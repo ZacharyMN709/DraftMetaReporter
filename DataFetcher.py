@@ -4,9 +4,17 @@ fetching the summary of data about the whole set.
 """
 
 from JSONHandler import JSONHandler
+from RawDataFetcher import RawDataFetcher
 
 TRGT_SET = 'NEO'
-TRGT_FMT = 'TradDraft'
+TRGT_FMT = 'PremierDraft'
 
-fetcher = JSONHandler(TRGT_SET, TRGT_FMT, None)
-fetcher.get_day_data()
+
+def get_set_data():
+    fetcher = RawDataFetcher(TRGT_SET, TRGT_FMT)
+    fetcher.get_summary_data()
+
+def __main__():
+    get_set_data()
+
+

@@ -11,8 +11,8 @@ SET_CONFIG = {
             "QuickDraft": [(date(2022, 2, 25), date(2022, 4, 28))]
         },
         "VOW" : {
-            "PremierDraft": [(date(2021, 11, 11), date(2022, 2, 20))],
-            "TradDraft": [(date(2021, 11, 11), date(2022, 2, 20))],
+            "PremierDraft": [(date(2021, 11, 11), date(2022, 2, 10))],
+            "TradDraft": [(date(2021, 11, 11), date(2022, 2, 10))],
             "QuickDraft": [(date(2021, 11, 26), date(2021, 12, 10)), (date(2021, 12, 24), date(2022, 1, 7))]
         },
         "MID" : {
@@ -81,6 +81,7 @@ class FormatMetadata:
         for time_period in self._ACTIVE_PERIODS:
             start_date = time_period[0]
             active_days.append(start_date)
+            new_date = start_date
             while (new_date < time_period[1]):
                 new_date += timedelta(days=1)
                 active_days.append(new_date)

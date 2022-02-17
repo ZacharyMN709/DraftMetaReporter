@@ -1,7 +1,7 @@
 import os
 import requests
 from time import sleep
-from datetime import date
+from datetime import date, datetime
 import json
 
 import WUBRG
@@ -15,7 +15,7 @@ class JSONHandler:
     _DEFAULT_DATE = '2020-01-01'
     _BASE_URL = 'https://www.17lands.com/'
         
-    def __init__(self, SET: str, FORMAT: str, DATE: date):
+    def __init__(self, SET: str, FORMAT: str, DATE: date=None):
         self.SET = SET
         self.FORMAT = FORMAT
         self.DATE = DATE
@@ -79,7 +79,17 @@ class JSONHandler:
     
     def file_exists(self, filename):
         return os.path.isfile(self.get_file_path(filename))
-    
+
+    def get_last_write_time(self):
+        """
+        Returns a UTC datetime object for the last write time of the managed files.
+        :return: A datetime object.
+        """
+        try:
+            filepath = os.path.abspath(self.get_file_path('ColorRatings.json'))
+            return datetime.utcfromtimestamp(os.path.getmtime(filepath))
+        except:
+            return datetime(2020, 1, 1)
     
     def load_json_file(self, filename):
         """
