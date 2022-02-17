@@ -100,17 +100,8 @@ class RawDataFetcher:
         Depending on the age of the data, it will be updated automatically.
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
-        loader = JSONHandler(self.SET, self.FORMAT, None) 
-        
-        # Calculate the last update date
-        utc = datetime.utcnow()
-        dt = datetime.combine(date(utc.year, utc.month, utc.day), time(2, 0))
-        if dt > utc:
-            dt -= timedelta(days=1)
-        
-        # Get the time the file was last updated, and see if it is before the most recent update.
-        last_edit = loader.get_last_write_time()
-        update = last_edit < dt
+        loader = JSONHandler(self.SET, self.FORMAT, None)
+        update = loader.get_last_write_time() < loader.get_prev_site_update_time()
         print(f'Getting overall data for {self.SET} {self.FORMAT}')
         card_dict, meta_dict = loader.get_day_data(overwrite=update)            
         return meta_dict, card_dict

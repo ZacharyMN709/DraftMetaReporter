@@ -152,7 +152,7 @@ def get_color_alias(color_string: str) -> str:
 
 
 COLOR_GROUPS = [''] + [get_color_string(y) for x in COLOUR_GROUPINGS for y in COLOUR_GROUPINGS[x]] + ['WUBRG']
-
+COLOR_PAIRS = [COLOR_ALIASES_SUPPORT['Guilds'][key] for key in COLOR_ALIASES_SUPPORT['Guilds']]
 
 # Takes in a valid colour string, or colour string alias,
 # and then returns a dictionary of booleans.
