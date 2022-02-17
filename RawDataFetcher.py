@@ -32,14 +32,14 @@ class RawDataFetcher:
     @property
     def META_DICT(self):
         """The daily data for archetype performance."""
-        if !self._META_DICT:
+        if not self._META_DICT:
             self.get_set_data()
         return self._META_DICT
     
     @property
     def CARD_DICTS(self):
         """The daily data for card performance."""
-        if !self._CARD_DICTS:
+        if not self._CARD_DICTS:
             self.get_set_data()
         return self._CARD_DICTS
 
@@ -47,14 +47,14 @@ class RawDataFetcher:
     @property
     def SUMMARY_META_DICT(self):
         """The overall data for archetype performance."""
-        if !self._SUMMARY_META_DICT:
+        if not self._SUMMARY_META_DICT:
             self.get_summary_data()
         return self._SUMMARY_META_DICT
     
     @property
     def SUMMARY_CARD_DICTS(self):
         """The overall data for card performance."""
-        if !self._SUMMARY_CARD_DICTS:
+        if not self._SUMMARY_CARD_DICTS:
             self.get_summary_data()
         return self._SUMMARY_CARD_DICTS
 
