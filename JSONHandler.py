@@ -90,16 +90,6 @@ class JSONHandler:
             return datetime.utcfromtimestamp(os.path.getmtime(filepath))
         except:
             return datetime(2020, 1, 1)
-
-    def get_prev_site_update_time():
-        utc = datetime.utcnow()
-        dt = datetime.combine(date(utc.year, utc.month, utc.day), time(2, 0))
-        if dt > utc:
-            dt -= timedelta(days=1)
-        return dt
-
-    def get_nest_site_update_time():
-        return get_prev_site_update_time() + timedelta(days=1)
     
     def load_json_file(self, filename):
         """

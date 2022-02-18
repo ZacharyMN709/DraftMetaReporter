@@ -12,9 +12,10 @@ TRGT_FMT = 'PremierDraft'
 
 def get_set_data():
     fetcher = RawDataFetcher(TRGT_SET, TRGT_FMT)
-    fetcher.get_summary_data()
+    fetcher.get_set_data()
+    print('Done!')
 
-def __main__():
+if __name__ == '__main__':
     get_set_data()
 
 

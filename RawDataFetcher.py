@@ -89,9 +89,9 @@ class RawDataFetcher:
             if self.FORMAT_METADATA.is_active(check_date):
                 self.get_day_data(check_date)
             check_date += timedelta(days=1)
-            run = check_date < date.today() 
+            utc_check_date = datetime.combine(check_date, time(2, 0))
+            run = utc_check_date < RawDataFetcher.get_prev_site_update_time()
     
-        self.gen_frames()
         return self._META_DICT, self._CARD_DICTS
     
     def get_summary_data(self):
@@ -101,7 +101,18 @@ class RawDataFetcher:
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
         loader = JSONHandler(self.SET, self.FORMAT, None)
-        update = loader.get_last_write_time() < loader.get_prev_site_update_time()
+        update = loader.get_last_write_time() < RawDataFetcher.get_prev_site_update_time()
         print(f'Getting overall data for {self.SET} {self.FORMAT}')
         card_dict, meta_dict = loader.get_day_data(overwrite=update)            
         return meta_dict, card_dict
+
+
+    def get_prev_site_update_time():
+        utc = datetime.utcnow()
+        dt = datetime.combine(date(utc.year, utc.month, utc.day), time(2, 0))
+        if dt > utc:
+            dt -= timedelta(days=1)
+        return dt
+
+    def get_next_site_update_time():
+        return RawDataFetcher.get_prev_site_update_time() + timedelta(days=1)
