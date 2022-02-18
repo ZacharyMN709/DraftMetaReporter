@@ -60,20 +60,20 @@ class LineColors:
     @property
     def LP(self):
         """White"""
-        return (1,0.2,1,0.5)
+        return (1,0.25,1,0.45)
     
     def get_col_array(self, filt=None):
         if filt =='':
-            return [self.W, self.U, self.B, self.R, self.G, self.LW, self.LU, self.LB, self.LR, self.LG, self.P]
+            return [self.W, self.U, self.B, self.R, self.G, self.LW, self.LU, self.LB, self.LR, self.LG, self.P, self.LP]
         elif filt =='W':
-            return [self.U, self.B, self.R, self.G, self.P]
+            return [self.U, self.B, self.R, self.G, self.P, self.LP]
         elif filt =='U':
-            return [self.W, self.B, self.R, self.G, self.P]
+            return [self.W, self.B, self.R, self.G, self.P, self.LP]
         elif filt =='B':
-            return [self.W, self.U, self.R, self.G, self.P]
+            return [self.W, self.U, self.R, self.G, self.P, self.LP]
         elif filt =='R':
-            return [self.W, self.U, self.B, self.G, self.P]
+            return [self.W, self.U, self.B, self.G, self.P, self.LP]
         elif filt =='G':
-            return [self.W, self.U, self.B, self.R, self.P]
+            return [self.W, self.U, self.B, self.R, self.P, self.LP]
         else:
             return None
