@@ -171,7 +171,7 @@ def get_color_map(color_str):
     return colors_exist
 
 
-def get_color_supersets(color_id: str, l: int = 5) -> list[str]:
+def get_color_supersets(color_id: str, l: int = 5, strict: bool=False) -> list[str]:
     """
     Gets all possible permutations of WUBRG which contain the color_id.
     Can limit the length of the permutations returned with l.
@@ -183,25 +183,29 @@ def get_color_supersets(color_id: str, l: int = 5) -> list[str]:
 
     cis = set(get_color_string(color_id))
     for c in COLOR_GROUPS:
-        if len(c) <= l and cis < set(c):
-            color_ids.append(c)
+        if strict:
+            if len(c) < l and cis < set(c): color_ids.append(c)
+        else:
+            if len(c) <= l and cis <= set(c): color_ids.append(c)
 
     return color_ids
 
 
-def get_color_subsets(color_id: str, l: int = 1) -> list[str]:
+def get_color_subsets(color_id: str, l: int = 0, strict: bool=False) -> list[str]:
     """
     Gets all possible permutations of WUBRG which are contained in color_id.
     Can limit the length of the permutations returned with l.
     :param color_id: The colours to look for in the permutations.
-    :param l: The min length of the permutations. Default: 1
+    :param l: The min length of the permutations. Default: 0
     :return: A list of color ids.
     """
     colour_ids = list()
 
     cis = set(get_color_string(color_id))
     for c in COLOR_GROUPS:
-        if len(c) >= l and cis > set(c):
-            colour_ids.append(c)
+        if strict:
+            if len(c) > l and cis > set(c): colour_ids.append(c)
+        else:
+            if len(c) >= l and cis >= set(c): colour_ids.append(c)
 
     return colour_ids

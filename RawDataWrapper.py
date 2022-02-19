@@ -29,43 +29,62 @@ class RawDataWrapper:
         return self._FUNCS
     
     
-    def deck_group_frame(self, name=slice(None, None, None), date=slice(None, None, None), summary=False):
+    def deck_group_frame(self, name=None, date=None, summary=False):
         """Returns a subset of the 'GROUPED_ARCHTYPE' data as a DataFrame."""
+        if name is None: name = slice(None)
+        if date is None: date = slice(None)
+        
         if summary:
             return self.DATA.GROUPED_ARCHTYPE_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[name]]
         else:
             return self.DATA.GROUPED_ARCHTYPE_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, name]]
      
-    def deck_archetype_frame(self, name=slice(None, None, None), date=slice(None, None, None), summary=False):
+    def deck_archetype_frame(self, deck_color=None, date=None, summary=False):
         """Returns a subset of the 'SINGLE_ARCHTYPE' data as a DataFrame."""
+        if deck_color is None: deck_color = slice(None)
+        if type(deck_color) is str: deck_color = WUBRG.get_color_identity(deck_color)
+        if date is None: date = slice(None)
+            
         if summary:
-            return self.DATA.SINGLE_ARCHTYPE_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[name]]
+            return self.DATA.SINGLE_ARCHTYPE_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[deck_color]]
         else:
-            return self.DATA.SINGLE_ARCHTYPE_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, name]]
+            return self.DATA.SINGLE_ARCHTYPE_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, deck_color]]
     
-    def card_frame(self, name=slice(None, None, None), deck_colors=slice(None, None, None), date=slice(None, None, None), card_color=None, card_rarity=None, summary=False):
+    def card_frame(self, name=None, deck_color=None, date=None, card_color=None, card_rarity=None, summary=False):
         """Returns a subset of the 'CARD' data as a DataFrame."""
-        if type(deck_colors) is str:
-            deck_colors = WUBRG.get_color_identity(deck_colors)
+        if name is None: name = slice(None)
+        if deck_color is None: deck_color = slice(None)
+        if date is None: date = slice(None)
+        if type(deck_color) is str: deck_color = WUBRG.get_color_identity(deck_color)
         
         if summary:
-            ret = self.DATA.CARD_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[deck_colors, name]]
+            ret = self.DATA.CARD_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[deck_color, name]]
         else:
-            ret = self.DATA.CARD_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, deck_colors, name]]
+            ret = self.DATA.CARD_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, deck_color, name]]
             
         if card_color:
-            card_color = WUBRG.get_color_identity(card_color)
-            ret = ret[ret['Color'] == card_color]
+            color_set = WUBRG.get_color_subsets(WUBRG.get_color_identity(card_color))
+            ret = ret[ret['Color'].isin(list(color_set))]
             
         if card_rarity:
-            ret = ret[ret['Rarity'] == card_rarity]
+            ret = ret[ret['Rarity'].isin(list(card_rarity))]
         
         return ret
     
     
+    #################################################################################################
     
     
     #Helper Functions
+    def get_avg_winrate(self, day=None, arch='All Decks'):
+        if day: return self.deck_group_frame(date=day, summary=False).loc[(day, arch)]['Win %']
+        else: return self.deck_group_frame(date=day, summary=True).loc[arch]['Win %'] 
+            
+    def get_games_played(deck_color):
+        if deck_color: return set_data.BO1.deck_archetype_frame(deck_color=deck_color, summary=True)['Games'].sum()
+        else: return set_data.BO1.deck_group_frame(name='All Decks', summary=True)['Games']
+    
+    
     def graph_pick_stats(self, card_name, roll=1):
         taken_data = self.card_frame(name=card_name, deck_colors='')[['ALSA', 'ATA']]
         taken_data.index = [tup[0][5:] for tup in taken_data.index]
@@ -93,7 +112,6 @@ class RawDataWrapper:
         return diff[['ALSA', 'Δ ALSA', 'ATA', 'Δ ATA', 'Color', 'Rarity']]
 
     
-    
     def get_card_summary(self, card_name, colors='', roll=1):
         frame = self.card_frame(name=card_name, deck_colors=colors)[['GIH WR', 'ALSA', '# GP', 'IWD']]
         frame.index = [tup[0][5:] for tup in frame.index]
@@ -116,25 +134,23 @@ class RawDataWrapper:
 
         rolling.plot(subplots=True, layout=(2,2), figsize=(12,8), title=title)
         
-    def get_top(self, column, count=10, asc=True, color=None, rarity=None):
-        frame = self.card_frame(deck_colors='', summary=True)
+
+    def get_top(self, column, count=10, asc=True, card_color=None, card_rarity=None, deck_color='', play_lim=None):
+        frame = self.card_frame(deck_color=deck_color, summary=True, card_rarity=card_rarity)
         frame = frame.sort_values(column, ascending=asc)
 
-        if color is not None:
-            color = WUBRG.get_color_identity(color)
-            frame = frame[frame['Color'] == color]
+        if card_color is not None:
+            card_color = WUBRG.get_color_identity(card_color)
+            frame = frame[frame['Color'] == card_color]
 
-        if rarity:
-            frame = frame[frame['Rarity'].isin(list(rarity))]
+        # TODO: Implement filtering here.
+        if play_lim is not None:
+            if type(play_lim) is float: play_lim *= self.get_games_played(deck_color)
+            print(f'Minimum Games played to be included: {play_lim}')
+            frame = frame[frame['# GP'] >= play_lim]
 
         return frame.head(count)
 
-        
-    def get_avg_winrate(self, day=None, arch='All Decks'):
-        if day:
-            return self.deck_group_frame(date=day, summary=False).loc[(day, arch)]['Win %']
-        else:
-            return self.deck_group_frame(date=day, summary=True).loc[arch]['Win %']
     
     def get_archetype_frame(self, colors, roll=1):
         win_rate_frame = self.deck_archetype_frame(name=colors)
