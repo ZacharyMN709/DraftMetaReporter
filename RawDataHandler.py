@@ -135,6 +135,8 @@ class RawDataHandler:
     def gen_hist(self):
         """Populates and updates the three 'HISTORY' properties."""
         hist_meta, hist_card = self._FETCHER.get_set_data()
+        if (not hist_meta) and (not hist_card):
+            return
         
         grouped_arch_frame_dict = dict()
         single_arch_frame_dict = dict()
@@ -159,7 +161,9 @@ class RawDataHandler:
     def gen_summary(self):
         """Populates and updates the three 'SUMMARY' properties."""
         hist_meta, hist_card = self._FETCHER.get_summary_data()
-               
+        if (not hist_meta) and (not hist_card):
+            return
+        
         grouped_arch_frame, single_arch_frame = self.panadafy_meta_dict(hist_meta)
 
         color_dict = dict()

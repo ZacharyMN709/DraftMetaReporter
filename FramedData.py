@@ -29,7 +29,11 @@ class FramedData:
     def FUNCS(self):
         """A helper object which contains convenience functions for plotting and subsetting."""
         return self._FUNCS
-    
+
+
+    def check_for_updates(self):
+        """Populates and updates all data properties."""
+        self._DATA.check_for_updates()    
     
     def deck_group_frame(self, name=None, date=None, summary=False):
         """Returns a subset of the 'GROUPED_ARCHTYPE' data as a DataFrame."""

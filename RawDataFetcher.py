@@ -82,7 +82,7 @@ class RawDataFetcher:
         If any data does not exist locally, it will be fetched from 17Lands and saved locally.
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
-        check_date = self.FORMAT_METADATA.START_DATE
+        check_date = min(self.FORMAT_METADATA.START_DATE, RawDataFetcher.utc_today())
 
         run = True        
         while(run):
@@ -100,8 +100,15 @@ class RawDataFetcher:
         Depending on the age of the data, it will be updated automatically.
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
+        if self.FORMAT_METADATA.START_DATE > RawDataFetcher.utc_today():
+            return dict(), dict()
+
         loader = JSONHandler(self.SET, self.FORMAT, None)
-        update = loader.get_last_write_time() < RawDataFetcher.get_prev_site_update_time()
+        last_write = loader.get_last_write_time()
+        ext_end_date = self.FORMAT_METADATA.END_DATE + timedelta(days=7)
+        data_updated = last_write < RawDataFetcher.get_prev_site_update_time()
+        data_live = last_write.date() < ext_end_date
+        update = data_updated and data_live
         print(f'Getting overall data for {self.SET} {self.FORMAT}')
         card_dict, meta_dict = loader.get_day_data(overwrite=update)            
         return meta_dict, card_dict
@@ -116,3 +123,7 @@ class RawDataFetcher:
 
     def get_next_site_update_time():
         return RawDataFetcher.get_prev_site_update_time() + timedelta(days=1)
+
+    def utc_today():
+        utc = datetime.utcnow()
+        return date(utc.year, utc.month, utc.day)
