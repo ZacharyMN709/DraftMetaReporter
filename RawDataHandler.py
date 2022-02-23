@@ -94,6 +94,13 @@ class RawDataHandler:
 
         frame = frame.drop(['sideboard_game_count', 'sideboard_win_rate', 'url', 'url_back'], axis=1)
         frame['Rarity'] = frame['Rarity'].map(consts.RARITY_ALIASES)
+
+        frame['# UGIH'] = frame['# GP'] - frame['# GND']
+        frame['UGIH WR'] = (((frame['# GP'] * frame['GP WR']) - (frame['# GND'] * frame['GND WR'])) / frame['# UGIH'])
+        
+        column_names = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR', '# GIH', 'GIH WR', '# UGIH', 'UGIH WR', '# GND', 'GND WR', 'IWD', 'Color', 'Rarity']
+        frame = frame.reindex(columns=column_names)
+        
         frame = frame.round(3)
         return frame
     

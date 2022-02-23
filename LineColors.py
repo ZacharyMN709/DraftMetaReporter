@@ -147,7 +147,7 @@ class LineColors:
     
     def get_col_array(self, filt=None):
         if filt =='':
-            return [self.W, self.U, self.B, self.R, self.G, self.LW, self.LU, self.LB, self.LR, self.LG, self.P, self.LP]
+            return [self.W, self.LW, self.LR, self.G, self.U, self.LU, self.LG, self.B, self.LB, self.R, self.P, self.LP]
         elif filt =='W':
             return [self.U, self.B, self.R, self.G, self.P, self.LP]
         elif filt =='U':
