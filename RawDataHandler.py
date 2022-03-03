@@ -94,10 +94,7 @@ class RawDataHandler:
 
         frame = frame.drop(['sideboard_game_count', 'sideboard_win_rate', 'url', 'url_back'], axis=1)
         frame['Rarity'] = frame['Rarity'].map(consts.RARITY_ALIASES)
-
-        frame['# UGIH'] = frame['# GP'] - frame['# GND']
-        frame['UGIH WR'] = (((frame['# GP'] * frame['GP WR']) - (frame['# GND'] * frame['GND WR'])) / frame['# UGIH'])
-        
+    
         column_names = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR', '# GIH', 'GIH WR', '# UGIH', 'UGIH WR', '# GND', 'GND WR', 'IWD', 'Color', 'Rarity']
         frame = frame.reindex(columns=column_names)
         
@@ -110,12 +107,15 @@ class RawDataHandler:
         :param card_dict: The dictionary containing card data for a colour group
         :return: A DataFrame filled with the cleaned card data
         """
+        # If there's no (meaningful) data, make a blank frame and return it.
+        if len(meta_dict) == 1:
+            frame = pd.DataFrame(columns=['Name', 'Colors', 'Splash', 'Wins', 'Games', 'Win %'])
+            frame = frame.set_index('Name')
+            return frame, frame.copy()
+
+        # Otherwise, load in the data and split it into summaries and archtypes.
         frame = pd.DataFrame.from_dict(meta_dict)
         frame = frame.rename(columns=consts.META_COLS)
-
-        # If there's no data, make a blank frame and return it.
-        if len(meta_dict) == 0:
-            return frame, frame.copy()
         
         frame['Name'] = frame['Color Name']
         frame = frame.set_index('Name')

@@ -2,7 +2,6 @@
 Running this program will update the ALL folder for the relevant set and format,
 fetching the summary of data about the whole set.
 """
-
 from JSONHandler import JSONHandler
 from RawDataFetcher import RawDataFetcher
 
@@ -15,7 +14,16 @@ def get_set_data():
     fetcher.get_set_data()
     print('Done!')
 
+
+def get_all_data():
+    formats = ['PremierDraft', 'TradDraft', 'QuickDraft']
+    for f in formats:
+        fetcher = RawDataFetcher(TRGT_SET, f)
+        fetcher.get_set_data()
+    print('Done!')
+
+
 if __name__ == '__main__':
-    get_set_data()
+    get_all_data()
 
 
