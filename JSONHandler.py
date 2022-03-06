@@ -10,7 +10,9 @@ import consts
 
 class JSONHandler:
     _TRIES = 5
-    _DELAY = 60
+    _FAIL_DELAY = 60
+    _SUCC_DELAY = 1
+    #TODO: Create and move to a config file.
     
     _DEFAULT_DATE = '2020-01-01'
     _BASE_URL = 'https://www.17lands.com/'
@@ -55,12 +57,12 @@ class JSONHandler:
                 data = response.json()
 
                 success = True
-                sleep(0.5)
+                sleep(self._SUCC_DELAY)
                 return data
             except:
                 if count < self._TRIES:
-                    print(f'Failed to get data. Trying again in {self._DELAY} seconds.')
-                    sleep(self._DELAY)
+                    print(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.')
+                    sleep(self._FAIL_DELAY)
                     continue
                 else:
                     print(f'Failed to get data after {self._TRIES} attempts.')
@@ -90,6 +92,21 @@ class JSONHandler:
             return datetime.utcfromtimestamp(os.path.getmtime(filepath))
         except:
             return datetime(2020, 1, 1)
+
+    def files_valid(self):
+        """
+        Returns a boolean which represents if the files contain valid data.
+        Returns False if all of the files contain empty or default data.
+        :return: A boolean.
+        """
+        folder_path = self.get_folder_path()
+        files = os.listdir(folder_path)
+        for x in files:
+            # Min filesize is 129.
+            if os.path.getsize(os.path.join(folder_path, x)) > 130:
+                return True
+    
+        return False
     
     def load_json_file(self, filename):
         """
@@ -104,7 +121,6 @@ class JSONHandler:
             with open(filepath, 'r') as f:
                 json_str = f.read()
                 f.close()
-
                 #print(f'File {filename} read sucessfully.')
                 return json.loads(json_str)
         except Exception as ex:
@@ -126,7 +142,6 @@ class JSONHandler:
             with open(filepath, 'w') as f:
                 f.write(json.dumps(data, indent=4))
                 f.close()
-
             #print(f'File {filename} written to.')
             return True
         except Exception as ex:
@@ -160,6 +175,9 @@ class JSONHandler:
         return self._get_data(self.get_color_rating_url(), f'ColorRatings.json', overwrite)
         
     def get_day_data(self, overwrite=False):
+        if not self.files_valid():
+            overwrite = True
+        
         card_dict = self.get_all_card_data(overwrite)
         meta_dict = self.get_meta_data(overwrite)
         
