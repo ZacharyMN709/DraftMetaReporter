@@ -1,15 +1,19 @@
 from datetime import date, time, datetime, timedelta
 
+from Logger import Logger
 import WUBRG
 import consts
 from JSONHandler import JSONHandler
 from FormatMetadata import FormatMetadata
 
 class RawDataFetcher:    
-    def __init__(self, SET, FORMAT):
+    def __init__(self, SET, FORMAT, LOGGER=None):
         self._SET = SET
         self._FORMAT = FORMAT
         self.FORMAT_METADATA = FormatMetadata(SET, FORMAT)
+        if LOGGER is None:
+            LOGGER = Logger(Logger.FLG.DEFAULT)
+        self.LOGGER = LOGGER
         
         self._META_DICT = dict()
         self._CARD_DICTS = dict()
@@ -66,14 +70,21 @@ class RawDataFetcher:
         :param check_date: The date to get the data for
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
-        loader = JSONHandler(self.SET, self.FORMAT, check_date)
+        loader = JSONHandler(self.SET, self.FORMAT, check_date, self.LOGGER)
         str_date = str(check_date)
-        print(f'Getting data for {self.SET} {self.FORMAT}, date: {str_date}')
+        self.LOGGER.log(f'Getting data for {self.SET} {self.FORMAT}, date: {str_date}', Logger.FLG.DEFAULT)
         card_dict, meta_dict = loader.get_day_data()
         
+
+
+        if not card_dict:
+            self.LOGGER.log(f'`card_dict` for {str_date} is empty.', Logger.FLG.VERBOSE)
+        if not meta_dict:
+            self.LOGGER.log(f'`meta_dict` for {str_date} is empty.', Logger.FLG.VERBOSE)
+
         self._META_DICT[str_date] = meta_dict
         self._CARD_DICTS[str_date] = {color: card_dict[color] for color in card_dict}
-            
+
         return meta_dict, card_dict
 
     def get_set_data(self):
@@ -101,15 +112,16 @@ class RawDataFetcher:
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
         if self.FORMAT_METADATA.START_DATE > RawDataFetcher.utc_today():
+            self.LOGGER.log(f'{self.SET} {self.FORMAT} has not begun yet. No data to get!', Logger.FLG.DEFAULT)
             return dict(), dict()
 
-        loader = JSONHandler(self.SET, self.FORMAT, None)
+        loader = JSONHandler(self.SET, self.FORMAT, None, self.LOGGER)
         last_write = loader.get_last_write_time()
         ext_end_date = self.FORMAT_METADATA.END_DATE + timedelta(days=7)
         data_updated = last_write < RawDataFetcher.get_prev_site_update_time()
         data_live = last_write.date() < ext_end_date
         update = data_updated and data_live
-        print(f'Getting overall data for {self.SET} {self.FORMAT}')
+        self.LOGGER.log(f'Getting overall data for {self.SET} {self.FORMAT}', Logger.FLG.DEFAULT)
         card_dict, meta_dict = loader.get_day_data(overwrite=update)            
         return meta_dict, card_dict
 

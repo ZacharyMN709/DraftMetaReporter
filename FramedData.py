@@ -1,13 +1,17 @@
 import pandas as pd
 
+from Logger import Logger
 import WUBRG
 from RawDataHandler import RawDataHandler
 
 class FramedData:   
-    def __init__(self, SET, FORMAT):
+    def __init__(self, SET, FORMAT, LOGGER=None):
         self._SET = SET
         self._FORMAT = FORMAT
-        self._DATA = RawDataHandler(SET, FORMAT)
+        if LOGGER is None:
+            LOGGER = Logger(Logger.FLG.DEFAULT)
+        self.LOGGER = LOGGER
+        self._DATA = RawDataHandler(SET, FORMAT, self.LOGGER)
         
     
     @property

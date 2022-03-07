@@ -9,6 +9,13 @@ TRGT_SET = 'NEO'
 TRGT_FMT = 'PremierDraft'
 
 
+def test_JSONHandler():
+    handler = JSONHandler(TRGT_SET, TRGT_FMT)
+    data = handler.get_day_data()
+    print('Done!')
+    return data
+
+
 def get_set_data():
     fetcher = RawDataFetcher(TRGT_SET, TRGT_FMT)
     fetcher.get_set_data()
@@ -24,6 +31,6 @@ def get_all_data():
 
 
 if __name__ == '__main__':
-    get_all_data()
+    test_JSONHandler()
 
 

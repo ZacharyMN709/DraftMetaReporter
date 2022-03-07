@@ -1,14 +1,18 @@
 import pandas as pd
 
+from Logger import Logger
 import WUBRG
 import consts
 from RawDataFetcher import RawDataFetcher
 
 class RawDataHandler:
-    def __init__(self, SET, FORMAT):
+    def __init__(self, SET, FORMAT, LOGGER=None):
         self._SET = SET
         self._FORMAT = FORMAT
-        self._FETCHER = RawDataFetcher(SET, FORMAT)
+        if LOGGER is None:
+            LOGGER = Logger(Logger.FLG.DEFAULT)
+        self.LOGGER = LOGGER
+        self._FETCHER = RawDataFetcher(SET, FORMAT, self.LOGGER)
         
         self._GROUPED_ARCHTYPE_HISTORY_FRAME = None
         self._SINGLE_ARCHTYPE_HISTORY_FRAME = None
@@ -184,5 +188,7 @@ class RawDataHandler:
     
     def check_for_updates(self):
         """Populates and updates all data properties."""
+        self.LOGGER.log(f'Refreshing data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
         self.gen_hist()
         self.gen_summary()
+        self.LOGGER.log(f'Finished refreshing data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)

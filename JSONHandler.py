@@ -4,6 +4,7 @@ from time import sleep
 from datetime import date, datetime
 import json
 
+from Logger import Logger
 import WUBRG
 import consts
 
@@ -17,10 +18,13 @@ class JSONHandler:
     _DEFAULT_DATE = '2020-01-01'
     _BASE_URL = 'https://www.17lands.com/'
         
-    def __init__(self, SET: str, FORMAT: str, DATE: date=None):
+    def __init__(self, SET: str, FORMAT: str, DATE: date=None, LOGGER=None):
         self.SET = SET
         self.FORMAT = FORMAT
         self.DATE = DATE
+        if LOGGER is None:
+            LOGGER = Logger(Logger.FLG.DEFAULT)
+        self.LOGGER = LOGGER
         os.makedirs(self.get_folder_path(), exist_ok=True)
         
     def get_date_filter(self) -> str:
@@ -53,6 +57,7 @@ class JSONHandler:
             count += 1
 
             try:
+                self.LOGGER.log(f'Attempting to get data from {url}.', Logger.FLG.DEBUG)
                 response = requests.get(url)
                 data = response.json()
 
@@ -61,12 +66,12 @@ class JSONHandler:
                 return data
             except:
                 if count < self._TRIES:
-                    print(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.')
+                    self.LOGGER.log(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.', Logger.FLG.DEFAULT)
                     sleep(self._FAIL_DELAY)
                     continue
                 else:
-                    print(f'Failed to get data after {self._TRIES} attempts.')
-                    print(f'Failed URL: {url}')
+                    self.LOGGER.log(f'Failed to get data after {self._TRIES} attempts.', Logger.FLG.ERROR)
+                    self.LOGGER.log(f'Failed URL: {url}', Logger.FLG.ERROR)
                     return None        
 
     def get_folder_path(self):
@@ -89,9 +94,11 @@ class JSONHandler:
         """
         try:
             filepath = os.path.abspath(self.get_file_path('ColorRatings.json'))
-            return datetime.utcfromtimestamp(os.path.getmtime(filepath))
+            wrt_tm = datetime.utcfromtimestamp(os.path.getmtime(filepath))
         except:
-            return datetime(2020, 1, 1)
+            wrt_tm = datetime(2020, 1, 1)
+        self.LOGGER.log(f'Last write-time: {wrt_tm}', Logger.FLG.DEBUG)
+        return wrt_tm
 
     def files_valid(self):
         """
@@ -104,8 +111,10 @@ class JSONHandler:
         for x in files:
             # Min filesize is 129.
             if os.path.getsize(os.path.join(folder_path, x)) > 130:
+                self.LOGGER.log(f'Non-empty file found: {x}', Logger.FLG.DEBUG)
                 return True
-    
+
+        self.LOGGER.log(f'All files are empty!', Logger.FLG.DEBUG)
         return False
     
     def load_json_file(self, filename):
@@ -121,11 +130,11 @@ class JSONHandler:
             with open(filepath, 'r') as f:
                 json_str = f.read()
                 f.close()
-                #print(f'File {filename} read sucessfully.')
+                self.LOGGER.log(f'File {filename} read sucessfully.', Logger.FLG.VERBOSE)
                 return json.loads(json_str)
         except Exception as ex:
-            print(f'Error reading json file {filename}')
-            print(ex)
+            self.LOGGER.log(f'Error reading json file {filename}', Logger.FLG.ERROR)
+            self.LOGGER.log(ex, Logger.FLG.ERROR)
             return None
 
     def save_json_file(self, filename, data):
@@ -142,19 +151,19 @@ class JSONHandler:
             with open(filepath, 'w') as f:
                 f.write(json.dumps(data, indent=4))
                 f.close()
-            #print(f'File {filename} written to.')
+            self.LOGGER.log(f'File {filename} written to.', Logger.FLG.VERBOSE)
             return True
         except Exception as ex:
-            print(f'Error writing to json file {filename}')
-            print(ex)
+            self.LOGGER.log(f'Error writing to json file {filename}', Logger.FLG.ERROR)
+            self.LOGGER.log(ex, Logger.FLG.ERROR)
             return False
         
     def _get_data(self, url, filename, overwrite=False):
         if (not self.file_exists(filename)) or overwrite:
             if overwrite:
-                print(f"Updating data for '{filename}'. Fetching from 17Lands site...")
+                self.LOGGER.log(f"Updating data for '{filename}'. Fetching from 17Lands site...", Logger.FLG.DEFAULT)
             else:
-                print(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...")
+                self.LOGGER.log(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...", Logger.FLG.DEFAULT)
             data = self.fetch(url)
             self.save_json_file(filename, data)
         else:
