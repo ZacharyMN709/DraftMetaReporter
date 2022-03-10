@@ -36,8 +36,12 @@ class FramedData:
 
 
     def check_for_updates(self):
-        """Populates and updates all data properties."""
-        self._DATA.check_for_updates()    
+        """Populates and updates all data properties, filling in missing data."""
+        self._DATA.check_for_updates()
+
+    def reload_data(self):
+        """Populates and updates all data properties, reloading all data."""
+        self._DATA.reload_data()   
     
     def deck_group_frame(self, name=None, date=None, summary=False):
         """Returns a subset of the 'GROUPED_ARCHTYPE' data as a DataFrame."""

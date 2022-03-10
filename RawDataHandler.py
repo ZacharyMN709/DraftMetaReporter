@@ -88,7 +88,7 @@ class RawDataHandler:
         frame = frame.rename(columns=consts.STAT_NAMES)
 
         # If there's no data, make a blank frame and return it.
-        if len(card_dict) == 0:
+        if card_dict is None or len(card_dict) == 0:
             return frame
 
         frame = frame.set_index('Name')
@@ -112,7 +112,7 @@ class RawDataHandler:
         :return: A DataFrame filled with the cleaned card data
         """
         # If there's no (meaningful) data, make a blank frame and return it.
-        if len(meta_dict) == 1:
+        if meta_dict is None or len(meta_dict) <= 1:
             frame = pd.DataFrame(columns=['Name', 'Colors', 'Splash', 'Wins', 'Games', 'Win %'])
             frame = frame.set_index('Name')
             return frame, frame.copy()
@@ -143,9 +143,9 @@ class RawDataHandler:
         return summary_frame, archetype_frame
 
         
-    def gen_hist(self):
+    def gen_hist(self, reload=False, overwrite=False):
         """Populates and updates the three 'HISTORY' properties."""
-        hist_meta, hist_card = self._FETCHER.get_set_data()
+        hist_meta, hist_card = self._FETCHER.get_set_data(reload, overwrite)
         if (not hist_meta) and (not hist_card):
             return
         
@@ -169,9 +169,9 @@ class RawDataHandler:
         self._SINGLE_ARCHTYPE_HISTORY_FRAME = single_arch_frame
         self._CARD_HISTORY_FRAME = card_frame
 
-    def gen_summary(self):
+    def gen_summary(self, reload=False, overwrite=False):
         """Populates and updates the three 'SUMMARY' properties."""
-        hist_meta, hist_card = self._FETCHER.get_summary_data()
+        hist_meta, hist_card = self._FETCHER.get_summary_data(reload, overwrite)
         if (not hist_meta) and (not hist_card):
             return
         
@@ -187,8 +187,24 @@ class RawDataHandler:
         self._CARD_SUMMARY_FRAME = card_frame
     
     def check_for_updates(self):
-        """Populates and updates all data properties."""
-        self.LOGGER.log(f'Refreshing data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
+        """Populates and updates all data properties, filling in missing data."""
+        self.LOGGER.log(f'Checking for missing data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
         self.gen_hist()
         self.gen_summary()
-        self.LOGGER.log(f'Finished refreshing data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
+        self.LOGGER.log(f'Finished checking for missing data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
+
+
+    def reload_data(self):
+        """Populates and updates all data properties, reloading all data."""
+        self.LOGGER.log(f'Loading data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
+        self.gen_hist(True)
+        self.gen_summary(True)
+        self.LOGGER.log(f'Finished loading data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
+
+
+    def force_update(self):
+        """Forcibly refetches and overwrites all data."""
+        self.LOGGER.log(f'Re-downloading data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
+        self.gen_hist(True, True)
+        self.gen_summary(True, True)
+        self.LOGGER.log(f'Finished re-downloading data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)

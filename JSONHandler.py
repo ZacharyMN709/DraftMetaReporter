@@ -4,6 +4,7 @@ from time import sleep
 from datetime import date, datetime
 import json
 
+import settings
 from Logger import Logger
 import WUBRG
 import consts
@@ -75,7 +76,7 @@ class JSONHandler:
                     return None        
 
     def get_folder_path(self):
-        path = os.path.join('..', '17LandsData', self.SET, self.FORMAT)
+        path = os.path.join(settings.DATA_DIR_LOC, settings.DATA_DIR_NAME, self.SET, self.FORMAT)
         if self.DATE:
             return os.path.join(path, str(self.DATE))
         else:
