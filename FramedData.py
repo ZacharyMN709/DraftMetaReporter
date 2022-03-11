@@ -1,3 +1,4 @@
+from functools import cmp_to_key
 import pandas as pd
 
 from Logger import Logger
@@ -84,3 +85,68 @@ class FramedData:
             ret = ret[ret['Rarity'].isin(list(card_rarity))]
         
         return ret
+
+    # TODO: Figure out how to best paramaterize this/what wrapper functions to have call this
+    def compress_date_range_data(self, start_date, end_date, card_name=None):
+        """Summarizes card data over a provided set of time."""
+        # Set up dictionaries for quicker sorting.
+        COLOR_INDEXES = { WUBRG.COLOR_GROUPS[x]: x for x in range(0, len(WUBRG.COLOR_GROUPS)) }
+        #TODO: Have the cards be pulled from Scryfall via SetMetadata
+        CARDS = list(self.card_frame(summary=True, deck_color='').reset_index(level=0).index)    
+        CARD_INDEXES = {CARDS[x]: x for x in range(0, len(CARDS))}
+
+        # Creating a custom sorting algortihm
+        def compare(pair1, pair2):
+            # Convert the colors and names into numeric indexes
+            color1, name1 = pair1
+            col_idx1 = COLOR_INDEXES[color1]
+            name_idx1 = CARD_INDEXES[name1]
+            color2, name2 = pair2
+            col_idx2 = COLOR_INDEXES[color2]
+            name_idx2 = CARD_INDEXES[name2]
+
+            # Sort by deck colour than card number.
+            if col_idx1 == col_idx2:
+                if name_idx1 < name_idx2: return -1
+                else: return 1
+            if col_idx1 < col_idx2: return -1
+            else: return 1
+
+        compare_key = cmp_to_key(compare)
+
+        # The columns which have win percents.
+        percent_cols = ['GP', 'OH', 'GD', 'GIH', 'GND']
+        
+        # Get the relevant dates (and card)
+        frame = self.card_frame(card_name, date=slice(start_date, end_date)).copy()
+        
+        # Calculate helper stats to recalculate value later.
+        frame['ALSA SUM'] = frame['ALSA'] * frame['# Seen']
+        frame['ATA SUM'] = frame['ATA'] * frame['# Picked']
+        for col in percent_cols:
+            frame[f'# {col} WINS'] = frame[f'# {col}'] * frame[f'{col} WR']
+        
+        # Take the expanded frame, and drop the dates.
+        frame = frame.reset_index(level=0)
+        frame = frame.drop('Date', axis=1)
+
+        # Sum the frame by deck colours and cards.
+        temp = frame.groupby(['Deck Colors', 'Name']).max() #Used to preserve color and rarity.
+        frame = frame.groupby(['Deck Colors', 'Name']).sum()
+        frame['Color'] = temp['Color']
+        frame['Rarity'] = temp['Rarity']
+
+        # Re-caulculate the stats based on the processing from above.
+        frame['ALSA'] = frame['ALSA SUM'] / frame['# Seen']
+        frame['ATA'] = frame['ATA SUM'] / frame['# Picked']
+        for col in ['GP', 'OH', 'GD', 'GIH', 'GND']:
+            frame[f'{col} WR'] = frame[f'# {col} WINS'] / frame[f'# {col}']
+        frame['IWD'] = frame['GIH WR'] - frame['GND WR']
+        
+        # Trim the helper columns from the epanded frame.
+        summed = frame[['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR', '# GIH', 'GIH WR', '# GND', 'GND WR', 'IWD', 'Color', 'Rarity']]
+        idx = list(summed.index)
+        idx.sort(key=compare_key)
+        summed = summed.set_index([idx])
+        
+        return summed

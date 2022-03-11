@@ -23,6 +23,9 @@ SET_CONFIG = {
     }
 
 class FormatMetadata:
+
+    CARD_LISTS = dict()
+    
     def __init__(self, SET, FORMAT):
         self._SET = SET
         self._FORMAT = FORMAT
@@ -54,6 +57,16 @@ class FormatMetadata:
     def END_DATE(self):
         """The end date of the set's format."""
         return self._END_DATE
+
+
+    @property
+    def CARD_LIST(self):
+        """The list of cards in the set"""
+        if self.SET not in CARD_LISTS:
+            # TODO: Get cards from Scryfall
+            raise Exception("Need to get cards from Scryfall!")
+            pass
+        return CARD_LISTS[self.SET]
 
     
     def is_active(self, check_date=None):
