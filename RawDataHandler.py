@@ -10,7 +10,7 @@ class RawDataHandler:
         self._SET = SET
         self._FORMAT = FORMAT
         if LOGGER is None:
-            LOGGER = Logger(Logger.FLG.DEFAULT)
+            LOGGER = Logger()
         self.LOGGER = LOGGER
         self._FETCHER = RawDataFetcher(SET, FORMAT, self.LOGGER)
         

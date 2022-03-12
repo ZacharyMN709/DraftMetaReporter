@@ -10,7 +10,7 @@ class FramedData:
         self._SET = SET
         self._FORMAT = FORMAT
         if LOGGER is None:
-            LOGGER = Logger(Logger.FLG.DEFAULT)
+            LOGGER = Logger()
         self.LOGGER = LOGGER
         self._DATA = RawDataHandler(SET, FORMAT, self.LOGGER)
         

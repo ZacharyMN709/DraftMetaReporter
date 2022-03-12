@@ -26,7 +26,9 @@ class Logger:
             pass
 
         
-    def __init__(self, LOG_LVL, USE_TIMESTAMP=False):
+    def __init__(self, LOG_LVL=None, USE_TIMESTAMP=False):
+        if LOG_LVL is None:
+            LOG_LVL = self.FLG.DEFAULT
         self.LOG_LVL = LOG_LVL
         #TODO: Implement timestamp prepender.
         self.log = self.prt

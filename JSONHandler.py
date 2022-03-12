@@ -24,7 +24,7 @@ class JSONHandler:
         self.FORMAT = FORMAT
         self.DATE = DATE
         if LOGGER is None:
-            LOGGER = Logger(Logger.FLG.DEFAULT)
+            LOGGER = Logger()
         self.LOGGER = LOGGER
         os.makedirs(self.get_folder_path(), exist_ok=True)
         
@@ -50,6 +50,7 @@ class JSONHandler:
         """
         Attempts to get json data from a url.
         :param url: The url to get data from
+        :return: A json object or None
         """
         success = False
         count = 0

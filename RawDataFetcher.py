@@ -12,7 +12,7 @@ class RawDataFetcher:
         self._FORMAT = FORMAT
         self.FORMAT_METADATA = FormatMetadata(SET, FORMAT)
         if LOGGER is None:
-            LOGGER = Logger(Logger.FLG.DEFAULT)
+            LOGGER = Logger()
         self.LOGGER = LOGGER
         
         self._META_DICT = dict()
