@@ -7,30 +7,27 @@ from Fetcher import Fetcher
 
 class CallScryfall():   
     _BASE_URL = 'https://api.scryfall.com/'
+    FETCHER = Fetcher()
     
-    def __init__(self, LOGGER=None):
-        if LOGGER is None:
-            LOGGER = Logger()
-        self.LOGGER = LOGGER
-        self.FETCHER = Fetcher(self.LOGGER)
-    
-    
-    def get_set_cards(self, SET):
+    def get_set_cards(SET):
         cards = []
         next_page = True
-        url = f'{self._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false&order=set&page=1&q=e%3A{SET}&unique=cards'
-        
+        url = f'{CallScryfall._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false&order=set&page=1&q=e%3A{SET}&unique=cards'
+        Logger.LOGGER.log(f"Fetching card data for set: {SET}", Logger.FLG.DEFAULT)
+
         while next_page:
-            response = self.FETCHER.fetch(url)
+            response = CallScryfall.FETCHER.fetch(url)
             cards += response['data']
             if response['has_more']:
                 url = response['next_page']
+                Logger.LOGGER.log(f"Fetching next page for set: {SET}", Logger.FLG.VERBOSE)
+                Logger.LOGGER.log(f"URL: {url}", Logger.FLG.DEBUG)
             else:
                 next_page = False
         
         return cards
     
-    def get_card_by_name(self, NAME):
+    def get_card_by_name(NAME):
         """
         Gets card data from scryfall based on a name. Scryfall's fuzzy filter is
         used to handle imprecise queries and spelling errors.
@@ -43,10 +40,12 @@ class CallScryfall():
 
         # Attempt to get information on the card.
         try:
-            response = self.FETCHER.fetch(f'{self._BASE_URL}cards/named?fuzzy={NAME}')
+            Logger.LOGGER.log(f"Fetching data for card: {NAME}", Logger.FLG.DEFAULT)
+            response = CallScryfall.FETCHER.fetch(f'{CallScryfall._BASE_URL}cards/named?fuzzy={NAME}')
 
             # If is not a card, do some processing and return the struct with some information.
             if response['object'] != 'card':
+                Logger.LOGGER.log(f"A non-card was returned for {NAME}", Logger.FLG.VERBOSE)
                 # If the response type is an error, use that as the message.
                 if response['object'] == 'error':
                     if response['details'][:20] == 'Too many cards match':
@@ -56,10 +55,11 @@ class CallScryfall():
                 # If the search return a non-card, add that as the error message.
                 else:
                     card_info['err_msg'] = f'Error: "{NAME}" returned non-card'
+                Logger.LOGGER.log(card_info['err_msg'], Logger.FLG.DEBUG)
                 return card_info
         # If an exception occurs, print it, and add an error massage to the struct.
         except Exception as ex:
-            self.LOGGER.log(ex, Logger.FLG.ERROR)
+            Logger.LOGGER.log(ex, Logger.FLG.ERROR)
             card_info['err_msg'] = f'Error: Failed to query Scryfall for {NAME}\r\n{ex}'
             return card_info
             

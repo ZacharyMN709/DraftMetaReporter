@@ -2,20 +2,16 @@ import requests
 from time import sleep
 import json
 
-
 import settings
 from Logger import Logger
 
 class Fetcher():
-    _TRIES = 5
-    _FAIL_DELAY = 60
-    _SUCC_DELAY = 1
     
-    def __init__(self, LOGGER=None):
-        if LOGGER is None:
-            LOGGER = Logger()
-        self.LOGGER = LOGGER
-
+    def __init__(self, tries=None, fail_delay=None, succ_delay=None):
+        ## TODO: Handle values via a defaults or config.
+        self._TRIES = tries if tries is not None else 5
+        self._FAIL_DELAY = fail_delay if fail_delay is not None else 60
+        self._SUCC_DELAY = succ_delay if succ_delay is not None else 1
         
     def fetch(self, url: str) -> object:
         """
@@ -30,7 +26,7 @@ class Fetcher():
             count += 1
 
             try:
-                self.LOGGER.log(f'Attempting to get data from {url}.', Logger.FLG.DEBUG)
+                Logger.LOGGER.log(f'Attempting to get data from {url}.', Logger.FLG.DEBUG)
                 response = requests.get(url)
                 data = response.json()
 
@@ -39,10 +35,11 @@ class Fetcher():
                 return data
             except:
                 if count < self._TRIES:
-                    self.LOGGER.log(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.', Logger.FLG.DEFAULT)
+                    Logger.LOGGER.log(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.', Logger.FLG.DEFAULT)
                     sleep(self._FAIL_DELAY)
                     continue
                 else:
-                    self.LOGGER.log(f'Failed to get data after {self._TRIES} attempts.', Logger.FLG.ERROR)
-                    self.LOGGER.log(f'Failed URL: {url}', Logger.FLG.ERROR)
+                    Logger.LOGGER.log(f'Failed to get data after {self._TRIES} attempts.', Logger.FLG.ERROR)
+                    Logger.LOGGER.log(f'Failed URL: {url}', Logger.FLG.ERROR)
                     return None  
+

@@ -18,15 +18,12 @@ class JSONHandler:
     _DEFAULT_DATE = '2020-01-01'
     _BASE_URL = 'https://www.17lands.com/'
         
-    def __init__(self, SET: str, FORMAT: str, DATE: date=None, LOGGER=None):
+    def __init__(self, SET: str, FORMAT: str, DATE: date=None):
         self.SET = SET
         self.FORMAT = FORMAT
         self.DATE = DATE
-        if LOGGER is None:
-            LOGGER = Logger()
-        self.LOGGER = LOGGER
         os.makedirs(self.get_folder_path(), exist_ok=True)
-        self.FETCHER = Fetcher(self.LOGGER)
+        self.FETCHER = Fetcher()
         
     def get_date_filter(self) -> str:
         if self.DATE:
@@ -69,7 +66,7 @@ class JSONHandler:
             wrt_tm = datetime.utcfromtimestamp(os.path.getmtime(filepath))
         except:
             wrt_tm = datetime(2020, 1, 1)
-        self.LOGGER.log(f'Last write-time: {wrt_tm}', Logger.FLG.DEBUG)
+        Logger.LOGGER.log(f'Last write-time: {wrt_tm}', Logger.FLG.DEBUG)
         return wrt_tm
 
     def files_valid(self):
@@ -83,10 +80,10 @@ class JSONHandler:
         for x in files:
             # Min filesize is 129.
             if os.path.getsize(os.path.join(folder_path, x)) > 130:
-                self.LOGGER.log(f'Non-empty file found: {x}', Logger.FLG.DEBUG)
+                Logger.LOGGER.log(f'Non-empty file found: {x}', Logger.FLG.DEBUG)
                 return True
 
-        self.LOGGER.log(f'All files are empty!', Logger.FLG.DEBUG)
+        Logger.LOGGER.log(f'All files are empty!', Logger.FLG.DEBUG)
         return False
     
     def load_json_file(self, filename):
@@ -102,11 +99,11 @@ class JSONHandler:
             with open(filepath, 'r') as f:
                 json_str = f.read()
                 f.close()
-                self.LOGGER.log(f'File {filename} read sucessfully.', Logger.FLG.VERBOSE)
+                Logger.LOGGER.log(f'File {filename} read sucessfully.', Logger.FLG.VERBOSE)
                 return json.loads(json_str)
         except Exception as ex:
-            self.LOGGER.log(f'Error reading json file {filename}', Logger.FLG.ERROR)
-            self.LOGGER.log(ex, Logger.FLG.ERROR)
+            Logger.LOGGER.log(f'Error reading json file {filename}', Logger.FLG.ERROR)
+            Logger.LOGGER.log(ex, Logger.FLG.ERROR)
             return None
 
     def save_json_file(self, filename, data):
@@ -123,19 +120,19 @@ class JSONHandler:
             with open(filepath, 'w') as f:
                 f.write(json.dumps(data, indent=4))
                 f.close()
-            self.LOGGER.log(f'File {filename} written to.', Logger.FLG.VERBOSE)
+            Logger.LOGGER.log(f'File {filename} written to.', Logger.FLG.VERBOSE)
             return True
         except Exception as ex:
-            self.LOGGER.log(f'Error writing to json file {filename}', Logger.FLG.ERROR)
-            self.LOGGER.log(ex, Logger.FLG.ERROR)
+            Logger.LOGGER.log(f'Error writing to json file {filename}', Logger.FLG.ERROR)
+            Logger.LOGGER.log(ex, Logger.FLG.ERROR)
             return False
         
     def _get_data(self, url, filename, overwrite=False):
         if (not self.file_exists(filename)) or overwrite:
             if overwrite:
-                self.LOGGER.log(f"Updating data for '{filename}'. Fetching from 17Lands site...", Logger.FLG.DEFAULT)
+                Logger.LOGGER.log(f"Updating data for '{filename}'. Fetching from 17Lands site...", Logger.FLG.DEFAULT)
             else:
-                self.LOGGER.log(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...", Logger.FLG.DEFAULT)
+                Logger.LOGGER.log(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...", Logger.FLG.DEFAULT)
             data = self.FETCHER.fetch(url)
             self.save_json_file(filename, data)
         else:

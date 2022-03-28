@@ -8,13 +8,10 @@ from JSONHandler import JSONHandler
 from FormatMetadata import FormatMetadata
 
 class RawDataFetcher:    
-    def __init__(self, SET, FORMAT, LOGGER=None):
+    def __init__(self, SET, FORMAT):
         self._SET = SET
         self._FORMAT = FORMAT
         self.FORMAT_METADATA = FormatMetadata(SET, FORMAT)
-        if LOGGER is None:
-            LOGGER = Logger()
-        self.LOGGER = LOGGER
         
         self._META_DICT = dict()
         self._CARD_DICTS = dict()
@@ -78,15 +75,15 @@ class RawDataFetcher:
         update = data_missing or reload
 
         if update:
-            loader = JSONHandler(self.SET, self.FORMAT, check_date, self.LOGGER)
-            self.LOGGER.log(f'Getting data for {self.SET} {self.FORMAT}, date: {str_date}', Logger.FLG.DEFAULT)
+            loader = JSONHandler(self.SET, self.FORMAT, check_date)
+            Logger.LOGGER.log(f'Getting data for {self.SET} {self.FORMAT}, date: {str_date}', Logger.FLG.DEFAULT)
             card_dict, meta_dict = loader.get_day_data(overwrite)
             
 
             if not card_dict:
-                self.LOGGER.log(f'`card_dict` for {str_date} is empty.', Logger.FLG.VERBOSE)
+                Logger.LOGGER.log(f'`card_dict` for {str_date} is empty.', Logger.FLG.VERBOSE)
             if not meta_dict:
-                self.LOGGER.log(f'`meta_dict` for {str_date} is empty.', Logger.FLG.VERBOSE)
+                Logger.LOGGER.log(f'`meta_dict` for {str_date} is empty.', Logger.FLG.VERBOSE)
 
             self._META_DICT[str_date] = meta_dict
             self._CARD_DICTS[str_date] = {color: card_dict[color] for color in card_dict}
@@ -124,7 +121,7 @@ class RawDataFetcher:
         # If the set/format hasn't started yet, log a message and return empty dicts.
         has_started = self.FORMAT_METADATA.START_DATE < RawDataFetcher.utc_today()
         if not has_started:
-            self.LOGGER.log(f'{self.SET} {self.FORMAT} has not begun yet. No data to get!', Logger.FLG.DEFAULT)
+            Logger.LOGGER.log(f'{self.SET} {self.FORMAT} has not begun yet. No data to get!', Logger.FLG.DEFAULT)
             return dict(), dict()
 
         # Determine the update conditions
@@ -133,7 +130,7 @@ class RawDataFetcher:
 
         # If an update is required, get the data.
         if update:
-            loader = JSONHandler(self.SET, self.FORMAT, None, self.LOGGER)
+            loader = JSONHandler(self.SET, self.FORMAT, None)
 
             # Get the relevant times for updates.
             last_write = loader.get_last_write_time()
@@ -146,7 +143,7 @@ class RawDataFetcher:
             # Determine if an update is neeeded. 
             update = data_updated and data_live
             
-            self.LOGGER.log(f'Getting overall data for {self.SET} {self.FORMAT}', Logger.FLG.DEFAULT)
+            Logger.LOGGER.log(f'Getting overall data for {self.SET} {self.FORMAT}', Logger.FLG.DEFAULT)
             self._SUMMARY_CARD_DICTS, self._SUMMARY_META_DICT = loader.get_day_data(overwrite)
             
         return self._SUMMARY_META_DICT, self._SUMMARY_CARD_DICTS

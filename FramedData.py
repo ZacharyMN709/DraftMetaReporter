@@ -7,13 +7,10 @@ from Logger import Logger
 from RawDataHandler import RawDataHandler
 
 class FramedData:   
-    def __init__(self, SET, FORMAT, LOGGER=None):
+    def __init__(self, SET, FORMAT):
         self._SET = SET
         self._FORMAT = FORMAT
-        if LOGGER is None:
-            LOGGER = Logger()
-        self.LOGGER = LOGGER
-        self._DATA = RawDataHandler(SET, FORMAT, self.LOGGER)
+        self._DATA = RawDataHandler(SET, FORMAT)
         
     
     @property
@@ -125,7 +122,7 @@ class FramedData:
         frame['ALSA SUM'] = frame['ALSA'] * frame['# Seen']
         frame['ATA SUM'] = frame['ATA'] * frame['# Picked']
         for col in percent_cols:
-            frame[f'# {col} WINS'] = frame[f'# {col}'] * frame[f'{col} WR']
+            frame[f'# {col} WINS'] = pd.to_numeric(frame[f'# {col}'] * frame[f'{col} WR'])
         
         # Take the expanded frame, and drop the dates.
         frame = frame.reset_index(level=0)
@@ -141,7 +138,7 @@ class FramedData:
         frame['ALSA'] = frame['ALSA SUM'] / frame['# Seen']
         frame['ATA'] = frame['ATA SUM'] / frame['# Picked']
         for col in ['GP', 'OH', 'GD', 'GIH', 'GND']:
-            frame[f'{col} WR'] = frame[f'# {col} WINS'] / frame[f'# {col}']
+            frame[f'{col} WR'] = pd.to_numeric(frame[f'# {col} WINS'] / frame[f'# {col}'])
         frame['IWD'] = frame['GIH WR'] - frame['GND WR']
         
         # Trim the helper columns from the epanded frame.

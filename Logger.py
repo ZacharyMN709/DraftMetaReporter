@@ -12,6 +12,7 @@ class Flags(IntEnum):
 
 class Logger:
     FLG = Flags
+    LOGGER = None
     
     def void(self, msg, lvl=1):
         pass
@@ -26,11 +27,24 @@ class Logger:
             pass
 
         
-    def __init__(self, LOG_LVL=None, USE_TIMESTAMP=False):
-        if LOG_LVL is None:
-            LOG_LVL = self.FLG.DEFAULT
+    def __init__(self, LOG_LVL, USE_TIMESTAMP=False):
         self.LOG_LVL = LOG_LVL
         #TODO: Implement timestamp prepender.
         self.log = self.prt
 
+
+
+
+    @property
+    def log(self):
+        """Gets the logging function."""
+        return self._log
+
+    @log.setter
+    def log(self, value):
+        """Sets the logging function."""
+        self._log = value
+        
     
+Logger.LOGGER = Logger(Flags.DEFAULT)
+

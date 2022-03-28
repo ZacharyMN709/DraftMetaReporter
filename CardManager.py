@@ -2,7 +2,6 @@ from CallScryfall import CallScryfall
 from CARD import Card
 
 class CardManager():
-    SCRYFALL = CallScryfall()
     REDIRECT = dict()
     SETS = dict()
     CARDS = dict()
@@ -14,17 +13,20 @@ class CardManager():
         CardManager.REDIRECT[card.FULL_NAME] = card.NAME 
     
     def from_name(name):
-        if set_code not in CardManager.CARDS:
-            json = CardManager.SCRYFALL.get_card_by_name(name)
-            card = Card(json)
-            CardManager._add_card(card)
-        
-        return CardManager.CARDS[name]
+        ## TODO: Better handle mis-spellings.
+        if name not in CardManager.CARDS:
+            json = CallScryfall.get_card_by_name(name)
+            if 'err_msg' not in json:
+                card = Card(json)
+                CardManager._add_card(card)
+                return CardManager.CARDS[card.NAME]
+            else:
+                return None
 
     def from_set(set_code):
         if set_code not in CardManager.SETS:
             CardManager.SETS[set_code] = dict()
-            for json in CardManager.SCRYFALL.get_set_cards(set_code):
+            for json in CallScryfall.get_set_cards(set_code):
                 card = Card(json)
                 CardManager._add_card(card)
                 CardManager.SETS[set_code][card.NAME] = card 
