@@ -1,11 +1,10 @@
 import os
-import requests
-from time import sleep
 from datetime import date, datetime
 import json
 
 import settings
 from Logger import Logger
+from Fetcher import Fetcher
 import WUBRG
 import consts
 
@@ -27,6 +26,7 @@ class JSONHandler:
             LOGGER = Logger()
         self.LOGGER = LOGGER
         os.makedirs(self.get_folder_path(), exist_ok=True)
+        self.FETCHER = Fetcher(self.LOGGER)
         
     def get_date_filter(self) -> str:
         if self.DATE:
@@ -45,36 +45,6 @@ class JSONHandler:
         url = self._BASE_URL + f'color_ratings/data?expansion={self.SET}&event_type={self.FORMAT}&combine_splash=false'
         url += self.get_date_filter()
         return url
-    
-    def fetch(self, url: str) -> object:
-        """
-        Attempts to get json data from a url.
-        :param url: The url to get data from
-        :return: A json object or None
-        """
-        success = False
-        count = 0
-
-        while not success:
-            count += 1
-
-            try:
-                self.LOGGER.log(f'Attempting to get data from {url}.', Logger.FLG.DEBUG)
-                response = requests.get(url)
-                data = response.json()
-
-                success = True
-                sleep(self._SUCC_DELAY)
-                return data
-            except:
-                if count < self._TRIES:
-                    self.LOGGER.log(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.', Logger.FLG.DEFAULT)
-                    sleep(self._FAIL_DELAY)
-                    continue
-                else:
-                    self.LOGGER.log(f'Failed to get data after {self._TRIES} attempts.', Logger.FLG.ERROR)
-                    self.LOGGER.log(f'Failed URL: {url}', Logger.FLG.ERROR)
-                    return None        
 
     def get_folder_path(self):
         path = os.path.join(settings.DATA_DIR_LOC, settings.DATA_DIR_NAME, self.SET, self.FORMAT)
@@ -166,7 +136,7 @@ class JSONHandler:
                 self.LOGGER.log(f"Updating data for '{filename}'. Fetching from 17Lands site...", Logger.FLG.DEFAULT)
             else:
                 self.LOGGER.log(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...", Logger.FLG.DEFAULT)
-            data = self.fetch(url)
+            data = self.FETCHER.fetch(url)
             self.save_json_file(filename, data)
         else:
             data = self.load_json_file(filename)
