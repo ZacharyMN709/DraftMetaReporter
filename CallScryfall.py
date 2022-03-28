@@ -5,11 +5,7 @@ from datetime import date, time, datetime, timedelta
 from Logger import Logger
 from Fetcher import Fetcher
 
-class CallScryfall():
-    _TRIES = 5
-    _FAIL_DELAY = 60
-    _SUCC_DELAY = 1
-    
+class CallScryfall():   
     _BASE_URL = 'https://api.scryfall.com/'
     
     def __init__(self, LOGGER=None):

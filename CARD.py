@@ -1,6 +1,5 @@
 from enum import unique
 
-from CallScryfall import CallScryfall
 from consts import RARITY_ALIASES
 from WUBRG import get_color_identity
 
@@ -89,11 +88,7 @@ class Card():
     SCRY_URL = 'https://scryfall.com/card/'
     API_URL = 'https://api.scryfall.com/cards/'
     IMG_URL = 'https://c1.scryfall.com/file/scryfall-cards/'
-    
-    def from_name(name):
-        scry = CallScryfall()
-        json = scry.get_card_by_name(name)
-        return Card(json)
+
     
     def _handle_card_faces(self, json):
         if self.LAYOUT == CardLayouts.NORMAL:
