@@ -1,8 +1,9 @@
 from datetime import date, time, datetime, timedelta
 
-from Logger import Logger
 import WUBRG
 import consts
+from Logger import Logger
+
 from JSONHandler import JSONHandler
 from FormatMetadata import FormatMetadata
 

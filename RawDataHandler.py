@@ -1,8 +1,9 @@
 import pandas as pd
 
-from Logger import Logger
 import WUBRG
 import consts
+from Logger import Logger
+
 from RawDataFetcher import RawDataFetcher
 
 class RawDataHandler:

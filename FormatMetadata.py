@@ -1,5 +1,7 @@
 from datetime import date, time, datetime, timedelta
 
+from CardManager import CardManager
+
 SETS = ["NEO", "VOW", "MID"]
 
 FORMATS = ["PremierDraft", "TradDraft", "QuickDraft"]
@@ -8,7 +10,7 @@ SET_CONFIG = {
         "NEO" : {
             "PremierDraft": [(date(2022, 2, 10), date(2022, 4, 28))],
             "TradDraft": [(date(2022, 2, 10), date(2022, 4, 28))],
-            "QuickDraft": [(date(2022, 2, 25), date(2022, 4, 28))]
+            "QuickDraft": [(date(2022, 2, 25), date(2022, 3, 11)), (date(2022, 3, 26), date(2022, 4, 8))]
         },
         "VOW" : {
             "PremierDraft": [(date(2021, 11, 11), date(2022, 2, 10))],
@@ -22,17 +24,85 @@ SET_CONFIG = {
         }
     }
 
-class FormatMetadata:
 
-    CARD_LISTS = dict()
+class SetMetadata:
+    METADATA = { s : dict() for s in SETS }
+
+
+    def get_metadata(SET):
+        ## TODO: Implement some checks so only valid sets are added.
+        ## TODO: Make the check update along with added sets.
+        if SET not in SetMetadata.METADATA or not SetMetadata.METADATA[SET]:
+            SetMetadata.METADATA[SET] = SetMetadata(SET)
+        return SetMetadata.METADATA[SET]
+
     
-    def __init__(self, SET, FORMAT):
+    def __init__(self, SET):       
+        self._SET = SET
+        self._CARD_DICT = CardManager.from_set(self.SET)
+        
+        
+    @property
+    def SET(self):
+        """The draft set."""
+        return self._SET     
+    
+    
+    @property
+    def RELEASE_DATE(self):
+        """The (Arena) release date of the set's format."""
+        return SET_CONFIG[self.SET]["PremierDraft"][0][0]
+
+
+    @property
+    def CARD_DICT(self):
+        """The dicitionary of cards in the set"""
+        return self._CARD_DICT
+    
+
+    @property
+    def CARD_LIST(self):
+        """The list of cards in the set"""
+        return [self._CARD_DICT[name] for name in self._CARD_DICT]
+
+
+    def find_card(self, card_name):
+        """
+        Looks for a card name in the list of cards for the set.
+        :param card_name: The card name, simple or full. Must be an exact match. If 'NONE', today's date is used.
+        :return: A Card object or None
+        """
+        if card_name in CardManager.REDIRECT:
+            card_name = CardManager.REDIRECT[card_name]
+        if card_name in self.CARD_DICT:
+            return self.CARD_DICT[card_name]
+        else:
+            return None
+    
+
+class FormatMetadata:
+    METADATA = { s : { f : dict() for f in FORMATS } for s in SETS }
+
+
+    def get_metadata(SET, FORMAT):
+        ## TODO: Implement some checks so only valid sets are added.
+        ## TODO: Make the check update along with added sets.
+        if SET not in FormatMetadata.METADATA or not FormatMetadata.METADATA[SET]:
+            FormatMetadata.METADATA[SET] = dict()
+        if FORMAT not in FormatMetadata.METADATA[SET] or not FormatMetadata.METADATA[SET][FORMAT]:
+            FormatMetadata.METADATA[SET][FORMAT] = FormatMetadata(SET, FORMAT)
+        return FormatMetadata.METADATA[SET][FORMAT]
+
+    
+    def __init__(self, SET, FORMAT):       
         self._SET = SET
         self._FORMAT = FORMAT
         
         self._ACTIVE_PERIODS = SET_CONFIG[SET][FORMAT]
         self._START_DATE = self._ACTIVE_PERIODS[0][0]
         self._END_DATE = self._ACTIVE_PERIODS[-1][1]
+
+        self._SET_METADATA = SetMetadata.get_metadata(SET)
 
         
     @property
@@ -60,13 +130,24 @@ class FormatMetadata:
 
 
     @property
+    def CARD_DICT(self):
+        """The dicitionary of cards in the set"""
+        return self._SET_METADATA.CARD_DICT
+    
+
+    @property
     def CARD_LIST(self):
         """The list of cards in the set"""
-        if self.SET not in CARD_LISTS:
-            # TODO: Get cards from Scryfall
-            raise Exception("Need to get cards from Scryfall!")
-            pass
-        return CARD_LISTS[self.SET]
+        return self._SET_METADATA.CARD_LIST
+
+
+    def find_card(self, card_name):
+        """
+        Looks for a card name in the list of cards for the set.
+        :param card_name: The card name, simple or full. Must be an exact match. If 'NONE', today's date is used.
+        :return: A Card object or None
+        """
+        return self._SET_METADATA.find_card(card_name)
 
     
     def is_active(self, check_date=None):
@@ -99,3 +180,4 @@ class FormatMetadata:
                 new_date += timedelta(days=1)
                 active_days.append(new_date)
         return active_days
+     

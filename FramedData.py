@@ -1,8 +1,9 @@
 from functools import cmp_to_key
 import pandas as pd
 
-from Logger import Logger
 import WUBRG
+from Logger import Logger
+
 from RawDataHandler import RawDataHandler
 
 class FramedData:   

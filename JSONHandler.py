@@ -3,10 +3,10 @@ from datetime import date, datetime
 import json
 
 import settings
-from Logger import Logger
-from Fetcher import Fetcher
 import WUBRG
 import consts
+from Logger import Logger
+from Fetcher import Fetcher
 
 
 class JSONHandler:
