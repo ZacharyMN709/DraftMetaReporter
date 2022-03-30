@@ -1,6 +1,7 @@
 from functools import cmp_to_key
 import pandas as pd
 
+import consts
 import WUBRG
 from Logger import Logger
 
@@ -19,9 +20,20 @@ class FramedData:
         return self._SET
     
     @property
+    def FULL_SET(self):
+        """The full name of the draft set."""
+        ## TODO: Have this information be pulle from somewhere
+        return self._SET
+    
+    @property
     def FORMAT(self):
         """The format type."""
         return self._FORMAT
+    
+    @property
+    def SHORT_FORMAT(self):
+        """The shorthand of the format type."""
+        return consts.FORMAT_NICKNAMES[self._FORMAT].upper()
     
     @property
     def DATA(self):

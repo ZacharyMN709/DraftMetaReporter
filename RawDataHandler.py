@@ -146,11 +146,16 @@ class RawDataHandler:
         hist_meta, hist_card = self._FETCHER.get_set_data(reload, overwrite)
         if (not hist_meta) and (not hist_card):
             return
+
+        # TODO: Attempt to handle this in a way so the entire history frames
+        # aren't reloaded each time this function is called.
         
         grouped_arch_frame_dict = dict()
         single_arch_frame_dict = dict()
         card_frame_dict = dict()
-        
+
+        Logger.LOGGER.log(f'Pandafying historical data for {self.SET} {self.FORMAT}...', Logger.FLG.VERBOSE)
+
         for date in hist_meta:
             grouped_arch_frame_dict[date], single_arch_frame_dict[date] = self.panadafy_meta_dict(hist_meta[date])
         grouped_arch_frame = pd.concat(grouped_arch_frame_dict, names=["Date", "Name"])
@@ -162,7 +167,9 @@ class RawDataHandler:
                 color_dict[color] = self.panadafy_card_dict(hist_card[date][color])
             card_frame_dict[date] = pd.concat(color_dict, names=["Deck Colors", "Name"])
         card_frame = pd.concat(card_frame_dict, names=["Date", "Deck Colors", "Name"])
-            
+
+        Logger.LOGGER.log(f'Finished pandafying data.', Logger.FLG.VERBOSE)
+        
         self._GROUPED_ARCHTYPE_HISTORY_FRAME = grouped_arch_frame
         self._SINGLE_ARCHTYPE_HISTORY_FRAME = single_arch_frame
         self._CARD_HISTORY_FRAME = card_frame
@@ -186,7 +193,7 @@ class RawDataHandler:
     
     def check_for_updates(self):
         """Populates and updates all data properties, filling in missing data."""
-        Logger.LOGGER.log(f'Checking for missing data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
+        Logger.LOGGER.log(f'Checking for missing data for {self.SET} {self.FORMAT}...', Logger.FLG.KEY)
         self.gen_hist()
         self.gen_summary()
         Logger.LOGGER.log(f'Finished checking for missing data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
