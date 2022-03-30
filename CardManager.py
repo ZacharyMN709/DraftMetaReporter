@@ -1,5 +1,5 @@
 from CallScryfall import CallScryfall
-from CARD import Card
+from Card import Card
 
 class CardManager():
     REDIRECT = dict()

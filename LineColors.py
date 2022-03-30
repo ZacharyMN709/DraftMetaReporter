@@ -160,3 +160,7 @@ class LineColors:
             return [self.W, self.U, self.B, self.R, self.P, self.LP]
         else:
             return None
+
+
+
+LineColors = LineColors()
