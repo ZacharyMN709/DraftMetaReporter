@@ -2,12 +2,12 @@ from datetime import date, time, datetime, timedelta
 
 from CardManager import CardManager
 
-SETS = ["CPN", "NEO", "VOW", "MID"]
+SETS = ["SNC", "NEO", "VOW", "MID"]
 
 FORMATS = ["PremierDraft", "TradDraft", "QuickDraft"]
 
 SET_CONFIG = {
-        "CPN" : {
+        "SNC" : {
             "PremierDraft": [(date(2022, 4, 28), date(2022, 5, 28))],
             "TradDraft": [(date(2022, 4, 28), date(2022, 5, 28))],
             "QuickDraft": [(date(2022, 5, 13), date(2022, 5, 27))]

@@ -1,4 +1,9 @@
 
+# Web Request Defaults
+TRIES = 5
+FAIL_DELAY = 60
+SUCC_DELAY = 1
+
 # Data Storage Defaults
 ROOT_DIR = '.'
 DATA_DIR_NAME = '17LandsData'

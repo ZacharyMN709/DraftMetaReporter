@@ -151,7 +151,7 @@ class RawDataFetcher:
 
     def get_prev_site_update_time():
         utc = datetime.utcnow()
-        dt = datetime.combine(date(utc.year, utc.month, utc.day), time(2, 0))
+        dt = datetime.combine(RawDataFetcher.utc_today(), time(2, 0))
         if dt > utc:
             dt -= timedelta(days=1)
         return dt
@@ -160,5 +160,6 @@ class RawDataFetcher:
         return RawDataFetcher.get_prev_site_update_time() + timedelta(days=1)
 
     def utc_today():
+        # TODO: Move this to a more generic place?
         utc = datetime.utcnow()
         return date(utc.year, utc.month, utc.day)

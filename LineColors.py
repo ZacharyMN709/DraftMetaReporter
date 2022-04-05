@@ -162,5 +162,4 @@ class LineColors:
             return None
 
 
-
 LineColors = LineColors()

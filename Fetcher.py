@@ -8,10 +8,9 @@ from Logger import Logger
 class Fetcher():
     
     def __init__(self, tries=None, fail_delay=None, succ_delay=None):
-        ## TODO: Handle values via a defaults or config.
-        self._TRIES = tries if tries is not None else 5
-        self._FAIL_DELAY = fail_delay if fail_delay is not None else 60
-        self._SUCC_DELAY = succ_delay if succ_delay is not None else 1
+        self._TRIES = tries if tries is not None else settings.TRIES
+        self._FAIL_DELAY = fail_delay if fail_delay is not None else settings.FAIL_DELAY
+        self._SUCC_DELAY = succ_delay if succ_delay is not None else settings.SUCC_DELAY
         
     def fetch(self, url: str) -> object:
         """

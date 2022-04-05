@@ -1,5 +1,5 @@
 """
-Running this program will update the ALL folder for the relevant set and format,
+Running this program will update the ALL folders for the relevant set and format,
 fetching the summary of data about the whole set.
 """
 from JSONHandler import JSONHandler
@@ -31,6 +31,6 @@ def get_all_data():
 
 
 if __name__ == '__main__':
-    test_JSONHandler()
+    get_set_data()
 
 

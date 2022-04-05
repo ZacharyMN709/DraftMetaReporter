@@ -22,7 +22,7 @@ class FramedData:
     @property
     def FULL_SET(self):
         """The full name of the draft set."""
-        ## TODO: Have this information be pulle from somewhere
+        ## TODO: Have this information be pulled from somewhere
         return self._SET
     
     @property
@@ -67,7 +67,7 @@ class FramedData:
     def deck_archetype_frame(self, deck_color=None, date=None, summary=False):
         """Returns a subset of the 'SINGLE_ARCHTYPE' data as a DataFrame."""
         if deck_color is None: deck_color = slice(None)
-        if type(deck_color) is str: deck_color = WUBRG.get_color_identity(deck_color)
+        if isinstance(deck_color, str): deck_color = WUBRG.get_color_identity(deck_color)
         if date is None: date = slice(None)
             
         if summary:
@@ -80,7 +80,7 @@ class FramedData:
         if name is None: name = slice(None)
         if deck_color is None: deck_color = slice(None)
         if date is None: date = slice(None)
-        if type(deck_color) is str: deck_color = WUBRG.get_color_identity(deck_color)
+        if isinstance(deck_color, str): deck_color = WUBRG.get_color_identity(deck_color)
         
         if summary:
             ret = self.DATA.CARD_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[deck_color, name]]
