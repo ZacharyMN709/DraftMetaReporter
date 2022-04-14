@@ -4,75 +4,75 @@ import pandas as pd
 from utils import consts, WUBRG
 
 from RawDataHandler import RawDataHandler
+from game_metadata.FormatMetadata import SetMetadata
 
 
 class FramedData:
-    def __init__(self, SET, FORMAT):
-        self._SET = SET
-        self._FORMAT = FORMAT
-        self._DATA = RawDataHandler(SET, FORMAT)
+    def __init__(self, set_name, format_name):
+        self._set = set_name
+        self._format = format_name
+        self._data = RawDataHandler(set_name, format_name)
 
     @property
-    def SET(self):
+    def set(self) -> str:
         """The draft set."""
-        return self._SET
+        return self._set
 
     @property
-    def FULL_SET(self):
+    def full_set(self) -> str:
         """The full name of the draft set."""
         # TODO: Have this information be pulled from somewhere
-        return self._SET
+        return self._set
 
     @property
-    def FORMAT(self):
+    def format(self) -> str:
         """The format type."""
-        return self._FORMAT
+        return self._format
 
     @property
-    def SHORT_FORMAT(self):
+    def format_shorthand(self) -> str:
         """The shorthand of the format type."""
-        return consts.FORMAT_NICKNAMES[self._FORMAT].upper()
+        return consts.FORMAT_NICKNAMES[self._format].upper()
 
     @property
-    def DATA(self):
+    def data(self) -> RawDataHandler:
         """The object which contains the data about the set and format."""
-        return self._DATA
+        return self._data
 
-    @property
-    def FUNCS(self):
-        """A helper object which contains convenience functions for plotting and subsetting."""
-        return self._FUNCS
-
-    def check_for_updates(self):
+    def check_for_updates(self) -> None:
         """Populates and updates all data properties, filling in missing data."""
-        self._DATA.check_for_updates()
+        self._data.check_for_updates()
 
-    def reload_data(self):
+    def reload_data(self) -> None:
         """Populates and updates all data properties, reloading all data."""
-        self._DATA.reload_data()
+        self._data.reload_data()
 
-    def deck_group_frame(self, name=None, date=None, summary=False):
+    # TODO: Create a function which takes in common parameters for subsetting the frames, and converts them
+    #  into a kwarg dict of slices.
+
+    def deck_group_frame(self, name=None, date=None, summary=False) -> pd.DataFrame:
         """Returns a subset of the 'GROUPED_ARCHETYPE' data as a DataFrame."""
         if name is None: name = slice(None)
         if date is None: date = slice(None)
 
         if summary:
-            return self.DATA.GROUPED_ARCHETYPE_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[name]]
+            return self.data.GROUPED_ARCHETYPE_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[name]]
         else:
-            return self.DATA.GROUPED_ARCHETYPE_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, name]]
+            return self.data.GROUPED_ARCHETYPE_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, name]]
 
-    def deck_archetype_frame(self, deck_color=None, date=None, summary=False):
+    def deck_archetype_frame(self, deck_color=None, date=None, summary=False) -> pd.DataFrame:
         """Returns a subset of the 'SINGLE_ARCHETYPE' data as a DataFrame."""
         if deck_color is None: deck_color = slice(None)
         if isinstance(deck_color, str): deck_color = WUBRG.get_color_identity(deck_color)
         if date is None: date = slice(None)
 
         if summary:
-            return self.DATA.SINGLE_ARCHETYPE_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[deck_color]]
+            return self.data.SINGLE_ARCHETYPE_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[deck_color]]
         else:
-            return self.DATA.SINGLE_ARCHETYPE_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, deck_color]]
+            return self.data.SINGLE_ARCHETYPE_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, deck_color]]
 
-    def card_frame(self, name=None, deck_color=None, date=None, card_color=None, card_rarity=None, summary=False):
+    def card_frame(self, name=None, deck_color=None, date=None, card_color=None, card_rarity=None,
+                   summary=False) -> pd.DataFrame:
         """Returns a subset of the 'CARD' data as a DataFrame."""
         if name is None: name = slice(None)
         if deck_color is None: deck_color = slice(None)
@@ -80,9 +80,9 @@ class FramedData:
         if isinstance(deck_color, str): deck_color = WUBRG.get_color_identity(deck_color)
 
         if summary:
-            ret = self.DATA.CARD_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[deck_color, name]]
+            ret = self.data.CARD_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[deck_color, name]]
         else:
-            ret = self.DATA.CARD_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, deck_color, name]]
+            ret = self.data.CARD_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, deck_color, name]]
 
         if card_color:
             color_set = WUBRG.get_color_subsets(WUBRG.get_color_identity(card_color))
@@ -94,23 +94,27 @@ class FramedData:
         return ret
 
     # TODO: Figure out how to best parameterize this/what wrapper functions to have call this
-    def compress_date_range_data(self, start_date, end_date, card_name=None):
-        """Summarizes card data over a provided set of time."""
+    def compress_date_range_data(self, start_date: str, end_date: str, card_name: str = None) -> pd.DataFrame:
+        """
+        Summarizes card data over a provided set of time.
+        :param start_date: The start date of the data to combine (inclusive)
+        :param end_date: The end date of the data to combine (inclusive)
+        :param card_name: The card name to isolate the data to.
+        :return: A DataFrame with aggregated data over the given date range
+        """
         # Set up dictionaries for quicker sorting.
-        COLOR_INDEXES = {WUBRG.COLOR_GROUPS[x]: x for x in range(0, len(WUBRG.COLOR_GROUPS))}
-        # TODO: Have the cards be pulled from Scryfall via SetMetadata
-        CARDS = list(self.card_frame(summary=True, deck_color='').reset_index(level=0).index)
-        CARD_INDEXES = {CARDS[x]: x for x in range(0, len(CARDS))}
+        color_indexes = {WUBRG.COLOR_GROUPS[x]: x for x in range(0, len(WUBRG.COLOR_GROUPS))}
+        card_indexes = SetMetadata.get_metadata(self.set).card_list
 
         # Creating a custom sorting algorithm
         def compare(pair1, pair2):
             # Convert the colors and names into numeric indexes
             color1, name1 = pair1
-            col_idx1 = COLOR_INDEXES[color1]
-            name_idx1 = CARD_INDEXES[name1]
+            col_idx1 = color_indexes[color1]
+            name_idx1 = card_indexes[name1]
             color2, name2 = pair2
-            col_idx2 = COLOR_INDEXES[color2]
-            name_idx2 = CARD_INDEXES[name2]
+            col_idx2 = color_indexes[color2]
+            name_idx2 = card_indexes[name2]
 
             # Sort by deck colour than card number.
             if col_idx1 == col_idx2:

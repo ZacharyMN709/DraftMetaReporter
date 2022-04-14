@@ -5,6 +5,10 @@ SETS: list[str] = ["SNC", "NEO", "VOW", "MID"]
 
 FORMATS: list[str] = ["PremierDraft", "TradDraft", "QuickDraft"]
 
+
+# TODO: Change this so the dates are formatted strings, and the Set/FormatMetadata objects parse the dates on load.
+#  This will allow for the SET_CONFIG to be updated from a JSON file and have the Set/FormatMetadata objects re-
+#  parse the data to update the sets information.
 SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
     "SNC": {
         "PremierDraft": [(date(2022, 4, 28), date(2022, 5, 28))],

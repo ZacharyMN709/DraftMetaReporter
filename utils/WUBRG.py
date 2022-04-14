@@ -152,8 +152,7 @@ def get_color_alias(color_string: str) -> str:
                 return alias
 
 
-COLOR_GROUPS: list[str] = [''] + [get_color_string(y) for x in COLOUR_GROUPINGS for y in COLOUR_GROUPINGS[x]] + [
-    'WUBRG']
+COLOR_GROUPS: list[str] = [''] + [get_color_string(y) for x in COLOUR_GROUPINGS for y in COLOUR_GROUPINGS[x]] + ['WUBRG']
 COLOR_PAIRS: list[str] = [COLOR_ALIASES_SUPPORT['Guilds'][key] for key in COLOR_ALIASES_SUPPORT['Guilds']]
 
 

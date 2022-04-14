@@ -43,4 +43,5 @@ class Logger:
         self._log = value
 
 
+# TODO: Use a better way of handling logging.
 Logger.LOGGER = Logger(Flags.DEFAULT)

@@ -1,7 +1,7 @@
 from datetime import date, time, datetime, timedelta
 
 
-def get_prev_17_lands_update_time() -> datetime:
+def get_prev_17lands_update_time() -> datetime:
     utc = datetime.utcnow()
     dt = datetime.combine(utc_today(), time(2, 0))
     if dt > utc:
@@ -9,8 +9,8 @@ def get_prev_17_lands_update_time() -> datetime:
     return dt
 
 
-def get_next_17_lands_update_time() -> datetime:
-    return get_prev_17_lands_update_time() + timedelta(days=1)
+def get_next_17lands_update_time() -> datetime:
+    return get_prev_17lands_update_time() + timedelta(days=1)
 
 
 def utc_today() -> date:

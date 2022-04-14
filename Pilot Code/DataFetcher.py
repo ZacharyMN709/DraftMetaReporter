@@ -32,5 +32,3 @@ def get_all_data():
 
 if __name__ == '__main__':
     get_set_data()
-
-

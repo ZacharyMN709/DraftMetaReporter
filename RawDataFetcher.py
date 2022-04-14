@@ -1,11 +1,11 @@
 from datetime import time, datetime, timedelta
 
 from utils.Logger import Logger
-from utils.date_helper import get_prev_17_lands_update_time, utc_today
+from utils.date_helper import get_prev_17lands_update_time, utc_today
 
 
 from JSONHandler import JSONHandler
-from FormatMetadata import FormatMetadata
+from game_metadata.FormatMetadata import FormatMetadata
 
 
 class RawDataFetcher:
@@ -96,7 +96,7 @@ class RawDataFetcher:
         :param overwrite: Force overwrite the data in the file
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
-        check_date = min(self.FORMAT_METADATA.START_DATE, utc_today())
+        check_date = min(self.FORMAT_METADATA.start_date, utc_today())
 
         run = True
         while run:
@@ -107,7 +107,7 @@ class RawDataFetcher:
             # Get the next day, and check to make sure data will exist for it on the site.
             check_date += timedelta(days=1)
             utc_check_date = datetime.combine(check_date, time(2, 0))
-            run = utc_check_date < get_prev_17_lands_update_time()
+            run = utc_check_date < get_prev_17lands_update_time()
 
         return self._META_DICT, self._CARD_DICTS
 
@@ -121,7 +121,7 @@ class RawDataFetcher:
         """
 
         # If the set/format hasn't started yet, log a message and return empty dicts.
-        has_started = self.FORMAT_METADATA.START_DATE < utc_today()
+        has_started = self.FORMAT_METADATA.start_date < utc_today()
         if not has_started:
             Logger.LOGGER.log(f'{self.SET} {self.FORMAT} has not begun yet. No data to get!', Logger.FLG.DEFAULT)
             return dict(), dict()
@@ -136,10 +136,10 @@ class RawDataFetcher:
 
             # Get the relevant times for updates.
             last_write = loader.get_last_write_time()
-            ext_end_date = self.FORMAT_METADATA.END_DATE + timedelta(days=7)
+            ext_end_date = self.FORMAT_METADATA.end_date + timedelta(days=7)
 
             # Check if the data has been updated since last write and that the format is still open.
-            data_updated = last_write < get_prev_17_lands_update_time()
+            data_updated = last_write < get_prev_17lands_update_time()
             data_live = last_write.date() < ext_end_date
 
             # Determine if an update is needed.

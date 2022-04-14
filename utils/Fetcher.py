@@ -1,3 +1,4 @@
+from typing import Union
 import requests
 from time import sleep
 
@@ -12,7 +13,7 @@ class Fetcher:
         self._FAIL_DELAY = settings.FAIL_DELAY if fail_delay is None else fail_delay
         self._SUCCESS_DELAY = settings.SUCCESS_DELAY if success_delay is None else success_delay
 
-    def fetch(self, url: str) -> dict[str, object]:
+    def fetch(self, url: str) -> Union[dict[str, object], None]:
         """
         Attempts to get json data from a url.
         :param url: The url to get data from
@@ -41,4 +42,4 @@ class Fetcher:
                 else:
                     Logger.LOGGER.log(f'Failed to get data after {self._TRIES} attempts.', Logger.FLG.ERROR)
                     Logger.LOGGER.log(f'Failed URL: {url}', Logger.FLG.ERROR)
-                    return {'err_msg': f'Failed to get data for: {url}'}
+                    return None
