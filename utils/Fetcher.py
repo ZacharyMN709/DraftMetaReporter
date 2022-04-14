@@ -1,18 +1,18 @@
 import requests
 from time import sleep
-import json
 
-import settings
-from Logger import Logger
+from utils import settings
+from utils.Logger import Logger
 
-class Fetcher():
-    
-    def __init__(self, tries=None, fail_delay=None, succ_delay=None):
-        self._TRIES = tries if tries is not None else settings.TRIES
-        self._FAIL_DELAY = fail_delay if fail_delay is not None else settings.FAIL_DELAY
-        self._SUCC_DELAY = succ_delay if succ_delay is not None else settings.SUCC_DELAY
-        
-    def fetch(self, url: str) -> object:
+
+class Fetcher:
+
+    def __init__(self, tries=None, fail_delay=None, success_delay=None):
+        self._TRIES = settings.TRIES if tries is None else tries
+        self._FAIL_DELAY = settings.FAIL_DELAY if fail_delay is None else fail_delay
+        self._SUCCESS_DELAY = settings.SUCCESS_DELAY if success_delay is None else success_delay
+
+    def fetch(self, url: str) -> dict[str, object]:
         """
         Attempts to get json data from a url.
         :param url: The url to get data from
@@ -30,15 +30,15 @@ class Fetcher():
                 data = response.json()
 
                 success = True
-                sleep(self._SUCC_DELAY)
+                sleep(self._SUCCESS_DELAY)
                 return data
-            except:
+            except Exception:
                 if count < self._TRIES:
-                    Logger.LOGGER.log(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.', Logger.FLG.DEFAULT)
+                    Logger.LOGGER.log(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.',
+                                      Logger.FLG.DEFAULT)
                     sleep(self._FAIL_DELAY)
                     continue
                 else:
                     Logger.LOGGER.log(f'Failed to get data after {self._TRIES} attempts.', Logger.FLG.ERROR)
                     Logger.LOGGER.log(f'Failed URL: {url}', Logger.FLG.ERROR)
-                    return None  
-
+                    return {'err_msg': f'Failed to get data for: {url}'}

@@ -1,8 +1,8 @@
 # Colour Mapping
-COLORS = "WUBRG"
+COLORS: str = "WUBRG"
 
 # Groupings of colour-sets supported.
-COLOR_ALIASES_SUPPORT = {
+COLOR_ALIASES_SUPPORT: dict[str, dict[str, str]] = {
     'Colors': {
         'White': "W",
         'Blue': "U",
@@ -60,26 +60,26 @@ COLOR_ALIASES_SUPPORT = {
 }
 
 # Merging all of the supported colour-sets.
-COLOR_ALIASES = {
+COLOR_ALIASES: dict[str, str] = {
     '5-Color': "WUBRG",
     'All': "WUBRGC",
     'None': ""
 }
 
 for d in COLOR_ALIASES_SUPPORT:
-    # COLOR_ALIASES = COLOR_ALIASES | COLOR_ALIASES_SUPPORT[d]
-    COLOR_ALIASES = {**COLOR_ALIASES, **COLOR_ALIASES_SUPPORT[d]}
+    COLOR_ALIASES = COLOR_ALIASES | COLOR_ALIASES_SUPPORT[d]
+    # COLOR_ALIASES = {**COLOR_ALIASES, **COLOR_ALIASES_SUPPORT[d]}
 
 # Lists of aliases based on the number of colours.
-COLOUR_GROUPINGS = {
+COLOUR_GROUPINGS: dict[str, dict[str, str]] = {
     'Mono-Color': COLOR_ALIASES_SUPPORT['Colors'],
     'Two-Color': COLOR_ALIASES_SUPPORT['Guilds'],
-    # 'Three-Color': COLOR_ALIASES_SUPPORT['Wedges'] | COLOR_ALIASES_SUPPORT['Shards'],
-    'Three-Color': {**COLOR_ALIASES_SUPPORT['Wedges'], **COLOR_ALIASES_SUPPORT['Shards']},
+    'Three-Color': COLOR_ALIASES_SUPPORT['Wedges'] | COLOR_ALIASES_SUPPORT['Shards'],
+    # 'Three-Color': {**COLOR_ALIASES_SUPPORT['Wedges'], **COLOR_ALIASES_SUPPORT['Shards']},
     'Four-Color': COLOR_ALIASES_SUPPORT['Nephillim'],
 }
 
-COLOR_COUNT_MAP = {
+COLOR_COUNT_MAP: dict[str, int] = {
     "Mono-color": 1,
     "Two-color": 2,
     "Three-color": 3,
@@ -87,6 +87,7 @@ COLOR_COUNT_MAP = {
     "Five-color": 5,
     "All Decks": None
 }
+
 
 def get_color_string(s: str) -> str:
     """
@@ -151,12 +152,14 @@ def get_color_alias(color_string: str) -> str:
                 return alias
 
 
-COLOR_GROUPS = [''] + [get_color_string(y) for x in COLOUR_GROUPINGS for y in COLOUR_GROUPINGS[x]] + ['WUBRG']
-COLOR_PAIRS = [COLOR_ALIASES_SUPPORT['Guilds'][key] for key in COLOR_ALIASES_SUPPORT['Guilds']]
+COLOR_GROUPS: list[str] = [''] + [get_color_string(y) for x in COLOUR_GROUPINGS for y in COLOUR_GROUPINGS[x]] + [
+    'WUBRG']
+COLOR_PAIRS: list[str] = [COLOR_ALIASES_SUPPORT['Guilds'][key] for key in COLOR_ALIASES_SUPPORT['Guilds']]
+
 
 # Takes in a valid colour string, or colour string alias,
 # and then returns a dictionary of booleans.
-def get_color_map(color_str):
+def get_color_map(color_str: str):
     s = get_color_string(color_str)
     colors_exist = {'W': False,
                     'U': False,
@@ -171,12 +174,13 @@ def get_color_map(color_str):
     return colors_exist
 
 
-def get_color_supersets(color_id: str, l: int = 5, strict: bool=False) -> list[str]:
+def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -> list[str]:
     """
     Gets all possible permutations of WUBRG which contain the color_id.
     Can limit the length of the permutations returned with l.
     :param color_id: The colours to look for in the permutations.
-    :param l: The max length of the permutations. Default: 5
+    :param max_len: The max length of the permutations. Default: 5
+    :param strict: Whether the subset should be strict
     :return: A list of color ids.
     """
     color_ids = list()
@@ -184,19 +188,22 @@ def get_color_supersets(color_id: str, l: int = 5, strict: bool=False) -> list[s
     cis = set(get_color_string(color_id))
     for c in COLOR_GROUPS:
         if strict:
-            if len(c) < l and cis < set(c): color_ids.append(c)
+            if len(c) < max_len and cis < set(c):
+                color_ids.append(c)
         else:
-            if len(c) <= l and cis <= set(c): color_ids.append(c)
+            if len(c) <= max_len and cis <= set(c):
+                color_ids.append(c)
 
     return color_ids
 
 
-def get_color_subsets(color_id: str, l: int = 0, strict: bool=False) -> list[str]:
+def get_color_subsets(color_id: str, min_len: int = 0, strict: bool = False) -> list[str]:
     """
     Gets all possible permutations of WUBRG which are contained in color_id.
     Can limit the length of the permutations returned with l.
     :param color_id: The colours to look for in the permutations.
-    :param l: The min length of the permutations. Default: 0
+    :param min_len: The min length of the permutations. Default: 0
+    :param strict: Whether the subset should be strict
     :return: A list of color ids.
     """
     colour_ids = list()
@@ -204,8 +211,10 @@ def get_color_subsets(color_id: str, l: int = 0, strict: bool=False) -> list[str
     cis = set(get_color_string(color_id))
     for c in COLOR_GROUPS:
         if strict:
-            if len(c) > l and cis > set(c): colour_ids.append(c)
+            if len(c) > min_len and cis > set(c):
+                colour_ids.append(c)
         else:
-            if len(c) >= l and cis >= set(c): colour_ids.append(c)
+            if len(c) >= min_len and cis >= set(c):
+                colour_ids.append(c)
 
     return colour_ids
