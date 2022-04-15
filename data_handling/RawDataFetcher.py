@@ -54,7 +54,7 @@ class RawDataFetcher:
 
         return self._META_DICT[str_date], self._CARD_DICTS[str_date]
 
-    def get_set_data(self, reload: bool = False, overwrite: bool = False) -> tuple[dict, dict]:
+    def get_historic_data(self, reload: bool = False, overwrite: bool = False) -> tuple[dict, dict]:
         """
         Gets all of the data by day for the set and format.
         If any data does not exist locally, it will be fetched from 17Lands and saved locally.

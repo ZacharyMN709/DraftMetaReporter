@@ -76,6 +76,11 @@ class SetMetadata:
         else:
             return None
 
+    # TODO: See if this works
+    @classmethod
+    def __getitem__(cls, set_code):
+        return cls.get_metadata(set_code)
+
 
 class FormatMetadata:
     """

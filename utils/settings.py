@@ -39,14 +39,14 @@ FAIL_DELAY: int = 60
 SUCCESS_DELAY: int = 1
 
 # Data Storage Defaults
-ROOT_DIR: str = '..'
+ROOT_DIR: str = '.'
 DATA_DIR_NAME: str = '17LandsData'
-DATA_DIR_LOC: str = '../..'
+DATA_DIR_LOC: str = '..'
 
 # Graphing Defaults
 ROLL: int = 3
 GRAPH_DIR_NAME: str = 'Graphs'
-GRAPH_DIR_LOC: str = '../..'
+GRAPH_DIR_LOC: str = '..'
 DPI: int = 400
 ACCREDIT_STR: str = "Data taken from 17Lands"
 ACCREDIT_KWARGS: dict[str, str] = {

@@ -50,6 +50,13 @@ COLOR_ALIASES_SUPPORT: dict[str, dict[str, str]] = {
         'Grixis': "UBR",
         'Jund': "BRG"
     },
+    'Families': {
+        'Obscura': "WUB",
+        'Brokers': "WUG",
+        'Cabaretti': "WRG",
+        'Maestros': "UBR",
+        'Riveteers': "BRG"
+    },
     'Nephillim': {
         'Yore': "WUBR",
         'Witch': "WUBG",

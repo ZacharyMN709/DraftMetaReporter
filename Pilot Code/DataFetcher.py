@@ -18,7 +18,7 @@ def test_json_handler():
 
 def get_set_data():
     fetcher = RawDataFetcher(TARGET_SET, TARGET_FORMAT)
-    fetcher.get_set_data()
+    fetcher.get_historic_data()
     print('Done!')
 
 
@@ -26,7 +26,7 @@ def get_all_data():
     formats = ['PremierDraft', 'TradDraft', 'QuickDraft']
     for f in formats:
         fetcher = RawDataFetcher(TARGET_SET, f)
-        fetcher.get_set_data()
+        fetcher.get_historic_data()
     print('Done!')
 
 

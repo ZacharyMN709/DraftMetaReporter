@@ -14,11 +14,14 @@ class FramedData:
     examined over certain parts of a format (After week 2, first meta shift, under-drafted colour becomes good, etc.)
     """
 
-    def __init__(self, set_name: str, format_name: str):
+    def __init__(self, set_name: str, format_name: str, load_summary: bool = True, load_history: bool = True):
         self._set = set_name
         self._format = format_name
         self._data = RawDataHandler(set_name, format_name)
         self._compare_key = SetMetadata.get_metadata(set_name).COMPARE_KEY
+
+        self.load_summary = load_summary
+        self.load_history = load_history
 
     @property
     def set(self) -> str:
