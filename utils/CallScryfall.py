@@ -1,3 +1,5 @@
+from typing import Union
+
 from utils.Logger import Logger
 from utils.Fetcher import Fetcher
 
@@ -6,28 +8,35 @@ class CallScryfall:
     _BASE_URL = 'https://api.scryfall.com/'
     FETCHER = Fetcher()
 
-    @staticmethod
-    def get_set_cards(set_name: str):
+    @classmethod
+    def get_set_cards(cls, set_code: str) -> list[dict[str, Union[str, dict[str, str], list[str]]]]:
         cards = []
         next_page = True
-        url = f'{CallScryfall._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
-              f'&order=set&page=1&q=e%3A{set_name}&unique=cards '
-        Logger.LOGGER.log(f"Fetching card data for set: {set_name}", Logger.FLG.DEFAULT)
+        url = f'{cls._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
+              f'&order=set&page=1&q=e%3A{set_code}&unique=cards'
+        Logger.LOGGER.log(f"Fetching card data for set: {set_code}", Logger.FLG.DEFAULT)
 
         while next_page:
-            response: dict[str, object] = CallScryfall.FETCHER.fetch(url)
+            response: dict[str, object] = cls.FETCHER.fetch(url)
             cards += response['data']
             if response['has_more']:
                 url = response['next_page']
-                Logger.LOGGER.log(f"Fetching next page for set: {set_name}", Logger.FLG.VERBOSE)
+                Logger.LOGGER.log(f"Fetching next page for set: {set_code}", Logger.FLG.VERBOSE)
                 Logger.LOGGER.log(f"URL: {url}", Logger.FLG.DEBUG)
             else:
                 next_page = False
 
         return cards
 
-    @staticmethod
-    def get_card_by_name(name: str):
+    @classmethod
+    def get_set_info(cls, set_code: str) -> tuple[str, str]:
+        url = f'{cls._BASE_URL}sets/{set_code}'
+        Logger.LOGGER.log(f"Fetching data for set: {set_code}", Logger.FLG.DEFAULT)
+        response: dict[str, str] = cls.FETCHER.fetch(url)
+        return response['name'], response['icon_svg_uri']
+
+    @classmethod
+    def get_card_by_name(cls, name: str) -> Union[dict[str, Union[str, dict[str, str], list[str]]], None]:
         """
         Gets card data from scryfall based on a name. Scryfall's fuzzy filter is
         used to handle imprecise queries and spelling errors.
@@ -41,8 +50,7 @@ class CallScryfall:
         # Attempt to get information on the card.
         try:
             Logger.LOGGER.log(f"Fetching data for card: {name}", Logger.FLG.DEFAULT)
-            response: dict[str, object] = \
-                CallScryfall.FETCHER.fetch(f'{CallScryfall._BASE_URL}cards/named?fuzzy={name}')
+            response = cls.FETCHER.fetch(f'{cls._BASE_URL}cards/named?fuzzy={name}')
 
             # If is not a card, do some processing and return the struct with some information.
             if response['object'] != 'card':

@@ -1,7 +1,7 @@
+from typing import Optional
 import os
 from datetime import date, datetime
 import json
-from typing import Optional
 
 from utils import settings, WUBRG
 from utils.Logger import Logger

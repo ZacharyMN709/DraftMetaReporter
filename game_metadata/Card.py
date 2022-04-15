@@ -1,19 +1,39 @@
-from enum import Enum
+from typing import Union
+from enum import Flag, auto
 
 from utils.consts import RARITY_ALIASES
 from utils.WUBRG import get_color_identity
 
 
-def safe_get(dic, key):
-    return dic[key] if key in dic else None
+# https://scryfall.com/docs/api/layouts
+class CardLayouts(Flag):
+    NORMAL = auto()
+    SPLIT = auto()
+    FLIP = auto()
+    TRANSFORM = auto()
+    MODAL_DFC = auto()
+    MELD = auto()
+    LEVELER = auto()
+    CLASS = auto()
+    SAGA = auto()
+    ADVENTURE = auto()
+
+    TWO_SIDED = TRANSFORM | MODAL_DFC
+    FUSED = ADVENTURE | SPLIT | FLIP
 
 
-class CardLayouts(Enum):
-    NORMAL = 0
-    ADVENTURE = 1
-    SPLIT = 2
-    TRANSFORM = 3
-    MODAL_DFC = 4
+LAYOUT_DICT = {
+    "normal": CardLayouts.NORMAL,
+    "split": CardLayouts.SPLIT,
+    "flip": CardLayouts.FLIP,
+    "transform": CardLayouts.TRANSFORM,
+    "modal_dfc": CardLayouts.MODAL_DFC,
+    "meld": CardLayouts.MELD,
+    "leveler": CardLayouts.LEVELER,
+    "class": CardLayouts.CLASS,
+    "saga": CardLayouts.SAGA,
+    "adventure": CardLayouts.ADVENTURE
+}
 
 
 class CardFace:
@@ -22,31 +42,43 @@ class CardFace:
     IMG_URL = 'https://c1.scryfall.com/file/scryfall-cards/'
 
     # sides = ['default', 'left', 'right', 'creature', 'adventure']
-    @staticmethod
-    def single_face(json, side='default'):
-        face = CardFace(json, side)
+    @classmethod
+    def single_face(cls, json: dict[str, Union[str, dict[str, str], list[str]]], side: str = 'default') -> 'CardFace':
+        """
+        Returns the appropriately configured card face for the side given.
+        :param json: The data for the card.
+        :param side: The face of the card to generate the data for.
+        :return: A CardFace object with nicely formatted data.
+        """
+        face = cls(json, side)
 
         # Modify 'default' as needed for easy access to data.
         if side == 'default':
-            face.NAME = safe_get(json, 'name')
-            face.MANA_COST = safe_get(json, 'mana_cost')
-            face.TYPE_LINE = safe_get(json, 'type_line')
+            face.NAME = json.get('name')
+            face.MANA_COST = json.get('mana_cost')
+            face.TYPE_LINE = json.get('type_line')
 
         return face
 
     # sides = ['default', 'front', 'back']
-    @staticmethod
-    def double_faced(json, side='default'):
-        face = CardFace(json, side)
+    @classmethod
+    def double_faced(cls, json: dict[str, Union[str, dict[str, str]], list[str]], side: str = 'default') -> 'CardFace':
+        """
+        Returns the appropriately configured card face for the side given.
+        :param json: The data for the card.
+        :param side: The face of the card to generate the data for.
+        :return: A CardFace object with nicely formatted data.
+        """
+        face = cls(json, side)
 
         # Modify 'default' as needed for easy access to data.
         if side == 'default':
-            face.NAME = safe_get(json, 'name')
-            face.TYPE_LINE = safe_get(json, 'type_line')
+            face.NAME = json.get('name')
+            face.TYPE_LINE = json.get('type_line')
 
         return face
 
-    def __init__(self, json, side):
+    def __init__(self, json: dict[str, Union[str, dict[str, str], list[str]]], side: str):
         if side in ['back', 'adventure', 'right']:
             sub_json = json['card_faces'][1]
         else:
@@ -56,39 +88,39 @@ class CardFace:
                 sub_json = json
 
         self.ID = json['id']
-        self.NAME = safe_get(sub_json, 'name')
-        self.MANA_COST = safe_get(sub_json, 'mana_cost')
-        # self.CMC = safe_get(sub_json, 'cmc')  #TODO: Handle this more precisely later.
-        self.COLORS = safe_get(sub_json, 'colors')
+        self.NAME = sub_json.get('name')
+        self.MANA_COST = sub_json.get('mana_cost')
+        # self.CMC = sub_json.get('cmc')  #TODO: Handle this more precisely later.
+        self.COLORS = sub_json.get('colors')
         if self.COLORS is not None:
             self.COLORS = get_color_identity("".join(self.COLORS))
-        self.TYPE_LINE = safe_get(sub_json, 'type_line')
+        self.TYPE_LINE = sub_json.get('type_line')
 
-        self.ORACLE = safe_get(sub_json, 'oracle_text')
-        self.FLAVOR_TEXT = safe_get(sub_json, 'flavor_text')
+        self.ORACLE = sub_json.get('oracle_text')
+        self.FLAVOR_TEXT = sub_json.get('flavor_text')
 
-        self.POW = safe_get(sub_json, 'power')
-        self.TOU = safe_get(sub_json, 'toughness')
+        self.POW = sub_json.get('power')
+        self.TOU = sub_json.get('toughness')
 
         self.CARD_SIDE = side
         self.IMG_SIDE = 'back' if side == 'back' else 'front'
 
     # sizes = ['small', 'normal', 'large', 'png', 'art_crop', 'border_crop']
-    def image_url(self, size='normal'):
+    def image_url(self, size: str = 'normal') -> str:
         """Returns a link to the card, of the appropriate size."""
         return f"{self.IMG_URL}{size}/{self.IMG_SIDE}/{self.ID[0]}/{self.ID[1]}/{self.ID}.jpg"
 
 
 class Card:
-    # https://scryfall.com/docs/api/layouts has information about card layouts,
-    # which are necessary for determining how to handle a card.
-    # relevant_layouts = ['normal', adventure', 'split', 'transform', 'modal_dfc']
-
     SCRY_URL = 'https://scryfall.com/card/'
     API_URL = 'https://api.scryfall.com/cards/'
     IMG_URL = 'https://c1.scryfall.com/file/scryfall-cards/'
 
-    def _handle_card_faces(self, json):
+    def _handle_card_faces(self, json: dict[str, Union[str, dict[str, str], list[str]]]) -> None:
+        """
+        Automatically generates and sets the CardFaces for the Card object.
+        :param json: The card data.
+        """
         if self.LAYOUT == CardLayouts.NORMAL:
             self.DEFAULT_FACE = CardFace.single_face(json)
             self.FACE_1 = self.DEFAULT_FACE
@@ -112,40 +144,25 @@ class Card:
         else:
             raise Exception(f"Unknown layout '{self.LAYOUT}'")
 
-    def _handle_layout(self, layout):
-        if layout == 'normal':
-            self.LAYOUT = CardLayouts.NORMAL
-        elif layout == 'adventure':
-            self.LAYOUT = CardLayouts.ADVENTURE
-        elif layout == 'split':
-            self.LAYOUT = CardLayouts.SPLIT
-        elif layout == 'transform':
-            self.LAYOUT = CardLayouts.TRANSFORM
-        elif layout == 'modal_dfc':
-            self.LAYOUT = CardLayouts.MODAL_DFC
-        else:
-            raise Exception(f"Unknown layout '{layout}'")
-
-        self.TWO_SIDED = layout in ['transform', 'modal_dfc']
-        self.SPLIT = layout in ['adventure', 'split']
-
-    def __init__(self, json):
+    def __init__(self, json: dict[str, Union[str, dict[str, str], list[str]]]):
         if json['object'] != 'card':
             raise Exception("Invalid JSON provided! Object type is not 'card'")
 
         # Card ID info
         self.ID = json['id']
-        self.ARENA_ID = safe_get(json, 'arena_id')  # TODO: Handle Remastered Arena sets.
+        self.ARENA_ID = json.get('arena_id')  # TODO: Handle Remastered Arena sets.
         self.SET = json['set'].upper()
         self.RARITY = RARITY_ALIASES[json['rarity']]
         self.NUMBER = json['collector_number']
         self.COLOR_IDENTITY = get_color_identity("".join(json['color_identity']))
         self.CMC = json['cmc']  # TODO: Have this handled by a card face later.
-        self._handle_layout(json['layout'])
+        self.LAYOUT = LAYOUT_DICT[json['layout']]
+        self.TWO_SIDED = self.LAYOUT is CardLayouts.TWO_SIDED
+        self.SPLIT = self.LAYOUT is CardLayouts.FUSED
         self._handle_card_faces(json)
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Gets the simple name of the card"""
         if self.LAYOUT == CardLayouts.SPLIT:
             return self.DEFAULT_FACE.NAME
@@ -153,31 +170,33 @@ class Card:
             return self.FACE_1.NAME
 
     @property
-    def full_name(self):
+    def full_name(self) -> str:
         """Gets the full name of the card"""
         return self.DEFAULT_FACE.NAME
 
     @property
-    def mana_cost(self):
+    def mana_cost(self) -> str:
         """Gets the mana cost of the card"""
         return self.DEFAULT_FACE.MANA_COST
 
     @property
-    def api(self):
+    def api(self) -> str:
         """Link for the API call of the card"""
         return f"{self.API_URL}{self.ID}"
 
     @property
-    def url(self):
+    def url(self) -> str:
         """Shortened link to the Scryfall page for the card"""
         return f"{self.SCRY_URL}{self.SET.lower()}/{self.NUMBER}"
 
     @property
-    def image_url(self):
+    def image_url(self) -> str:
         """Returns a link to the image of the card."""
         return self.DEFAULT_FACE.image_url('normal')
 
-    def list_contents(self):
+    # TODO: Consider removing this.
+    def list_contents(self) -> str:
+        """Returns a text summary of the card. Mainly meant for debugging."""
         s = ""
         s += f"NAME: {self.name}\n"
         s += f"FULL_NAME: {self.full_name}\n"

@@ -2,8 +2,8 @@
 Running this program will update the ALL folders for the relevant set and format,
 fetching the summary of data about the whole set.
 """
-from JSONHandler import JSONHandler
-from RawDataFetcher import RawDataFetcher
+from data_handling.JSONHandler import JSONHandler
+from data_handling.RawDataFetcher import RawDataFetcher
 
 TARGET_SET = 'NEO'
 TARGET_FORMAT = 'PremierDraft'

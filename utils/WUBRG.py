@@ -67,15 +67,15 @@ COLOR_ALIASES: dict[str, str] = {
 }
 
 for d in COLOR_ALIASES_SUPPORT:
-    COLOR_ALIASES = COLOR_ALIASES | COLOR_ALIASES_SUPPORT[d]
-    # COLOR_ALIASES = {**COLOR_ALIASES, **COLOR_ALIASES_SUPPORT[d]}
+    # COLOR_ALIASES = COLOR_ALIASES | COLOR_ALIASES_SUPPORT[d]
+    COLOR_ALIASES = {**COLOR_ALIASES, **COLOR_ALIASES_SUPPORT[d]}
 
 # Lists of aliases based on the number of colours.
 COLOUR_GROUPINGS: dict[str, dict[str, str]] = {
     'Mono-Color': COLOR_ALIASES_SUPPORT['Colors'],
     'Two-Color': COLOR_ALIASES_SUPPORT['Guilds'],
-    'Three-Color': COLOR_ALIASES_SUPPORT['Wedges'] | COLOR_ALIASES_SUPPORT['Shards'],
-    # 'Three-Color': {**COLOR_ALIASES_SUPPORT['Wedges'], **COLOR_ALIASES_SUPPORT['Shards']},
+    # 'Three-Color': COLOR_ALIASES_SUPPORT['Wedges'] | COLOR_ALIASES_SUPPORT['Shards'],
+    'Three-Color': {**COLOR_ALIASES_SUPPORT['Wedges'], **COLOR_ALIASES_SUPPORT['Shards']},
     'Four-Color': COLOR_ALIASES_SUPPORT['Nephillim'],
 }
 
@@ -152,14 +152,17 @@ def get_color_alias(color_string: str) -> str:
                 return alias
 
 
-COLOR_GROUPS: list[str] = [''] + [get_color_string(y) for x in COLOUR_GROUPINGS for y in COLOUR_GROUPINGS[x]] + ['WUBRG']
+COLOR_GROUPS: list[str] = [''] + \
+                          [get_color_string(y) for x in COLOUR_GROUPINGS for y in COLOUR_GROUPINGS[x]] + \
+                          ['WUBRG']
+
 COLOR_PAIRS: list[str] = [COLOR_ALIASES_SUPPORT['Guilds'][key] for key in COLOR_ALIASES_SUPPORT['Guilds']]
 
 
 # Takes in a valid colour string, or colour string alias,
 # and then returns a dictionary of booleans.
-def get_color_map(color_str: str):
-    s = get_color_string(color_str)
+def get_color_map(color_string: str):
+    s = get_color_string(color_string)
     colors_exist = {'W': False,
                     'U': False,
                     'B': False,

@@ -2,36 +2,54 @@ from typing import Union
 from datetime import date, timedelta
 
 from utils.settings import SETS, FORMATS, SET_CONFIG
+from utils.CallScryfall import CallScryfall
+
 from game_metadata.CardManager import CardManager
 from game_metadata.Card import Card
 
 
 class SetMetadata:
-    _set: str
+    _set_code: str
     _card_dict: dict[str, Card]
     METADATA = {s: dict() for s in SETS}
 
     @classmethod
-    def get_metadata(cls, set_name) -> 'SetMetadata':
+    def get_metadata(cls, set_code: str) -> 'SetMetadata':
+        """
+        Returns an existing instance of a FormatMetadata object, or creates one if none exists.
+        :param set_code: The three letter code for the set.
+        :return: The SetMetadata for the set.
+        """
         # TODO: Implement some checks so only valid sets are added.
         # TODO: Make the check update along with added sets.
-        if set_name not in cls.METADATA or not cls.METADATA[set_name]:
-            cls.METADATA[set_name] = cls(set_name)
-        return cls.METADATA[set_name]
+        if set_code not in cls.METADATA or not cls.METADATA[set_code]:
+            cls.METADATA[set_code] = cls(set_code)
+        return cls.METADATA[set_code]
 
-    def __init__(self, set_name):
-        self._set = set_name
-        self._card_dict = CardManager.from_set(self.set)
+    def __init__(self, set_code):
+        self._set_code = set_code
+        self._card_dict = CardManager.from_set(set_code)
+        self._full_name, self._icon_url = CallScryfall.get_set_info(set_code)
 
     @property
-    def set(self) -> str:
-        """The draft set."""
-        return self._set
+    def set_code(self) -> str:
+        """The code of the draft set."""
+        return self._set_code
+
+    @property
+    def set_name(self) -> str:
+        """The full name of the draft set."""
+        return self._full_name
+
+    @property
+    def set_icon_url(self) -> str:
+        """The icon of the draft set."""
+        return self._icon_url
 
     @property
     def release_date(self) -> date:
         """The (Arena) release date of the set's format."""
-        return SET_CONFIG[self.set]["PremierDraft"][0][0]
+        return SET_CONFIG[self.set_code]["PremierDraft"][0][0]
 
     @property
     def card_dict(self) -> dict[str, Card]:
@@ -61,14 +79,20 @@ class FormatMetadata:
     METADATA = {s: {f: dict() for f in FORMATS} for s in SETS}
 
     @staticmethod
-    def get_metadata(set_name, format_name) -> 'FormatMetadata':
+    def get_metadata(set_code, format_name) -> 'FormatMetadata':
+        """
+        Returns an existing instance of a FormatMetadata object, or creates one if none exists.
+        :param set_code: The three letter code for the set.
+        :param format_name: The identifier for the format.
+        :return: The FormatMetadata for the set and format.
+        """
         # TODO: Implement some checks so only valid sets are added.
         # TODO: Make the check update along with added sets.
-        if set_name not in FormatMetadata.METADATA or not FormatMetadata.METADATA[set_name]:
-            FormatMetadata.METADATA[set_name] = dict()
-        if format_name not in FormatMetadata.METADATA[set_name] or not FormatMetadata.METADATA[set_name][format_name]:
-            FormatMetadata.METADATA[set_name][format_name] = FormatMetadata(set_name, format_name)
-        return FormatMetadata.METADATA[set_name][format_name]
+        if set_code not in FormatMetadata.METADATA or not FormatMetadata.METADATA[set_code]:
+            FormatMetadata.METADATA[set_code] = dict()
+        if format_name not in FormatMetadata.METADATA[set_code] or not FormatMetadata.METADATA[set_code][format_name]:
+            FormatMetadata.METADATA[set_code][format_name] = FormatMetadata(set_code, format_name)
+        return FormatMetadata.METADATA[set_code][format_name]
 
     def __init__(self, set_name, format_name):
         self._set = set_name

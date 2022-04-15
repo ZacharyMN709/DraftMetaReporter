@@ -3,8 +3,8 @@ import pandas as pd
 
 from utils import consts, WUBRG
 
-from RawDataHandler import RawDataHandler
 from game_metadata.FormatMetadata import SetMetadata
+from RawDataHandler import RawDataHandler
 
 
 class FramedData:
