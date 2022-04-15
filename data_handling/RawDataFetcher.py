@@ -59,7 +59,6 @@ class RawDataFetcher:
         return self._SUMMARY_CARD_DICTS
 
     def get_day_data(self, check_date, reload=False, overwrite=False):
-        # TODO: Consider implementing the 'overwrite' option here and upwards.
         """
         Gets all of the data for a given day, for the object's set and format.
         If the data does not exist locally, it will be fetched from 17Lands and saved locally.
@@ -96,7 +95,7 @@ class RawDataFetcher:
         :param overwrite: Force overwrite the data in the file
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
-        check_date = min(self.FORMAT_METADATA.start_date, utc_today())
+        check_date = min(self.FORMAT_METADATA.START_DATE, utc_today())
 
         run = True
         while run:
@@ -121,7 +120,7 @@ class RawDataFetcher:
         """
 
         # If the set/format hasn't started yet, log a message and return empty dicts.
-        has_started = self.FORMAT_METADATA.start_date < utc_today()
+        has_started = self.FORMAT_METADATA.START_DATE < utc_today()
         if not has_started:
             Logger.LOGGER.log(f'{self.SET} {self.FORMAT} has not begun yet. No data to get!', Logger.FLG.DEFAULT)
             return dict(), dict()
@@ -136,7 +135,7 @@ class RawDataFetcher:
 
             # Get the relevant times for updates.
             last_write = loader.get_last_write_time()
-            ext_end_date = self.FORMAT_METADATA.end_date + timedelta(days=7)
+            ext_end_date = self.FORMAT_METADATA.END_DATE + timedelta(days=7)
 
             # Check if the data has been updated since last write and that the format is still open.
             data_updated = last_write < get_prev_17lands_update_time()

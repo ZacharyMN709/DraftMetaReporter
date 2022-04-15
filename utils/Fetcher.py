@@ -7,6 +7,7 @@ from utils.Logger import Logger
 
 
 class Fetcher:
+    """ Helps to handle getting data from url end points, with some configurable options about timing. """
 
     def __init__(self, tries=None, fail_delay=None, success_delay=None):
         self._TRIES = settings.TRIES if tries is None else tries

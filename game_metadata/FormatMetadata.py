@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 from datetime import date, timedelta
 
 from utils.settings import SETS, FORMATS, SET_CONFIG
@@ -9,9 +9,13 @@ from game_metadata.Card import Card
 
 
 class SetMetadata:
-    _set_code: str
-    _card_dict: dict[str, Card]
-    METADATA = {s: dict() for s in SETS}
+    """
+    SetMetadata acts as a global repository for set data. Each set is defined by its three-letter code, and from
+    there all information about the set can be gathered. As the information won't change, getting the information
+    multiple time is unnecessary, so this acts as a central hub for that data. In particular, the costly operation of
+    getting all cards in a set only needs to be done once, and then can be accessed from any place in the code.
+    """
+    METADATA: dict[str, Optional['SetMetadata']] = {s: None for s in SETS}
 
     @classmethod
     def get_metadata(cls, set_code: str) -> 'SetMetadata':
@@ -27,39 +31,11 @@ class SetMetadata:
         return cls.METADATA[set_code]
 
     def __init__(self, set_code):
-        self._set_code = set_code
-        self._card_dict = CardManager.from_set(set_code)
-        self._full_name, self._icon_url = CallScryfall.get_set_info(set_code)
-
-    @property
-    def set_code(self) -> str:
-        """The code of the draft set."""
-        return self._set_code
-
-    @property
-    def set_name(self) -> str:
-        """The full name of the draft set."""
-        return self._full_name
-
-    @property
-    def set_icon_url(self) -> str:
-        """The icon of the draft set."""
-        return self._icon_url
-
-    @property
-    def release_date(self) -> date:
-        """The (Arena) release date of the set's format."""
-        return SET_CONFIG[self.set_code]["PremierDraft"][0][0]
-
-    @property
-    def card_dict(self) -> dict[str, Card]:
-        """The dictionary of cards in the set"""
-        return self._card_dict
-
-    @property
-    def card_list(self) -> list[Card]:
-        """The list of cards in the set"""
-        return [self._card_dict[name] for name in self._card_dict]
+        self.SET = set_code
+        self.CARD_DICT = CardManager.from_set(set_code)
+        self.FULL_NAME, self.ICON_URL = CallScryfall.get_set_info(set_code)
+        self.RELEASE_DATE = SET_CONFIG[self.SET]["PremierDraft"][0][0]
+        self.CARD_LIST = [self.CARD_DICT[name] for name in self.CARD_DICT]
 
     def find_card(self, card_name) -> Union[Card, None]:
         """
@@ -69,14 +45,19 @@ class SetMetadata:
         """
         if card_name in CardManager.REDIRECT:
             card_name = CardManager.REDIRECT[card_name]
-        if card_name in self.card_dict:
-            return self.card_dict[card_name]
+        if card_name in self.CARD_DICT:
+            return self.CARD_DICT[card_name]
         else:
             return None
 
 
 class FormatMetadata:
-    METADATA = {s: {f: dict() for f in FORMATS} for s in SETS}
+    """
+    FormatMetadata acts as a global repository for each format's data. Each format is defined by the three-letter set
+    code, along with the string description of the format/game-type. FormatMetadata has access to all of the relevant
+    SetMetadata, along with data specific to the format, such as dates.
+    """
+    METADATA: dict[str, dict[str, Optional['FormatMetadata']]] = {s: {f: None for f in FORMATS} for s in SETS}
 
     @staticmethod
     def get_metadata(set_code, format_name) -> 'FormatMetadata':
@@ -95,44 +76,16 @@ class FormatMetadata:
         return FormatMetadata.METADATA[set_code][format_name]
 
     def __init__(self, set_name, format_name):
-        self._set = set_name
-        self._format = format_name
+        self.SET = set_name
+        self.FORMAT = format_name
 
         self._active_periods = SET_CONFIG[set_name][format_name]
-        self._start_date = self._active_periods[0][0]
-        self._end_date = self._active_periods[-1][1]
+        self.START_DATE = self._active_periods[0][0]
+        self.END_DATE = self._active_periods[-1][1]
 
         self._set_metadata = SetMetadata.get_metadata(set_name)
-
-    @property
-    def set(self) -> str:
-        """The draft set."""
-        return self._set
-
-    @property
-    def format(self) -> str:
-        """The format type."""
-        return self._format
-
-    @property
-    def start_date(self) -> date:
-        """The start date of the set's format."""
-        return self._start_date
-
-    @property
-    def end_date(self) -> date:
-        """The end date of the set's format."""
-        return self._end_date
-
-    @property
-    def card_dict(self) -> dict[str, Card]:
-        """The dictionary of cards in the set"""
-        return self._set_metadata.card_dict
-
-    @property
-    def card_list(self) -> list[Card]:
-        """The list of cards in the set"""
-        return self._set_metadata.card_list
+        self.CARD_DICT = self._set_metadata.CARD_DICT
+        self.CARD_LIST = self._set_metadata.CARD_LIST
 
     def find_card(self, card_name) -> Card:
         """

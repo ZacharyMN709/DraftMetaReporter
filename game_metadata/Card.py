@@ -37,8 +37,10 @@ LAYOUT_DICT = {
 
 
 class CardFace:
-    SCRY_URL = 'https://scryfall.com/card/'
-    API_URL = 'https://api.scryfall.com/cards/'
+    """
+    This object helps simplify the logic for full card by separating specific information about a card (power,
+    toughness, mana value, etc.) from general information about a card (rarity, number, set, etc.)
+    """
     IMG_URL = 'https://c1.scryfall.com/file/scryfall-cards/'
 
     # sides = ['default', 'left', 'right', 'creature', 'adventure']
@@ -90,7 +92,7 @@ class CardFace:
         self.ID = json['id']
         self.NAME = sub_json.get('name')
         self.MANA_COST = sub_json.get('mana_cost')
-        # self.CMC = sub_json.get('cmc')  #TODO: Handle this more precisely later.
+        # self.CMC = sub_json.get('cmc')  # TODO: Handle this more precisely later.
         self.COLORS = sub_json.get('colors')
         if self.COLORS is not None:
             self.COLORS = get_color_identity("".join(self.COLORS))
@@ -112,9 +114,12 @@ class CardFace:
 
 
 class Card:
+    """
+    Provides a succinct collection of information about a card, with the ability to have a simple layer of information
+    easily accessible, with a more complicated, but accurate, set of information underneath.
+    """
     SCRY_URL = 'https://scryfall.com/card/'
     API_URL = 'https://api.scryfall.com/cards/'
-    IMG_URL = 'https://c1.scryfall.com/file/scryfall-cards/'
 
     def _handle_card_faces(self, json: dict[str, Union[str, dict[str, str], list[str]]]) -> None:
         """

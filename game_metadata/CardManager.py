@@ -7,6 +7,14 @@ from game_metadata.Card import Card
 
 
 class CardManager:
+    """
+    CardManager acts as a global repository for card data. This is both for pulled data from Scryfall, and the results
+    and queries of users. In particular, it tracks user's requests (which can be mis-spelled), and logs them as aliases
+    for a found card. This means that as more users request cards, less calls have to be made to Scryfall.
+
+    It's possible this should be reset at the release of a new set to let the object "re-link" names as their mappings
+    may end up changing with the release of new cards, or after a certain amount of time to free up memory.
+    """
     REDIRECT = dict()
     SETS = dict()
     CARDS = dict()
@@ -92,3 +100,14 @@ class CardManager:
             return cls.CARDS[card_name]
         else:
             return None
+
+    @classmethod
+    def reset_redirects(cls) -> None:
+        """
+        Resets the REDIRECT dictionary.
+        """
+        cls.REDIRECT = dict()
+        for card_name in cls.CARDS:
+            card = cls.CARDS[card_name]
+            cls._add_card(card, card_name)
+

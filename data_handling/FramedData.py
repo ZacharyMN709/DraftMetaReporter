@@ -21,8 +21,7 @@ class FramedData:
     @property
     def full_set(self) -> str:
         """The full name of the draft set."""
-        # TODO: Have this information be pulled from somewhere
-        return self._set
+        return SetMetadata.get_metadata(self.set).FULL_NAME
 
     @property
     def format(self) -> str:
@@ -104,7 +103,7 @@ class FramedData:
         """
         # Set up dictionaries for quicker sorting.
         color_indexes = {WUBRG.COLOR_GROUPS[x]: x for x in range(0, len(WUBRG.COLOR_GROUPS))}
-        card_indexes = SetMetadata.get_metadata(self.set).card_list
+        card_indexes = SetMetadata.get_metadata(self.set).CARD_LIST
 
         # Creating a custom sorting algorithm
         def compare(pair1, pair2):

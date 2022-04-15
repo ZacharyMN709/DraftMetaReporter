@@ -5,6 +5,7 @@ from utils.Fetcher import Fetcher
 
 
 class CallScryfall:
+    """ A small class which helps get specific data from scryfall, handling the minutia of json checking. """
     _BASE_URL = 'https://api.scryfall.com/'
     FETCHER = Fetcher()
 
