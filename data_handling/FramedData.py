@@ -1,7 +1,7 @@
-from functools import cmp_to_key
 import pandas as pd
 
-from utils import consts, WUBRG
+from utils import WUBRG
+from data_handling.utils import consts
 
 from game_metadata.FormatMetadata import SetMetadata
 from data_handling.RawDataHandler import RawDataHandler

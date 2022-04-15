@@ -1,6 +1,7 @@
 import pandas as pd
 
-from utils import consts, WUBRG
+from utils import WUBRG
+from data_handling.utils import consts
 
 
 def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:

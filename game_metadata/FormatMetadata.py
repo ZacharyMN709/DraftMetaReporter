@@ -4,7 +4,7 @@ from datetime import date, timedelta
 
 from utils.WUBRG import COLOR_INDEXES
 from utils.settings import SETS, FORMATS, SET_CONFIG
-from utils.CallScryfall import CallScryfall
+from game_metadata.CallScryfall import CallScryfall
 
 from game_metadata.CardManager import CardManager
 from game_metadata.Card import Card

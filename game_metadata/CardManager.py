@@ -1,7 +1,7 @@
 from typing import Union
 
 from utils.Logger import Logger
-from utils.CallScryfall import CallScryfall
+from game_metadata.CallScryfall import CallScryfall
 
 from game_metadata.Card import Card
 

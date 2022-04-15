@@ -1,7 +1,7 @@
 import pandas as pd
 
 from utils.Logger import Logger
-from utils.pandafy import panadafy_card_dict, panadafy_meta_dict
+from data_handling.utils.pandafy import panadafy_card_dict, panadafy_meta_dict
 
 from data_handling.RawDataFetcher import RawDataFetcher
 
