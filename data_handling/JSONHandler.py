@@ -3,7 +3,7 @@ import os
 from datetime import date, datetime
 import json
 
-from WUBRG import WUBRG
+from WUBRG import COLOR_COMBINATIONS
 from utils import settings
 from utils.Logger import Logger
 from utils.Fetcher import Fetcher
@@ -169,7 +169,7 @@ class JSONHandler:
         :return: A dictionary of dictionaries, with deck colours as keys
         """
         card_dict = dict()
-        for color in WUBRG.COLOR_GROUPS:
+        for color in COLOR_COMBINATIONS:
             card_dict[color] = self.get_card_data(color, overwrite)
 
         return card_dict

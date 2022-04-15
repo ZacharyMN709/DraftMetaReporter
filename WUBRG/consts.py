@@ -71,7 +71,6 @@ NEPHILLIM: dict[str, str] = {
     'Glint': "UBRG"
 }
 
-
 # Groupings of colour-combinations supported.
 COLOR_ALIAS_GROUPS: dict[str, dict[str, str]] = {
     'Mono-Color': SINGLE_COLORS,
@@ -124,7 +123,6 @@ COLOUR_GROUPINGS: dict[str, dict[str, str]] = {
     'Five-Color': {'Five-Color': 'WUBRG'}
 }
 
-
 # Lists of colour combinations of given length.
 COLOR_COMBINATIONS: list[str] = [COLOUR_GROUPINGS[x][y] for x in COLOUR_GROUPINGS for y in COLOUR_GROUPINGS[x]]
 COLOR_SINGLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 1]
@@ -132,6 +130,18 @@ COLOR_PAIRS: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors)
 COLOR_TRIPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 3]
 COLOR_QUADRUPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 4]
 
-
 # Used for sorting.
 COLOR_INDEXES = {COLOR_COMBINATIONS[x]: x for x in range(0, len(COLOR_COMBINATIONS))}
+
+COLOR_COUNT_MAP: dict[str, int] = {
+    "Mono-color": 1,
+    "Two-color": 2,
+    "Three-color": 3,
+    "Four-color": 4,
+    "Five-color": 5,
+    "All Decks": None
+}
+
+
+# Reverse lookup of aliases.
+COLOR_COMBINATION_TO_ALIAS = {v: k for k, v in SIMPLE_COLOR_ALIASES.items()}

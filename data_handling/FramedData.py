@@ -1,6 +1,6 @@
 import pandas as pd
 
-from WUBRG import WUBRG
+from WUBRG import get_color_identity, get_color_subsets
 from data_handling.utils import consts
 
 from game_metadata.FormatMetadata import SetMetadata
@@ -72,7 +72,7 @@ class FramedData:
     def deck_archetype_frame(self, deck_color=None, date=None, summary=False) -> pd.DataFrame:
         """Returns a subset of the 'SINGLE_ARCHETYPE' data as a DataFrame."""
         if deck_color is None: deck_color = slice(None)
-        if isinstance(deck_color, str): deck_color = WUBRG.get_color_identity(deck_color)
+        if isinstance(deck_color, str): deck_color = get_color_identity(deck_color)
         if date is None: date = slice(None)
 
         if summary:
@@ -86,7 +86,7 @@ class FramedData:
         if name is None: name = slice(None)
         if deck_color is None: deck_color = slice(None)
         if date is None: date = slice(None)
-        if isinstance(deck_color, str): deck_color = WUBRG.get_color_identity(deck_color)
+        if isinstance(deck_color, str): deck_color = get_color_identity(deck_color)
 
         if summary:
             ret = self.data.CARD_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[deck_color, name]]
@@ -94,7 +94,7 @@ class FramedData:
             ret = self.data.CARD_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, deck_color, name]]
 
         if card_color:
-            color_set = WUBRG.get_color_subsets(WUBRG.get_color_identity(card_color))
+            color_set = get_color_subsets(get_color_identity(card_color))
             ret = ret[ret['Color'].isin(list(color_set))]
 
         if card_rarity:

@@ -1,17 +1,7 @@
 import pandas as pd
 
-from WUBRG import WUBRG
+from WUBRG import COLOR_COUNT_MAP, COLOR_ALIASES
 from data_handling.utils import consts
-
-
-COLOR_COUNT_MAP: dict[str, int] = {
-    "Mono-color": 1,
-    "Two-color": 2,
-    "Three-color": 3,
-    "Four-color": 4,
-    "Five-color": 5,
-    "All Decks": None
-}
 
 
 def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:
@@ -43,6 +33,7 @@ def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:
     return frame
 
 
+# noinspection PyPep8
 def panadafy_meta_dict(meta_dict: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Turns a dictionary into a DataFrame, with some data cleaning applied.
@@ -75,7 +66,7 @@ def panadafy_meta_dict(meta_dict: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
     archetype_frame['Colors'] = archetype_frame['Colors'].map(
         lambda x: x[0: (x.find('(') if x.find('(') != -1 else len(x))].strip())
     archetype_frame['Colors'] = archetype_frame['Colors'].map(lambda x: x.replace('Mono-', ''))
-    archetype_frame['Colors'] = archetype_frame['Colors'].map(WUBRG.COLOR_ALIASES)
+    archetype_frame['Colors'] = archetype_frame['Colors'].map(COLOR_ALIASES)
     archetype_frame['Name'] = archetype_frame['Colors']
     archetype_frame = archetype_frame.set_index('Name')
 

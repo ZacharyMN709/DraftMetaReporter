@@ -1,4 +1,4 @@
-from consts import COLORS, COLOR_ALIASES, COLOUR_GROUPINGS, COLOR_COMBINATIONS
+from consts import COLORS, COLOR_ALIASES, COLOR_COMBINATIONS, COLOR_COMBINATION_TO_ALIAS
 
 
 def get_color_string(s: str) -> str:
@@ -11,15 +11,17 @@ def get_color_string(s: str) -> str:
     :return: A color string, which contains only characters found in 'WUBRG'.
     """
     if s.title() in COLOR_ALIASES:
-        s = COLOR_ALIASES[s.title()]
-
-    # Validate the string by using the set difference
-    remainder = set(s.upper()) - set(COLORS)
-    if len(remainder) > 0:
-        print(f'Invalid color string provided: {s}. Converting to "{COLORS}"')
-        s = COLORS
-
-    return s
+        # Return the string provided by the alias dictionary.
+        return COLOR_ALIASES[s.title()]
+    else:
+        # Validate the string by using the set difference
+        if set(s.upper()) <= set(COLORS):
+            # If the string isn't a subset of 'WUBRG', the string is invalid.
+            print(f'Invalid color string provided: {s}. Converting to "{COLORS}"')
+            return COLORS
+        else:
+            # Otherwise, the string is valid. Return it.
+            return s.upper()
 
 
 def get_color_identity(color_string: str) -> str:
@@ -31,7 +33,7 @@ def get_color_identity(color_string: str) -> str:
     """
     char_set = set(get_color_string(color_string))
     s = ''
-    for c in COLOR_ALIASES['All']:
+    for c in COLORS:
         if c in char_set:
             s += c
     return s
@@ -45,18 +47,7 @@ def get_color_alias(color_string: str) -> str:
     :return: A common name which represents the colours in color_string.
     """
     color_identity = get_color_identity(color_string)
-    if color_identity == 'WUBRG':
-        return '5-Colour'
-    elif color_identity == '':
-        return ''
-
-    for g in COLOUR_GROUPINGS:
-        for c in COLOUR_GROUPINGS[g]:
-            if color_identity == get_color_string(c):
-                alias = c
-                if len(color_identity) == 1:
-                    alias = 'Mono-' + alias
-                return alias
+    return COLOR_COMBINATION_TO_ALIAS[color_identity]
 
 
 def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -> list[str]:

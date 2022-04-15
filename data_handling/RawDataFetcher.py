@@ -92,25 +92,24 @@ class RawDataFetcher:
             Logger.LOGGER.log(f'{self.SET} {self.FORMAT} has not begun yet. No data to get!', Logger.FLG.DEFAULT)
             return dict(), dict()
 
-        # Determine the update conditions
+        # Initialize the loader.
+        loader = JSONHandler(self.SET, self.FORMAT, None)
+
+        # Determine the object is missing data.
         data_missing = (not self._SUMMARY_META_DICT) or (not self._SUMMARY_CARD_DICTS)
-        update = data_missing or reload
 
-        # If an update is required, get the data.
+        # Get the relevant times for updates.
+        last_write = loader.get_last_write_time()
+        ext_end_date = self._format_metadata.END_DATE + timedelta(days=7)
+
+        # Check if the data has been updated since last write and that the format is still open.
+        data_updated = last_write < get_prev_17lands_update_time()
+        data_live = last_write.date() < ext_end_date
+        fresh_data = data_updated and data_live
+
+        update = reload or data_missing or fresh_data
+
         if update:
-            loader = JSONHandler(self.SET, self.FORMAT, None)
-
-            # Get the relevant times for updates.
-            last_write = loader.get_last_write_time()
-            ext_end_date = self._format_metadata.END_DATE + timedelta(days=7)
-
-            # Check if the data has been updated since last write and that the format is still open.
-            data_updated = last_write < get_prev_17lands_update_time()
-            data_live = last_write.date() < ext_end_date
-
-            # Determine if an update is needed.
-            update = data_updated and data_live
-
             Logger.LOGGER.log(f'Getting overall data for {self.SET} {self.FORMAT}', Logger.FLG.DEFAULT)
             self._SUMMARY_CARD_DICTS, self._SUMMARY_META_DICT = loader.get_day_data(overwrite)
 
