@@ -1,6 +1,6 @@
 import pandas as pd
 
-from utils import WUBRG
+from WUBRG import WUBRG
 from data_handling.utils import consts
 
 from game_metadata.FormatMetadata import SetMetadata

@@ -1,7 +1,17 @@
 import pandas as pd
 
-from utils import WUBRG
+from WUBRG import WUBRG
 from data_handling.utils import consts
+
+
+COLOR_COUNT_MAP: dict[str, int] = {
+    "Mono-color": 1,
+    "Two-color": 2,
+    "Three-color": 3,
+    "Four-color": 4,
+    "Five-color": 5,
+    "All Decks": None
+}
 
 
 def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:
@@ -58,7 +68,7 @@ def panadafy_meta_dict(meta_dict: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
 
     summary_frame = frame[frame['is_summary'] == True].copy()
     summary_frame = summary_frame.drop(['is_summary'], axis=1)
-    summary_frame['Colors'] = summary_frame['Colors'].map(WUBRG.COLOR_COUNT_MAP)
+    summary_frame['Colors'] = summary_frame['Colors'].map(COLOR_COUNT_MAP)
 
     archetype_frame = frame[frame['is_summary'] == False].copy()
     archetype_frame = archetype_frame.drop(['is_summary'], axis=1)

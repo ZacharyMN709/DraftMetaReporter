@@ -2,17 +2,21 @@ from typing import Union
 import requests
 from time import sleep
 
-from utils import settings
 from utils.Logger import Logger
+
+# Web Request Defaults
+TRIES: int = 5
+FAIL_DELAY: int = 60
+SUCCESS_DELAY: int = 1
 
 
 class Fetcher:
     """ Helps to handle getting data from url end points, with some configurable options about timing. """
 
     def __init__(self, tries=None, fail_delay=None, success_delay=None):
-        self._TRIES = settings.TRIES if tries is None else tries
-        self._FAIL_DELAY = settings.FAIL_DELAY if fail_delay is None else fail_delay
-        self._SUCCESS_DELAY = settings.SUCCESS_DELAY if success_delay is None else success_delay
+        self._TRIES = TRIES if tries is None else tries
+        self._FAIL_DELAY = FAIL_DELAY if fail_delay is None else fail_delay
+        self._SUCCESS_DELAY = SUCCESS_DELAY if success_delay is None else success_delay
 
     def fetch(self, url: str) -> Union[dict, None]:
         """

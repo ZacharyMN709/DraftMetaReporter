@@ -169,23 +169,6 @@ COLOR_PAIRS: list[str] = [COLOR_ALIASES_SUPPORT['Guilds'][key] for key in COLOR_
 COLOR_INDEXES = {COLOR_GROUPS[x]: x for x in range(0, len(COLOR_GROUPS))}
 
 
-# Takes in a valid colour string, or colour string alias,
-# and then returns a dictionary of booleans.
-def get_color_map(color_string: str):
-    s = get_color_string(color_string)
-    colors_exist = {'W': False,
-                    'U': False,
-                    'B': False,
-                    'R': False,
-                    'G': False,
-                    'C': False}
-
-    for c in s:
-        colors_exist[c] = True
-
-    return colors_exist
-
-
 def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -> list[str]:
     """
     Gets all possible permutations of WUBRG which contain the color_id.

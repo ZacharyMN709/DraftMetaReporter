@@ -3,7 +3,8 @@ import os
 from datetime import date, datetime
 import json
 
-from utils import settings, WUBRG
+from WUBRG import WUBRG
+from utils import settings
 from utils.Logger import Logger
 from utils.Fetcher import Fetcher
 
