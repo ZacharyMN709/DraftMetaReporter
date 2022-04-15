@@ -1,5 +1,5 @@
 # Card Consts
-RARITY_ALIASES = {
+RARITY_ALIASES: dict[str, str] = {
     'common': "C",
     'uncommon': "U",
     'rare': "R",
@@ -7,7 +7,7 @@ RARITY_ALIASES = {
 }
 
 # Set Consts
-FORMAT_NICKNAMES = {
+FORMAT_NICKNAMES: dict[str, str] = {
     'PremierDraft': 'Bo1',
     'TradDraft': 'Bo3',
     'QuickDraft': 'Quick',
@@ -16,7 +16,7 @@ FORMAT_NICKNAMES = {
     'DraftChallenge': 'Chal.',
 }
 
-STAT_NAMES = {
+STAT_NAMES: dict[str, str] = {
     "name": "Name",
     "color": "Color",
     "rarity": "Rarity",
@@ -37,14 +37,14 @@ STAT_NAMES = {
     "drawn_improvement_win_rate": "IWD"
 }
 
-META_COLS = {
+META_COLS: dict[str, str] = {
     "is_summary": "is_summary",
     "color_name": "Color Name",
     "wins": "Wins",
     "games": "Games",
 }
 
-STAT_FORMAT_STRINGS = {
+STAT_FORMAT_STRINGS: dict[str, str] = {
     "Name": "`{:<20}`",
     "Color": "`{:^6}`",
     "Rarity": "`{:^6}`",
@@ -65,4 +65,4 @@ STAT_FORMAT_STRINGS = {
     "IWD": "`{:5.2f}%`"
 }
 
-PERCENT_COLUMNS = ["GP WR", "OH WR", "GD WR", "GIH WR", "GND WR", "IWD"]
+PERCENT_COLUMNS: list[str] = ["GP WR", "OH WR", "GD WR", "GIH WR", "GND WR", "IWD"]

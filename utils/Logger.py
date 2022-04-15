@@ -1,5 +1,6 @@
 from enum import IntEnum, unique
 
+
 @unique
 class Flags(IntEnum):
     NONE = 0
@@ -13,27 +14,23 @@ class Flags(IntEnum):
 class Logger:
     FLG = Flags
     LOGGER = None
-    
+
     def void(self, msg, lvl=1):
         pass
 
     def prt(self, msg, lvl=1):
-        if lvl <= self.LOG_LVL:
+        if lvl <= self.log_lvl:
             print(msg)
 
     def pfl(self, msg, lvl=1):
-        if lvl <= self.LOG_LVL:
-            #TODO: Output message to a file.
+        if lvl <= self.log_lvl:
+            # TODO: Output message to a file.
             pass
 
-        
-    def __init__(self, LOG_LVL, USE_TIMESTAMP=False):
-        self.LOG_LVL = LOG_LVL
-        #TODO: Implement timestamp prepender.
+    def __init__(self, log_lvl, use_timestamp=False):
+        self.log_lvl = log_lvl
+        # TODO: Implement timestamp prepender.
         self.log = self.prt
-
-
-
 
     @property
     def log(self):
@@ -44,7 +41,7 @@ class Logger:
     def log(self, value):
         """Sets the logging function."""
         self._log = value
-        
-    
-Logger.LOGGER = Logger(Flags.DEFAULT)
 
+
+# TODO: Use a better way of handling logging.
+Logger.LOGGER = Logger(Flags.DEFAULT)
