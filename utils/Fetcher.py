@@ -14,7 +14,7 @@ class Fetcher:
         self._FAIL_DELAY = settings.FAIL_DELAY if fail_delay is None else fail_delay
         self._SUCCESS_DELAY = settings.SUCCESS_DELAY if success_delay is None else success_delay
 
-    def fetch(self, url: str) -> Union[dict[str, object], dict[str, str], None]:
+    def fetch(self, url: str) -> Union[dict, None]:
         """
         Attempts to get json data from a url.
         :param url: The url to get data from

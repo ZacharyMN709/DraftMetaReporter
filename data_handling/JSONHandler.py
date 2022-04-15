@@ -9,30 +9,31 @@ from utils.Fetcher import Fetcher
 
 
 class JSONHandler:
-    _set: str
-    _format: str
-    _date: Optional[date]
-    _fetcher: Fetcher
+    """
+    Used to get data for a specific set, format and date. Automatically handles how to retrieve
+    data based on whether it exists locally or not.
+    """
+
     _DEFAULT_DATE = '2020-01-01'
     _BASE_URL = 'https://www.17lands.com/'
 
     def __init__(self, set_name: str, format_name: str, target_date: date = None):
-        self._set = set_name
-        self._format = format_name
-        self._date = target_date
+        self.SET: str = set_name
+        self.FORMAT: str = format_name
+        self.DATE: Optional[date] = target_date
         os.makedirs(self.get_folder_path(), exist_ok=True)
-        self._fetcher = Fetcher()
+        self._fetcher: Fetcher = Fetcher()
 
     def _get_date_filter(self) -> str:
         """Generates a piece of the url to isolate data to a certain date range."""
-        if self._date:
-            return f'&start_date={self._date}&end_date={self._date}'
+        if self.DATE:
+            return f'&start_date={self.DATE}&end_date={self.DATE}'
         else:
             return f'&start_date={self._DEFAULT_DATE}&end_date={date.today()}'
 
     def get_card_rating_url(self, colors: str) -> str:
         """Generates a piece of the url for card data."""
-        url = self._BASE_URL + f'card_ratings/data?expansion={self._set}&format={self._format}'
+        url = self._BASE_URL + f'card_ratings/data?expansion={self.SET}&format={self.FORMAT}'
         if colors:
             url += f'&colors={colors}'
         url += self._get_date_filter()
@@ -40,16 +41,16 @@ class JSONHandler:
 
     def get_color_rating_url(self) -> str:
         """Generates a piece of the url for archetype performances."""
-        url = self._BASE_URL + f'color_ratings/data?expansion={self._set}' \
-                               f'&event_type={self._format}&combine_splash=false'
+        url = self._BASE_URL + f'color_ratings/data?expansion={self.SET}' \
+                               f'&event_type={self.FORMAT}&combine_splash=false'
         url += self._get_date_filter()
         return url
 
     def get_folder_path(self) -> str:
         """Returns the appropriate folder path, based on the properties of the object."""
-        path = os.path.join(settings.DATA_DIR_LOC, settings.DATA_DIR_NAME, self._set, self._format)
-        if self._date:
-            return os.path.join(path, str(self._date))
+        path = os.path.join(settings.DATA_DIR_LOC, settings.DATA_DIR_NAME, self.SET, self.FORMAT)
+        if self.DATE:
+            return os.path.join(path, str(self.DATE))
         else:
             return os.path.join(path, 'ALL')
 

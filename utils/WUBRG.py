@@ -158,6 +158,9 @@ COLOR_GROUPS: list[str] = [''] + \
 
 COLOR_PAIRS: list[str] = [COLOR_ALIASES_SUPPORT['Guilds'][key] for key in COLOR_ALIASES_SUPPORT['Guilds']]
 
+# Used for sorting.
+COLOR_INDEXES = {COLOR_GROUPS[x]: x for x in range(0, len(COLOR_GROUPS))}
+
 
 # Takes in a valid colour string, or colour string alias,
 # and then returns a dictionary of booleans.

@@ -3,14 +3,19 @@ import pandas as pd
 from utils import consts, WUBRG
 from utils.Logger import Logger
 
-from RawDataFetcher import RawDataFetcher
+from data_handling.RawDataFetcher import RawDataFetcher
 
 
 class RawDataHandler:
-    def __init__(self, SET, FORMAT):
-        self._SET = SET
-        self._FORMAT = FORMAT
-        self._FETCHER = RawDataFetcher(SET, FORMAT)
+    """
+    RawDataHandler is responsible for converting the data aggregated by RawDataFetcher into Pandas DataFrames.
+    Once it does, it contains all summary and historical data for a given set and format.
+    """
+
+    def __init__(self, set_code: str, format_name: str):
+        self._SET = set_code
+        self._FORMAT = format_name
+        self._FETCHER = RawDataFetcher(set_code, format_name)
 
         self._GROUPED_ARCHETYPE_HISTORY_FRAME = None
         self._SINGLE_ARCHETYPE_HISTORY_FRAME = None
@@ -100,7 +105,7 @@ class RawDataHandler:
         frame = frame.round(3)
         return frame
 
-    def panadafy_meta_dict(self, meta_dict: dict) -> pd.DataFrame:
+    def panadafy_meta_dict(self, meta_dict: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
         """
         Turns a dictionary into a DataFrame, with some data cleaning applied.
         :param meta_dict: The dictionary containing data on the metagame.
@@ -112,7 +117,7 @@ class RawDataHandler:
             frame = frame.set_index('Name')
             return frame, frame.copy()
 
-        # Otherwise, load in the data and split it into summaries and archtypes.
+        # Otherwise, load in the data and split it into summaries and archetypes.
         frame = pd.DataFrame.from_dict(meta_dict)
         frame = frame.rename(columns=consts.META_COLS)
 
@@ -138,7 +143,7 @@ class RawDataHandler:
 
         return summary_frame, archetype_frame
 
-    def gen_hist(self, reload=False, overwrite=False):
+    def gen_hist(self, reload: bool = False, overwrite: bool = False) -> None:
         """Populates and updates the three 'HISTORY' properties."""
         hist_meta, hist_card = self._FETCHER.get_set_data(reload, overwrite)
         if (not hist_meta) and (not hist_card):
@@ -171,7 +176,7 @@ class RawDataHandler:
         self._SINGLE_ARCHETYPE_HISTORY_FRAME = single_arch_frame
         self._CARD_HISTORY_FRAME = card_frame
 
-    def gen_summary(self, reload=False, overwrite=False):
+    def gen_summary(self, reload: bool = False, overwrite: bool = False) -> None:
         """Populates and updates the three 'SUMMARY' properties."""
         hist_meta, hist_card = self._FETCHER.get_summary_data(reload, overwrite)
         if (not hist_meta) and (not hist_card):
@@ -188,21 +193,21 @@ class RawDataHandler:
         self._SINGLE_ARCHETYPE_SUMMARY_FRAME = single_arch_frame
         self._CARD_SUMMARY_FRAME = card_frame
 
-    def check_for_updates(self):
+    def check_for_updates(self) -> None:
         """Populates and updates all data properties, filling in missing data."""
         Logger.LOGGER.log(f'Checking for missing data for {self.SET} {self.FORMAT}...', Logger.FLG.KEY)
         self.gen_hist()
         self.gen_summary()
         Logger.LOGGER.log(f'Finished checking for missing data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
 
-    def reload_data(self):
+    def reload_data(self) -> None:
         """Populates and updates all data properties, reloading all data."""
         Logger.LOGGER.log(f'Loading data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
         self.gen_hist(True)
         self.gen_summary(True)
         Logger.LOGGER.log(f'Finished loading data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
 
-    def force_update(self):
+    def force_update(self) -> None:
         """Forcibly re-fetches and overwrites all data."""
         Logger.LOGGER.log(f'Re-downloading data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
         self.gen_hist(True, True)

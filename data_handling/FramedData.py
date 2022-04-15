@@ -4,14 +4,21 @@ import pandas as pd
 from utils import consts, WUBRG
 
 from game_metadata.FormatMetadata import SetMetadata
-from RawDataHandler import RawDataHandler
+from data_handling.RawDataHandler import RawDataHandler
 
 
 class FramedData:
-    def __init__(self, set_name, format_name):
+    """
+    Acts as a wrapper for RawDataHandler, adding some extended functionality in how data can bet accessed and handled.
+    One of its primary features is the ability to compress data over a given range into a summary, allowing data to be
+    examined over certain parts of a format (After week 2, first meta shift, under-drafted colour becomes good, etc.)
+    """
+
+    def __init__(self, set_name: str, format_name: str):
         self._set = set_name
         self._format = format_name
         self._data = RawDataHandler(set_name, format_name)
+        self._compare_key = SetMetadata.get_metadata(set_name).COMPARE_KEY
 
     @property
     def set(self) -> str:
@@ -101,32 +108,6 @@ class FramedData:
         :param card_name: The card name to isolate the data to.
         :return: A DataFrame with aggregated data over the given date range
         """
-        # Set up dictionaries for quicker sorting.
-        color_indexes = {WUBRG.COLOR_GROUPS[x]: x for x in range(0, len(WUBRG.COLOR_GROUPS))}
-        card_indexes = SetMetadata.get_metadata(self.set).CARD_LIST
-
-        # Creating a custom sorting algorithm
-        def compare(pair1, pair2):
-            # Convert the colors and names into numeric indexes
-            color1, name1 = pair1
-            col_idx1 = color_indexes[color1]
-            name_idx1 = card_indexes[name1]
-            color2, name2 = pair2
-            col_idx2 = color_indexes[color2]
-            name_idx2 = card_indexes[name2]
-
-            # Sort by deck colour than card number.
-            if col_idx1 == col_idx2:
-                if name_idx1 < name_idx2:
-                    return -1
-                else:
-                    return 1
-            if col_idx1 < col_idx2:
-                return -1
-            else:
-                return 1
-
-        compare_key = cmp_to_key(compare)
 
         # The columns which have win percents.
         percent_cols = ['GP', 'OH', 'GD', 'GIH', 'GND']
@@ -162,7 +143,7 @@ class FramedData:
             ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR', '# GIH', 'GIH WR',
              '# GND', 'GND WR', 'IWD', 'Color', 'Rarity']]
         idx = list(summed.index)
-        idx.sort(key=compare_key)
+        idx.sort(key=self._compare_key)
         summed = summed.set_index([idx])
 
         return summed

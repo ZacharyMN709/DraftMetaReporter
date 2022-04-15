@@ -1,6 +1,8 @@
 from typing import Union, Optional
+from functools import cmp_to_key
 from datetime import date, timedelta
 
+from utils.WUBRG import COLOR_INDEXES
 from utils.settings import SETS, FORMATS, SET_CONFIG
 from utils.CallScryfall import CallScryfall
 
@@ -36,6 +38,30 @@ class SetMetadata:
         self.FULL_NAME, self.ICON_URL = CallScryfall.get_set_info(set_code)
         self.RELEASE_DATE = SET_CONFIG[self.SET]["PremierDraft"][0][0]
         self.CARD_LIST = [self.CARD_DICT[name] for name in self.CARD_DICT]
+        # Set up a dictionary for quicker sorting.
+        self.CARD_INDEXES = {card.name: card.NUMBER for card in self.CARD_LIST}
+        self.COMPARE_KEY = cmp_to_key(self._sort_compare)
+
+    # Creating a custom sorting algorithm to order frames
+    def _sort_compare(self, pair1: tuple[str, str], pair2: tuple[str, str]) -> int:
+        # Convert the colors and names into numeric indexes
+        # color1, name1 = pair1
+        col_idx1 = COLOR_INDEXES[pair1[0]]
+        name_idx1 = self.CARD_INDEXES[pair1[1]]
+        # color2, name2 = pair2
+        col_idx2 = COLOR_INDEXES[pair2[0]]
+        name_idx2 = self.CARD_INDEXES[pair2[1]]
+
+        # Sort by deck colour than card number.
+        if col_idx1 == col_idx2:
+            if name_idx1 < name_idx2:
+                return -1
+            else:
+                return 1
+        if col_idx1 < col_idx2:
+            return -1
+        else:
+            return 1
 
     def find_card(self, card_name) -> Union[Card, None]:
         """
