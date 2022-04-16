@@ -2,7 +2,8 @@ import pandas as pd
 
 from WUBRG import COLOR_ALIASES
 from WUBRG.consts import COLOR_COUNT_MAP
-from consts import RARITY_ALIASES, STAT_NAMES, META_COLS
+
+from data_fetching.utils.consts import RARITY_ALIASES, STAT_NAMES, META_COLS
 
 
 def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:

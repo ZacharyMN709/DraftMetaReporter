@@ -2,7 +2,7 @@ from typing import Union
 
 from WUBRG import get_color_identity
 
-from utils.consts import RARITY_ALIASES, LAYOUT_DICT, CardLayouts
+from game_metadata.utils.consts import RARITY_ALIASES, LAYOUT_DICT, CardLayouts
 
 
 class CardFace:

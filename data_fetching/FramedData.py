@@ -3,8 +3,8 @@ import pandas as pd
 from WUBRG import get_color_identity, get_color_subsets
 from game_metadata import SetMetadata
 
-from utils.consts import FORMAT_NICKNAMES
-from RawDataHandler import RawDataHandler
+from data_fetching.utils.consts import FORMAT_NICKNAMES
+from data_fetching.RawDataHandler import RawDataHandler
 
 
 class FramedData:

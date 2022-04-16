@@ -1,2 +1,2 @@
-from Fetcher import Fetcher
-from Logger import Logger
+from Utilities.Fetcher import Fetcher
+from Utilities.Logger import Logger

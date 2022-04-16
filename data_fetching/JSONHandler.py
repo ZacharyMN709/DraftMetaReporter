@@ -7,7 +7,7 @@ from WUBRG import COLOR_COMBINATIONS
 from Utilities import Logger
 from Utilities import Fetcher
 
-from utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
+from data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
 
 
 class JSONHandler:
