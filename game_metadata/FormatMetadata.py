@@ -2,10 +2,10 @@ from typing import Union, Optional
 from functools import cmp_to_key
 from datetime import date, timedelta
 
-from utils.WUBRG import COLOR_INDEXES
-from utils.settings import SETS, FORMATS, SET_CONFIG
-from utils.CallScryfall import CallScryfall
+from WUBRG.consts import COLOR_INDEXES
 
+from game_metadata.utils.settings import SETS, FORMATS, SET_CONFIG
+from game_metadata.CallScryfall import CallScryfall
 from game_metadata.CardManager import CardManager
 from game_metadata.Card import Card
 

@@ -1,4 +1,4 @@
-# Card Consts
+# Set Consts
 RARITY_ALIASES: dict[str, str] = {
     'common': "C",
     'uncommon': "U",
@@ -6,7 +6,6 @@ RARITY_ALIASES: dict[str, str] = {
     'mythic': "M"
 }
 
-# Set Consts
 FORMAT_NICKNAMES: dict[str, str] = {
     'PremierDraft': 'Bo1',
     'TradDraft': 'Bo3',

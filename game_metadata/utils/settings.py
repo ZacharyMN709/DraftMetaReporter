@@ -5,7 +5,6 @@ SETS: list[str] = ["SNC", "NEO", "VOW", "MID"]
 
 FORMATS: list[str] = ["PremierDraft", "TradDraft", "QuickDraft"]
 
-
 # TODO: Change this so the dates are formatted strings, and the Set/FormatMetadata objects parse the dates on load.
 #  This will allow for the SET_CONFIG to be updated from a JSON file and have the Set/FormatMetadata objects re-
 #  parse the data to update the sets information.
@@ -32,38 +31,3 @@ SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
         "QuickDraft": [(date(2021, 10, 1), date(2021, 10, 15)), (date(2021, 10, 29), date(2022, 11, 12))]
     }
 }
-
-# Web Request Defaults
-TRIES: int = 5
-FAIL_DELAY: int = 60
-SUCCESS_DELAY: int = 1
-
-# Data Storage Defaults
-ROOT_DIR: str = '.'
-DATA_DIR_NAME: str = '17LandsData'
-DATA_DIR_LOC: str = '..'
-
-# Graphing Defaults
-ROLL: int = 3
-GRAPH_DIR_NAME: str = 'Graphs'
-GRAPH_DIR_LOC: str = '..'
-DPI: int = 400
-ACCREDIT_STR: str = "Data taken from 17Lands"
-ACCREDIT_KWARGS: dict[str, str] = {
-    'ha': 'center',
-    'va': 'bottom',
-    'weight': 'demi',
-    'size': 'medium',
-    'style': 'oblique'
-}
-
-FILTER_KWARGS: dict[str, str] = {
-    'ha': 'center',
-    'va': 'center',
-    'weight': 'light',
-    'size': 'small',
-    'style': 'oblique'
-}
-
-TITLE_SIZE: float = 16.5
-LABEL_SIZE: float = 13.5

@@ -1,7 +1,7 @@
 from typing import Union
 
-from utils.Logger import Logger
-from utils.Fetcher import Fetcher
+from Utilities import Logger
+from Utilities import Fetcher
 
 
 class CallScryfall:

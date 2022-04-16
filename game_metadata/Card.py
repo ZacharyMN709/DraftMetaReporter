@@ -1,39 +1,8 @@
 from typing import Union
-from enum import Flag, auto
 
-from utils.consts import RARITY_ALIASES
-from utils.WUBRG import get_color_identity
+from WUBRG import get_color_identity
 
-
-# https://scryfall.com/docs/api/layouts
-class CardLayouts(Flag):
-    NORMAL = auto()
-    SPLIT = auto()
-    FLIP = auto()
-    TRANSFORM = auto()
-    MODAL_DFC = auto()
-    MELD = auto()
-    LEVELER = auto()
-    CLASS = auto()
-    SAGA = auto()
-    ADVENTURE = auto()
-
-    TWO_SIDED = TRANSFORM | MODAL_DFC
-    FUSED = ADVENTURE | SPLIT | FLIP
-
-
-LAYOUT_DICT = {
-    "normal": CardLayouts.NORMAL,
-    "split": CardLayouts.SPLIT,
-    "flip": CardLayouts.FLIP,
-    "transform": CardLayouts.TRANSFORM,
-    "modal_dfc": CardLayouts.MODAL_DFC,
-    "meld": CardLayouts.MELD,
-    "leveler": CardLayouts.LEVELER,
-    "class": CardLayouts.CLASS,
-    "saga": CardLayouts.SAGA,
-    "adventure": CardLayouts.ADVENTURE
-}
+from game_metadata.utils.consts import RARITY_ALIASES, LAYOUT_DICT, CardLayouts
 
 
 class CardFace:

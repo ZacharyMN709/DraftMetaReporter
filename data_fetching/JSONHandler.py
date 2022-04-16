@@ -3,9 +3,11 @@ import os
 from datetime import date, datetime
 import json
 
-from utils import settings, WUBRG
-from utils.Logger import Logger
-from utils.Fetcher import Fetcher
+from WUBRG import COLOR_COMBINATIONS
+from Utilities import Logger
+from Utilities import Fetcher
+
+from data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
 
 
 class JSONHandler:
@@ -48,7 +50,7 @@ class JSONHandler:
 
     def get_folder_path(self) -> str:
         """Returns the appropriate folder path, based on the properties of the object."""
-        path = os.path.join(settings.DATA_DIR_LOC, settings.DATA_DIR_NAME, self.SET, self.FORMAT)
+        path = os.path.join(DATA_DIR_LOC, DATA_DIR_NAME, self.SET, self.FORMAT)
         if self.DATE:
             return os.path.join(path, str(self.DATE))
         else:
@@ -68,8 +70,8 @@ class JSONHandler:
         :return: A datetime object.
         """
         try:
-            filepath = os.path.abspath(self.get_file_path('ColorRatings.json'))
-            wrt_tm = datetime.utcfromtimestamp(os.path.getmtime(filepath))
+            sum_path = os.path.abspath(self.get_file_path('ColorRatings.json'))
+            wrt_tm = datetime.utcfromtimestamp(os.path.getmtime(sum_path))
         except Exception:
             wrt_tm = datetime(2020, 1, 1)
         Logger.LOGGER.log(f'Last write-time: {wrt_tm}', Logger.FLG.DEBUG)
@@ -168,7 +170,7 @@ class JSONHandler:
         :return: A dictionary of dictionaries, with deck colours as keys
         """
         card_dict = dict()
-        for color in WUBRG.COLOR_GROUPS:
+        for color in COLOR_COMBINATIONS:
             card_dict[color] = self.get_card_data(color, overwrite)
 
         return card_dict

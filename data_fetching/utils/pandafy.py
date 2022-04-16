@@ -1,6 +1,9 @@
 import pandas as pd
 
-from utils import consts, WUBRG
+from WUBRG import COLOR_ALIASES
+from WUBRG.consts import COLOR_COUNT_MAP
+
+from data_fetching.utils.consts import RARITY_ALIASES, STAT_NAMES, META_COLS
 
 
 def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:
@@ -10,7 +13,7 @@ def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:
     :return: A DataFrame filled with the cleaned card data
     """
     frame = pd.DataFrame.from_dict(card_dict)
-    frame = frame.rename(columns=consts.STAT_NAMES)
+    frame = frame.rename(columns=STAT_NAMES)
 
     # If there's no data, make a blank frame and return it.
     if card_dict is None or len(card_dict) == 0:
@@ -22,7 +25,7 @@ def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:
         frame[col] = frame[col] * 100
 
     frame = frame.drop(['sideboard_game_count', 'sideboard_win_rate', 'url', 'url_back'], axis=1)
-    frame['Rarity'] = frame['Rarity'].map(consts.RARITY_ALIASES)
+    frame['Rarity'] = frame['Rarity'].map(RARITY_ALIASES)
 
     column_names = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR', '# GIH',
                     'GIH WR', '# GND', 'GND WR', 'IWD', 'Color', 'Rarity']
@@ -32,6 +35,7 @@ def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:
     return frame
 
 
+# noinspection PyPep8
 def panadafy_meta_dict(meta_dict: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Turns a dictionary into a DataFrame, with some data cleaning applied.
@@ -46,7 +50,7 @@ def panadafy_meta_dict(meta_dict: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
 
     # Otherwise, load in the data and split it into summaries and archetypes.
     frame = pd.DataFrame.from_dict(meta_dict)
-    frame = frame.rename(columns=consts.META_COLS)
+    frame = frame.rename(columns=META_COLS)
 
     frame['Name'] = frame['Color Name']
     frame = frame.set_index('Name')
@@ -57,14 +61,14 @@ def panadafy_meta_dict(meta_dict: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
 
     summary_frame = frame[frame['is_summary'] == True].copy()
     summary_frame = summary_frame.drop(['is_summary'], axis=1)
-    summary_frame['Colors'] = summary_frame['Colors'].map(WUBRG.COLOR_COUNT_MAP)
+    summary_frame['Colors'] = summary_frame['Colors'].map(COLOR_COUNT_MAP)
 
     archetype_frame = frame[frame['is_summary'] == False].copy()
     archetype_frame = archetype_frame.drop(['is_summary'], axis=1)
     archetype_frame['Colors'] = archetype_frame['Colors'].map(
         lambda x: x[0: (x.find('(') if x.find('(') != -1 else len(x))].strip())
     archetype_frame['Colors'] = archetype_frame['Colors'].map(lambda x: x.replace('Mono-', ''))
-    archetype_frame['Colors'] = archetype_frame['Colors'].map(WUBRG.COLOR_ALIASES)
+    archetype_frame['Colors'] = archetype_frame['Colors'].map(COLOR_ALIASES)
     archetype_frame['Name'] = archetype_frame['Colors']
     archetype_frame = archetype_frame.set_index('Name')
 
