@@ -15,7 +15,7 @@ def get_color_string(s: str) -> str:
         return COLOR_ALIASES[s.title()]
     else:
         # Validate the string by using the set difference
-        if set(s.upper()) <= set(COLORS):
+        if set(s.upper()) > set(COLORS):
             # If the string isn't a subset of 'WUBRG', the string is invalid.
             print(f'Invalid color string provided: {s}. Converting to "{COLORS}"')
             return COLORS

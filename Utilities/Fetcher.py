@@ -2,7 +2,7 @@ from typing import Union
 import requests
 from time import sleep
 
-from Utilities import Logger
+from Utilities.Logger import Logger
 
 # Web Request Defaults
 TRIES: int = 5

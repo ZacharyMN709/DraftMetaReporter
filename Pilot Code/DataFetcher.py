@@ -5,10 +5,10 @@ fetching the summary of data about the whole set.
 from data_fetching import JSONHandler, RawDataFetcher
 
 TARGET_SET = 'NEO'
-TARGET_FORMAT = 'PremierDraft'
+TARGET_FORMAT = 'TradDraft'
 
 
-def test_json_handler():
+def json_handler():
     handler = JSONHandler(TARGET_SET, TARGET_FORMAT)
     data = handler.get_day_data()
     print('Done!')
@@ -21,6 +21,12 @@ def get_set_data():
     print('Done!')
 
 
+def get_summary_data():
+    fetcher = RawDataFetcher(TARGET_SET, TARGET_FORMAT)
+    fetcher.get_summary_data()
+    print('Done!')
+
+
 def get_all_data():
     formats = ['PremierDraft', 'TradDraft', 'QuickDraft']
     for f in formats:
@@ -30,4 +36,4 @@ def get_all_data():
 
 
 if __name__ == '__main__':
-    get_set_data()
+    get_summary_data()

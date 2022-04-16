@@ -70,8 +70,8 @@ class JSONHandler:
         :return: A datetime object.
         """
         try:
-            filepath = os.path.abspath(self.get_file_path('ColorRatings.json'))
-            wrt_tm = datetime.utcfromtimestamp(os.path.getmtime(filepath))
+            sum_path = os.path.abspath(self.get_file_path('ColorRatings.json'))
+            wrt_tm = datetime.utcfromtimestamp(os.path.getmtime(sum_path))
         except Exception:
             wrt_tm = datetime(2020, 1, 1)
         Logger.LOGGER.log(f'Last write-time: {wrt_tm}', Logger.FLG.DEBUG)
