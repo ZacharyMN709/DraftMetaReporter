@@ -1,7 +1,7 @@
 import pandas as pd
 
 from WUBRG import COLOR_COUNT_MAP, COLOR_ALIASES
-from data_handling.utils import consts
+from consts import RARITY_ALIASES, STAT_NAMES, META_COLS
 
 
 def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:
@@ -11,7 +11,7 @@ def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:
     :return: A DataFrame filled with the cleaned card data
     """
     frame = pd.DataFrame.from_dict(card_dict)
-    frame = frame.rename(columns=consts.STAT_NAMES)
+    frame = frame.rename(columns=STAT_NAMES)
 
     # If there's no data, make a blank frame and return it.
     if card_dict is None or len(card_dict) == 0:
@@ -23,7 +23,7 @@ def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:
         frame[col] = frame[col] * 100
 
     frame = frame.drop(['sideboard_game_count', 'sideboard_win_rate', 'url', 'url_back'], axis=1)
-    frame['Rarity'] = frame['Rarity'].map(consts.RARITY_ALIASES)
+    frame['Rarity'] = frame['Rarity'].map(RARITY_ALIASES)
 
     column_names = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR', '# GIH',
                     'GIH WR', '# GND', 'GND WR', 'IWD', 'Color', 'Rarity']
@@ -48,7 +48,7 @@ def panadafy_meta_dict(meta_dict: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
 
     # Otherwise, load in the data and split it into summaries and archetypes.
     frame = pd.DataFrame.from_dict(meta_dict)
-    frame = frame.rename(columns=consts.META_COLS)
+    frame = frame.rename(columns=META_COLS)
 
     frame['Name'] = frame['Color Name']
     frame = frame.set_index('Name')

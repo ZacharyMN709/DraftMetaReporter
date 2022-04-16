@@ -1,7 +1,7 @@
 from typing import Union
 from enum import Flag, auto
 
-from data_handling.utils.consts import RARITY_ALIASES
+from utils.consts import RARITY_ALIASES
 from WUBRG import get_color_identity
 
 

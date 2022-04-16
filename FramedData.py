@@ -1,10 +1,10 @@
 import pandas as pd
 
 from WUBRG import get_color_identity, get_color_subsets
-from data_handling.utils import consts
+from data_fetching.utils import consts
 
 from game_metadata.FormatMetadata import SetMetadata
-from data_handling.RawDataHandler import RawDataHandler
+from data_fetching.RawDataHandler import RawDataHandler
 
 
 class FramedData:
