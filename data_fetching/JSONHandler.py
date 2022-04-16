@@ -1,11 +1,11 @@
 from typing import Optional
 import os
 from datetime import date, datetime
-import json
 
 from WUBRG import COLOR_COMBINATIONS
 from Utilities import Logger
 from Utilities import Fetcher
+from Utilities import save_json_file, load_json_file
 
 from data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
 
@@ -94,45 +94,6 @@ class JSONHandler:
         Logger.LOGGER.log(f'All files are empty!', Logger.FLG.DEBUG)
         return False
 
-    def load_json_file(self, filename: str) -> dict[str, object]:
-        """
-        Loads and returns the data from a json file.
-        :param filename: The name of the json file (including filetype).
-        :return: An object contain the json data.
-        """
-        filepath = os.path.abspath(self.get_file_path(filename))
-
-        try:
-            with open(filepath, 'r') as f:
-                json_str = f.read()
-                f.close()
-                Logger.LOGGER.log(f'File {filename} read successfully.', Logger.FLG.VERBOSE)
-                return json.loads(json_str)
-        except Exception as ex:
-            Logger.LOGGER.log(f'Error reading json file {filename}', Logger.FLG.ERROR)
-            Logger.LOGGER.log(ex, Logger.FLG.ERROR)
-            return dict()
-
-    def save_json_file(self, filename: str, data: dict[str, object]) -> bool:
-        """
-        Saves provided data into the specified json file.
-        :param filename: The name of the json file (including filetype).
-        :param data: The object to be saved as json.
-        :return: Whether the save operation was successful.
-        """
-        filepath = os.path.abspath(self.get_file_path(filename))
-
-        try:
-            with open(filepath, 'w') as f:
-                f.write(json.dumps(data, indent=4))
-                f.close()
-            Logger.LOGGER.log(f'File {filename} written to.', Logger.FLG.VERBOSE)
-            return True
-        except Exception as ex:
-            Logger.LOGGER.log(f'Error writing to json file {filename}', Logger.FLG.ERROR)
-            Logger.LOGGER.log(ex, Logger.FLG.ERROR)
-            return False
-
     def _get_data(self, url: str, filename: str, overwrite: bool = False) -> dict[str, object]:
         """
         Automatically gets the appropriate data. If it saved locally, it will query 17Lands for the data
@@ -149,9 +110,9 @@ class JSONHandler:
                 Logger.LOGGER.log(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...",
                                   Logger.FLG.DEFAULT)
             data = self._fetcher.fetch(url)
-            self.save_json_file(filename, data)
+            save_json_file(self.get_folder_path(), filename, data)
         else:
-            data = self.load_json_file(filename)
+            data = load_json_file(self.get_folder_path(), filename)
         return data
 
     def get_card_data(self, color: str, overwrite: bool = False) -> dict[str, object]:
