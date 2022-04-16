@@ -1,9 +1,9 @@
 from typing import Union
 
-from utils.Logger import Logger
-from game_metadata.CallScryfall import CallScryfall
+from Utilities import Logger
 
-from game_metadata.Card import Card
+from CallScryfall import CallScryfall
+from Card import Card
 
 
 class CardManager:

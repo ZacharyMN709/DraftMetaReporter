@@ -1,10 +1,10 @@
 from datetime import time, date, datetime, timedelta
 
-from utils.Logger import Logger
-from data_fetching.utils.date_helper import get_prev_17lands_update_time, utc_today
+from Utilities import Logger
+from game_metadata import FormatMetadata
 
-from data_fetching.JSONHandler import JSONHandler
-from game_metadata.FormatMetadata import FormatMetadata
+from utils.date_helper import get_prev_17lands_update_time, utc_today
+from JSONHandler import JSONHandler
 
 
 class RawDataFetcher:

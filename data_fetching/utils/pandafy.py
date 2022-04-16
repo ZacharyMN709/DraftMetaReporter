@@ -1,6 +1,7 @@
 import pandas as pd
 
-from WUBRG import COLOR_COUNT_MAP, COLOR_ALIASES
+from WUBRG import COLOR_ALIASES
+from WUBRG.consts import COLOR_COUNT_MAP
 from consts import RARITY_ALIASES, STAT_NAMES, META_COLS
 
 

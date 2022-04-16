@@ -1,10 +1,10 @@
 import pandas as pd
 
 from WUBRG import get_color_identity, get_color_subsets
-from data_fetching.utils import consts
+from game_metadata import SetMetadata
 
-from game_metadata.FormatMetadata import SetMetadata
-from data_fetching.RawDataHandler import RawDataHandler
+from utils.consts import FORMAT_NICKNAMES
+from RawDataHandler import RawDataHandler
 
 
 class FramedData:
@@ -41,7 +41,7 @@ class FramedData:
     @property
     def format_shorthand(self) -> str:
         """The shorthand of the format type."""
-        return consts.FORMAT_NICKNAMES[self._format].upper()
+        return FORMAT_NICKNAMES[self._format].upper()
 
     @property
     def data(self) -> RawDataHandler:

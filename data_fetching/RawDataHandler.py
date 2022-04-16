@@ -1,9 +1,9 @@
 import pandas as pd
 
-from utils.Logger import Logger
-from data_fetching.utils.pandafy import panadafy_card_dict, panadafy_meta_dict
+from Utilities import Logger
 
-from data_fetching.RawDataFetcher import RawDataFetcher
+from utils.pandafy import panadafy_card_dict, panadafy_meta_dict
+from RawDataFetcher import RawDataFetcher
 
 
 class RawDataHandler:
