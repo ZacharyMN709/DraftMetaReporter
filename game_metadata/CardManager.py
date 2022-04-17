@@ -17,7 +17,7 @@ class CardManager:
     """
     REDIRECT = dict()
     SETS = dict()
-    CARDS = dict()
+    CARDS = {'': None}
 
     @classmethod
     def _add_card(cls, card: Card, searched_name: str) -> None:
@@ -41,16 +41,17 @@ class CardManager:
         :return: A Card or None
         """
         # If the card already exists, return it.
-        prev_card = cls.find_card(name)
+        prev_card = cls._find_card(name)
         if prev_card is not None:
             return prev_card
         # Otherwise, get the card info from scryfall.
         else:
             json = CallScryfall.get_card_by_name(name)
-            # If there's an error, log it and return None.
+            # If there's an error, log it, mark the alias as '' and return None.
             if 'err_msg' in json:
                 Logger.LOGGER.log(f'Could not get card for {name}', Logger.FLG.DEFAULT)
                 Logger.LOGGER.log(f'Error: {json["err_msg"]}', Logger.FLG.DEFAULT)
+                cls.REDIRECT[name] = ''
                 return None
             # If the card is found, return it.
             else:
@@ -58,7 +59,7 @@ class CardManager:
 
                 # See if a copy of the card already exists, likely
                 # due to a misspelling. If so, use that instead.
-                prev_card = cls.find_card(card.name)
+                prev_card = cls._find_card(card.name)
                 if prev_card is not None:
                     card = prev_card
 
@@ -86,7 +87,7 @@ class CardManager:
         return cls.SETS[set_code]
 
     @classmethod
-    def find_card(cls, card_name: str) -> Union[Card, None]:
+    def _find_card(cls, card_name: str) -> Union[Card, None]:
         """
         Attempts to find a saved instance of a card.
         :param card_name: The card name to find

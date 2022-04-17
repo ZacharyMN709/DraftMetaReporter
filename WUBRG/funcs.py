@@ -1,10 +1,11 @@
+from typing import Optional
 from WUBRG.consts import COLORS, COLOR_ALIASES, COLOR_COMBINATIONS, COLOR_COMBINATION_TO_ALIAS
 
 
 def get_color_string(s: str) -> str:
     """
     Takes in a string, and attempts to convert it to a color string.
-    If the string is invalid, returns 'WUBRGC'.
+    If the string is invalid, returns ''.
     This function will attempt to convert common names into their colours.
     Eg. 'Bant' -> 'WUG'
     :param s: The string to convert.
@@ -17,8 +18,8 @@ def get_color_string(s: str) -> str:
         # Validate the string by using the set difference
         if set(s.upper()) > set(COLORS):
             # If the string isn't a subset of 'WUBRG', the string is invalid.
-            print(f'Invalid color string provided: {s}. Converting to "{COLORS}"')
-            return COLORS
+            print(f"Invalid color string provided: {s}. Converting to ''")
+            return ''
         else:
             # Otherwise, the string is valid. Return it.
             return s.upper()
@@ -39,15 +40,18 @@ def get_color_identity(color_string: str) -> str:
     return s
 
 
-def get_color_alias(color_string: str) -> str:
+def get_color_alias(color_string: str) -> Optional[str]:
     """
     Takes in a colour string and attempts to return a more
     common name for the colors. Eg. 'WUR' -> 'Jeskai'
     :param color_string: The color string to convert.
-    :return: A common name which represents the colours in color_string.
+    :return: A common name which represents the colours in color_string, or None.
     """
     color_identity = get_color_identity(color_string)
-    return COLOR_COMBINATION_TO_ALIAS[color_identity]
+    if color_identity in COLOR_COMBINATION_TO_ALIAS:
+        return COLOR_COMBINATION_TO_ALIAS[color_identity]
+    else:
+        return None
 
 
 def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -> list[str]:
@@ -61,7 +65,7 @@ def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -
     """
     color_ids = list()
 
-    cis = set(get_color_string(color_id))
+    cis = set(get_color_identity(color_id))
     for c in COLOR_COMBINATIONS:
         if strict:
             if len(c) < max_len and cis < set(c):
@@ -84,7 +88,7 @@ def get_color_subsets(color_id: str, min_len: int = 0, strict: bool = False) -> 
     """
     colour_ids = list()
 
-    cis = set(get_color_string(color_id))
+    cis = set(get_color_identity(color_id))
     for c in COLOR_COMBINATIONS:
         if strict:
             if len(c) > min_len and cis > set(c):

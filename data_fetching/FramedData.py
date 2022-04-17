@@ -20,7 +20,7 @@ class FramedData:
         self.SET_NAME = self._set_metadata.FULL_NAME
         self.FORMAT = format_name
         self.FORMAT_ALIAS = FORMAT_NICKNAMES[self.FORMAT].upper()
-        self.DATA = RawDataHandler(set_code, format_name)
+        self.DATA = RawDataHandler(set_code, format_name, load_summary, load_history)
         self._compare_key = self._set_metadata.COMPARE_KEY
 
         self.load_summary = load_summary

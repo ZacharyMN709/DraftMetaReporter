@@ -4,9 +4,9 @@ from data_fetching.FramedData import FramedData
 
 
 class SetManager:
-    def __init__(self, set_code):
+    def __init__(self, set_code, load_summary: bool = True, load_history: bool = True):
         self.SET = set_code
-        self.DATA = {f: FramedData(set_code, f) for f in FORMATS}
+        self.DATA = {f: FramedData(set_code, f, load_summary, load_history) for f in FORMATS}
         self.SET_METADATA = SetMetadata.get_metadata(set_code)
 
     def check_for_updates(self):
