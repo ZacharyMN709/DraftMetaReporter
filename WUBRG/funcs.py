@@ -2,6 +2,8 @@ from typing import Optional
 import re
 from WUBRG.consts import COLORS, COLOR_ALIASES, COLOR_COMBINATIONS, COLOR_COMBINATION_TO_ALIAS, MANA_SYMBOLS
 
+mana_cost_re = re.compile(r'{(.*?)}')
+
 
 def get_color_string(s: str) -> str:
     """
@@ -117,7 +119,7 @@ def parse_cost(mana_cost: str) -> list[str]:
         return default
 
     # Find anything like {.} in the string,
-    costs = re.findall(r'{(.*?)}', mana_cost)
+    costs = mana_cost_re.findall(mana_cost)
     # And for the contents of each element,
     for cost in costs:
         # Make sure it is a valid mana symbol.
