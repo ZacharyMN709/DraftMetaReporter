@@ -1,5 +1,6 @@
 from typing import Optional
-from WUBRG.consts import COLORS, COLOR_ALIASES, COLOR_COMBINATIONS, COLOR_COMBINATION_TO_ALIAS
+import re
+from WUBRG.consts import COLORS, COLOR_ALIASES, COLOR_COMBINATIONS, COLOR_COMBINATION_TO_ALIAS, MANA_SYMBOLS
 
 
 def get_color_string(s: str) -> str:
@@ -98,3 +99,31 @@ def get_color_subsets(color_id: str, min_len: int = 0, strict: bool = False) -> 
                 colour_ids.append(c)
 
     return colour_ids
+
+
+def parse_cost(mana_cost: str) -> list[str]:
+    """
+    Converts the typically used mana cost to a list of strings to more easily iterate over.
+    Eg. {10}{G}{G} would return ['10', 'G', 'G']
+    :param mana_cost: A mana cost, in the form of {W}{U}{B}{R}{G}.
+    :return: A list of mana symbols as strings.
+    """
+    sym_left = '{'
+    sym_right = '}'
+    default = ['A']
+
+    # If the parenthesis don't match, return a dummy value.
+    if mana_cost.count(sym_left) != mana_cost.count(sym_right):
+        return default
+
+    # Find anything like {.} in the string,
+    costs = re.findall(r'{(.*?)}', mana_cost)
+    # And for the contents of each element,
+    for cost in costs:
+        # Make sure it is a valid mana symbol.
+        if cost not in MANA_SYMBOLS:
+            # If not, return a dummy value.
+            return default
+
+    # If all check passed, return the found values.
+    return costs

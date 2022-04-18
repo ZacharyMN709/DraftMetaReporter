@@ -136,7 +136,7 @@ class Card:
         self._handle_card_faces(json)
 
     @property
-    def name(self) -> str:
+    def NAME(self) -> str:
         """Gets the simple name of the card"""
         if self.LAYOUT == CardLayouts.SPLIT:
             return self.DEFAULT_FACE.NAME
@@ -144,27 +144,27 @@ class Card:
             return self.FACE_1.NAME
 
     @property
-    def full_name(self) -> str:
+    def FULL_NAME(self) -> str:
         """Gets the full name of the card"""
         return self.DEFAULT_FACE.NAME
 
     @property
-    def mana_cost(self) -> str:
+    def MANA_COST(self) -> str:
         """Gets the mana cost of the card"""
         return self.DEFAULT_FACE.MANA_COST
 
     @property
-    def api(self) -> str:
+    def API(self) -> str:
         """Link for the API call of the card"""
         return f"{self.API_URL}{self.ID}"
 
     @property
-    def url(self) -> str:
+    def URL(self) -> str:
         """Shortened link to the Scryfall page for the card"""
         return f"{self.SCRY_URL}{self.SET.lower()}/{self.NUMBER}"
 
     @property
-    def image_url(self) -> str:
+    def IMAGE_URL(self) -> str:
         """Returns a link to the image of the card."""
         return self.DEFAULT_FACE.image_url('normal')
 
@@ -172,22 +172,22 @@ class Card:
     def list_contents(self) -> str:
         """Returns a text summary of the card. Mainly meant for debugging."""
         s = ""
-        s += f"NAME: {self.name}\n"
-        s += f"FULL_NAME: {self.full_name}\n"
-        s += f"MANA_COST: {self.mana_cost}\n"
+        s += f"NAME: {self.NAME}\n"
+        s += f"FULL_NAME: {self.FULL_NAME}\n"
+        s += f"MANA_COST: {self.MANA_COST}\n"
         for key in self.__dict__.keys():
             s += f"{key}: {self.__dict__[key]}\n"
             if isinstance(self.__dict__[key], CardFace):
                 for k in self.__dict__[key].__dict__.keys():
                     s += f"  {k}: {self.__dict__[key].__dict__[k]}\n"
-                s += f"  IMAGE_URL: {self.__dict__[key].image_url()}\n"
-        s += f"IMAGE_URL: {self.image_url}\n"
-        s += f"API: {self.api}\n"
-        s += f"URL: {self.url}\n"
+                s += f"  IMAGE_URL: {self.__dict__[key].IMAGE_URL()}\n"
+        s += f"IMAGE_URL: {self.IMAGE_URL}\n"
+        s += f"API: {self.API}\n"
+        s += f"URL: {self.URL}\n"
         return s
 
     def __str__(self):
-        return self.full_name
+        return self.FULL_NAME
 
     def __repr__(self):
-        return self.full_name
+        return self.FULL_NAME

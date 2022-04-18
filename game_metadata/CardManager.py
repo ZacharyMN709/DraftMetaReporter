@@ -26,11 +26,11 @@ class CardManager:
         :param card: The card object to track
         :param searched_name: The name provided by the user to find
         """
-        cls.CARDS[card.name] = card
-        cls.REDIRECT[card.name] = card.name
-        cls.REDIRECT[card.full_name] = card.name
+        cls.CARDS[card.NAME] = card
+        cls.REDIRECT[card.NAME] = card.NAME
+        cls.REDIRECT[card.FULL_NAME] = card.NAME
         # Used to re-direct mis-spellings.
-        cls.REDIRECT[searched_name] = card.name
+        cls.REDIRECT[searched_name] = card.NAME
 
     @classmethod
     def from_name(cls, name: str) -> Union[Card, None]:
@@ -59,7 +59,7 @@ class CardManager:
 
                 # See if a copy of the card already exists, likely
                 # due to a misspelling. If so, use that instead.
-                prev_card = cls._find_card(card.name)
+                prev_card = cls._find_card(card.NAME)
                 if prev_card is not None:
                     card = prev_card
 
@@ -81,8 +81,8 @@ class CardManager:
             for json in CallScryfall.get_set_cards(set_code):
                 # And fill it with cards fetched from Scryfall.
                 card = Card(json)
-                cls._add_card(card, card.name)
-                cls.SETS[set_code][card.name] = card
+                cls._add_card(card, card.NAME)
+                cls.SETS[set_code][card.NAME] = card
 
         return cls.SETS[set_code]
 

@@ -39,7 +39,7 @@ class SetMetadata:
         self.RELEASE_DATE = SET_CONFIG[self.SET]["PremierDraft"][0][0]
         self.CARD_LIST = [self.CARD_DICT[name] for name in self.CARD_DICT]
         # Set up a dictionary for quicker sorting.
-        self.CARD_INDEXES = {card.name: card.NUMBER for card in self.CARD_LIST}
+        self.CARD_INDEXES = {card.NAME: card.NUMBER for card in self.CARD_LIST}
         self.COMPARE_KEY = cmp_to_key(self._sort_compare)
 
     # Creating a custom sorting algorithm to order frames
@@ -76,9 +76,8 @@ class SetMetadata:
         else:
             return None
 
-    # TODO: See if this works
     @classmethod
-    def __getitem__(cls, set_code):
+    def __class_getitem__(cls, set_code):
         return cls.get_metadata(set_code)
 
 
