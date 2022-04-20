@@ -80,7 +80,7 @@ class JSONHandler:
     def files_valid(self) -> bool:
         """
         Returns a boolean which represents if the files contain valid data.
-        Returns False if all of the files contain empty or default data.
+        Returns False if all the files contain empty or default data.
         :return: A boolean.
         """
         folder_path = self.get_folder_path()
@@ -97,7 +97,7 @@ class JSONHandler:
     def _get_data(self, url: str, filename: str, overwrite: bool = False) -> dict[str, object]:
         """
         Automatically gets the appropriate data. If it saved locally, it will query 17Lands for the data
-        and then save it to a file. Otherwise it will load it from the file.
+        and then save it to a file. Otherwise, it will load it from the file.
         :param url: The url to get the data from
         :param filename: The file to load/save data from/to
         :param overwrite: Forcibly overwrite the data in the file

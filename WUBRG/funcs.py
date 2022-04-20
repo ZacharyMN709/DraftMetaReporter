@@ -56,7 +56,7 @@ def get_color_identity(color_string: str) -> str:
 def get_color_alias(color_string: str) -> Optional[str]:
     """
     Takes in a colour string and attempts to return a more
-    common name for the colors. Eg. 'WUR' -> 'Jeskai'
+    common name for the colors. e.g. 'WUR' -> 'Jeskai'
     :param color_string: The color string to convert.
     :return: A common name which represents the colours in color_string, or None.
     """

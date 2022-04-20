@@ -67,7 +67,7 @@ class CallScryfall:
                     card_info['err_msg'] = f'Error: "{name}" returned non-card'
                 Logger.LOGGER.log(card_info['err_msg'], Logger.FLG.DEBUG)
                 return card_info
-        # If an exception occurs, print it, and add an error massage to the struct.
+        # If an exception occurs, print it, and add an error message to the struct.
         except Exception as ex:
             Logger.LOGGER.log(ex, Logger.FLG.ERROR)
             card_info['err_msg'] = f'Error: Failed to query Scryfall for {name}\r\n{ex}'

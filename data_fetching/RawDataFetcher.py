@@ -30,8 +30,8 @@ class RawDataFetcher:
         Gets all of the data for a given day, for the object's set and format.
         If the data does not exist locally, it will be fetched from 17Lands and saved locally.
         :param check_date: The date to get the data for
-        :param reload: Force reload data from the file
-        :param overwrite: Force overwrite the data in the file
+        :param reload: Forces reload data from the file
+        :param overwrite: Forces overwrite the data in the file
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
 
@@ -58,15 +58,15 @@ class RawDataFetcher:
         """
         Gets all of the data by day for the set and format.
         If any data does not exist locally, it will be fetched from 17Lands and saved locally.
-        :param reload: Force reload data from the file
-        :param overwrite: Force overwrite the data in the file
+        :param reload: Forces reload data from the file
+        :param overwrite: Forces overwrite the data in the file
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
         check_date = min(self._format_metadata.START_DATE, utc_today())
 
         run = True
         while run:
-            # If the the format is active for the given date, get the data. 
+            # If the format is active for the given date, get the data.
             if self._format_metadata.is_active(check_date):
                 self.get_day_data(check_date, reload, overwrite)
 
@@ -81,8 +81,8 @@ class RawDataFetcher:
         """
         Gets the aggregated data for the set and format
         Depending on the age of the data, it will be updated automatically.
-        :param reload: Force reload data from the file
-        :param overwrite: Force overwrite the data in the file
+        :param reload: Forces reload data from the file
+        :param overwrite: Forces overwrite the data in the file
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
 

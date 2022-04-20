@@ -2,12 +2,8 @@ from typing import Union
 import requests
 from time import sleep
 
-from Utilities.Logger import Logger
-
-# Web Request Defaults
-TRIES: int = 5
-FAIL_DELAY: int = 60
-SUCCESS_DELAY: int = 1
+from Utilities import Logger
+from Utilities import TRIES, FAIL_DELAY, SUCCESS_DELAY
 
 
 class Fetcher:
@@ -38,7 +34,7 @@ class Fetcher:
                 success = True
                 sleep(self._SUCCESS_DELAY)
                 return data
-            except Exception:
+            except Exception as ex:
                 if count < self._TRIES:
                     Logger.LOGGER.log(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.',
                                       Logger.FLG.DEFAULT)
@@ -47,4 +43,5 @@ class Fetcher:
                 else:
                     Logger.LOGGER.log(f'Failed to get data after {self._TRIES} attempts.', Logger.FLG.ERROR)
                     Logger.LOGGER.log(f'Failed URL: {url}', Logger.FLG.ERROR)
+                    Logger.LOGGER.log(f'Exception: {ex}', Logger.FLG.ERROR)
                     return None

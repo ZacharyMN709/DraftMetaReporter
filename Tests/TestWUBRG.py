@@ -102,4 +102,3 @@ class TestWUBRGListFuncs(unittest.TestCase):
         s = '{2}{V}U}'
         ret = parse_cost(s)
         self.assertListEqual(ret, ['A'])
-

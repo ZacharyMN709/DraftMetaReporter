@@ -23,7 +23,7 @@ class SetMetadata:
     def get_metadata(cls, set_code: str) -> 'SetMetadata':
         """
         Returns an existing instance of a FormatMetadata object, or creates one if none exists.
-        :param set_code: The three letter code for the set.
+        :param set_code: The three-letter code for the set.
         :return: The SetMetadata for the set.
         """
         # TODO: Implement some checks so only valid sets are added.
@@ -52,7 +52,7 @@ class SetMetadata:
         col_idx2 = COLOR_INDEXES[pair2[0]]
         name_idx2 = self.CARD_INDEXES[pair2[1]]
 
-        # Sort by deck colour than card number.
+        # Sort by deck colour, then card number.
         if col_idx1 == col_idx2:
             if name_idx1 < name_idx2:
                 return -1
@@ -93,7 +93,7 @@ class FormatMetadata:
     def get_metadata(set_code, format_name) -> 'FormatMetadata':
         """
         Returns an existing instance of a FormatMetadata object, or creates one if none exists.
-        :param set_code: The three letter code for the set.
+        :param set_code: The three-letter code for the set.
         :param format_name: The identifier for the format.
         :return: The FormatMetadata for the set and format.
         """
@@ -142,7 +142,7 @@ class FormatMetadata:
 
     def get_active_days(self) -> list[date]:
         """
-        Gets the days where a draft queue was active.
+        Gets the days when a draft queue was active.
         :return: A list of Date objects
         """
         active_days = list()

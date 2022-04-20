@@ -10,7 +10,7 @@ class CardManager:
     """
     CardManager acts as a global repository for card data. This is both for pulled data from Scryfall, and the results
     and queries of users. In particular, it tracks user's requests (which can be mis-spelled), and logs them as aliases
-    for a found card. This means that as more users request cards, less calls have to be made to Scryfall.
+    for a found card. This means that as more users request cards, fewer calls have to be made to Scryfall.
 
     It's possible this should be reset at the release of a new set to let the object "re-link" names as their mappings
     may end up changing with the release of new cards, or after a certain amount of time to free up memory.
@@ -77,7 +77,7 @@ class CardManager:
     def from_set(cls, set_code: str) -> dict[str, Card]:
         """
         Gets a dictionary of card which exist a set.
-        :param set_code: The three letter code of the set.
+        :param set_code: The three-letter code of the set.
         :return: A dictionary of cards, with common names as keys.
         """
 
