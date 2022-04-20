@@ -20,17 +20,24 @@ class CardManager:
     CARDS = {'': None}
 
     @classmethod
-    def _add_card(cls, card: Card, searched_name: str) -> None:
+    def _add_card(cls, card: Card, searched_name: str = '') -> None:
         """
         An internal method to help more easily track cards as they're found/fetched.
         :param card: The card object to track
         :param searched_name: The name provided by the user to find
         """
-        cls.CARDS[card.NAME] = card
-        cls.REDIRECT[card.NAME] = card.NAME
-        cls.REDIRECT[card.FULL_NAME] = card.NAME
+
+        # If the card objects isn't tracked in CARDS, add it.
+        # This also means if cards from sets are pulled newest to oldest, the most recent version
+        # of the card will be the one that is cached.
+        if card.NAME not in cls.CARDS:
+            cls.CARDS[card.NAME] = card
+            cls.REDIRECT[card.NAME] = card.NAME
+            cls.REDIRECT[card.FULL_NAME] = card.NAME
+
         # Used to re-direct mis-spellings.
-        cls.REDIRECT[searched_name] = card.NAME
+        if searched_name != '':
+            cls.REDIRECT[searched_name] = card.NAME
 
     @classmethod
     def from_name(cls, name: str) -> Union[Card, None]:
@@ -81,7 +88,7 @@ class CardManager:
             for json in CallScryfall.get_set_cards(set_code):
                 # And fill it with cards fetched from Scryfall.
                 card = Card(json)
-                cls._add_card(card, card.NAME)
+                cls._add_card(card)
                 cls.SETS[set_code][card.NAME] = card
 
         return cls.SETS[set_code]
@@ -110,5 +117,5 @@ class CardManager:
         cls.REDIRECT = dict()
         for card_name in cls.CARDS:
             card = cls.CARDS[card_name]
-            cls._add_card(card, card_name)
+            cls._add_card(card)
 

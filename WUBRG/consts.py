@@ -1,5 +1,6 @@
 # Colour Mapping
 COLORS: str = "WUBRG"
+FAILSAFE: str = ''
 
 # Groupings of colour combinations by origin/description.
 SINGLE_COLORS: dict[str, str] = {

@@ -3,3 +3,4 @@ __pychache__
 .ipynb_checkpoints/Scratch-checkpoint.ipynb
 CardCheck.txt
 .idea
+.coverage
