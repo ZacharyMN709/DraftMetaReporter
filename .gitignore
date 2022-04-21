@@ -4,3 +4,4 @@ __pychache__
 CardCheck.txt
 .idea
 .coverage
+Tests/test.txt

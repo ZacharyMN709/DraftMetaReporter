@@ -1,6 +1,7 @@
 import unittest
 
 from Utilities import TRIES, FAIL_DELAY, SUCCESS_DELAY
+from Utilities import load_json_file, save_json_file
 from Utilities import Fetcher
 
 
@@ -28,11 +29,29 @@ class TestFetcher(unittest.TestCase):
         self.assertIsNone(ret)
 
 
+# TODO: Revamp logger, then implement tests.
 class TestLogger(unittest.TestCase):
     def test_get_color_supersets(self):
         pass
 
 
 class TestFuncs(unittest.TestCase):
-    def test_get_color_supersets(self):
+    def test_get_invalid_save(self):
+        ret = save_json_file('./+%', 'test+test.txt', {'test': 'results'})
+        self.assertFalse(ret)
+        pass
+
+    def test_get_valid_save(self):
+        ret = save_json_file('Tests/', 'test.txt', {'test': 'results'})
+        self.assertTrue(ret)
+        pass
+
+    def test_get_invalid_load(self):
+        ret = load_json_file('./+%', 'test+test.txt')
+        self.assertIsNone(ret)
+        pass
+
+    def test_get_valid_load(self):
+        ret = load_json_file('Tests/', 'test.txt')
+        self.assertIsInstance(ret, dict)
         pass

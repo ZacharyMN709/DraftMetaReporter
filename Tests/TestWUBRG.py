@@ -93,6 +93,11 @@ class TestWUBRGListFuncs(unittest.TestCase):
         ret = parse_cost(s)
         self.assertListEqual(ret, ['2', 'W', 'U'])
 
+    def test_parse_cost_valid_split(self):
+        s = '{U/R} // {4}{U}{R}'
+        ret = parse_cost(s)
+        self.assertListEqual(ret, ['U/R', '4', 'U', 'R'])
+
     def test_parse_cost_invalid(self):
         s = '{2}{V}{U}'
         ret = parse_cost(s)

@@ -2,7 +2,7 @@ from typing import Optional
 from os import path
 import json
 
-from Utilities import Logger
+from Utilities.Logger import Logger
 
 
 def load_json_file(folder: str, filename: str) -> Optional[dict]:

@@ -34,6 +34,7 @@ class Fetcher:
                 success = True
                 sleep(self._SUCCESS_DELAY)
                 return data
+            # TODO: Consider handling errors based on specific connection issue.
             except Exception as ex:
                 if count < self._TRIES:
                     Logger.LOGGER.log(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.',
