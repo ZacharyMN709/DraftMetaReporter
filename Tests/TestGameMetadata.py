@@ -6,6 +6,8 @@ from game_metadata.CallScryfall import trap_error
 from game_metadata import Card
 from game_metadata.utils.consts import CardLayouts
 
+from game_metadata import CardManager
+
 
 class TestCallScryfall(unittest.TestCase):
     def test_trap_error(self):
@@ -17,6 +19,7 @@ class TestCallScryfall(unittest.TestCase):
 
         val = trap_error(raise_test_error)(True, None)
         self.assertIsNone(val)
+        trap_error(raise_test_error)(False, None)  # To enable full code coverage.
 
     def test_get_set_cards_valid(self):
         cards = CallScryfall.get_set_cards('NEO')
@@ -142,13 +145,73 @@ class TestCard(unittest.TestCase):
 
 
 class TestCardManager(unittest.TestCase):
-    @staticmethod
-    def gen_card(card_name):
-        json = CallScryfall.get_card_by_name(card_name)
-        return Card(json)
+    def test_from_set(self):
+        cards = CardManager.from_set('NEO')
+        self.assertIsInstance(cards, dict)
+        self.assertEqual(len(cards), 282)
 
-    def test_card_normal(self):
-        name = 'Jukai Preserver'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
+    def test_from_name(self):
+        card = CardManager.from_name('Shock')
+        self.assertIsInstance(card, Card)
+
+    def test_from_name_invalid(self):
+        card = CardManager.from_name('ucbubfsvudgiru  bvubvfyfj ')
+        self.assertIsNone(card)
+
+    def test_reset_redirects(self):
+        CardManager.reset_redirects()
+        self.assertFalse(CardManager.REDIRECT)
+
+    def test_redirects(self):
+        proper_name = 'Virus Beetle'
+        misspell_name = 'Vires Beetle'
+        gibberish = 'ucbubfsvudgiru  bvubvfyfj '
+        # Clear any data in CardManager
+        CardManager.flush_cache()
+
+        # This redirect should not exist yet.
+        card, found = CardManager._find_card(proper_name)
+        self.assertIsNone(card)
+        self.assertFalse(found)
+
+        # Get the card
+        org_card = CardManager.from_name(proper_name)
+
+        # The redirect should now exist.
+        card, found = CardManager._find_card(proper_name)
+        self.assertIsInstance(card, Card)
+        self.assertTrue(found)
+
+        # The redirect should not exist yet.
+        card, found = CardManager._find_card(misspell_name)
+        self.assertIsNone(card)
+        self.assertFalse(found)
+
+        # Tests "from_name"'s use of a previous copy of a card on a misspelled card name.
+        miss_card = CardManager.from_name(misspell_name)
+        self.assertEqual(org_card, miss_card)  # Tests if the objects are the same instance
+
+        # The redirect should now exist.
+        card, found = CardManager._find_card(misspell_name)
+        self.assertIsInstance(card, Card)
+        self.assertTrue(found)
+
+        # This tests the short-circuit to not re-call a cached card.
+        CardManager.from_name(proper_name)
+
+        # Tests redirection of unresolvable card names
+        CardManager.from_name(gibberish)
+        card, found = CardManager._find_card(gibberish)
+        self.assertIsNone(card)
+        self.assertTrue(found)
+
+
+class TestSetMetadata(unittest.TestCase):
+    def test_from_set(self):
+        pass
+
+
+class TestFormatMetadata(unittest.TestCase):
+    def test_from_set(self):
+        pass
 

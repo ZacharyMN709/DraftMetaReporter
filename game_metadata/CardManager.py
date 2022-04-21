@@ -17,7 +17,7 @@ class CardManager:
     """
     REDIRECT = dict()
     SETS = dict()
-    CARDS = {'': None}
+    CARDS = dict()
 
     @classmethod
     def _add_card(cls, card: Card, searched_name: str = '') -> None:
@@ -48,8 +48,8 @@ class CardManager:
         :return: A Card or None
         """
         # If the card already exists, return it.
-        prev_card = cls._find_card(name)
-        if prev_card is not None:
+        prev_card, found = cls._find_card(name)
+        if found:
             return prev_card
         # Otherwise, get the card info from scryfall.
         else:
@@ -66,7 +66,7 @@ class CardManager:
 
                 # See if a copy of the card already exists, likely
                 # due to a misspelling. If so, use that instead.
-                prev_card = cls._find_card(card.NAME)
+                prev_card, found = cls._find_card(card.NAME)
                 if prev_card is not None:
                     card = prev_card
 
@@ -91,23 +91,30 @@ class CardManager:
                 cls._add_card(card)
                 cls.SETS[set_code][card.NAME] = card
 
+            for card_name in ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest']:
+                if card_name in cls.SETS[set_code]:
+                    del cls.SETS[set_code][card_name]
+
         return cls.SETS[set_code]
 
     @classmethod
-    def _find_card(cls, card_name: str) -> Union[Card, None]:
+    def _find_card(cls, card_name: str) -> tuple[Union[Card, None], bool]:
         """
         Attempts to find a saved instance of a card.
         :param card_name: The card name to find
-        :return: A Card or None
+        :return: A Card or None, and whether the name exists in REDIRECT
         """
 
         # If the card has been found before,
         if card_name in cls.REDIRECT:
             # Get the name it was found under, and return it.
             card_name = cls.REDIRECT[card_name]
-            return cls.CARDS[card_name]
+            if card_name == '':
+                return None, True
+            else:
+                return cls.CARDS[card_name], True
         else:
-            return None
+            return None, False
 
     @classmethod
     def reset_redirects(cls) -> None:
@@ -118,4 +125,14 @@ class CardManager:
         for card_name in cls.CARDS:
             card = cls.CARDS[card_name]
             cls._add_card(card)
+
+    @classmethod
+    def flush_cache(cls):
+        del cls.REDIRECT
+        del cls.SETS
+        del cls.CARDS
+
+        cls.REDIRECT = dict()
+        cls.SETS = dict()
+        cls.CARDS = dict()
 
