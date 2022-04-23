@@ -17,7 +17,7 @@ class SetMetadata:
     multiple time is unnecessary, so this acts as a central hub for that data. In particular, the costly operation of
     getting all cards in a set only needs to be done once, and then can be accessed from any place in the code.
     """
-    METADATA: dict[str, Optional['SetMetadata']] = {s: None for s in SETS}
+    METADATA: dict[str, Optional['SetMetadata']] = dict()
 
     @classmethod
     def get_metadata(cls, set_code: str) -> 'SetMetadata':
@@ -28,7 +28,7 @@ class SetMetadata:
         """
         # TODO: Implement some checks so only valid sets are added.
         # TODO: Make the check update along with added sets.
-        if set_code not in cls.METADATA or not cls.METADATA[set_code]:
+        if set_code not in cls.METADATA:
             cls.METADATA[set_code] = cls(set_code)
         return cls.METADATA[set_code]
 
@@ -45,10 +45,10 @@ class SetMetadata:
     # Creating a custom sorting algorithm to order frames
     def _sort_compare(self, pair1: tuple[str, str], pair2: tuple[str, str]) -> int:
         # Convert the colors and names into numeric indexes
-        # color1, name1 = pair1
+        # deck_color1, name1 = pair1
         col_idx1 = COLOR_INDEXES[pair1[0]]
         name_idx1 = self.CARD_INDEXES[pair1[1]]
-        # color2, name2 = pair2
+        # deck_color2, name2 = pair2
         col_idx2 = COLOR_INDEXES[pair2[0]]
         name_idx2 = self.CARD_INDEXES[pair2[1]]
 
@@ -78,7 +78,7 @@ class SetMetadata:
 
     @classmethod
     def __class_getitem__(cls, set_code):
-        return cls.get_metadata(set_code)
+        return cls.METADATA[set_code]
 
 
 class FormatMetadata:
@@ -87,10 +87,10 @@ class FormatMetadata:
     code, along with the string description of the format/game-type. FormatMetadata has access to all of the relevant
     SetMetadata, along with data specific to the format, such as dates.
     """
-    METADATA: dict[str, dict[str, Optional['FormatMetadata']]] = {s: {f: None for f in FORMATS} for s in SETS}
+    METADATA: dict[str, dict[str, Optional['FormatMetadata']]] = dict()
 
     @staticmethod
-    def get_metadata(set_code, format_name) -> 'FormatMetadata':
+    def get_metadata(set_code: str, format_name: str) -> 'FormatMetadata':
         """
         Returns an existing instance of a FormatMetadata object, or creates one if none exists.
         :param set_code: The three-letter code for the set.
@@ -99,13 +99,13 @@ class FormatMetadata:
         """
         # TODO: Implement some checks so only valid sets are added.
         # TODO: Make the check update along with added sets.
-        if set_code not in FormatMetadata.METADATA or not FormatMetadata.METADATA[set_code]:
+        if set_code not in FormatMetadata.METADATA:
             FormatMetadata.METADATA[set_code] = dict()
-        if format_name not in FormatMetadata.METADATA[set_code] or not FormatMetadata.METADATA[set_code][format_name]:
+        if format_name not in FormatMetadata.METADATA[set_code]:
             FormatMetadata.METADATA[set_code][format_name] = FormatMetadata(set_code, format_name)
         return FormatMetadata.METADATA[set_code][format_name]
 
-    def __init__(self, set_name, format_name):
+    def __init__(self, set_name: str, format_name: str):
         self.SET = set_name
         self.FORMAT = format_name
 
@@ -117,7 +117,7 @@ class FormatMetadata:
         self.CARD_DICT = self._set_metadata.CARD_DICT
         self.CARD_LIST = self._set_metadata.CARD_LIST
 
-    def find_card(self, card_name) -> Card:
+    def find_card(self, card_name: str) -> Card:
         """
         Looks for a card name in the list of cards for the set.
         :param card_name: The card name, simple or full. Must be an exact match. If 'NONE', today's date is used.
@@ -125,7 +125,7 @@ class FormatMetadata:
         """
         return self._set_metadata.find_card(card_name)
 
-    def is_active(self, check_date=None) -> bool:
+    def is_active(self, check_date: date = None) -> bool:
         """
         Checks if the draft queue is active for a given date.
         :param check_date: The date to check. If 'NONE', today's date is used.

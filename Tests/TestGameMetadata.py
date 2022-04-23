@@ -1,5 +1,7 @@
 import unittest
+from datetime import date
 
+import WUBRG
 from game_metadata import CallScryfall
 from game_metadata.CallScryfall import trap_error
 
@@ -7,6 +9,8 @@ from game_metadata import Card
 from game_metadata.utils.consts import CardLayouts
 
 from game_metadata import CardManager
+
+from game_metadata import SetMetadata, FormatMetadata
 
 
 class TestCallScryfall(unittest.TestCase):
@@ -207,11 +211,75 @@ class TestCardManager(unittest.TestCase):
 
 
 class TestSetMetadata(unittest.TestCase):
-    def test_from_set(self):
-        pass
+    def test_get_metadata(self):
+        meta = SetMetadata.get_metadata('NEO')
+        self.assertIsInstance(meta, SetMetadata)
+        self.assertIsInstance(meta.CARD_DICT, dict)
+        self.assertIsInstance(meta.CARD_DICT['Virus Beetle'], Card)
+
+        get = SetMetadata['NEO']
+        self.assertEqual(meta, get)
+
+    def test_find_card(self):
+        meta = SetMetadata.get_metadata('NEO')
+        card_1 = meta.find_card('Boseiju Reaches Skyward')
+        card_2 = meta.find_card('Boseiju Reaches Skyward // Branch of Boseiju')
+        self.assertIsInstance(card_1, Card)
+        self.assertEqual(card_1, card_2)
+
+        card_3 = meta.find_card('Shock')
+        self.assertIsNone(card_3)
+
+    def test_sort_compare(self):
+        meta = SetMetadata.get_metadata('NEO')
+
+        tup_1 = (WUBRG.COLOR_COMBINATIONS[0], meta.CARD_LIST[0].NAME)
+        tup_2 = (WUBRG.COLOR_COMBINATIONS[-1], meta.CARD_LIST[-1].NAME)
+        tup_3 = (WUBRG.COLOR_COMBINATIONS[0], meta.CARD_LIST[2].NAME)
+
+        self.assertEqual(meta._sort_compare(tup_1, tup_2), -1)
+        self.assertEqual(meta._sort_compare(tup_2, tup_1), 1)
+        self.assertEqual(meta._sort_compare(tup_1, tup_3), -1)
+        self.assertEqual(meta._sort_compare(tup_3, tup_1), 1)
+        self.assertEqual(meta._sort_compare(tup_3, tup_2), -1)
+        self.assertEqual(meta._sort_compare(tup_2, tup_3), 1)
 
 
 class TestFormatMetadata(unittest.TestCase):
-    def test_from_set(self):
-        pass
+    def test_get_metadata(self):
+        form = FormatMetadata.get_metadata('NEO', 'PremierDraft')
+        self.assertIsInstance(form, FormatMetadata)
+        self.assertIsInstance(form.CARD_DICT, dict)
+        self.assertIsInstance(form.CARD_DICT['Virus Beetle'], Card)
+
+    def test_find_card(self):
+        form = FormatMetadata.get_metadata('NEO', 'PremierDraft')
+        card_1 = form.find_card('Boseiju Reaches Skyward')
+        card_2 = form.find_card('Boseiju Reaches Skyward // Branch of Boseiju')
+        self.assertIsInstance(card_1, Card)
+        self.assertEqual(card_1, card_2)
+
+        card_3 = form.find_card('Shock')
+        self.assertIsNone(card_3)
+
+    def test_active_dates(self):
+        form = FormatMetadata.get_metadata('NEO', 'PremierDraft')
+        active = form.get_active_days()
+        start = date(2022, 2, 10)
+        end = date(2022, 4, 28)
+
+        self.assertEqual(active[0], start)
+        self.assertEqual(active[-1], end)
+
+    def test_is_active(self):
+        form = FormatMetadata.get_metadata('NEO', 'PremierDraft')
+        active = form.is_active(date(2022, 2, 1))
+        self.assertFalse(active)
+
+        active = form.is_active(date(2022, 3, 15))
+        self.assertTrue(active)
+
+        active = form.is_active()
+        self.assertEqual(active, date.today() <= date(2022, 4, 28))
+
 
