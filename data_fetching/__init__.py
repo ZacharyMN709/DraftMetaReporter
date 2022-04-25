@@ -3,7 +3,7 @@ from data_fetching.utils.consts import FORMAT_NICKNAMES, STAT_NAMES, STAT_FORMAT
 from data_fetching.utils.date_helper import get_prev_17lands_update_time, get_next_17lands_update_time, utc_today
 
 from data_fetching.JSONHandler import JSONHandler
-from data_fetching.RawDataFetcher import RawDataFetcher
-from data_fetching.RawDataHandler import RawDataHandler
+from data_fetching.LoadedData import LoadedData
+from data_fetching.DataFramer import DataFramer
 from data_fetching.FramedData import FramedData
 from data_fetching.SetManager import SetManager

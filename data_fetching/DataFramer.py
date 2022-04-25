@@ -3,19 +3,19 @@ import pandas as pd
 from Utilities import Logger
 
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
-from data_fetching.RawDataFetcher import RawDataFetcher
+from data_fetching.LoadedData import LoadedData
 
 
-class RawDataHandler:
+class DataFramer:
     """
-    RawDataHandler is responsible for converting the data aggregated by RawDataFetcher into Pandas DataFrames.
+    DataFramer is responsible for converting the data aggregated by LoadedData into Pandas DataFrames.
     Once it does, it contains all summary and historical data for a given set and format.
     """
 
     def __init__(self, set_code: str, format_name: str, load_summary: bool = True, load_history: bool = True):
         self._SET = set_code
         self._FORMAT = format_name
-        self._FETCHER = RawDataFetcher(set_code, format_name)
+        self._FETCHER = LoadedData(set_code, format_name)
 
         self.load_summary = load_summary
         self.load_history = load_history
@@ -82,8 +82,8 @@ class RawDataHandler:
 
     def gen_hist(self, reload: bool = False, overwrite: bool = False) -> None:
         """Populates and updates the three 'HISTORY' properties."""
-        hist_meta, hist_card = self._FETCHER.get_historic_data(reload, overwrite)
-        if (not hist_meta) and (not hist_card):
+        hist_card, hist_meta = self._FETCHER.get_historic_data(reload, overwrite)
+        if (not hist_card) and (not hist_meta):
             return
 
         # TODO: Attempt to handle this in a way so the entire history frames
@@ -115,8 +115,8 @@ class RawDataHandler:
 
     def gen_summary(self, reload: bool = False, overwrite: bool = False) -> None:
         """Populates and updates the three 'SUMMARY' properties."""
-        hist_meta, hist_card = self._FETCHER.get_summary_data(reload, overwrite)
-        if (not hist_meta) and (not hist_card):
+        hist_card, hist_meta = self._FETCHER.get_summary_data(reload, overwrite)
+        if (not hist_card) and (not hist_meta):
             return
 
         grouped_arch_frame, single_arch_frame = gen_meta_frame(hist_meta)

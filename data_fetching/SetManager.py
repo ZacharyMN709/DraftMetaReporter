@@ -4,6 +4,9 @@ from data_fetching.FramedData import FramedData
 
 
 class SetManager:
+    """
+    Acts as a wrapper for FramedData, mostly for convenience in loading multiple formats for one set under one object.
+    """
     def __init__(self, set_code, load_summary: bool = True, load_history: bool = True):
         self.SET = set_code
         self.DATA = {f: FramedData(set_code, f, load_summary, load_history) for f in FORMATS}
@@ -45,6 +48,9 @@ class SetManager:
 
 
 class CentralManager:
+    """
+    Acts as a wrapper for SetManager, aggregating all possible data into one root object.
+    """
     def __init__(self, load_summary: bool = True, load_history: bool = True):
         self.DATA = dict()
         self.load_summary = load_summary

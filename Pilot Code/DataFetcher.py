@@ -2,7 +2,7 @@
 Running this program will update the ALL folders for the relevant set and format,
 fetching the summary of data about the whole set.
 """
-from data_fetching import JSONHandler, RawDataFetcher
+from data_fetching import JSONHandler, LoadedData
 
 TARGET_SET = 'NEO'
 TARGET_FORMAT = 'TradDraft'
@@ -16,13 +16,13 @@ def json_handler():
 
 
 def get_set_data():
-    fetcher = RawDataFetcher(TARGET_SET, TARGET_FORMAT)
+    fetcher = LoadedData(TARGET_SET, TARGET_FORMAT)
     fetcher.get_historic_data()
     print('Done!')
 
 
 def get_summary_data():
-    fetcher = RawDataFetcher(TARGET_SET, TARGET_FORMAT)
+    fetcher = LoadedData(TARGET_SET, TARGET_FORMAT)
     fetcher.get_summary_data()
     print('Done!')
 
@@ -30,7 +30,7 @@ def get_summary_data():
 def get_all_data():
     formats = ['PremierDraft', 'TradDraft', 'QuickDraft']
     for f in formats:
-        fetcher = RawDataFetcher(TARGET_SET, f)
+        fetcher = LoadedData(TARGET_SET, f)
         fetcher.get_historic_data()
     print('Done!')
 

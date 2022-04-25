@@ -4,12 +4,12 @@ from WUBRG import get_color_identity, get_color_subsets
 from game_metadata import SetMetadata
 
 from data_fetching.utils.consts import FORMAT_NICKNAMES
-from data_fetching.RawDataHandler import RawDataHandler
+from data_fetching.DataFramer import DataFramer
 
 
 class FramedData:
     """
-    Acts as a wrapper for RawDataHandler, adding some extended functionality in how data can bet accessed and handled.
+    Acts as a wrapper for DataFramer, adding some extended functionality in how data can bet accessed and handled.
     One of its primary features is the ability to compress data over a given range into a summary, allowing data to be
     examined over certain parts of a format (After week 2, first meta shift, under-drafted colour becomes good, etc.)
     """
@@ -20,7 +20,7 @@ class FramedData:
         self.SET_NAME = self._set_metadata.FULL_NAME
         self.FORMAT = format_name
         self.FORMAT_ALIAS = FORMAT_NICKNAMES[self.FORMAT].upper()
-        self.DATA = RawDataHandler(set_code, format_name, load_summary, load_history)
+        self.DATA = DataFramer(set_code, format_name, load_summary, load_history)
         self._compare_key = self._set_metadata.COMPARE_KEY
 
         self.load_summary = load_summary

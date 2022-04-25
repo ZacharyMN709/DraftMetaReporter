@@ -7,9 +7,9 @@ from data_fetching.utils.date_helper import get_prev_17lands_update_time, utc_to
 from data_fetching.JSONHandler import JSONHandler
 
 
-class RawDataFetcher:
+class LoadedData:
     """
-    RawDataFetcher is mean as an intermediary step between getting the data and converting it into Pandas
+    LoadedData is meant as an intermediary step between getting the data and converting it into Pandas
     DataFrames. It's been left separate to reduce the size of classes, along with allowing for ways to access and
     handle data without the use of Pandas - though that's not recommended.
     """
@@ -49,10 +49,10 @@ class RawDataFetcher:
             if not meta_dict:
                 Logger.LOGGER.log(f'`meta_dict` for {str_date} is empty.', Logger.FLG.VERBOSE)
 
-            self._META_DICT[str_date] = meta_dict
             self._CARD_DICTS[str_date] = {color: card_dict[color] for color in card_dict}
+            self._META_DICT[str_date] = meta_dict
 
-        return self._META_DICT[str_date], self._CARD_DICTS[str_date]
+        return self._CARD_DICTS[str_date], self._META_DICT[str_date]
 
     def get_historic_data(self, reload: bool = False, overwrite: bool = False) -> tuple[dict, dict]:
         """
@@ -75,9 +75,9 @@ class RawDataFetcher:
             utc_check_date = datetime.combine(check_date, time(2, 0))
             run = utc_check_date < get_prev_17lands_update_time()
 
-        return self._META_DICT, self._CARD_DICTS
+        return self._CARD_DICTS, self._META_DICT
 
-    def get_summary_data(self, reload: bool = False, overwrite: bool = False) -> tuple[dict, dict]:
+    def get_summary_data(self, reload: bool = False, overwrite: bool = False) -> tuple[dict, list]:
         """
         Gets the aggregated data for the set and format
         Depending on the age of the data, it will be updated automatically.
@@ -90,7 +90,7 @@ class RawDataFetcher:
         has_started = self._format_metadata.START_DATE < utc_today()
         if not has_started:
             Logger.LOGGER.log(f'{self.SET} {self.FORMAT} has not begun yet. No data to get!', Logger.FLG.DEFAULT)
-            return dict(), dict()
+            return dict(), list()
 
         # Determine the object is missing data.
         data_missing = (not self._SUMMARY_META_DICT) or (not self._SUMMARY_CARD_DICTS)
@@ -116,4 +116,4 @@ class RawDataFetcher:
             Logger.LOGGER.log(f'Getting overall data for {self.SET} {self.FORMAT}', Logger.FLG.DEFAULT)
             self._SUMMARY_CARD_DICTS, self._SUMMARY_META_DICT = loader.get_day_data(overwrite)
 
-        return self._SUMMARY_META_DICT, self._SUMMARY_CARD_DICTS
+        return self._SUMMARY_CARD_DICTS, self._SUMMARY_META_DICT
