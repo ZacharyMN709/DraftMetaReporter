@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 import os
 from datetime import date, datetime
 
@@ -94,7 +94,7 @@ class JSONHandler:
         Logger.LOGGER.log(f'All files are empty!', Logger.FLG.DEBUG)
         return False
 
-    def _get_data(self, url: str, filename: str, overwrite: bool = False) -> dict[str, object]:
+    def _get_data(self, url: str, filename: str, overwrite: bool = False) -> list[dict]:
         """
         Automatically gets the appropriate data. If it saved locally, it will query 17Lands for the data
         and then save it to a file. Otherwise, it will load it from the file.
@@ -115,16 +115,16 @@ class JSONHandler:
             data = load_json_file(self.get_folder_path(), filename)
         return data
 
-    def get_card_data(self, color: str, overwrite: bool = False) -> dict[str, object]:
+    def get_card_data(self, color: str, overwrite: bool = False) -> list[dict]:
         """
-        Get the data on individual card performance
+        Get the data on individual card performance.
         :param color: The colours to filter card performance on
         :param overwrite: Forcibly overwrite the data in the file
-        :return: A dictionary with card names as keys.
+        :return: A list of dictionaries with card value mapping to their data.
         """
         return self._get_data(self.get_card_rating_url(color), f'{color}CardRatings.json', overwrite)
 
-    def get_all_card_data(self, overwrite: bool = False) -> dict[str, dict[str, object]]:
+    def get_all_card_data(self, overwrite: bool = False) -> dict[str, list[dict]]:
         """
         Gets data on card performance for all colour combinations.
         :param overwrite: Forcibly overwrite the data in the file
@@ -136,7 +136,7 @@ class JSONHandler:
 
         return card_dict
 
-    def get_meta_data(self, overwrite: bool = False) -> dict[str, object]:
+    def get_meta_data(self, overwrite: bool = False) -> list[dict]:
         """
         Gets data on archetype performance.
         :param overwrite: Forcibly overwrite the data in the file
@@ -144,7 +144,7 @@ class JSONHandler:
         """
         return self._get_data(self.get_color_rating_url(), f'ColorRatings.json', overwrite)
 
-    def get_day_data(self, overwrite: bool = False) -> tuple[dict[str, dict[str, object]], dict[str, object]]:
+    def get_day_data(self, overwrite: bool = False) -> tuple[dict[str, list[dict]], list[dict]]:
         """
         Gets all data available for the day.
         :param overwrite: Forcibly overwrite the data in the file

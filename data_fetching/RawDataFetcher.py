@@ -17,7 +17,7 @@ class RawDataFetcher:
     def __init__(self, set_name: str, format_name: str):
         self.SET = set_name
         self.FORMAT = format_name
-        self._format_metadata = FormatMetadata(set_name, format_name)
+        self._format_metadata = FormatMetadata.get_metadata(set_name, format_name)
 
         self._META_DICT = dict()
         self._CARD_DICTS = dict()

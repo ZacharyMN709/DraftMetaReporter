@@ -2,7 +2,7 @@ import pandas as pd
 
 from Utilities import Logger
 
-from data_fetching.utils.pandafy import panadafy_card_dict, panadafy_meta_dict
+from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
 from data_fetching.RawDataFetcher import RawDataFetcher
 
 
@@ -96,14 +96,14 @@ class RawDataHandler:
         Logger.LOGGER.log(f'Pandafying historical data for {self.SET} {self.FORMAT}...', Logger.FLG.VERBOSE)
 
         for date in hist_meta:
-            grouped_arch_frame_dict[date], single_arch_frame_dict[date] = panadafy_meta_dict(hist_meta[date])
+            grouped_arch_frame_dict[date], single_arch_frame_dict[date] = gen_meta_frame(hist_meta[date])
         grouped_arch_frame = pd.concat(grouped_arch_frame_dict, names=["Date", "Name"])
         single_arch_frame = pd.concat(single_arch_frame_dict, names=["Date", "Name"])
 
         for date in hist_card:
             color_dict = dict()
             for color in hist_card[date]:
-                color_dict[color] = panadafy_card_dict(hist_card[date][color])
+                color_dict[color] = gen_card_frame(hist_card[date][color])
             card_frame_dict[date] = pd.concat(color_dict, names=["Deck Colors", "Name"])
         card_frame = pd.concat(card_frame_dict, names=["Date", "Deck Colors", "Name"])
 
@@ -119,11 +119,11 @@ class RawDataHandler:
         if (not hist_meta) and (not hist_card):
             return
 
-        grouped_arch_frame, single_arch_frame = panadafy_meta_dict(hist_meta)
+        grouped_arch_frame, single_arch_frame = gen_meta_frame(hist_meta)
 
         color_dict = dict()
         for color in hist_card:
-            color_dict[color] = panadafy_card_dict(hist_card[color])
+            color_dict[color] = gen_card_frame(hist_card[color])
         card_frame = pd.concat(color_dict, names=["Deck Colors", "Name"])
 
         self._GROUPED_ARCHETYPE_SUMMARY_FRAME = grouped_arch_frame

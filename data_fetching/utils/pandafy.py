@@ -6,13 +6,13 @@ from WUBRG.consts import COLOR_COUNT_MAP
 from data_fetching.utils.consts import RARITY_ALIASES, STAT_NAMES, META_COLS
 
 
-def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:
+def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
     """
     Turns a dictionary into a DataFrame, with some data cleaning applied.
     :param card_dict: The dictionary containing card data for a colour group
     :return: A DataFrame filled with the cleaned card data
     """
-    frame = pd.DataFrame.from_dict(card_dict)
+    frame = pd.DataFrame(card_dict)
     frame = frame.rename(columns=STAT_NAMES)
 
     # If there's no data, make a blank frame and return it.
@@ -35,8 +35,7 @@ def panadafy_card_dict(card_dict: dict) -> pd.DataFrame:
     return frame
 
 
-# noinspection PyPep8
-def panadafy_meta_dict(meta_dict: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
+def gen_meta_frame(meta_dict: list[dict[str, object]]) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Turns a dictionary into a DataFrame, with some data cleaning applied.
     :param meta_dict: The dictionary containing data on the metagame.
@@ -49,7 +48,7 @@ def panadafy_meta_dict(meta_dict: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
         return frame, frame.copy()
 
     # Otherwise, load in the data and split it into summaries and archetypes.
-    frame = pd.DataFrame.from_dict(meta_dict)
+    frame = pd.DataFrame(meta_dict)
     frame = frame.rename(columns=META_COLS)
 
     frame['Name'] = frame['Color Name']

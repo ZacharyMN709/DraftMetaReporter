@@ -99,6 +99,14 @@ class Card:
             self.DEFAULT_FACE = CardFace.single_face(json)
             self.FACE_1 = self.DEFAULT_FACE
             self.FACE_2 = None
+        elif self.LAYOUT == CardLayouts.SAGA:
+            self.DEFAULT_FACE = CardFace.single_face(json)
+            self.FACE_1 = self.DEFAULT_FACE
+            self.FACE_2 = None
+        elif self.LAYOUT == CardLayouts.CLASS:
+            self.DEFAULT_FACE = CardFace.single_face(json)
+            self.FACE_1 = self.DEFAULT_FACE
+            self.FACE_2 = None
         elif self.LAYOUT == CardLayouts.ADVENTURE:
             self.DEFAULT_FACE = CardFace.single_face(json)
             self.FACE_1 = CardFace.single_face(json, 'creature')

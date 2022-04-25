@@ -1,11 +1,11 @@
-from typing import Optional
+from typing import Union
 from os import path
 import json
 
 from Utilities.Logger import Logger
 
 
-def load_json_file(folder: str, filename: str) -> Optional[dict]:
+def load_json_file(folder: str, filename: str) -> Union[dict, list[dict], None]:
     """
     Loads and returns the data from a json file.
     :param folder: The folder the json file is in.

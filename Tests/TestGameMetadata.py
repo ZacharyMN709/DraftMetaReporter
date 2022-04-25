@@ -103,6 +103,16 @@ class TestCard(unittest.TestCase):
         card = self.gen_card(name)
         self.assertEqual(card.LAYOUT, CardLayouts.MODAL_DFC)
 
+    def test_card_saga(self):
+        name = 'Fall of the Thran'
+        card = self.gen_card(name)
+        self.assertEqual(card.LAYOUT, CardLayouts.SAGA)
+
+    def test_card_class(self):
+        name = 'Ranger Class'
+        card = self.gen_card(name)
+        self.assertEqual(card.LAYOUT, CardLayouts.CLASS)
+
     def test_card_flip(self):
         name = 'Bushi Tenderfoot'
         self.assertRaises(Exception, self.gen_card, name)
@@ -164,7 +174,8 @@ class TestCardManager(unittest.TestCase):
 
     def test_reset_redirects(self):
         CardManager.reset_redirects()
-        self.assertFalse(CardManager.REDIRECT)
+        for name in CardManager.REDIRECT.keys():
+            self.assertEqual(CardManager.REDIRECT[name], name)
 
     def test_redirects(self):
         proper_name = 'Virus Beetle'
@@ -215,15 +226,21 @@ class TestSetMetadata(unittest.TestCase):
         meta = SetMetadata.get_metadata('NEO')
         self.assertIsInstance(meta, SetMetadata)
         self.assertIsInstance(meta.CARD_DICT, dict)
+        self.assertEqual(len(meta.CARD_DICT), 282)
+        self.assertEqual(len(meta.CARD_LIST), 282)
         self.assertIsInstance(meta.CARD_DICT['Virus Beetle'], Card)
 
         get = SetMetadata['NEO']
         self.assertEqual(meta, get)
 
+    def test_get_metadata_invalid_constructor(self):
+        self.assertRaises(Exception, SetMetadata, object(), 'NEO')
+
     def test_find_card(self):
         meta = SetMetadata.get_metadata('NEO')
         card_1 = meta.find_card('Boseiju Reaches Skyward')
         card_2 = meta.find_card('Boseiju Reaches Skyward // Branch of Boseiju')
+
         self.assertIsInstance(card_1, Card)
         self.assertEqual(card_1, card_2)
 
@@ -250,7 +267,12 @@ class TestFormatMetadata(unittest.TestCase):
         form = FormatMetadata.get_metadata('NEO', 'PremierDraft')
         self.assertIsInstance(form, FormatMetadata)
         self.assertIsInstance(form.CARD_DICT, dict)
+        self.assertEqual(len(form.CARD_DICT), 282)
+        self.assertEqual(len(form.CARD_LIST), 282)
         self.assertIsInstance(form.CARD_DICT['Virus Beetle'], Card)
+
+    def test_get_metadata_invalid_constructor(self):
+        self.assertRaises(Exception, FormatMetadata, object(), 'NEO', 'PremierDraft')
 
     def test_find_card(self):
         form = FormatMetadata.get_metadata('NEO', 'PremierDraft')

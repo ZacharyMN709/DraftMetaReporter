@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Optional
 from functools import cmp_to_key
 from datetime import date, timedelta
 
@@ -18,6 +18,7 @@ class SetMetadata:
     getting all cards in a set only needs to be done once, and then can be accessed from any place in the code.
     """
     METADATA: dict[str, Optional['SetMetadata']] = dict()
+    __cls_lock = object()
 
     @classmethod
     def get_metadata(cls, set_code: str) -> 'SetMetadata':
@@ -29,18 +30,27 @@ class SetMetadata:
         # TODO: Implement some checks so only valid sets are added.
         # TODO: Make the check update along with added sets.
         if set_code not in cls.METADATA:
-            cls.METADATA[set_code] = cls(set_code)
+            cls.METADATA[set_code] = cls(cls.__cls_lock, set_code)
         return cls.METADATA[set_code]
 
-    def __init__(self, set_code):
+    def __init__(self, cls_lock, set_code):
+        if cls_lock != self.__cls_lock:
+            raise Exception("Must use 'SetMetadata.get_metadata' class method.")
+
         self.SET = set_code
-        self.CARD_DICT = CardManager.from_set(set_code)
         self.FULL_NAME, self.ICON_URL = CallScryfall.get_set_info(set_code)
         self.RELEASE_DATE = SET_CONFIG[self.SET]["PremierDraft"][0][0]
-        self.CARD_LIST = [self.CARD_DICT[name] for name in self.CARD_DICT]
         # Set up a dictionary for quicker sorting.
         self.CARD_INDEXES = {card.NAME: card.NUMBER for card in self.CARD_LIST}
         self.COMPARE_KEY = cmp_to_key(self._sort_compare)
+
+    @property
+    def CARD_DICT(self):
+        return CardManager.from_set(self.SET)
+
+    @property
+    def CARD_LIST(self):
+        return [self.CARD_DICT[name] for name in self.CARD_DICT]
 
     # Creating a custom sorting algorithm to order frames
     def _sort_compare(self, pair1: tuple[str, str], pair2: tuple[str, str]) -> int:
@@ -63,14 +73,16 @@ class SetMetadata:
         else:
             return 1
 
-    def find_card(self, card_name) -> Union[Card, None]:
+    def find_card(self, card_name) -> Optional[Card]:
         """
         Looks for a card name in the list of cards for the set.
-        :param card_name: The card name, simple or full. Must be an exact match. If 'NONE', today's date is used.
+        :param card_name: The card name, simple or full. Must be an exact match.
         :return: A Card object or None
         """
         if card_name in CardManager.REDIRECT:
+            print(f"Changing '{card_name}' to ", end='')
             card_name = CardManager.REDIRECT[card_name]
+            print(f"'{card_name}'")
         if card_name in self.CARD_DICT:
             return self.CARD_DICT[card_name]
         else:
@@ -88,6 +100,7 @@ class FormatMetadata:
     SetMetadata, along with data specific to the format, such as dates.
     """
     METADATA: dict[str, dict[str, Optional['FormatMetadata']]] = dict()
+    __cls_lock = object()
 
     @staticmethod
     def get_metadata(set_code: str, format_name: str) -> 'FormatMetadata':
@@ -102,10 +115,14 @@ class FormatMetadata:
         if set_code not in FormatMetadata.METADATA:
             FormatMetadata.METADATA[set_code] = dict()
         if format_name not in FormatMetadata.METADATA[set_code]:
-            FormatMetadata.METADATA[set_code][format_name] = FormatMetadata(set_code, format_name)
+            inst = FormatMetadata(FormatMetadata.__cls_lock, set_code, format_name)
+            FormatMetadata.METADATA[set_code][format_name] = inst
         return FormatMetadata.METADATA[set_code][format_name]
 
-    def __init__(self, set_name: str, format_name: str):
+    def __init__(self, cls_lock, set_name: str, format_name: str):
+        if cls_lock != self.__cls_lock:
+            raise Exception("Must use 'FormatMetadata.get_metadata' class method.")
+
         self.SET = set_name
         self.FORMAT = format_name
 
@@ -114,8 +131,14 @@ class FormatMetadata:
         self.END_DATE = self._active_periods[-1][1]
 
         self._set_metadata = SetMetadata.get_metadata(set_name)
-        self.CARD_DICT = self._set_metadata.CARD_DICT
-        self.CARD_LIST = self._set_metadata.CARD_LIST
+
+    @property
+    def CARD_DICT(self):
+        return self._set_metadata.CARD_DICT
+
+    @property
+    def CARD_LIST(self):
+        return self._set_metadata.CARD_LIST
 
     def find_card(self, card_name: str) -> Card:
         """

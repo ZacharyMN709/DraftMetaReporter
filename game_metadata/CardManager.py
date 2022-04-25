@@ -20,7 +20,7 @@ class CardManager:
     CARDS = dict()
 
     @classmethod
-    def _add_card(cls, card: Card, searched_name: str = '') -> None:
+    def _add_card(cls, card: Card, searched_name: str = '', force_update=True) -> None:
         """
         An internal method to help more easily track cards as they're found/fetched.
         :param card: The card object to track
@@ -30,7 +30,7 @@ class CardManager:
         # If the card objects isn't tracked in CARDS, add it.
         # This also means if cards from sets are pulled newest to oldest, the most recent version
         # of the card will be the one that is cached.
-        if card.NAME not in cls.CARDS:
+        if card.NAME not in cls.CARDS or force_update:
             cls.CARDS[card.NAME] = card
             cls.REDIRECT[card.NAME] = card.NAME
             cls.REDIRECT[card.FULL_NAME] = card.NAME
@@ -119,12 +119,12 @@ class CardManager:
     @classmethod
     def reset_redirects(cls) -> None:
         """
-        Resets the REDIRECT dictionary.
+        Resets the REDIRECT dictionary, clearing any aliases, but preserving the true card names.
         """
         cls.REDIRECT = dict()
         for card_name in cls.CARDS:
             card = cls.CARDS[card_name]
-            cls._add_card(card)
+            cls._add_card(card, force_update=True)
 
     @classmethod
     def flush_cache(cls):

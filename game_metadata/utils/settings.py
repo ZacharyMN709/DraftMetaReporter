@@ -29,5 +29,8 @@ SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
         "PremierDraft": [(date(2021, 9, 16), date(2021, 11, 11))],
         "TradDraft": [(date(2021, 9, 16), date(2021, 11, 11))],
         "QuickDraft": [(date(2021, 10, 1), date(2021, 10, 15)), (date(2021, 10, 29), date(2022, 11, 12))]
+    },
+    "DOM": {
+        "PremierDraft": [(date(2022, 4, 1), date(2022, 4, 8))]
     }
 }
