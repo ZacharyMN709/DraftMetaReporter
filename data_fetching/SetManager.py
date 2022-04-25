@@ -1,4 +1,4 @@
-from game_metadata import FORMATS, SetMetadata
+from game_metadata import SETS, FORMATS, SetMetadata
 
 from data_fetching.FramedData import FramedData
 
@@ -42,3 +42,36 @@ class SetManager:
     def QD(self):
         """Quick Draft data."""
         return self['QuickDraft']
+
+
+class CentralManager:
+    def __init__(self, load_summary: bool = True, load_history: bool = True):
+        self.DATA = dict()
+        self.load_summary = load_summary
+        self.load_history = load_history
+
+    def check_for_updates(self):
+        """Populates and updates all data properties, filling in missing data."""
+        for set_code in SETS:
+            self[set_code].check_for_updates()
+
+    def reload_data(self):
+        """Populates and updates all data properties, reloading all data."""
+        for set_code in SETS:
+            self[set_code].reload_data()
+
+    def __getitem__(self, item):
+        return self.DATA[item]
+
+    # These are here for convenience, as they're the most often used data.
+    @property
+    def NEO(self):
+        if 'NEO' not in self.DATA:
+            self.DATA['NEO'] = SetManager('NEO')
+        return self.DATA['NEO']
+
+    @property
+    def SNC(self):
+        if 'SNC' not in self.DATA:
+            self.DATA['SNC'] = SetManager('SNC')
+        return self.DATA['SNC']
