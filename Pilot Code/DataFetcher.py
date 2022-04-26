@@ -2,14 +2,14 @@
 Running this program will update the ALL folders for the relevant set and format,
 fetching the summary of data about the whole set.
 """
-from data_fetching import JSONHandler, LoadedData
+from data_fetching import DataLoader, LoadedData
 
 TARGET_SET = 'NEO'
 TARGET_FORMAT = 'TradDraft'
 
 
 def json_handler():
-    handler = JSONHandler(TARGET_SET, TARGET_FORMAT)
+    handler = DataLoader(TARGET_SET, TARGET_FORMAT)
     data = handler.get_day_data()
     print('Done!')
     return data

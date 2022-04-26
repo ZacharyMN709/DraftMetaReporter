@@ -4,7 +4,7 @@ from Utilities import Logger
 from game_metadata import FormatMetadata
 
 from data_fetching.utils.date_helper import get_prev_17lands_update_time, utc_today
-from data_fetching.JSONHandler import JSONHandler
+from data_fetching.DataLoader import DataLoader
 
 
 class LoadedData:
@@ -40,13 +40,13 @@ class LoadedData:
         update = data_missing or reload
 
         if update:
-            loader = JSONHandler(self.SET, self.FORMAT, check_date)
+            loader = DataLoader(self.SET, self.FORMAT, check_date)
             Logger.LOGGER.log(f'Getting data for {self.SET} {self.FORMAT}, date: {str_date}', Logger.FLG.DEFAULT)
             card_dict, meta_dict = loader.get_day_data(overwrite)
 
-            if not card_dict:
+            if not card_dict:  # pragma: no cover
                 Logger.LOGGER.log(f'`card_dict` for {str_date} is empty.', Logger.FLG.VERBOSE)
-            if not meta_dict:
+            if not meta_dict:  # pragma: no cover
                 Logger.LOGGER.log(f'`meta_dict` for {str_date} is empty.', Logger.FLG.VERBOSE)
 
             self._CARD_DICTS[str_date] = {color: card_dict[color] for color in card_dict}
@@ -88,7 +88,7 @@ class LoadedData:
 
         # If the set/format hasn't started yet, log a message and return empty dicts.
         has_started = self._format_metadata.START_DATE < utc_today()
-        if not has_started:
+        if not has_started:  # pragma: no cover
             Logger.LOGGER.log(f'{self.SET} {self.FORMAT} has not begun yet. No data to get!', Logger.FLG.DEFAULT)
             return dict(), list()
 
@@ -96,7 +96,7 @@ class LoadedData:
         data_missing = (not self._SUMMARY_META_DICT) or (not self._SUMMARY_CARD_DICTS)
 
         # Initialize the loader.
-        loader = JSONHandler(self.SET, self.FORMAT, None)
+        loader = DataLoader(self.SET, self.FORMAT, None)
 
         # Get the relevant times for updates.
         last_write = loader.get_last_write_time()

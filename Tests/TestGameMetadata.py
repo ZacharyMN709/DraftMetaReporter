@@ -18,12 +18,11 @@ class TestCallScryfall(unittest.TestCase):
         def raise_test_error(v=True, void=None):
             if v:
                 raise Exception("Test Error!")
-            else:
+            else:  # pragma: no cover
                 return list()
 
         val = trap_error(raise_test_error)(True, None)
         self.assertIsNone(val)
-        trap_error(raise_test_error)(False, None)  # To enable full code coverage.
 
     def test_get_set_cards_valid(self):
         cards = CallScryfall.get_set_cards('NEO')
@@ -52,12 +51,6 @@ class TestCallScryfall(unittest.TestCase):
         self.assertIsInstance(card, dict)
         self.assertEqual(card['object'], 'card')
         self.assertEqual(card['name'], 'Virus Beetle')
-
-    def test_get_card_by_name_invalid(self):
-        name = 'IOF(B*#R(&*(FC (HUCH( FEP( FU C JXCBJ CIBU FWUIPB F'
-        card = CallScryfall.get_card_by_name(name)
-        self.assertIsInstance(card, dict)
-        self.assertEqual(card['err_msg'], f'Error: Cannot find card "{name}"')
 
     def test_get_card_by_name_multiple(self):
         name = 'Bolt'

@@ -22,12 +22,13 @@ class Fetcher:
         """
         success = False
         count = 0
+        url = url.replace(' ', '_')
 
         while not success:
             count += 1
 
             try:
-                Logger.LOGGER.log(f'Attempting to get data from {url}.', Logger.FLG.DEBUG)
+                Logger.LOGGER.log(f"Attempting to get data from '{url}'.", Logger.FLG.DEBUG)
                 response = requests.get(url)
                 data = response.json()
 

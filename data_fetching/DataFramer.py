@@ -29,52 +29,52 @@ class DataFramer:
         self._CARD_SUMMARY_FRAME = None
 
     @property
-    def SET(self):
+    def SET(self):  # pragma: no cover
         """The draft set."""
         return self._SET
 
     @property
-    def FORMAT(self):
+    def FORMAT(self):  # pragma: no cover
         """The queue type."""
         return self._FORMAT
 
     @property
-    def GROUPED_ARCHETYPE_HISTORY_FRAME(self):
+    def GROUPED_ARCHETYPE_HISTORY_FRAME(self):  # pragma: no cover
         """The daily data about how decks, grouped by number of colours, performs."""
         if self.load_history and self._GROUPED_ARCHETYPE_HISTORY_FRAME is None:
             self.gen_hist()
         return self._GROUPED_ARCHETYPE_HISTORY_FRAME
 
     @property
-    def SINGLE_ARCHETYPE_HISTORY_FRAME(self):
+    def SINGLE_ARCHETYPE_HISTORY_FRAME(self):  # pragma: no cover
         """The daily data for each deck archetype."""
         if self.load_history and self._SINGLE_ARCHETYPE_HISTORY_FRAME is None:
             self.gen_hist()
         return self._SINGLE_ARCHETYPE_HISTORY_FRAME
 
     @property
-    def CARD_HISTORY_FRAME(self):
+    def CARD_HISTORY_FRAME(self):  # pragma: no cover
         """The daily data for individual card performance."""
         if self.load_history and self._CARD_HISTORY_FRAME is None:
             self.gen_hist()
         return self._CARD_HISTORY_FRAME
 
     @property
-    def GROUPED_ARCHETYPE_SUMMARY_FRAME(self):
+    def GROUPED_ARCHETYPE_SUMMARY_FRAME(self):  # pragma: no cover
         """The overall data, about how decks, grouped by number of colours, performs."""
         if self.load_summary and self._GROUPED_ARCHETYPE_SUMMARY_FRAME is None:
             self.gen_summary()
         return self._GROUPED_ARCHETYPE_SUMMARY_FRAME
 
     @property
-    def SINGLE_ARCHETYPE_SUMMARY_FRAME(self):
+    def SINGLE_ARCHETYPE_SUMMARY_FRAME(self):  # pragma: no cover
         """The overall data, for each deck archetype."""
         if self.load_summary and self._SINGLE_ARCHETYPE_SUMMARY_FRAME is None:
             self.gen_summary()
         return self._SINGLE_ARCHETYPE_SUMMARY_FRAME
 
     @property
-    def CARD_SUMMARY_FRAME(self):
+    def CARD_SUMMARY_FRAME(self):  # pragma: no cover
         """The overall data, about individual card performance."""
         if self.load_summary and self._CARD_SUMMARY_FRAME is None:
             self.gen_summary()
@@ -83,7 +83,7 @@ class DataFramer:
     def gen_hist(self, reload: bool = False, overwrite: bool = False) -> None:
         """Populates and updates the three 'HISTORY' properties."""
         hist_card, hist_meta = self._FETCHER.get_historic_data(reload, overwrite)
-        if (not hist_card) and (not hist_meta):
+        if (not hist_card) and (not hist_meta):  # pragma: no cover
             return
 
         # TODO: Attempt to handle this in a way so the entire history frames
@@ -116,7 +116,7 @@ class DataFramer:
     def gen_summary(self, reload: bool = False, overwrite: bool = False) -> None:
         """Populates and updates the three 'SUMMARY' properties."""
         hist_card, hist_meta = self._FETCHER.get_summary_data(reload, overwrite)
-        if (not hist_card) and (not hist_meta):
+        if (not hist_card) and (not hist_meta):  # pragma: no cover
             return
 
         grouped_arch_frame, single_arch_frame = gen_meta_frame(hist_meta)
@@ -130,7 +130,7 @@ class DataFramer:
         self._SINGLE_ARCHETYPE_SUMMARY_FRAME = single_arch_frame
         self._CARD_SUMMARY_FRAME = card_frame
 
-    def check_for_updates(self) -> None:
+    def check_for_updates(self) -> None:  # pragma: no cover
         """Populates and updates data properties, filling in missing selected data."""
         Logger.LOGGER.log(f'Checking for missing data for {self.SET} {self.FORMAT}...', Logger.FLG.KEY)
         if self.load_summary:
@@ -139,7 +139,7 @@ class DataFramer:
             self.gen_hist()
         Logger.LOGGER.log(f'Finished checking for missing data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
 
-    def reload_data(self) -> None:
+    def reload_data(self) -> None:  # pragma: no cover
         """Populates and updates data properties, reloading selected data."""
         Logger.LOGGER.log(f'Loading data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
         if self.load_summary:
@@ -148,7 +148,7 @@ class DataFramer:
             self.gen_hist(True)
         Logger.LOGGER.log(f'Finished loading data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
 
-    def force_update(self) -> None:
+    def force_update(self) -> None:  # pragma: no cover
         """Forcibly re-fetches and overwrites selected data."""
         Logger.LOGGER.log(f'Re-downloading data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
         if self.load_summary:

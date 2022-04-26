@@ -1,5 +1,7 @@
 from typing import Optional
 import re
+
+from Utilities import Logger
 from WUBRG.consts import COLORS, FAILSAFE, COLOR_ALIASES, COLOR_COMBINATIONS, COLOR_COMBINATION_TO_ALIAS, MANA_SYMBOLS
 
 mana_cost_re = re.compile(r'{(.*?)}')
@@ -31,7 +33,7 @@ def get_color_string(s: str) -> str:
 
     # If the return string is empty, log a warning message.
     if not ret:
-        print(f"Invalid color string provided: {s}. Converting to '{FAILSAFE}'")
+        Logger.LOGGER.log(f"Invalid color string provided: {s}. Converting to '{FAILSAFE}'", Logger.FLG.VERBOSE)
         return FAILSAFE
     # Otherwise, return the generated string.
     else:
@@ -133,7 +135,8 @@ def parse_cost(mana_cost: str) -> list[str]:
         # Make sure it is a valid mana symbol.
         if cost not in MANA_SYMBOLS:
             # If not, return a dummy value.
+            Logger.LOGGER.log(f"Invalid mana cost provided: {mana_cost}. Converting to '{default}'", Logger.FLG.VERBOSE)
             return default
 
-    # If all check passed, return the found values.
+    # If all checks passed, return the found values.
     return costs

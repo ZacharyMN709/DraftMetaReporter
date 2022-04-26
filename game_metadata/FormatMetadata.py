@@ -2,6 +2,7 @@ from typing import Optional
 from functools import cmp_to_key
 from datetime import date, timedelta
 
+from Utilities import Logger
 from WUBRG.consts import COLOR_INDEXES
 
 from game_metadata.utils.settings import SETS, FORMATS, SET_CONFIG
@@ -80,9 +81,10 @@ class SetMetadata:
         :return: A Card object or None
         """
         if card_name in CardManager.REDIRECT:
-            print(f"Changing '{card_name}' to ", end='')
+            old_name = card_name
             card_name = CardManager.REDIRECT[card_name]
-            print(f"'{card_name}'")
+            Logger.LOGGER.log(f"Changing '{old_name}' to '{card_name}'", Logger.FLG.VERBOSE)
+            print()
         if card_name in self.CARD_DICT:
             return self.CARD_DICT[card_name]
         else:

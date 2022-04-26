@@ -26,11 +26,11 @@ class FramedData:
         self.load_summary = load_summary
         self.load_history = load_history
 
-    def check_for_updates(self) -> None:
+    def check_for_updates(self) -> None:  # pragma: no cover
         """Populates and updates all data properties, filling in missing data."""
         self.DATA.check_for_updates()
 
-    def reload_data(self) -> None:
+    def reload_data(self) -> None:  # pragma: no cover
         """Populates and updates all data properties, reloading all data."""
         self.DATA.reload_data()
 

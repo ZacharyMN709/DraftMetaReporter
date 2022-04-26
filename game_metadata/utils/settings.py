@@ -1,7 +1,7 @@
 from datetime import date
 
 # Game Format Defaults and Data
-SETS: list[str] = ["SNC", "NEO", "VOW", "MID"]
+SETS: list[str] = ["SNC", "NEO", "VOW", "MID"]  # ['AFR', 'STX', 'KHM', 'ZNR']
 
 FORMATS: list[str] = ["PremierDraft", "TradDraft", "QuickDraft"]
 

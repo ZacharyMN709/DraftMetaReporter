@@ -1,19 +1,13 @@
 import unittest
 from datetime import date
+from os import path
 
-from data_fetching.utils.date_helper import get_next_17lands_update_time
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
 
-from data_fetching import JSONHandler
-
-from data_fetching import SetManager
+from data_fetching import DataLoader, LoadedData, DataFramer, FramedData, SetManager, CentralManager
 
 
 class TestUtils(unittest.TestCase):
-    def test_get_next_17lands_update_time(self):
-        day = get_next_17lands_update_time()
-        self.assertIsInstance(day, date)
-
     def test_gen_card_frame(self):
         card_data = [
             {'seen_count': 1423,
@@ -136,6 +130,122 @@ class TestUtils(unittest.TestCase):
         sum_frame, arc_frame = gen_meta_frame(list())
         self.assertEqual(len(sum_frame), 0)
         self.assertEqual(len(arc_frame), 0)
+
+
+class TestDataLoader(unittest.TestCase):
+    DATA_DIR_LOC = r'C:\Users\Zachary\Coding\GitHub'
+    DATA_DIR_NAME = '17LandsData'
+
+    def test_urls_no_date(self):
+        loader = DataLoader('DOM', 'PremierDraft')
+
+        str1 = loader._get_date_filter()
+        date_str = r'&start_date=2020-01-01&end_date=' + str(date.today())
+        self.assertEqual(str1, date_str)
+
+        str1 = loader.get_card_rating_url()
+        str2 = r'https://www.17lands.com/card_ratings/data?expansion=DOM&format=PremierDraft'
+        self.assertEqual(str1, str2 + date_str)
+
+        str1 = loader.get_card_rating_url('RW')
+        str2 = r'https://www.17lands.com/card_ratings/data?expansion=DOM&format=PremierDraft&colors=RW'
+        self.assertEqual(str1, str2 + date_str)
+
+        str1 = loader.get_color_rating_url()
+        str2 = r'https://www.17lands.com/color_ratings/data?expansion=DOM&event_type=PremierDraft&combine_splash=false'
+        self.assertEqual(str1, str2 + date_str)
+
+    def test_urls(self):
+        loader = DataLoader('DOM', 'PremierDraft', date(2022, 4, 1))
+
+        str1 = loader._get_date_filter()
+        date_str = r'&start_date=2022-04-01&end_date=2022-04-01'
+        self.assertEqual(str1, date_str)
+
+        str1 = loader.get_card_rating_url()
+        str2 = r'https://www.17lands.com/card_ratings/data?expansion=DOM&format=PremierDraft'
+        self.assertEqual(str1, str2 + date_str)
+
+        str1 = loader.get_card_rating_url('RW')
+        str2 = r'https://www.17lands.com/card_ratings/data?expansion=DOM&format=PremierDraft&colors=RW'
+        self.assertEqual(str1, str2 + date_str)
+
+        str1 = loader.get_color_rating_url()
+        str2 = r'https://www.17lands.com/color_ratings/data?expansion=DOM&event_type=PremierDraft&combine_splash=false'
+        self.assertEqual(str1, str2 + date_str)
+
+    def test_paths_no_date(self):
+        loader = DataLoader('DOM', 'PremierDraft')
+
+        str1 = loader.get_folder_path()
+        dir_str = path.join(self.DATA_DIR_LOC, self.DATA_DIR_NAME, 'DOM', 'PremierDraft', 'ALL')
+        self.assertEqual(str1, dir_str)
+
+        str1 = loader.get_file_path('ColorRatings.json')
+        str2 = path.join(dir_str, 'ColorRatings.json')
+        self.assertEqual(str1, str2)
+
+        self.assertFalse(loader.file_exists('SoupRecipe.json'))
+        self.assertTrue(loader.file_exists('ColorRatings.json'))
+        self.assertTrue(loader.file_exists('CardRatings.json'))
+
+    def test_paths(self):
+        loader = DataLoader('DOM', 'PremierDraft', date(2022, 4, 1))
+
+        str1 = loader.get_folder_path()
+        dir_str = path.join(self.DATA_DIR_LOC, self.DATA_DIR_NAME, 'DOM', 'PremierDraft', '2022-04-01')
+        self.assertEqual(str1, dir_str)
+
+        str1 = loader.get_file_path('ColorRatings.json')
+        str2 = path.join(dir_str, 'ColorRatings.json')
+        self.assertEqual(str1, str2)
+
+        self.assertFalse(loader.file_exists('SoupRecipe.json'))
+        self.assertTrue(loader.file_exists('ColorRatings.json'))
+        self.assertTrue(loader.file_exists('CardRatings.json'))
+
+    def test_file_validation(self):
+        loader = DataLoader('DOM', 'PremierDraft', date(2022, 4, 1))
+        self.assertEqual(loader.get_last_write_time().date(), date(2022, 4, 24))
+
+    def test_get_card_data(self):
+        loader = DataLoader('DOM', 'PremierDraft', date(2022, 4, 1))
+        loader.get_card_data()
+
+    def test_get_meta_data(self):
+        loader = DataLoader('DOM', 'PremierDraft', date(2022, 4, 1))
+        loader.get_meta_data()
+
+    def test_get_day_data(self):
+        loader = DataLoader('DOM', 'PremierDraft', date(2022, 4, 1))
+        loader.get_day_data()
+
+
+class TestLoadedData(unittest.TestCase):
+    def test_get_day_data(self):
+        loaded = LoadedData('DOM', 'PremierDraft')
+        loaded.get_day_data(date(2022, 4, 1))
+
+    def test_get_summary_data(self):
+        loaded = LoadedData('DOM', 'PremierDraft')
+        loaded.get_summary_data()
+
+    def test_get_historic_data(self):
+        loaded = LoadedData('DOM', 'PremierDraft')
+        loaded.get_historic_data()
+
+
+class TestDataFramer(unittest.TestCase):
+    def test_data_framer(self):
+        framer = DataFramer('DOM', 'PremierDraft')
+        self.assertEqual(framer.SET, 'DOM')
+        self.assertEqual(framer.FORMAT, 'PremierDraft')
+        pass
+
+
+class TestFramedData(unittest.TestCase):
+    def test_(self):
+        pass
 
 
 class TestSetManager(unittest.TestCase):
