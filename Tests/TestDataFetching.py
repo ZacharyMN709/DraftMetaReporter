@@ -1,17 +1,20 @@
 import unittest
-from datetime import date
+from datetime import date, datetime
 from os import path
 from pandas import DataFrame
 
+from game_metadata import SETS, FORMATS
+from data_fetching.utils.date_helper import utc_today, get_prev_17lands_update_time, get_next_17lands_update_time
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
 
 from data_fetching import DataLoader, LoadedData, DataFramer, FramedData, SetManager, CentralManager
 
-
-CARD_KEYS = ['seen_count', 'avg_seen', 'pick_count', 'avg_pick', 'game_count', 'win_rate', 'opening_hand_game_count',
-                'opening_hand_win_rate', 'drawn_game_count', 'drawn_win_rate', 'ever_drawn_game_count',
-                'ever_drawn_win_rate', 'never_drawn_game_count', 'never_drawn_win_rate', 'drawn_improvement_win_rate',
-                'name', 'color', 'rarity']
+CARD_KEYS_REQ = ['seen_count', 'avg_seen', 'pick_count', 'avg_pick', 'game_count', 'win_rate', 'opening_hand_game_count',
+                 'opening_hand_win_rate', 'drawn_game_count', 'drawn_win_rate', 'ever_drawn_game_count',
+                 'ever_drawn_win_rate', 'never_drawn_game_count', 'never_drawn_win_rate', 'drawn_improvement_win_rate',
+                 'name', 'color', 'rarity']
+CARD_KEYS_EXTRA = ['sideboard_game_count', 'sideboard_win_rate', 'url', 'url_back']
+CARD_KEYS = CARD_KEYS_REQ + CARD_KEYS_EXTRA
 
 META_KEYS = ['is_summary', 'color_name', 'wins', 'games']
 
@@ -60,7 +63,7 @@ CARD_DATA = [
              'rarity': 'mythic',
              'url': 'https://c1.scryfall.com/file/scryfall-cards/border_crop/front/d/1/d134385d-b01c-41c7-bb2d-30722b44dc5a.jpg?1562743350',
              'url_back': ''}
-        ]
+]
 
 META_DATA = [
             {'is_summary': True, 'color_name': 'Two-color', 'wins': 1142, 'games': 1967},
@@ -74,10 +77,16 @@ META_DATA = [
             {'is_summary': False, 'color_name': 'Golgari (BG)', 'wins': 135, 'games': 230},
             {'is_summary': False, 'color_name': 'Simic (GU)', 'wins': 92, 'games': 144},
             {'is_summary': False, 'color_name': 'Izzet (UR)', 'wins': 361, 'games': 608},
-            {'is_summary': False, 'color_name': 'Boros (RW)', 'wins': 85, 'games': 142}]
+            {'is_summary': False, 'color_name': 'Boros (RW)', 'wins': 85, 'games': 142}
+]
 
 
 class TestUtils(unittest.TestCase):
+    def test_date_helpers(self):
+        self.assertIsInstance(utc_today(), date)
+        self.assertIsInstance(get_prev_17lands_update_time(), datetime)
+        self.assertIsInstance(get_next_17lands_update_time(), datetime)
+
     def test_gen_card_frame(self):
         card_frame = gen_card_frame(CARD_DATA)
         self.assertEqual(len(card_frame), 2)
@@ -305,8 +314,13 @@ class TestFramedData(unittest.TestCase):
         framer = FramedData('NEO', 'PremierDraft')
 
         framer.deck_group_frame()
+        framer.deck_group_frame(summary=True)
         framer.deck_archetype_frame()
+        framer.deck_archetype_frame(summary=True)
         framer.card_frame()
+        framer.card_frame(card_rarity='C')
+        framer.card_frame(card_color='U')
+        framer.card_frame(summary=True)
         framer.compress_date_range_data('2022-04-01', '2022-04-08')
 
         self.assertTrue(False)
@@ -318,7 +332,8 @@ class TestSetManager(unittest.TestCase):
         manager.reload_data()
         manager.check_for_updates()
         self.assertEqual(len(manager.CARDS), 282)
-        self.assertIsInstance(manager['PremierDraft'], DataFramer)
+        for format_type in FORMATS:
+            self.assertIsInstance(manager['PremierDraft'], FramedData)
 
 
 class TestCentralManager(unittest.TestCase):
@@ -326,4 +341,5 @@ class TestCentralManager(unittest.TestCase):
         manager = CentralManager()
         manager.reload_data()
         manager.check_for_updates()
-        self.assertIsInstance(manager['NEO'], DataFramer)
+        for set_code in SETS:
+            self.assertIsInstance(manager[set_code], SetManager)

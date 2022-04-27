@@ -15,5 +15,6 @@ def get_prev_17lands_update_time() -> datetime:  # pragma: no cover
 
 
 def get_next_17lands_update_time() -> datetime:  # pragma: no cover
-    return get_prev_17lands_update_time() + timedelta(days=1)
+    ret = get_prev_17lands_update_time() + timedelta(days=1)
+    return ret
 
