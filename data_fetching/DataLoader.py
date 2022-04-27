@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional
 import os
 from datetime import date, datetime
 
@@ -17,10 +17,9 @@ class DataLoader:
     """
 
     # TODO: This could be made more space efficient by converting fetched data into a csv format before saving.
-
-    _DEFAULT_DATE = '2020-01-01'
+    _DEFAULT_DATE = date(2020, 1, 1)
     _BASE_URL = 'https://www.17lands.com/'
-    _MIN_FILE_SIZE = 130
+    _MIN_FILE_SIZE = 265
 
     def __init__(self, set_name: str, format_name: str, target_date: date = None):
         self.SET: str = set_name
@@ -34,7 +33,6 @@ class DataLoader:
         if self.DATE:
             return f'&start_date={self.DATE}&end_date={self.DATE}'
         else:
-            # TODO: Consider if this is even needed.
             return f'&start_date={self._DEFAULT_DATE}&end_date={date.today()}'
 
     def get_card_rating_url(self, colors: str = '') -> str:
@@ -77,8 +75,8 @@ class DataLoader:
         try:
             sum_path = os.path.abspath(self.get_file_path('ColorRatings.json'))
             wrt_tm = datetime.utcfromtimestamp(os.path.getmtime(sum_path))
-        except Exception:  # pragma: no cover
-            wrt_tm = datetime(2020, 1, 1)
+        except FileNotFoundError:  # pragma: no cover
+            wrt_tm = self._DEFAULT_DATE
         Logger.LOGGER.log(f'Last write-time: {wrt_tm}', Logger.FLG.DEBUG)
         return wrt_tm
 

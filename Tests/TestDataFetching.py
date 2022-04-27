@@ -1,15 +1,21 @@
 import unittest
 from datetime import date
 from os import path
+from pandas import DataFrame
 
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
 
 from data_fetching import DataLoader, LoadedData, DataFramer, FramedData, SetManager, CentralManager
 
 
-class TestUtils(unittest.TestCase):
-    def test_gen_card_frame(self):
-        card_data = [
+CARD_KEYS = ['seen_count', 'avg_seen', 'pick_count', 'avg_pick', 'game_count', 'win_rate', 'opening_hand_game_count',
+                'opening_hand_win_rate', 'drawn_game_count', 'drawn_win_rate', 'ever_drawn_game_count',
+                'ever_drawn_win_rate', 'never_drawn_game_count', 'never_drawn_win_rate', 'drawn_improvement_win_rate',
+                'name', 'color', 'rarity']
+
+META_KEYS = ['is_summary', 'color_name', 'wins', 'games']
+
+CARD_DATA = [
             {'seen_count': 1423,
              'avg_seen': 8.179901616303583,
              'pick_count': 123,
@@ -56,7 +62,24 @@ class TestUtils(unittest.TestCase):
              'url_back': ''}
         ]
 
-        card_frame = gen_card_frame(card_data)
+META_DATA = [
+            {'is_summary': True, 'color_name': 'Two-color', 'wins': 1142, 'games': 1967},
+            {'is_summary': True, 'color_name': 'Two-color + Splash', 'wins': 395, 'games': 697},
+            {'is_summary': False, 'color_name': 'Azorius (WU)', 'wins': 140, 'games': 242},
+            {'is_summary': False, 'color_name': 'Dimir (UB)', 'wins': 97, 'games': 165},
+            {'is_summary': False, 'color_name': 'Rakdos (BR)', 'wins': 59, 'games': 112},
+            {'is_summary': False, 'color_name': 'Gruul (RG)', 'wins': 26, 'games': 60},
+            {'is_summary': False, 'color_name': 'Selesnya (GW)', 'wins': 18, 'games': 32},
+            {'is_summary': False, 'color_name': 'Orzhov (WB)', 'wins': 129, 'games': 232},
+            {'is_summary': False, 'color_name': 'Golgari (BG)', 'wins': 135, 'games': 230},
+            {'is_summary': False, 'color_name': 'Simic (GU)', 'wins': 92, 'games': 144},
+            {'is_summary': False, 'color_name': 'Izzet (UR)', 'wins': 361, 'games': 608},
+            {'is_summary': False, 'color_name': 'Boros (RW)', 'wins': 85, 'games': 142}]
+
+
+class TestUtils(unittest.TestCase):
+    def test_gen_card_frame(self):
+        card_frame = gen_card_frame(CARD_DATA)
         self.assertEqual(len(card_frame), 2)
 
         def compare_card_frame(row_name: str, seen: int, alsa: float, picked: int, ata: float, gp: int, gp_wr: float,
@@ -91,21 +114,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(len(frame), 0)
 
     def test_gen_meta_frame(self):
-        meta_data = [
-            {'is_summary': True, 'color_name': 'Two-color', 'wins': 1142, 'games': 1967},
-            {'is_summary': True, 'color_name': 'Two-color + Splash', 'wins': 395, 'games': 697},
-            {'is_summary': False, 'color_name': 'Azorius (WU)', 'wins': 140, 'games': 242},
-            {'is_summary': False, 'color_name': 'Dimir (UB)', 'wins': 97, 'games': 165},
-            {'is_summary': False, 'color_name': 'Rakdos (BR)', 'wins': 59, 'games': 112},
-            {'is_summary': False, 'color_name': 'Gruul (RG)', 'wins': 26, 'games': 60},
-            {'is_summary': False, 'color_name': 'Selesnya (GW)', 'wins': 18, 'games': 32},
-            {'is_summary': False, 'color_name': 'Orzhov (WB)', 'wins': 129, 'games': 232},
-            {'is_summary': False, 'color_name': 'Golgari (BG)', 'wins': 135, 'games': 230},
-            {'is_summary': False, 'color_name': 'Simic (GU)', 'wins': 92, 'games': 144},
-            {'is_summary': False, 'color_name': 'Izzet (UR)', 'wins': 361, 'games': 608},
-            {'is_summary': False, 'color_name': 'Boros (RW)', 'wins': 85, 'games': 142}]
-
-        sum_frame, arc_frame = gen_meta_frame(meta_data)
+        sum_frame, arc_frame = gen_meta_frame(META_DATA)
         self.assertEqual(len(sum_frame), 2)
         self.assertEqual(len(arc_frame), 10)
 
@@ -208,47 +217,113 @@ class TestDataLoader(unittest.TestCase):
         loader = DataLoader('DOM', 'PremierDraft', date(2022, 4, 1))
         self.assertEqual(loader.get_last_write_time().date(), date(2022, 4, 24))
 
+    def validate_returned_json(self, data, keys):
+        self.assertIsInstance(data, list)
+        self.assertIsInstance(data[0], dict)
+        for key in keys:
+            self.assertTrue(key in data[0])
+
     def test_get_card_data(self):
         loader = DataLoader('DOM', 'PremierDraft', date(2022, 4, 1))
-        loader.get_card_data()
+        data = loader.get_card_data()
+        self.validate_returned_json(data, CARD_KEYS)
 
     def test_get_meta_data(self):
         loader = DataLoader('DOM', 'PremierDraft', date(2022, 4, 1))
-        loader.get_meta_data()
-
-    def test_get_day_data(self):
-        loader = DataLoader('DOM', 'PremierDraft', date(2022, 4, 1))
-        loader.get_day_data()
+        data = loader.get_meta_data()
+        self.validate_returned_json(data, META_KEYS)
 
 
 class TestLoadedData(unittest.TestCase):
-    def test_get_day_data(self):
-        loaded = LoadedData('DOM', 'PremierDraft')
-        loaded.get_day_data(date(2022, 4, 1))
+    def validate_returned_json(self, data, keys):
+        self.assertIsInstance(data, list)
+        self.assertIsInstance(data[0], dict)
+        for key in keys:
+            self.assertIn(key, data[0])
 
     def test_get_summary_data(self):
         loaded = LoadedData('DOM', 'PremierDraft')
-        loaded.get_summary_data()
+        card, meta = loaded.get_summary_data()
+        self.assertIsInstance(card, dict)
+        self.validate_returned_json(card[''], CARD_KEYS)
+        self.validate_returned_json(meta, META_KEYS)
 
     def test_get_historic_data(self):
         loaded = LoadedData('DOM', 'PremierDraft')
-        loaded.get_historic_data()
+        card, meta = loaded.get_historic_data()
+        date_tmp = '2022-04-0x'
+
+        self.assertIsInstance(card, dict)
+        self.assertIsInstance(card['2022-04-01'], dict)
+        self.validate_returned_json(card['2022-04-01'][''], CARD_KEYS)
+
+        self.assertIsInstance(meta, dict)
+        self.validate_returned_json(meta['2022-04-01'], META_KEYS)
+
+        for i in range(1, 9):
+            date_str = date_tmp.replace('x', str(i))
+            self.assertIn(date_str, card)
+            self.assertIn(date_str, meta)
 
 
 class TestDataFramer(unittest.TestCase):
-    def test_data_framer(self):
-        framer = DataFramer('DOM', 'PremierDraft')
-        self.assertEqual(framer.SET, 'DOM')
-        self.assertEqual(framer.FORMAT, 'PremierDraft')
-        pass
+    def test_gen_hist(self):
+        framer = DataFramer('NEO', 'PremierDraft')
+        framer.gen_hist()
+        self.assertIsInstance(framer.GROUPED_ARCHETYPE_HISTORY_FRAME, DataFrame)
+        self.assertIsInstance(framer.SINGLE_ARCHETYPE_HISTORY_FRAME, DataFrame)
+        self.assertIsInstance(framer.CARD_HISTORY_FRAME, DataFrame)
+
+        self.assertListEqual(list(framer.GROUPED_ARCHETYPE_HISTORY_FRAME.columns),
+                             ['Colors', 'Splash', 'Wins', 'Games', 'Win %'])
+        self.assertListEqual(list(framer.SINGLE_ARCHETYPE_HISTORY_FRAME.columns),
+                             ['Colors', 'Splash', 'Wins', 'Games', 'Win %'])
+        self.assertListEqual(list(framer.CARD_HISTORY_FRAME.columns),
+                             ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR',
+                              '# GD', 'GD WR', '# GIH', 'GIH WR', '# GND', 'GND WR', 'IWD', 'Color',
+                              'Rarity'])
+
+    def test_gen_summary(self):
+        framer = DataFramer('NEO', 'PremierDraft')
+        framer.gen_summary()
+        self.assertIsInstance(framer.GROUPED_ARCHETYPE_SUMMARY_FRAME, DataFrame)
+        self.assertIsInstance(framer.SINGLE_ARCHETYPE_SUMMARY_FRAME, DataFrame)
+        self.assertIsInstance(framer.CARD_SUMMARY_FRAME, DataFrame)
+
+        self.assertListEqual(list(framer.GROUPED_ARCHETYPE_SUMMARY_FRAME.columns),
+                             ['Colors', 'Splash', 'Wins', 'Games', 'Win %'])
+        self.assertListEqual(list(framer.SINGLE_ARCHETYPE_SUMMARY_FRAME.columns),
+                             ['Colors', 'Splash', 'Wins', 'Games', 'Win %'])
+        self.assertListEqual(list(framer.CARD_SUMMARY_FRAME.columns),
+                             ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR',
+                              '# GD', 'GD WR', '# GIH', 'GIH WR', '# GND', 'GND WR', 'IWD', 'Color',
+                              'Rarity'])
 
 
 class TestFramedData(unittest.TestCase):
     def test_(self):
-        pass
+        framer = FramedData('NEO', 'PremierDraft')
+
+        framer.deck_group_frame()
+        framer.deck_archetype_frame()
+        framer.card_frame()
+        framer.compress_date_range_data('2022-04-01', '2022-04-08')
+
+        self.assertTrue(False)
 
 
 class TestSetManager(unittest.TestCase):
     def test_set_manager(self):
         manager = SetManager('NEO')
-        # manager.reload_data()
+        manager.reload_data()
+        manager.check_for_updates()
+        self.assertEqual(len(manager.CARDS), 282)
+        self.assertIsInstance(manager['PremierDraft'], DataFramer)
+
+
+class TestCentralManager(unittest.TestCase):
+    def test_set_manager(self):
+        manager = CentralManager()
+        manager.reload_data()
+        manager.check_for_updates()
+        self.assertIsInstance(manager['NEO'], DataFramer)

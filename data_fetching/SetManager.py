@@ -50,17 +50,17 @@ class SetManager:
 
     # These are here for convenience, as they're the most often used data.
     @property
-    def BO1(self):
+    def BO1(self):  # pragma: no cover
         """Premier Draft data."""
         return self['PremierDraft']
 
     @property
-    def BO3(self):
+    def BO3(self):  # pragma: no cover
         """Traditional Draft data."""
         return self['TradDraft']
 
     @property
-    def QD(self):
+    def QD(self):  # pragma: no cover
         """Quick Draft data."""
         return self['QuickDraft']
 
@@ -89,9 +89,10 @@ class CentralManager:
 
     # These are here for convenience, as they're the most often used data.
     @property
-    def NEO(self):
-        return self.DATA['NEO']
+    def SNC(self):  # pragma: no cover
+        return self.DATA['SNC']
 
     @property
-    def SNC(self):
-        return self.DATA['SNC']
+    def NEO(self):  # pragma: no cover
+        return self.DATA['NEO']
+

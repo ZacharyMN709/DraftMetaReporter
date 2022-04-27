@@ -39,44 +39,44 @@ class DataFramer:
         return self._FORMAT
 
     @property
-    def GROUPED_ARCHETYPE_HISTORY_FRAME(self):  # pragma: no cover
+    def GROUPED_ARCHETYPE_HISTORY_FRAME(self):
         """The daily data about how decks, grouped by number of colours, performs."""
-        if self.load_history and self._GROUPED_ARCHETYPE_HISTORY_FRAME is None:
+        if self.load_history and self._GROUPED_ARCHETYPE_HISTORY_FRAME is None:  # pragma: no cover
             self.gen_hist()
         return self._GROUPED_ARCHETYPE_HISTORY_FRAME
 
     @property
-    def SINGLE_ARCHETYPE_HISTORY_FRAME(self):  # pragma: no cover
+    def SINGLE_ARCHETYPE_HISTORY_FRAME(self):
         """The daily data for each deck archetype."""
-        if self.load_history and self._SINGLE_ARCHETYPE_HISTORY_FRAME is None:
+        if self.load_history and self._SINGLE_ARCHETYPE_HISTORY_FRAME is None:  # pragma: no cover
             self.gen_hist()
         return self._SINGLE_ARCHETYPE_HISTORY_FRAME
 
     @property
-    def CARD_HISTORY_FRAME(self):  # pragma: no cover
+    def CARD_HISTORY_FRAME(self):
         """The daily data for individual card performance."""
-        if self.load_history and self._CARD_HISTORY_FRAME is None:
+        if self.load_history and self._CARD_HISTORY_FRAME is None:  # pragma: no cover
             self.gen_hist()
         return self._CARD_HISTORY_FRAME
 
     @property
-    def GROUPED_ARCHETYPE_SUMMARY_FRAME(self):  # pragma: no cover
+    def GROUPED_ARCHETYPE_SUMMARY_FRAME(self):
         """The overall data, about how decks, grouped by number of colours, performs."""
-        if self.load_summary and self._GROUPED_ARCHETYPE_SUMMARY_FRAME is None:
+        if self.load_summary and self._GROUPED_ARCHETYPE_SUMMARY_FRAME is None:  # pragma: no cover
             self.gen_summary()
         return self._GROUPED_ARCHETYPE_SUMMARY_FRAME
 
     @property
-    def SINGLE_ARCHETYPE_SUMMARY_FRAME(self):  # pragma: no cover
+    def SINGLE_ARCHETYPE_SUMMARY_FRAME(self):
         """The overall data, for each deck archetype."""
-        if self.load_summary and self._SINGLE_ARCHETYPE_SUMMARY_FRAME is None:
+        if self.load_summary and self._SINGLE_ARCHETYPE_SUMMARY_FRAME is None:  # pragma: no cover
             self.gen_summary()
         return self._SINGLE_ARCHETYPE_SUMMARY_FRAME
 
     @property
-    def CARD_SUMMARY_FRAME(self):  # pragma: no cover
+    def CARD_SUMMARY_FRAME(self):
         """The overall data, about individual card performance."""
-        if self.load_summary and self._CARD_SUMMARY_FRAME is None:
+        if self.load_summary and self._CARD_SUMMARY_FRAME is None:  # pragma: no cover
             self.gen_summary()
         return self._CARD_SUMMARY_FRAME
 
