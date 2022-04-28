@@ -83,7 +83,7 @@ class DataLoader:
     def _file_valid(self, filename: str) -> bool:
         """
         Checks if a file contains actual data related to the game, or if it was created with no data.
-        :param filename: The name of the fiel to check.
+        :param filename: The name of the file to check.
         :return: True if the file is not an empty list. False, if no real data exists.
         """
         file_path = self.get_file_path(filename)

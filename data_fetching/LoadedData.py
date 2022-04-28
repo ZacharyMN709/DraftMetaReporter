@@ -62,18 +62,25 @@ class LoadedData:
         :param overwrite: Forces overwrite the data in the file
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
-        check_date = min(self._format_metadata.START_DATE, utc_today())
 
-        run = True
-        while run:
-            # If the format is active for the given date, get the data.
-            if self._format_metadata.is_active(check_date):
-                self.get_day_data(check_date, reload, overwrite)
+        # Get the date to start pulling data from, either the start date of the set or today.
+        target_date = min(self._format_metadata.START_DATE, utc_today())
 
-            # Get the next day, and check to make sure data will exist for it on the site.
-            check_date += timedelta(days=1)
-            utc_check_date = datetime.combine(check_date, time(2, 0))
-            run = utc_check_date < get_prev_17lands_update_time()
+        # Get the last time 17Lands updated its data.
+        last_17l_update_date: datetime = get_prev_17lands_update_time()
+
+        # Calculate when the data for the target date would be exist (the day after at 2am UTC).
+        update_date = datetime.combine(target_date, time(2, 0)) + timedelta(days=1)
+
+        # If the update date is before the last time 17Lands updated, the data should exist so,
+        while update_date < last_17l_update_date:
+            # If the format is active for the target date, get the data.
+            if self._format_metadata.is_active(target_date):
+                self.get_day_data(target_date, reload, overwrite)
+
+            # Increment to the next day, and repeat until we're looking for data that doesn't exist.
+            target_date += timedelta(days=1)
+            update_date += timedelta(days=1)
 
         return self._CARD_DICTS, self._META_DICT
 
@@ -86,10 +93,9 @@ class LoadedData:
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
 
-        # If the set/format hasn't started yet, log a message and return empty dicts.
-        has_started = self._format_metadata.START_DATE < utc_today()
-        if not has_started:  # pragma: no cover
-            Logger.LOGGER.log(f'{self.SET} {self.FORMAT} has not begun yet. No data to get!', Logger.FLG.DEFAULT)
+        # If the set/format has no data yet, log a message and return empty dicts.
+        if not self._format_metadata.has_data:  # pragma: no cover
+            Logger.LOGGER.log(f'{self.SET} {self.FORMAT} has no data to get!', Logger.FLG.DEFAULT)
             return dict(), list()
 
         # Determine the object is missing data.

@@ -1,6 +1,6 @@
 from typing import Optional
 from functools import cmp_to_key
-from datetime import date, timedelta
+from datetime import date, time, datetime, timedelta
 
 from Utilities import Logger
 from WUBRG.consts import COLOR_INDEXES
@@ -39,11 +39,13 @@ class SetMetadata:
             raise Exception("Must use 'SetMetadata.get_metadata' class method.")
 
         self.SET = set_code
+        Logger.LOGGER.log(f"Loading set metadata for: {set_code}", Logger.FLG.DEFAULT)
         self.FULL_NAME, self.ICON_URL = CallScryfall.get_set_info(set_code)
         self.RELEASE_DATE = SET_CONFIG[self.SET]["PremierDraft"][0][0]
         # Set up a dictionary for quicker sorting.
         self.CARD_INDEXES = {card.NAME: card.NUMBER for card in self.CARD_LIST}
         self.COMPARE_KEY = cmp_to_key(self._sort_compare)
+        Logger.LOGGER.log(f"Done!\n", Logger.FLG.DEFAULT)
 
     @property
     def CARD_DICT(self):
@@ -149,6 +151,14 @@ class FormatMetadata:
         :return: A Card object or None
         """
         return self._set_metadata.find_card(card_name)
+
+    @property
+    def has_started(self) -> bool:
+        return datetime.utcnow() > datetime.combine(self.START_DATE, time(15, 0))
+
+    @property
+    def has_data(self) -> bool:
+        return datetime.utcnow() > datetime.combine(self.START_DATE + timedelta(days=1), time(2, 0))
 
     def is_active(self, check_date: date = None) -> bool:
         """

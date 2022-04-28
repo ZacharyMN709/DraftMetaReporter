@@ -39,7 +39,7 @@ class CallScryfall:
             cards += response['data']
             if response['has_more']:
                 url = response['next_page']
-                Logger.LOGGER.log(f"Fetching next page for set: {set_code}", Logger.FLG.VERBOSE)
+                Logger.LOGGER.log(f"Fetching next page for set: {set_code}", Logger.FLG.DEBUG)
                 Logger.LOGGER.log(f"URL: {url}", Logger.FLG.DEBUG)
             else:
                 next_page = False
