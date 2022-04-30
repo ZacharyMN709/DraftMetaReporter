@@ -224,7 +224,7 @@ class TestDataLoader(unittest.TestCase):
 
     def test_file_validation(self):
         loader = DataLoader('DOM', 'PremierDraft', date(2022, 4, 1))
-        self.assertEqual(loader.get_last_write_time().date(), date(2022, 4, 24))
+        self.assertEqual(loader.get_last_summary_update_time().date(), date(2022, 4, 24))
 
     def validate_returned_json(self, data, keys):
         self.assertIsInstance(data, list)

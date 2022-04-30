@@ -6,6 +6,7 @@ from WUBRG import COLOR_COMBINATIONS
 from Utilities import Logger
 from Utilities import Fetcher
 from Utilities import save_json_file, load_json_file
+from data_fetching import utc_today
 
 from data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
 
@@ -66,15 +67,17 @@ class DataLoader:
         """Checks if a file exists in the appropriate directory for the object."""
         return os.path.isfile(self.get_file_path(filename))
 
-    # TODO: Make this more explicitly about updating summary data.
-    def get_last_write_time(self) -> datetime:
+    def get_last_summary_update_time(self) -> datetime:
         """
         Returns a UTC datetime object for the last write time of the managed files.
         :return: A datetime object.
         """
+        wrt_tm = datetime.utcnow()
         try:
-            sum_path = os.path.abspath(self.get_file_path('ColorRatings.json'))
-            wrt_tm = datetime.utcfromtimestamp(os.path.getmtime(sum_path))
+            files = os.listdir(self.get_folder_path())
+            for file in files:
+                sum_path = os.path.abspath(self.get_file_path(file))
+                wrt_tm = min(datetime.utcfromtimestamp(os.path.getmtime(sum_path)), wrt_tm)
         except FileNotFoundError:  # pragma: no cover
             wrt_tm = datetime.combine(self._DEFAULT_DATE, time(0, 0))
         Logger.LOGGER.log(f'Last write-time: {wrt_tm}', Logger.FLG.DEBUG)

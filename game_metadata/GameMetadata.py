@@ -22,13 +22,14 @@ class SetMetadata:
     __cls_lock = object()
 
     @classmethod
-    def get_metadata(cls, set_code: str) -> 'SetMetadata':
+    def get_metadata(cls, set_code: str) -> Optional['SetMetadata']:
         """
         Returns an existing instance of a FormatMetadata object, or creates one if none exists.
         :param set_code: The three-letter code for the set.
         :return: The SetMetadata for the set.
         """
-        # TODO: Implement some checks so only valid sets are added.
+        if set_code not in SETS:
+            return None
         # TODO: Make the check update along with added sets.
         if set_code not in cls.METADATA:
             cls.METADATA[set_code] = cls(cls.__cls_lock, set_code)
@@ -107,14 +108,15 @@ class FormatMetadata:
     __cls_lock = object()
 
     @staticmethod
-    def get_metadata(set_code: str, format_name: str) -> 'FormatMetadata':
+    def get_metadata(set_code: str, format_name: str) -> Optional['FormatMetadata']:
         """
         Returns an existing instance of a FormatMetadata object, or creates one if none exists.
         :param set_code: The three-letter code for the set.
         :param format_name: The identifier for the format.
         :return: The FormatMetadata for the set and format.
         """
-        # TODO: Implement some checks so only valid sets are added.
+        if set_code not in SETS or format_name not in FORMATS:
+            return None
         # TODO: Make the check update along with added sets.
         if set_code not in FormatMetadata.METADATA:
             FormatMetadata.METADATA[set_code] = dict()
