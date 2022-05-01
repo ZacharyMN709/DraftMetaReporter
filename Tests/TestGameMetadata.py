@@ -297,4 +297,4 @@ class TestFormatMetadata(unittest.TestCase):
         active = form.is_active()
         self.assertEqual(active, date.today() <= date(2022, 4, 28))
 
-
+        self.assertTrue(form.has_started)

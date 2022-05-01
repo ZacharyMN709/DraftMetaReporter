@@ -19,7 +19,7 @@ from data_fetching.FramedData import FramedData
 # https://www.17lands.com/data/draft/stream?draft_id=fdbe8fad413c4c84890760a985b8c5ef
 
 
-class SetManager:
+class SetManager:  # pragma: no cover
     """
     Acts as a wrapper for FramedData, mostly for convenience in loading multiple formats for one set under one object.
     """
@@ -50,22 +50,22 @@ class SetManager:
 
     # These are here for convenience, as they're the most often used data.
     @property
-    def BO1(self):  # pragma: no cover
+    def BO1(self):
         """Premier Draft data."""
         return self['PremierDraft']
 
     @property
-    def BO3(self):  # pragma: no cover
+    def BO3(self):
         """Traditional Draft data."""
         return self['TradDraft']
 
     @property
-    def QD(self):  # pragma: no cover
+    def QD(self):
         """Quick Draft data."""
         return self['QuickDraft']
 
 
-class CentralManager:
+class CentralManager:  # pragma: no cover
     """
     Acts as a wrapper for SetManager, aggregating all possible data into one root object.
     """
@@ -89,10 +89,10 @@ class CentralManager:
 
     # These are here for convenience, as they're the most often used data.
     @property
-    def SNC(self):  # pragma: no cover
+    def SNC(self):
         return self.DATA['SNC']
 
     @property
-    def NEO(self):  # pragma: no cover
+    def NEO(self):
         return self.DATA['NEO']
 

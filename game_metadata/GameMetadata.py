@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 from functools import cmp_to_key
 from datetime import date, time, datetime, timedelta
 
@@ -28,8 +28,6 @@ class SetMetadata:
         :param set_code: The three-letter code for the set.
         :return: The SetMetadata for the set.
         """
-        if set_code not in SETS:
-            return None
         # TODO: Make the check update along with added sets.
         if set_code not in cls.METADATA:
             cls.METADATA[set_code] = cls(cls.__cls_lock, set_code)
@@ -115,8 +113,6 @@ class FormatMetadata:
         :param format_name: The identifier for the format.
         :return: The FormatMetadata for the set and format.
         """
-        if set_code not in SETS or format_name not in FORMATS:
-            return None
         # TODO: Make the check update along with added sets.
         if set_code not in FormatMetadata.METADATA:
             FormatMetadata.METADATA[set_code] = dict()
@@ -162,7 +158,7 @@ class FormatMetadata:
     def has_data(self) -> bool:
         return datetime.utcnow() > datetime.combine(self.START_DATE + timedelta(days=1), time(2, 0))
 
-    def is_active(self, check_date: date = None) -> bool:
+    def is_active(self, check_date: Union[date, datetime] = None) -> bool:
         """
         Checks if the draft queue is active for a given date.
         :param check_date: The date to check. If 'NONE', today's date is used.
@@ -170,6 +166,9 @@ class FormatMetadata:
         """
         if check_date is None:
             check_date = date.today()
+
+        if isinstance(check_date, datetime):
+            check_date = check_date.date()
 
         active = False
         for time_period in self._active_periods:

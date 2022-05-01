@@ -3,7 +3,8 @@ from datetime import date, datetime
 from os import path
 from pandas import DataFrame
 
-from game_metadata import SETS, FORMATS
+from Utilities import Logger
+from game_metadata import SETS, FORMATS, FormatMetadata
 from data_fetching.utils.date_helper import utc_today, get_prev_17lands_update_time, get_next_17lands_update_time
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
 
@@ -250,6 +251,39 @@ class TestLoadedData(unittest.TestCase):
         for key in keys:
             self.assertIn(key, data[0])
 
+    def test_date_logic(self):
+        loaded = LoadedData('DOM', 'PremierDraft')
+        self.assertIsNotNone(FormatMetadata.get_metadata('DOM', 'PremierDraft'))
+
+        # Valid pull
+        refresh = loaded._is_historic_data_available(datetime(2022, 4, 2, 0, 0), datetime(2022, 4, 3, 2, 0))
+        self.assertTrue(refresh)
+        # Before release
+        refresh = loaded._is_historic_data_available(datetime(2022, 3, 2, 0, 0), datetime(2022, 4, 3, 2, 0))
+        self.assertFalse(refresh)
+        # After finish
+        refresh = loaded._is_historic_data_available(datetime(2022, 5, 2, 0, 0), datetime(2022, 4, 3, 2, 0))
+        self.assertFalse(refresh)
+        # No data exists yet
+        refresh = loaded._is_historic_data_available(datetime(2022, 4, 4, 0, 0), datetime(2022, 4, 3, 2, 0))
+        self.assertFalse(refresh)
+
+        # Valid pull
+        refresh = loaded._is_summary_data_stale(datetime(2022, 4, 2, 12, 0), datetime(2022, 4, 3, 2, 0))
+        self.assertTrue(refresh)
+        # After finish, but with possible updates
+        refresh = loaded._is_summary_data_stale(datetime(2022, 4, 9, 12, 0), datetime(2022, 4, 10, 2, 0))
+        self.assertTrue(refresh)
+        # Data is not stale
+        refresh = loaded._is_summary_data_stale(datetime(2022, 4, 2, 12, 0), datetime(2022, 4, 2, 2, 0))
+        self.assertFalse(refresh)
+        # After finish
+        refresh = loaded._is_summary_data_stale(datetime(2022, 5, 2, 12, 0), datetime(2022, 4, 3, 2, 0))
+        self.assertFalse(refresh)
+        # No data exists yet
+        refresh = loaded._is_summary_data_stale(datetime(2022, 4, 4, 12, 0), datetime(2022, 4, 3, 2, 0))
+        self.assertFalse(refresh)
+
     def test_get_summary_data(self):
         loaded = LoadedData('DOM', 'PremierDraft')
         card, meta = loaded.get_summary_data()
@@ -324,22 +358,3 @@ class TestFramedData(unittest.TestCase):
         framer.compress_date_range_data('2022-04-01', '2022-04-08')
 
         self.assertTrue(False)
-
-
-class TestSetManager(unittest.TestCase):
-    def test_set_manager(self):
-        manager = SetManager('NEO')
-        manager.reload_data()
-        manager.check_for_updates()
-        self.assertEqual(len(manager.CARDS), 282)
-        for format_type in FORMATS:
-            self.assertIsInstance(manager['PremierDraft'], FramedData)
-
-
-class TestCentralManager(unittest.TestCase):
-    def test_set_manager(self):
-        manager = CentralManager()
-        manager.reload_data()
-        manager.check_for_updates()
-        for set_code in SETS:
-            self.assertIsInstance(manager[set_code], SetManager)

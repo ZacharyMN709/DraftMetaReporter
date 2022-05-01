@@ -54,11 +54,11 @@ class LoadedData:
 
         return self._CARD_DICTS[str_date], self._META_DICT[str_date]
 
-    def _is_historic_data_available(self, requested_date: date, last_17l_update: datetime) -> bool:
+    def _is_historic_data_available(self, requested_date: datetime, last_17l_update: datetime) -> bool:
         # Data for a given day will be exist at 2am UTC the following day.
         update_date = datetime.combine(requested_date, time(2, 0)) + timedelta(days=1)
-        is_active = self._format_metadata.is_active(requested_date)
         has_updated = update_date <= last_17l_update
+        is_active = self._format_metadata.is_active(requested_date)
 
         Logger.LOGGER.log(f'Date to get data for:          {requested_date}', Logger.FLG.DEBUG)
         Logger.LOGGER.log(f'Date this data is available:   {update_date}', Logger.FLG.DEBUG)
@@ -78,24 +78,24 @@ class LoadedData:
         """
 
         # If the set/format has no data yet, log a message and return blank values.
-        if utc_today() < self._format_metadata.START_DATE:
+        if not self._format_metadata.has_data:  # pragma: no cover
             Logger.LOGGER.log(f'{self.SET} {self.FORMAT} has no historic data to get!', Logger.FLG.DEFAULT)
             return dict(), dict()
 
         # Initialize the relevant dates to determine if data is available.
-        requested_date = self._format_metadata.START_DATE
+        requested_date = datetime.combine(self._format_metadata.START_DATE, time(0, 0))
         last_17l_update_date = get_prev_17lands_update_time()
 
         # If the update date is before the last time 17Lands updated, the data could exist so,
         while requested_date <= last_17l_update_date:
             # Check if data is available for the requested_date, and if so do the update.
             if self._is_historic_data_available(requested_date, last_17l_update_date):
-                self.get_day_data(requested_date, reload, overwrite)
+                self.get_day_data(requested_date.date(), reload, overwrite)
             requested_date += timedelta(days=1)
 
         return self._CARD_DICTS, self._META_DICT
 
-    def _is_summary_data_stale(self, last_write, last_17l_update):
+    def _is_summary_data_stale(self, last_write: datetime, last_17l_update: datetime):
         # Check if the data has been updated since last write and that the format is still open.
         end_date = self._format_metadata.END_DATE + timedelta(days=3)
         data_updated = last_write < last_17l_update
@@ -105,7 +105,7 @@ class LoadedData:
         Logger.LOGGER.log(f'Last 17Lands Update:           {last_17l_update}', Logger.FLG.DEBUG)
         Logger.LOGGER.log(f'End Date:                      {end_date}', Logger.FLG.DEBUG)
         Logger.LOGGER.log(f'Cached data is stale:          {data_updated}', Logger.FLG.DEBUG)
-        Logger.LOGGER.log(f'The set is live:               {data_live}', Logger.FLG.DEBUG)
+        Logger.LOGGER.log(f'The set is live:               {data_live}\n', Logger.FLG.DEBUG)
 
         return data_updated and data_live
 
