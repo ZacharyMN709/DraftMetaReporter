@@ -9,7 +9,7 @@ from data_graphing.utils import settings
 from data_graphing.ColorHandler import ColorHandler
 
 
-class PlotterHelper:
+class PlotterHelper:  # pragma: no cover
     def __init__(self, data: FramedData, palette=None, color_dict=None):
         self.DATA = data
         self.FIG = None

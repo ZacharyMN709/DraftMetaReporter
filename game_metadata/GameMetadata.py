@@ -3,7 +3,7 @@ from functools import cmp_to_key
 from datetime import date, time, datetime, timedelta
 
 from Utilities import Logger
-from WUBRG.consts import COLOR_INDEXES
+from WUBRG.funcs import color_compare
 
 from game_metadata.utils.settings import SETS, FORMATS, SET_CONFIG
 from game_metadata.CallScryfall import CallScryfall
@@ -43,7 +43,7 @@ class SetMetadata:
         self.RELEASE_DATE = SET_CONFIG[self.SET]["PremierDraft"][0][0]
         # Set up a dictionary for quicker sorting.
         self.CARD_INDEXES = {card.NAME: card.NUMBER for card in self.CARD_LIST}
-        self.COMPARE_KEY = cmp_to_key(self._sort_compare)
+        self.FRAME_COMPARE_KEY = cmp_to_key(self._frame_compare)
         Logger.LOGGER.log(f"Done!\n", Logger.FLG.DEFAULT)
 
     @property
@@ -55,25 +55,23 @@ class SetMetadata:
         return [self.CARD_DICT[name] for name in self.CARD_DICT]
 
     # Creating a custom sorting algorithm to order frames
-    def _sort_compare(self, pair1: tuple[str, str], pair2: tuple[str, str]) -> int:
-        # Convert the colors and names into numeric indexes
-        # deck_color1, name1 = pair1
-        col_idx1 = COLOR_INDEXES[pair1[0]]
+    def _frame_compare(self, pair1: tuple[str, str], pair2: tuple[str, str]) -> int:
+        # Convert the  names into numeric indexes
         name_idx1 = self.CARD_INDEXES[pair1[1]]
-        # deck_color2, name2 = pair2
-        col_idx2 = COLOR_INDEXES[pair2[0]]
         name_idx2 = self.CARD_INDEXES[pair2[1]]
 
+        # Gets the colour strings.
+        col_1 = pair1[0]
+        col_2 = pair2[0]
+
         # Sort by deck colour, then card number.
-        if col_idx1 == col_idx2:
+        if col_1 == col_2:
             if name_idx1 < name_idx2:
                 return -1
             else:
                 return 1
-        if col_idx1 < col_idx2:
-            return -1
         else:
-            return 1
+            return color_compare(col_1, col_2)
 
     def find_card(self, card_name) -> Optional[Card]:
         """

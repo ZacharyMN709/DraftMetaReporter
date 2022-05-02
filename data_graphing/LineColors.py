@@ -1,4 +1,4 @@
-class LineColors:
+class LineColors:  # pragma: no cover
     def __init__(self):                
         pass
 

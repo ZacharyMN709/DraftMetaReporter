@@ -115,6 +115,16 @@ class TestCard(unittest.TestCase):
         card = self.gen_card(name)
         self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
 
+    def test_card_snow(self):
+        name = 'Berg Strider'
+        card = self.gen_card(name)
+        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
+
+    def test_card_planeswalker(self):
+        name = 'The Wandering Emperor'
+        card = self.gen_card(name)
+        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
+
     def test_card_error(self):
         name = 'ujbn uiblubiihno;cinoef r'
         self.assertRaises(Exception, self.gen_card, name)
@@ -252,12 +262,12 @@ class TestSetMetadata(unittest.TestCase):
         tup_2 = (WUBRG.COLOR_COMBINATIONS[-1], meta.CARD_LIST[-1].NAME)
         tup_3 = (WUBRG.COLOR_COMBINATIONS[0], meta.CARD_LIST[2].NAME)
 
-        self.assertEqual(meta._sort_compare(tup_1, tup_2), -1)
-        self.assertEqual(meta._sort_compare(tup_2, tup_1), 1)
-        self.assertEqual(meta._sort_compare(tup_1, tup_3), -1)
-        self.assertEqual(meta._sort_compare(tup_3, tup_1), 1)
-        self.assertEqual(meta._sort_compare(tup_3, tup_2), -1)
-        self.assertEqual(meta._sort_compare(tup_2, tup_3), 1)
+        self.assertEqual(meta._frame_compare(tup_1, tup_2), -1)
+        self.assertEqual(meta._frame_compare(tup_2, tup_1), 1)
+        self.assertEqual(meta._frame_compare(tup_1, tup_3), -1)
+        self.assertEqual(meta._frame_compare(tup_3, tup_1), 1)
+        self.assertEqual(meta._frame_compare(tup_3, tup_2), -1)
+        self.assertEqual(meta._frame_compare(tup_2, tup_3), 1)
 
 
 class TestFormatMetadata(unittest.TestCase):

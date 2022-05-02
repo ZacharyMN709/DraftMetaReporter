@@ -95,7 +95,7 @@ class LoadedData:
 
         return self._CARD_DICTS, self._META_DICT
 
-    def _is_summary_data_stale(self, last_write: datetime, last_17l_update: datetime):
+    def _is_summary_data_stale(self, last_write: datetime, last_17l_update: datetime) -> bool:
         # Check if the data has been updated since last write and that the format is still open.
         end_date = self._format_metadata.END_DATE + timedelta(days=3)
         data_updated = last_write < last_17l_update

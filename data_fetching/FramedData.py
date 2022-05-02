@@ -4,6 +4,7 @@ from WUBRG import get_color_identity, get_color_subsets
 from game_metadata import SetMetadata
 
 from data_fetching.utils.consts import FORMAT_NICKNAME_DICT
+from data_fetching.utils.index_slice_helper import get_name_slice
 from data_fetching.DataFramer import DataFramer
 
 
@@ -21,7 +22,7 @@ class FramedData:
         self.FORMAT = format_name
         self.FORMAT_ALIAS = FORMAT_NICKNAME_DICT[self.FORMAT].upper()
         self.DATA = DataFramer(set_code, format_name, load_summary, load_history)
-        self._compare_key = self._set_metadata.COMPARE_KEY
+        self._compare_key = self._set_metadata.FRAME_COMPARE_KEY
 
         self.load_summary = load_summary
         self.load_history = load_history
@@ -34,8 +35,12 @@ class FramedData:
         """Populates and updates all data properties, reloading all data."""
         self.DATA.reload_data()
 
-    # TODO: Create a function which takes in common parameters for subsetting the frames, and converts them
-    #  into a kwarg dict of slices.
+    # TODO: Handle the filtering of frames in steps. Handle filtering on indexes first,
+    #  then filtering on row values after.
+    #  :name:          Can be none, str, slice or lst*.
+    #  :deck_colors:   Can be none, str, slice or lst*.
+    #  :date:          Can be none, str, slice, date, lst*, or tuple*.
+    #  :summary:       Can be bool.
 
     def deck_group_frame(self, name=None, date=None, summary=False) -> pd.DataFrame:
         """Returns a subset of the 'GROUPED_ARCHETYPE' data as a DataFrame."""
@@ -81,7 +86,7 @@ class FramedData:
         return ret
 
     # TODO: Figure out how to best parameterize this/what wrapper functions to have call this
-    def compress_date_range_data(self, start_date: str, end_date: str, card_name: str = None) -> pd.DataFrame:
+    def aggregate_card_performance_data(self, start_date: str, end_date: str, card_name: str = None) -> pd.DataFrame:
         """
         Summarizes card data over a provided set of time.
         :param start_date: The start date of the data to combine (inclusive)
@@ -120,11 +125,12 @@ class FramedData:
         frame['IWD'] = frame['GIH WR'] - frame['GND WR']
 
         # Trim the helper columns from the expanded frame.
-        summed = frame[
-            ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR', '# GIH', 'GIH WR',
-             '# GND', 'GND WR', 'IWD', 'Color', 'Rarity']]
+        summed = frame[['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR',
+                        '# GIH', 'GIH WR', '# GND', 'GND WR', 'IWD', 'Color', 'Rarity']]
         idx = list(summed.index)
         idx.sort(key=self._compare_key)
         summed = summed.set_index([idx])
 
         return summed
+
+    # TODO: Create aggregation functions for the other data structures.

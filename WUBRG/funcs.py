@@ -1,8 +1,10 @@
-from typing import Optional
+from functools import cmp_to_key
+from typing import Optional, Callable
 import re
 
 from Utilities import Logger
-from WUBRG.consts import COLORS, FAILSAFE, COLOR_ALIASES, COLOR_COMBINATIONS, COLOR_COMBINATION_TO_ALIAS, MANA_SYMBOLS
+from WUBRG.consts import COLORS, FAILSAFE, COLOR_ALIASES, COLOR_COMBINATIONS, COLOR_COMBINATION_TO_ALIAS, MANA_SYMBOLS, \
+    COLOR_INDEXES
 
 mana_cost_re = re.compile(r'{(.*?)}')
 
@@ -140,3 +142,18 @@ def parse_cost(mana_cost: str) -> list[str]:
 
     # If all checks passed, return the found values.
     return costs
+
+
+# Creating a custom sorting algorithm to order frames
+def color_compare(col1: str, col2: str) -> int:
+    # Convert the colors into numeric indexes
+    col_idx1 = COLOR_INDEXES[col1]
+    col_idx2 = COLOR_INDEXES[col2]
+
+    if col_idx1 < col_idx2:
+        return -1
+    else:
+        return 1
+
+
+color_compare_key: Callable = cmp_to_key(color_compare)

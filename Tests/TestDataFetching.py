@@ -3,17 +3,16 @@ from datetime import date, datetime
 from os import path
 from pandas import DataFrame
 
-from Utilities import Logger
-from game_metadata import SETS, FORMATS, FormatMetadata
+from game_metadata import FormatMetadata
 from data_fetching.utils.date_helper import utc_today, get_prev_17lands_update_time, get_next_17lands_update_time
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
 
-from data_fetching import DataLoader, LoadedData, DataFramer, FramedData, SetManager, CentralManager
+from data_fetching import DataLoader, LoadedData, DataFramer, FramedData
 
-CARD_KEYS_REQ = ['seen_count', 'avg_seen', 'pick_count', 'avg_pick', 'game_count', 'win_rate', 'opening_hand_game_count',
-                 'opening_hand_win_rate', 'drawn_game_count', 'drawn_win_rate', 'ever_drawn_game_count',
-                 'ever_drawn_win_rate', 'never_drawn_game_count', 'never_drawn_win_rate', 'drawn_improvement_win_rate',
-                 'name', 'color', 'rarity']
+CARD_KEYS_REQ = ['seen_count', 'avg_seen', 'pick_count', 'avg_pick', 'game_count', 'win_rate',
+                 'opening_hand_game_count', 'opening_hand_win_rate', 'drawn_game_count', 'drawn_win_rate',
+                 'ever_drawn_game_count', 'ever_drawn_win_rate', 'never_drawn_game_count', 'never_drawn_win_rate',
+                 'drawn_improvement_win_rate', 'name', 'color', 'rarity']
 CARD_KEYS_EXTRA = ['sideboard_game_count', 'sideboard_win_rate', 'url', 'url_back']
 CARD_KEYS = CARD_KEYS_REQ + CARD_KEYS_EXTRA
 
@@ -310,6 +309,11 @@ class TestLoadedData(unittest.TestCase):
 
 
 class TestDataFramer(unittest.TestCase):
+    ARCHETYPE_COLS = ['Colors', 'Splash', 'Wins', 'Games', 'Win %']
+    CARD_COLS = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR',
+                 '# GIH', 'GIH WR', '# GND', 'GND WR', 'IWD', 'Rarity', 'Color',
+                 'Cast Color', 'CMC', 'Type Line', 'Supertypes', 'Types', 'Subtypes', 'Power', 'Toughness']
+
     def test_gen_hist(self):
         framer = DataFramer('NEO', 'PremierDraft')
         framer.gen_hist()
@@ -317,14 +321,9 @@ class TestDataFramer(unittest.TestCase):
         self.assertIsInstance(framer.SINGLE_ARCHETYPE_HISTORY_FRAME, DataFrame)
         self.assertIsInstance(framer.CARD_HISTORY_FRAME, DataFrame)
 
-        self.assertListEqual(list(framer.GROUPED_ARCHETYPE_HISTORY_FRAME.columns),
-                             ['Colors', 'Splash', 'Wins', 'Games', 'Win %'])
-        self.assertListEqual(list(framer.SINGLE_ARCHETYPE_HISTORY_FRAME.columns),
-                             ['Colors', 'Splash', 'Wins', 'Games', 'Win %'])
-        self.assertListEqual(list(framer.CARD_HISTORY_FRAME.columns),
-                             ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR',
-                              '# GD', 'GD WR', '# GIH', 'GIH WR', '# GND', 'GND WR', 'IWD', 'Color',
-                              'Rarity'])
+        self.assertListEqual(list(framer.GROUPED_ARCHETYPE_HISTORY_FRAME.columns), self.ARCHETYPE_COLS)
+        self.assertListEqual(list(framer.SINGLE_ARCHETYPE_HISTORY_FRAME.columns), self.ARCHETYPE_COLS)
+        self.assertListEqual(list(framer.CARD_HISTORY_FRAME.columns), self.CARD_COLS)
 
     def test_gen_summary(self):
         framer = DataFramer('NEO', 'PremierDraft')
@@ -333,14 +332,9 @@ class TestDataFramer(unittest.TestCase):
         self.assertIsInstance(framer.SINGLE_ARCHETYPE_SUMMARY_FRAME, DataFrame)
         self.assertIsInstance(framer.CARD_SUMMARY_FRAME, DataFrame)
 
-        self.assertListEqual(list(framer.GROUPED_ARCHETYPE_SUMMARY_FRAME.columns),
-                             ['Colors', 'Splash', 'Wins', 'Games', 'Win %'])
-        self.assertListEqual(list(framer.SINGLE_ARCHETYPE_SUMMARY_FRAME.columns),
-                             ['Colors', 'Splash', 'Wins', 'Games', 'Win %'])
-        self.assertListEqual(list(framer.CARD_SUMMARY_FRAME.columns),
-                             ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR',
-                              '# GD', 'GD WR', '# GIH', 'GIH WR', '# GND', 'GND WR', 'IWD', 'Color',
-                              'Rarity'])
+        self.assertListEqual(list(framer.GROUPED_ARCHETYPE_SUMMARY_FRAME.columns), self.ARCHETYPE_COLS)
+        self.assertListEqual(list(framer.SINGLE_ARCHETYPE_SUMMARY_FRAME.columns), self.ARCHETYPE_COLS)
+        self.assertListEqual(list(framer.CARD_SUMMARY_FRAME.columns), self.CARD_COLS)
 
 
 class TestFramedData(unittest.TestCase):
@@ -355,6 +349,6 @@ class TestFramedData(unittest.TestCase):
         framer.card_frame(card_rarity='C')
         framer.card_frame(card_color='U')
         framer.card_frame(summary=True)
-        framer.compress_date_range_data('2022-04-01', '2022-04-08')
+        framer.aggregate_card_performance_data('2022-04-01', '2022-04-08')
 
         self.assertTrue(False)

@@ -52,7 +52,7 @@ class CardFace:
 
     def handle_types(self, type_line):
         # Check that a type line was found.
-        if type_line is None:
+        if type_line is None:  # pragma: no cover
             return
         self.TYPE_LINE = type_line
 
@@ -76,7 +76,7 @@ class CardFace:
         # The remaining text is all of the types, separated by spaces.
         self.TYPES = half_one.strip().split(' ')
         for t in self.TYPES:
-            if t not in TYPES:
+            if t not in TYPES:  # pragma: no cover
                 raise Exception(f"Invalid type '{t}' for card '{self.NAME}'")
 
         # If the second half of the type line exists handle that.
@@ -92,7 +92,7 @@ class CardFace:
                     if subtype in SUBTYPE_DICT[t]:
                         valid_subtype = True
                 # And raise an exception if not.
-                if not valid_subtype:
+                if not valid_subtype:  # pragma: no cover
                     raise Exception(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
 
             self.SUBTYPES = subtypes
