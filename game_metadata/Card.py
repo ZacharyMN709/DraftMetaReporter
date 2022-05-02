@@ -3,6 +3,7 @@ from typing import Union
 from WUBRG import get_color_identity
 
 from game_metadata.utils.consts import RARITY_ALIASES, LAYOUT_DICT, CardLayouts
+from game_metadata.utils import SUPERTYPES, TYPES, ALL_SUBTYPES, SUBTYPE_DICT
 
 
 class CardFace:
@@ -49,6 +50,53 @@ class CardFace:
 
         return face
 
+    def handle_types(self, type_line):
+        # Check that a type line was found.
+        if type_line is None:
+            return
+        self.TYPE_LINE = type_line
+        # print(f"TYPE_LINE: {self.TYPE_LINE}")
+
+        # Split the type line on the dash to separate any subtypes
+        lst = type_line.split('—')
+
+        # Handle the first half of the type line
+        half_one = lst[0].strip()
+        # print(f"half_one: {half_one}")
+
+        # Remove the super types from the first half, and save them
+        supertypes = list()
+        for t in SUPERTYPES:
+            if t in half_one:
+                half_one = half_one.replace(t, '')
+                supertypes.append(t)
+
+        # If supertypes were found, assign the Card Face that value.
+        if supertypes:
+            self.SUPERTYPES = supertypes
+        # print(f"SUPERTYPES: {self.SUPERTYPES}")
+
+        # The remaining text is all of the types, separated by spaces.
+        self.TYPES = half_one.strip().split(' ')
+        # print(f"TYPES: {self.TYPES}")
+
+        # If the second half of the type line exists handle that.
+        if len(lst) == 2:
+            half_two = lst[1].strip()
+            # print(f"half_two: {half_two}")
+            subtypes = half_two.split(' ')
+
+            for subtype in subtypes:
+                valid_subtype = False
+                for t in self.TYPES:
+                    if subtype in SUBTYPE_DICT[t]:
+                        valid_subtype = True
+                if not valid_subtype:
+                    raise Exception(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
+
+            self.SUBTYPES = subtypes
+            # print(f"SUBTYPES: {self.SUBTYPES}")
+
     def __init__(self, json: dict[str, Union[str, dict[str, str], list[str]]], side: str):
         if side in ['back', 'adventure', 'right']:
             sub_json = json['card_faces'][1]
@@ -65,7 +113,11 @@ class CardFace:
         self.COLORS = sub_json.get('colors')
         if self.COLORS is not None:
             self.COLORS = get_color_identity("".join(self.COLORS))
-        self.TYPE_LINE = sub_json.get('type_line')
+        self.TYPE_LINE = None
+        self.SUPERTYPES = None
+        self.TYPES = None
+        self.SUBTYPES = None
+        self.handle_types(sub_json.get('type_line'))
 
         self.ORACLE = sub_json.get('oracle_text')
         self.FLAVOR_TEXT = sub_json.get('flavor_text')
@@ -137,7 +189,7 @@ class Card:
         self.RARITY = RARITY_ALIASES[json['rarity']]
         self.NUMBER = json['collector_number']
         self.COLOR_IDENTITY = get_color_identity("".join(json['color_identity']))
-        self.CMC = json['cmc']  # TODO: Have this handled by a card face later.
+        self._CMC = json['cmc']  # TODO: Have this handled by a card face later.
         self.LAYOUT = LAYOUT_DICT[json['layout']]
         self.TWO_SIDED = self.LAYOUT is CardLayouts.TWO_SIDED
         self.SPLIT = self.LAYOUT is CardLayouts.FUSED
@@ -160,6 +212,41 @@ class Card:
     def MANA_COST(self) -> str:
         """Gets the mana cost of the card"""
         return self.DEFAULT_FACE.MANA_COST
+
+    @property
+    def CMC(self) -> str:
+        """Gets the converted mana cost of the card"""
+        return self._CMC
+
+    @property
+    def TYPE_LINE(self) -> str:
+        """Gets the type line of the card"""
+        return self.DEFAULT_FACE.TYPE_LINE
+
+    @property
+    def SUPERTYPES(self) -> str:
+        """Gets the type line of the card"""
+        return self.DEFAULT_FACE.SUPERTYPES
+
+    @property
+    def TYPES(self) -> str:
+        """Gets the type line of the card"""
+        return self.DEFAULT_FACE.TYPES
+
+    @property
+    def SUBTYPES(self) -> str:
+        """Gets the type line of the card"""
+        return self.DEFAULT_FACE.SUBTYPES
+
+    @property
+    def POW(self) -> str:
+        """Gets the power of the card"""
+        return self.DEFAULT_FACE.POW
+
+    @property
+    def TOU(self) -> str:
+        """Gets the toughness of the card"""
+        return self.DEFAULT_FACE.TOU
 
     @property
     def API(self) -> str:

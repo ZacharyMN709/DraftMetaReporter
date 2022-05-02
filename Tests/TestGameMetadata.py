@@ -110,6 +110,11 @@ class TestCard(unittest.TestCase):
         name = 'Bushi Tenderfoot'
         self.assertRaises(Exception, self.gen_card, name)
 
+    def test_card_legendary(self):
+        name = 'Cormella, Glamor Thief'
+        card = self.gen_card(name)
+        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
+
     def test_card_error(self):
         name = 'ujbn uiblubiihno;cinoef r'
         self.assertRaises(Exception, self.gen_card, name)

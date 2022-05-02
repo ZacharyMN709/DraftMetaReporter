@@ -2,8 +2,9 @@ import pandas as pd
 
 from Utilities import Logger
 
-from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
+from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame, append_card_info
 from data_fetching.LoadedData import LoadedData
+from game_metadata import FormatMetadata
 
 
 class DataFramer:
@@ -16,6 +17,7 @@ class DataFramer:
         self._SET = set_code
         self._FORMAT = format_name
         self._FETCHER = LoadedData(set_code, format_name)
+        self._format_metadata = FormatMetadata.get_metadata(set_code, format_name)
 
         self.load_summary = load_summary
         self.load_history = load_history
@@ -103,7 +105,9 @@ class DataFramer:
         for date in hist_card:
             color_dict = dict()
             for color in hist_card[date]:
-                color_dict[color] = gen_card_frame(hist_card[date][color])
+                frame = gen_card_frame(hist_card[date][color])
+                frame = append_card_info(frame, self._format_metadata.CARD_DICT)
+                color_dict[color] = frame
             card_frame_dict[date] = pd.concat(color_dict, names=["Deck Colors", "Name"])
         card_frame = pd.concat(card_frame_dict, names=["Date", "Deck Colors", "Name"])
 
@@ -123,7 +127,9 @@ class DataFramer:
 
         color_dict = dict()
         for color in hist_card:
-            color_dict[color] = gen_card_frame(hist_card[color])
+            frame = gen_card_frame(hist_card[color])
+            frame = append_card_info(frame, self._format_metadata.CARD_DICT)
+            color_dict[color] = frame
         card_frame = pd.concat(color_dict, names=["Deck Colors", "Name"])
 
         self._GROUPED_ARCHETYPE_SUMMARY_FRAME = grouped_arch_frame

@@ -1,9 +1,10 @@
 import pandas as pd
 
-from WUBRG import COLOR_ALIASES
+from WUBRG import COLOR_ALIASES, get_color_identity
 from WUBRG.consts import COLOR_COUNT_MAP
 
 from data_fetching.utils.consts import RARITY_ALIASES, STAT_NAMES, META_COLS
+from game_metadata import Card
 
 
 def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
@@ -32,6 +33,30 @@ def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
     frame = frame.reindex(columns=column_names)
 
     frame = frame.round(3)
+    return frame
+
+
+def append_card_info(frame: pd.DataFrame, card_dict: dict[str, Card]) -> pd.DataFrame:
+    """
+    Appends card information to an existing frame to help with sorting.
+    :param frame: The pandas frame which contains the card performance data.
+    :param card_dict: The dictionary of card names and card objects.
+    :return: A DataFrame with the card information attached.
+    """
+    frame['Cast Color'] = [get_color_identity(card_dict[card_name].MANA_COST) for card_name in frame.index]
+    frame['CMC'] = [card_dict[card_name].CMC for card_name in frame.index]
+    frame['Type Line'] = [card_dict[card_name].TYPE_LINE for card_name in frame.index]
+    frame['Supertypes'] = [card_dict[card_name].SUPERTYPES for card_name in frame.index]
+    frame['Types'] = [card_dict[card_name].TYPES for card_name in frame.index]
+    frame['Subtypes'] = [card_dict[card_name].SUBTYPES for card_name in frame.index]
+    frame['Power'] = [card_dict[card_name].POW for card_name in frame.index]
+    frame['Toughness'] = [card_dict[card_name].TOU for card_name in frame.index]
+
+    column_names = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR',
+                    '# GIH', 'GIH WR', '# GND', 'GND WR', 'IWD', 'Rarity',
+                    'Color', 'Cast Color', 'CMC', 'Type Line', 'Supertypes', 'Types', 'Subtypes', 'Power', 'Toughness']
+
+    frame = frame[column_names]  # Re-orders columns.
     return frame
 
 

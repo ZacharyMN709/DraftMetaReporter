@@ -14,10 +14,10 @@ class LoadedData:
     handle data without the use of Pandas - though that's not recommended.
     """
 
-    def __init__(self, set_name: str, format_name: str):
-        self.SET = set_name
+    def __init__(self, set_code: str, format_name: str):
+        self.SET = set_code
         self.FORMAT = format_name
-        self._format_metadata = FormatMetadata.get_metadata(set_name, format_name)
+        self._format_metadata = FormatMetadata.get_metadata(set_code, format_name)
 
         self._META_DICT = dict()
         self._CARD_DICTS = dict()
