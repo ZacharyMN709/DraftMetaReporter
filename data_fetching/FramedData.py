@@ -3,7 +3,7 @@ import pandas as pd
 from WUBRG import get_color_identity, get_color_subsets
 from game_metadata import SetMetadata
 
-from data_fetching.utils.consts import FORMAT_NICKNAMES
+from data_fetching.utils.consts import FORMAT_NICKNAME_DICT
 from data_fetching.DataFramer import DataFramer
 
 
@@ -19,7 +19,7 @@ class FramedData:
         self.SET = set_code
         self.SET_NAME = self._set_metadata.FULL_NAME
         self.FORMAT = format_name
-        self.FORMAT_ALIAS = FORMAT_NICKNAMES[self.FORMAT].upper()
+        self.FORMAT_ALIAS = FORMAT_NICKNAME_DICT[self.FORMAT].upper()
         self.DATA = DataFramer(set_code, format_name, load_summary, load_history)
         self._compare_key = self._set_metadata.COMPARE_KEY
 

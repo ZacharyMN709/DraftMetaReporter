@@ -3,7 +3,8 @@ import pandas as pd
 from WUBRG import COLOR_ALIASES, get_color_identity
 from WUBRG.consts import COLOR_COUNT_MAP
 
-from data_fetching.utils.consts import RARITY_ALIASES, STAT_NAMES, META_COLS
+from data_fetching.utils.consts import RARITY_ALIAS_DICT, STAT_NAME_DICT, META_COLS_ALIAS_DICT, \
+    STAT_COL_NAMES, SHARED_COL_NAMES, CARD_INFO_COL_NAMES
 from game_metadata import Card
 
 
@@ -14,7 +15,7 @@ def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
     :return: A DataFrame filled with the cleaned card data
     """
     frame = pd.DataFrame(card_dict)
-    frame = frame.rename(columns=STAT_NAMES)
+    frame = frame.rename(columns=STAT_NAME_DICT)
 
     # If there's no data, make a blank frame and return it.
     if card_dict is None or len(card_dict) == 0:
@@ -26,10 +27,9 @@ def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
         frame[col] = frame[col] * 100
 
     frame = frame.drop(['sideboard_game_count', 'sideboard_win_rate', 'url', 'url_back'], axis=1)
-    frame['Rarity'] = frame['Rarity'].map(RARITY_ALIASES)
+    frame['Rarity'] = frame['Rarity'].map(RARITY_ALIAS_DICT)
 
-    column_names = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR', '# GIH',
-                    'GIH WR', '# GND', 'GND WR', 'IWD', 'Color', 'Rarity']
+    column_names = STAT_COL_NAMES + SHARED_COL_NAMES
     frame = frame.reindex(columns=column_names)
 
     frame = frame.round(3)
@@ -52,11 +52,8 @@ def append_card_info(frame: pd.DataFrame, card_dict: dict[str, Card]) -> pd.Data
     frame['Power'] = [card_dict[card_name].POW for card_name in frame.index]
     frame['Toughness'] = [card_dict[card_name].TOU for card_name in frame.index]
 
-    column_names = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR',
-                    '# GIH', 'GIH WR', '# GND', 'GND WR', 'IWD', 'Rarity',
-                    'Color', 'Cast Color', 'CMC', 'Type Line', 'Supertypes', 'Types', 'Subtypes', 'Power', 'Toughness']
-
-    frame = frame[column_names]  # Re-orders columns.
+    column_names = STAT_COL_NAMES + SHARED_COL_NAMES + CARD_INFO_COL_NAMES
+    frame = frame.reindex(columns=column_names)
     return frame
 
 
@@ -74,7 +71,7 @@ def gen_meta_frame(meta_dict: list[dict[str, object]]) -> tuple[pd.DataFrame, pd
 
     # Otherwise, load in the data and split it into summaries and archetypes.
     frame = pd.DataFrame(meta_dict)
-    frame = frame.rename(columns=META_COLS)
+    frame = frame.rename(columns=META_COLS_ALIAS_DICT)
 
     frame['Name'] = frame['Color Name']
     frame = frame.set_index('Name')

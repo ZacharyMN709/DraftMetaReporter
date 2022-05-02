@@ -55,14 +55,12 @@ class CardFace:
         if type_line is None:
             return
         self.TYPE_LINE = type_line
-        # print(f"TYPE_LINE: {self.TYPE_LINE}")
 
         # Split the type line on the dash to separate any subtypes
         lst = type_line.split('—')
 
         # Handle the first half of the type line
         half_one = lst[0].strip()
-        # print(f"half_one: {half_one}")
 
         # Remove the super types from the first half, and save them
         supertypes = list()
@@ -74,28 +72,30 @@ class CardFace:
         # If supertypes were found, assign the Card Face that value.
         if supertypes:
             self.SUPERTYPES = supertypes
-        # print(f"SUPERTYPES: {self.SUPERTYPES}")
 
         # The remaining text is all of the types, separated by spaces.
         self.TYPES = half_one.strip().split(' ')
-        # print(f"TYPES: {self.TYPES}")
+        for t in self.TYPES:
+            if t not in TYPES:
+                raise Exception(f"Invalid type '{t}' for card '{self.NAME}'")
 
         # If the second half of the type line exists handle that.
         if len(lst) == 2:
             half_two = lst[1].strip()
-            # print(f"half_two: {half_two}")
             subtypes = half_two.split(' ')
 
+            # For each subtype found,
             for subtype in subtypes:
                 valid_subtype = False
+                # Check that it's a valid subtype among the cards types.
                 for t in self.TYPES:
                     if subtype in SUBTYPE_DICT[t]:
                         valid_subtype = True
+                # And raise an exception if not.
                 if not valid_subtype:
                     raise Exception(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
 
             self.SUBTYPES = subtypes
-            # print(f"SUBTYPES: {self.SUBTYPES}")
 
     def __init__(self, json: dict[str, Union[str, dict[str, str], list[str]]], side: str):
         if side in ['back', 'adventure', 'right']:
