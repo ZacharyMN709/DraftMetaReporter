@@ -5,3 +5,4 @@ __pychache__
 .coverage
 Tests/test.txt
 test.txt
+*.png

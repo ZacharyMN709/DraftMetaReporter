@@ -48,6 +48,7 @@ class PlotterHelper:  # pragma: no cover
         self.set_x_axis_weekly(g_x=0, g_y=1)
         self.set_x_axis_weekly(g_x=1, g_y=0)
         self.set_x_axis_weekly(g_x=1, g_y=1)
+        self.FIG.autofmt_xdate(rotation=45, ha='right')
         return self.FIG, self.AX
 
     def accredit(self, y=0.01):

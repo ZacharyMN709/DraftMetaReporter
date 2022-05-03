@@ -12,17 +12,21 @@ def get_name_slice(arg):
 
 
 @get_name_slice.register(type(None))
-@get_name_slice.register(str)
 def _get_name_slice_single(val):
-    # If the parameter is a string or None, marshall it into a slice.
+    # If the parameter is None, marshall it into a slice.
     return slice(val)
+
+
+@get_name_slice.register(str)
+def _get_name_slice_string(val):
+    # If the parameter is a string, marshall it into a single element list to filter properly.
+    return [val]
 
 
 @get_name_slice.register(set)
 def _get_name_slice_unhashable(val):
     # If the parameter is a set, we need to convert it to a list so it's hashable.
-    # NOTE: Doing a sort here is unnecessary, as the whole frame is sorted later.
-    return [name for name in val]
+    return sorted([name for name in val])
 # endregion Name Slice
 
 
@@ -56,7 +60,7 @@ def _get_color_slice_set(val):
 @get_color_slice.register(dict)
 def _get_color_slice_iterable(val):
     # If the parameter is iterable, first convert it to a set to remove duplicates, then handle.
-    return _get_color_slice_set({color for color in val})
+    return _get_color_slice_set({get_color_identity(color) for color in val})
 
 
 @get_color_slice.register(tuple)

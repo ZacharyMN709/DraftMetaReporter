@@ -6,6 +6,7 @@ from pandas import DataFrame
 from game_metadata import FormatMetadata
 from data_fetching.utils.date_helper import utc_today, get_prev_17lands_update_time, get_next_17lands_update_time
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
+from data_fetching.utils.index_slice_helper import get_name_slice, get_color_slice
 
 from data_fetching import DataLoader, LoadedData, DataFramer, FramedData
 
@@ -148,6 +149,66 @@ class TestUtils(unittest.TestCase):
         sum_frame, arc_frame = gen_meta_frame(list())
         self.assertEqual(len(sum_frame), 0)
         self.assertEqual(len(arc_frame), 0)
+
+    def test(self):
+        self.assertEqual(slice(None), slice(None))
+
+    def test_name_index_helpers(self):
+        # Handle slices
+        self.assertEqual(get_name_slice(slice(None)), slice(None))
+        self.assertEqual(get_name_slice(slice('Angelic Observer', 'Celebrity Fencer')),
+                         slice('Angelic Observer', 'Celebrity Fencer'))
+
+        # Handle None
+        self.assertEqual(get_name_slice(None), slice(None))
+
+        # Handle string
+        self.assertListEqual(get_name_slice('Angelic Observer'), ['Angelic Observer'])
+
+        # Handle list
+        self.assertListEqual(get_name_slice(['Angelic Observer', 'Girder Goons', 'Run Out of Town']),
+                             ['Angelic Observer', 'Girder Goons', 'Run Out of Town'])
+
+        # Handle iterables
+        self.assertTupleEqual(get_name_slice(('Angelic Observer', 'Girder Goons')),
+                              ('Angelic Observer', 'Girder Goons'))
+        self.assertListEqual(get_name_slice({'Angelic Observer', 'Girder Goons'}),
+                             ['Angelic Observer', 'Girder Goons'])
+        self.assertDictEqual(get_name_slice({'Angelic Observer': '', 'Girder Goons': ''}),
+                             {'Angelic Observer': '', 'Girder Goons': ''})
+
+    def test_color_index_helpers(self):
+        # Check Nones
+        self.assertEqual(get_color_slice(None), slice(None))
+
+        # Check string
+        self.assertListEqual(get_color_slice('WU'), ['WU'])
+        self.assertListEqual(get_color_slice('UW'), ['WU'])
+
+        # Check slices
+        self.assertEqual(get_color_slice(slice(None)), slice(None))
+        self.assertEqual(get_color_slice(slice('', 'G')), slice('', 'G'))
+        self.assertEqual(get_color_slice(slice('WU', 'RG')), slice('WU', 'RG'))
+
+        # Handle ranges
+        self.assertEqual(get_color_slice(('', 'G')), slice('', 'G'))
+        self.assertEqual(get_color_slice(('WU', 'RG')), slice('WU', 'RG'))
+
+        # Handle sets
+        self.assertListEqual(get_color_slice({'WU', 'WB', 'WR', 'WG'}), ['WU', 'WB', 'WR', 'WG'])
+
+        # Handle lists
+        self.assertListEqual(get_color_slice(['WU', 'WB']), ['WU', 'WB'])
+        self.assertListEqual(get_color_slice(['WU', 'BW']), ['WU', 'WB'])
+        self.assertListEqual(get_color_slice(['WU', 'WB', 'WR', 'WG']), ['WU', 'WB', 'WR', 'WG'])
+        self.assertListEqual(get_color_slice(['UW', 'BW', 'RW', 'GW']), ['WU', 'WB', 'WR', 'WG'])
+        self.assertListEqual(get_color_slice(['UW', 'BW', 'RW', 'GW', 'WG']), ['WU', 'WB', 'WR', 'WG'])
+        self.assertListEqual(get_color_slice(['UW', 'BW', 'WR', 'RW', 'GW', 'WG']), ['WU', 'WB', 'WR', 'WG'])
+
+        # Handle iterables
+        self.assertListEqual(get_color_slice(('WU',)), ['WU'])
+        self.assertListEqual(get_color_slice({'WU': '', 'WB': '', 'WR': '', 'WG': ''}), ['WU', 'WB', 'WR', 'WG'])
+        self.assertListEqual(get_color_slice(('WU', 'WB', 'WR', 'WG')), ['WU', 'WB', 'WR', 'WG'])
 
 
 class TestDataLoader(unittest.TestCase):

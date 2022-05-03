@@ -4,7 +4,7 @@ from WUBRG import get_color_identity, get_color_subsets
 from game_metadata import SetMetadata
 
 from data_fetching.utils.consts import FORMAT_NICKNAME_DICT
-from data_fetching.utils.index_slice_helper import get_name_slice
+from data_fetching.utils.index_slice_helper import get_name_slice, get_color_slice
 from data_fetching.DataFramer import DataFramer
 
 
@@ -44,37 +44,35 @@ class FramedData:
 
     def deck_group_frame(self, name=None, date=None, summary=False) -> pd.DataFrame:
         """Returns a subset of the 'GROUPED_ARCHETYPE' data as a DataFrame."""
-        if name is None: name = slice(None)
+        name_slice = get_name_slice(name)
         if date is None: date = slice(None)
 
         if summary:
-            return self.DATA.GROUPED_ARCHETYPE_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[name]]
+            return self.DATA.GROUPED_ARCHETYPE_SUMMARY_FRAME.loc[name_slice]
         else:
-            return self.DATA.GROUPED_ARCHETYPE_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, name]]
+            return self.DATA.GROUPED_ARCHETYPE_HISTORY_FRAME.loc[date, name_slice]
 
     def deck_archetype_frame(self, deck_color=None, date=None, summary=False) -> pd.DataFrame:
         """Returns a subset of the 'SINGLE_ARCHETYPE' data as a DataFrame."""
-        if deck_color is None: deck_color = slice(None)
-        if isinstance(deck_color, str): deck_color = get_color_identity(deck_color)
+        deck_color_slice = get_color_slice(deck_color)
         if date is None: date = slice(None)
 
         if summary:
-            return self.DATA.SINGLE_ARCHETYPE_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[deck_color]]
+            return self.DATA.SINGLE_ARCHETYPE_SUMMARY_FRAME.loc[deck_color_slice]
         else:
-            return self.DATA.SINGLE_ARCHETYPE_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, deck_color]]
+            return self.DATA.SINGLE_ARCHETYPE_HISTORY_FRAME.loc[date, deck_color_slice]
 
-    def card_frame(self, name=None, deck_color=None, date=None, card_color=None, card_rarity=None,
-                   summary=False) -> pd.DataFrame:
+    def card_frame(self, name=None, deck_color=None, date=None, card_color=None, card_rarity=None, summary=False) \
+            -> pd.DataFrame:
         """Returns a subset of the 'CARD' data as a DataFrame."""
-        if name is None: name = slice(None)
-        if deck_color is None: deck_color = slice(None)
+        name_slice = get_name_slice(name)
+        deck_color_slice = get_color_slice(deck_color)
         if date is None: date = slice(None)
-        if isinstance(deck_color, str): deck_color = get_color_identity(deck_color)
 
         if summary:
-            ret = self.DATA.CARD_SUMMARY_FRAME.loc(axis=0)[pd.IndexSlice[deck_color, name]]
+            ret = self.DATA.CARD_SUMMARY_FRAME.loc[deck_color_slice, name_slice]
         else:
-            ret = self.DATA.CARD_HISTORY_FRAME.loc(axis=0)[pd.IndexSlice[date, deck_color, name]]
+            ret = self.DATA.CARD_HISTORY_FRAME.loc[date, deck_color_slice, name_slice]
 
         if card_color:
             color_set = get_color_subsets(get_color_identity(card_color))
