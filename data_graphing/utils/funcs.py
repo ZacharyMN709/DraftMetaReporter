@@ -1,7 +1,4 @@
-import dataframe_image as dfi
-
-
-def frame_to_png(frame, file_name):
+def prettify_frame(frame):
     s = frame.style
     cell_hover = {  # for row hover use <tr> instead of <td>
         'selector': 'td:hover',
@@ -16,5 +13,5 @@ def frame_to_png(frame, file_name):
         'props': 'background-color: #555555; color: white;'
     }
     s.set_table_styles([cell_hover, index_names, headers])
-    dfi.export(s, file_name)
+    s.set_table_styles([{'selector': 'th.col_heading', 'props': 'text-align: left;'}], overwrite=False)
     return s

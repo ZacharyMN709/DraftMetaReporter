@@ -1,5 +1,5 @@
 from data_graphing.utils.settings import *
-from data_graphing.utils import frame_to_png
+from data_graphing.utils import prettify_frame
 
 
 from game_metadata import SETS, FORMATS

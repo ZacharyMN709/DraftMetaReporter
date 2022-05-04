@@ -113,6 +113,8 @@ SIMPLE_COLOR_ALIASES: dict[str, str] = {
     'Five-Color': 'WUBRG'
 }
 
+COLOR_COMBINATION_TO_ALIAS = {v: k for k, v in SIMPLE_COLOR_ALIASES.items()}
+
 
 # Groups of aliases based on the number of colours.
 COLOUR_GROUPINGS: dict[str, dict[str, str]] = {
@@ -134,18 +136,37 @@ COLOR_QUADRUPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(co
 # Used for sorting.
 COLOR_INDEXES = {COLOR_COMBINATIONS[x]: x for x in range(0, len(COLOR_COMBINATIONS))}
 
+
+# Used for graphing
 COLOR_COUNT_MAP: dict[str, int] = {
-    "Mono-color": 1,
-    "Two-color": 2,
-    "Three-color": 3,
-    "Four-color": 4,
-    "Five-color": 5,
+    "Mono-Color": 1,
+    "Two-Color": 2,
+    "Three-Color": 3,
+    "Four-Color": 4,
+    "Five-Color": 5,
     "All Decks": None
 }
 
+COLOR_COUNT_SHORTHAND_MAP: dict[str, str] = {
+    "All Decks": "ALL",
+    "Mono-Color": "1C",
+    "Two-Color": "2C",
+    "Three-Color": "3C",
+    "Four-Color": "4C",
+    "Five-Color": "5C"
+}
 
-# Reverse lookup of aliases.
-COLOR_COMBINATION_TO_ALIAS = {v: k for k, v in SIMPLE_COLOR_ALIASES.items()}
+COLOR_COUNT_SHORTHAND: list[str] = [COLOR_COUNT_SHORTHAND_MAP[key] for key in COLOR_COUNT_SHORTHAND_MAP]
+
+COLOR_COUNT_REVERSE_MAP: dict[int, str] = {
+    0: "All Decks",
+    1: "Mono-Color",
+    2: "Two-Color",
+    3: "Three-Color",
+    4: "Four-Color",
+    5: "Five-Color",
+    None: "All Decks"
+}
 
 
 # Mana Symbols  -   # https://api.scryfall.com/symbology

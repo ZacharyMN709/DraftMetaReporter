@@ -1,1 +1,1 @@
-from data_graphing.utils.funcs import frame_to_png
+from data_graphing.utils.funcs import prettify_frame
