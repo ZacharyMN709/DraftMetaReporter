@@ -37,17 +37,13 @@ class PlotterHelper:  # pragma: no cover
         self.FIG, self.AX = plt.subplots(1, 1)
         self.FIG.set_size_inches(width, height)
         self.AX.set_title(f"{self.DATA.SET} {self.DATA.FORMAT_ALIAS}: {title}", fontsize=fontsize)
-        self.set_x_axis_weekly()
         return self.FIG, self.AX
 
     def new_quad_plot(self, title, width=12, height=8, fontsize=settings.TITLE_SIZE):
         self.FIG, self.AX = plt.subplots(2, 2)
         self.FIG.set_size_inches(width, height)
         plt.figtext(0.4, 0.9, f"{self.DATA.SET} {self.DATA.FORMAT_ALIAS}: {title}", fontsize=fontsize)
-        self.set_x_axis_weekly(g_x=0, g_y=0)
-        self.set_x_axis_weekly(g_x=0, g_y=1)
-        self.set_x_axis_weekly(g_x=1, g_y=0)
-        self.set_x_axis_weekly(g_x=1, g_y=1)
+        # TODO: Tinker with this so the layout is a little clearer.
         self.FIG.autofmt_xdate(rotation=45, ha='right')
         return self.FIG, self.AX
 
@@ -76,16 +72,25 @@ class PlotterHelper:  # pragma: no cover
 
     def set_data(self, data, col_list, inv_y=False, inv_x=False, g_x=None, g_y=None):
         ax = self._get_sub_ax(g_x, g_y)
+        if len(data.index) > 14:
+            self.set_x_axis_weekly(ax)
+        else:
+            self.set_x_axis_daily(ax)
         for col in col_list:
             ax.plot(data.index, data[[col]], label=col, color=self.COLORS.get_color(col))
         if inv_y: ax.invert_yaxis()
         if inv_x: ax.invert_xaxis()
         ax.legend()
 
-    def set_x_axis_weekly(self, g_x=None, g_y=None):
-        ax = self._get_sub_ax(g_x, g_y)
+    def set_x_axis_weekly(self, ax):
         weeks = mdates.DayLocator(interval=7)
         ax.xaxis.set_major_locator(weeks)
+        days = mdates.DayLocator(interval=1)
+        ax.xaxis.set_minor_locator(days)
+
+    def set_x_axis_daily(self, ax):
+        two_days = mdates.DayLocator(interval=2)
+        ax.xaxis.set_major_locator(two_days)
         days = mdates.DayLocator(interval=1)
         ax.xaxis.set_minor_locator(days)
 

@@ -150,9 +150,6 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(len(sum_frame), 0)
         self.assertEqual(len(arc_frame), 0)
 
-    def test(self):
-        self.assertEqual(slice(None), slice(None))
-
     def test_name_index_helpers(self):
         # Handle slices
         self.assertEqual(get_name_slice(slice(None)), slice(None))

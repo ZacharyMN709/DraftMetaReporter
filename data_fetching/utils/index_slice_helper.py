@@ -80,3 +80,11 @@ def _get_color_slice_range(val):
         # If not, handle it like as an iterable.
         return _get_color_slice_iterable(val)
 # endregion Color Slice
+
+
+# region Date Slice
+@functools.singledispatch
+def get_date_slice(arg):
+    # By default, if we don't have a special way to handle a parameter, don't change it.
+    return arg
+# endregion Date Slice

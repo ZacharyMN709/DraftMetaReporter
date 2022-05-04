@@ -48,9 +48,9 @@ class FramedData:
         if date is None: date = slice(None)
 
         if summary:
-            return self.DATA.GROUPED_ARCHETYPE_SUMMARY_FRAME.loc[name_slice]
+            return self.DATA.GROUPED_ARCHETYPE_SUMMARY_FRAME.loc(axis=0)[name_slice]
         else:
-            return self.DATA.GROUPED_ARCHETYPE_HISTORY_FRAME.loc[date, name_slice]
+            return self.DATA.GROUPED_ARCHETYPE_HISTORY_FRAME.loc(axis=0)[date, name_slice]
 
     def deck_archetype_frame(self, deck_color=None, date=None, summary=False) -> pd.DataFrame:
         """Returns a subset of the 'SINGLE_ARCHETYPE' data as a DataFrame."""
@@ -58,9 +58,9 @@ class FramedData:
         if date is None: date = slice(None)
 
         if summary:
-            return self.DATA.SINGLE_ARCHETYPE_SUMMARY_FRAME.loc[deck_color_slice]
+            return self.DATA.SINGLE_ARCHETYPE_SUMMARY_FRAME.loc(axis=0)[deck_color_slice]
         else:
-            return self.DATA.SINGLE_ARCHETYPE_HISTORY_FRAME.loc[date, deck_color_slice]
+            return self.DATA.SINGLE_ARCHETYPE_HISTORY_FRAME.loc(axis=0)[date, deck_color_slice]
 
     def card_frame(self, name=None, deck_color=None, date=None, card_color=None, card_rarity=None, summary=False) \
             -> pd.DataFrame:
@@ -70,9 +70,9 @@ class FramedData:
         if date is None: date = slice(None)
 
         if summary:
-            ret = self.DATA.CARD_SUMMARY_FRAME.loc[deck_color_slice, name_slice]
+            ret = self.DATA.CARD_SUMMARY_FRAME.loc(axis=0)[deck_color_slice, name_slice]
         else:
-            ret = self.DATA.CARD_HISTORY_FRAME.loc[date, deck_color_slice, name_slice]
+            ret = self.DATA.CARD_HISTORY_FRAME.loc(axis=0)[date, deck_color_slice, name_slice]
 
         if card_color:
             color_set = get_color_subsets(get_color_identity(card_color))
