@@ -1,5 +1,6 @@
 def prettify_frame(frame):
     s = frame.style
+    s = s.format(precision=2)
     cell_hover = {  # for row hover use <tr> instead of <td>
         'selector': 'td:hover',
         'props': [('background-color', '#ffffb3')]

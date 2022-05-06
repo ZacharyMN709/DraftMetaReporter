@@ -6,6 +6,14 @@ from WUBRG.consts import FAILSAFE, COLOR_COMBINATIONS
 
 
 class TestWUBRGStringFuncs(unittest.TestCase):
+    def test_consts(self):
+        #COLOR_COMBINATIONS: list[str] = [SIMPLE_COLOR_ALIASES[x] for x in SIMPLE_COLOR_ALIASES]
+        #COLOR_SINGLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 1]
+        #COLOR_PAIRS: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 2]
+        #COLOR_TRIPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 3]
+        #COLOR_QUADRUPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 4]
+        pass
+
     def test_get_color_string(self):
         s = 'RU'
         ret = get_color_string(s)

@@ -129,10 +129,11 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(len(arc_frame), 10)
 
         def compare_summary_frame(row_name: str, games: int, wins: int, winrate: float, splash: bool):
-            self.assertEqual(sum_frame.loc[row_name]['Games'], games)
-            self.assertEqual(sum_frame.loc[row_name]['Wins'], wins)
-            self.assertAlmostEqual(sum_frame.loc[row_name]['Win %'], winrate, delta=0.05)
-            self.assertEqual(sum_frame.loc[row_name]['Splash'], splash)
+            frame_slice = sum_frame.loc[row_name]
+            test_slice = frame_slice[frame_slice['Splash'] == splash]
+            self.assertEqual(test_slice['Games'][0], games)
+            self.assertEqual(test_slice['Wins'][0], wins)
+            self.assertAlmostEqual(test_slice['Win %'][0], winrate, delta=0.05)
 
         def compare_archetype_frame(row_name: str, games: int, wins: int, winrate: float, splash: bool):
             self.assertEqual(arc_frame.loc[row_name]['Games'], games)
@@ -140,8 +141,8 @@ class TestUtils(unittest.TestCase):
             self.assertAlmostEqual(arc_frame.loc[row_name]['Win %'], winrate, delta=0.05)
             self.assertEqual(arc_frame.loc[row_name]['Splash'], splash)
 
-        compare_summary_frame('Two-color', 1967, 1142, 58.060, False)
-        compare_summary_frame('Two-color + Splash', 697, 395, 56.670060, True)
+        compare_summary_frame('Two-Color', 1967, 1142, 58.060, False)
+        compare_summary_frame('Two-Color', 697, 395, 56.670060, True)
 
         compare_archetype_frame('UR', 608, 361, 59.380, False)
 

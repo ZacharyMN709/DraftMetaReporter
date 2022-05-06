@@ -1,6 +1,6 @@
 import pandas as pd
 
-from WUBRG import COLOR_ALIASES, get_color_identity
+from WUBRG import ALL_COLOR_ALIAS_MAP, get_color_identity
 from WUBRG.consts import COLOR_COUNT_MAP
 
 from data_fetching.utils.consts import RARITY_ALIAS_DICT, STAT_NAME_DICT, META_COLS_ALIAS_DICT, \
@@ -91,7 +91,7 @@ def gen_meta_frame(meta_dict: list[dict[str, object]]) -> tuple[pd.DataFrame, pd
     archetype_frame['Colors'] = archetype_frame['Colors'].map(
         lambda x: x[0: (x.find('(') if x.find('(') != -1 else len(x))].strip())
     archetype_frame['Colors'] = archetype_frame['Colors'].map(lambda x: x.replace('Mono-', ''))
-    archetype_frame['Colors'] = archetype_frame['Colors'].map(COLOR_ALIASES)
+    archetype_frame['Colors'] = archetype_frame['Colors'].map(ALL_COLOR_ALIAS_MAP)
     archetype_frame['Name'] = archetype_frame['Colors']
     archetype_frame = archetype_frame.set_index('Name')
 

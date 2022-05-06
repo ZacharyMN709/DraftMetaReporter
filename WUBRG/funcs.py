@@ -3,8 +3,8 @@ from typing import Optional, Callable
 import re
 
 from Utilities import Logger
-from WUBRG.consts import COLORS, FAILSAFE, COLOR_ALIASES, COLOR_COMBINATIONS, COLOR_COMBINATION_TO_ALIAS, MANA_SYMBOLS, \
-    COLOR_INDEXES
+from WUBRG.consts import COLORS, FAILSAFE, ALL_COLOR_ALIAS_MAP, COLOR_COMBINATIONS, REVERSE_COLOR_MAP, MANA_SYMBOLS, \
+    WUBRG_COLOR_INDEXES
 
 mana_cost_re = re.compile(r'{(.*?)}')
 
@@ -21,9 +21,9 @@ def get_color_string(s: str) -> str:
     s = s.strip()
 
     # If the colour name exists in the color alias dictionary,
-    if s.title() in COLOR_ALIASES:
+    if s.title() in ALL_COLOR_ALIAS_MAP:
         # Return the string provided by the alias dictionary.
-        return COLOR_ALIASES[s.title()]
+        return ALL_COLOR_ALIAS_MAP[s.title()]
 
     # For each character in the upper-case input,
     ret = ''
@@ -68,7 +68,7 @@ def get_color_alias(color_string: str) -> Optional[str]:
     if color_identity == '':
         return None
     else:
-        return COLOR_COMBINATION_TO_ALIAS[color_identity]
+        return REVERSE_COLOR_MAP[color_identity]
 
 
 def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -> list[str]:
@@ -147,8 +147,8 @@ def parse_cost(mana_cost: str) -> list[str]:
 # Creating a custom sorting algorithm to order frames
 def color_compare(col1: str, col2: str) -> int:
     # Convert the colors into numeric indexes
-    col_idx1 = COLOR_INDEXES[col1]
-    col_idx2 = COLOR_INDEXES[col2]
+    col_idx1 = WUBRG_COLOR_INDEXES[col1]
+    col_idx2 = WUBRG_COLOR_INDEXES[col2]
 
     if col_idx1 < col_idx2:
         return -1
