@@ -6,7 +6,8 @@ from pandas import DataFrame
 from game_metadata import FormatMetadata
 from data_fetching.utils.date_helper import utc_today, get_prev_17lands_update_time, get_next_17lands_update_time
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
-from data_fetching.utils.index_slice_helper import get_name_slice, get_color_slice
+from data_fetching.utils.index_slice_helper import get_name_slice, get_color_slice, _stringify_for_date_slice, \
+    get_date_slice
 
 from data_fetching import DataLoader, LoadedData, DataFramer, FramedData
 
@@ -207,6 +208,49 @@ class TestUtils(unittest.TestCase):
         self.assertListEqual(get_color_slice(('WU',)), ['WU'])
         self.assertListEqual(get_color_slice({'WU': '', 'WB': '', 'WR': '', 'WG': ''}), ['WU', 'WB', 'WR', 'WG'])
         self.assertListEqual(get_color_slice(('WU', 'WB', 'WR', 'WG')), ['WU', 'WB', 'WR', 'WG'])
+
+    def test_date_index_helpers(self):
+        # Check Date Stringifier
+        self.assertEqual(_stringify_for_date_slice('2022-05-09'), '2022-05-09')
+        self.assertEqual(_stringify_for_date_slice(date(2022, 5, 9)), '2022-05-09')
+        self.assertEqual(_stringify_for_date_slice(datetime(2022, 5, 9, 5, 6)), '2022-05-09')
+        self.assertEqual(_stringify_for_date_slice(None), None)
+        self.assertEqual(_stringify_for_date_slice(True), True)
+
+        # Check Nones
+        self.assertEqual(get_date_slice(None), slice(None))
+
+        # Check String and Dates
+        self.assertListEqual(get_date_slice('2022-05-09'), ['2022-05-09'])
+        self.assertListEqual(get_date_slice(date(2022, 5, 9)), ['2022-05-09'])
+        self.assertListEqual(get_date_slice(datetime(2022, 5, 9, 5, 6)), ['2022-05-09'])
+
+        # Check slices
+        self.assertEqual(get_date_slice(slice('2022-05-09')), slice('2022-05-09'))
+        self.assertEqual(get_date_slice(slice('2022-05-09', '2022-05-19')), slice('2022-05-09', '2022-05-19'))
+
+        # Handle ranges
+        self.assertEqual(get_date_slice(('2022-05-19', '2022-05-09')), slice('2022-05-09', '2022-05-19'))
+        self.assertEqual(get_date_slice(('2022-05-09', '2022-05-19')), slice('2022-05-09', '2022-05-19'))
+
+        # Handle sets
+        self.assertListEqual(get_date_slice({'2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09'}),
+                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
+
+        # Handle lists
+        self.assertListEqual(get_date_slice(['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12']),
+                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
+        self.assertListEqual(get_date_slice(['2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09']),
+                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
+        self.assertListEqual(get_date_slice(['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09']),
+                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
+
+        # Handle iterables
+        self.assertListEqual(get_date_slice(('2022-05-09',)), ['2022-05-09'])
+        self.assertListEqual(get_date_slice({'2022-05-09': '', '2022-05-10': '', '2022-05-11': '', '2022-05-12': ''}),
+                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
+        self.assertListEqual(get_date_slice(('2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12')),
+                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
 
 
 class TestDataLoader(unittest.TestCase):

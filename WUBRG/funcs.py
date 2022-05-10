@@ -4,7 +4,7 @@ import re
 
 from Utilities import Logger
 from WUBRG.consts import COLORS, FAILSAFE, ALL_COLOR_ALIAS_MAP, COLOR_COMBINATIONS, REVERSE_COLOR_MAP, MANA_SYMBOLS, \
-    WUBRG_COLOR_INDEXES
+    WUBRG_COLOR_INDEXES, GROUP_COLOR_INDEXES
 
 mana_cost_re = re.compile(r'{(.*?)}')
 
@@ -18,6 +18,9 @@ def get_color_string(s: str) -> str:
     :param s: The string to convert.
     :return: A color string, which contains only characters found in 'WUBRG'.
     """
+    if s is None:
+        return FAILSAFE
+
     s = s.strip()
 
     # If the colour name exists in the color alias dictionary,
@@ -144,8 +147,8 @@ def parse_cost(mana_cost: str) -> list[str]:
     return costs
 
 
-# Creating a custom sorting algorithm to order frames
-def color_compare(col1: str, col2: str) -> int:
+# Creating a custom sorting algorithm to order in WUBRG order
+def color_compare_wubrg(col1: str, col2: str) -> int:
     # Convert the colors into numeric indexes
     col_idx1 = WUBRG_COLOR_INDEXES[col1]
     col_idx2 = WUBRG_COLOR_INDEXES[col2]
@@ -156,4 +159,17 @@ def color_compare(col1: str, col2: str) -> int:
         return 1
 
 
-color_compare_key: Callable = cmp_to_key(color_compare)
+# Creating a custom sorting algorithm to order in group order
+def color_compare_group(col1: str, col2: str) -> int:
+    # Convert the colors into numeric indexes
+    col_idx1 = GROUP_COLOR_INDEXES[col1]
+    col_idx2 = GROUP_COLOR_INDEXES[col2]
+
+    if col_idx1 < col_idx2:
+        return -1
+    else:
+        return 1
+
+
+wubrg_compare_key: Callable = cmp_to_key(color_compare_wubrg)
+group_compare_key: Callable = cmp_to_key(color_compare_group)

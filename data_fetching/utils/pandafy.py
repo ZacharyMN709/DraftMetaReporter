@@ -23,9 +23,11 @@ def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
 
     frame = frame.set_index('Name')
 
-    for col in ["GP WR", "OH WR", "GD WR", "GIH WR", "GND WR", "IWD"]:
-        frame[col] = frame[col] * 100
+    for name in ['GP', 'OH', 'GD', 'GIH', 'GND']:
+        frame[f'{name} GW'] = (frame[f'# {name}'] * frame[f'{name} WR']).astype(int, errors='ignore')
+        frame[f'{name} WR'] = frame[f'{name} WR'] * 100
 
+    frame["IWD"] = frame["IWD"] * 100
     frame = frame.drop(['sideboard_game_count', 'sideboard_win_rate', 'url', 'url_back'], axis=1)
     frame['Rarity'] = frame['Rarity'].map(RARITY_ALIAS_DICT)
 

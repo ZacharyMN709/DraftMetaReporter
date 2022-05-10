@@ -189,7 +189,7 @@ class Card:
         self.RARITY = RARITY_ALIASES[json['rarity']]
         self.NUMBER = json['collector_number']
         self.COLOR_IDENTITY = get_color_identity("".join(json['color_identity']))
-        self._CMC = json['cmc']  # TODO: Have this handled by a card face later.
+        self._CMC = int(json['cmc'])  # TODO: Have this handled by a card face later.
         self.LAYOUT = LAYOUT_DICT[json['layout']]
         self.TWO_SIDED = self.LAYOUT is CardLayouts.TWO_SIDED
         self.SPLIT = self.LAYOUT is CardLayouts.FUSED

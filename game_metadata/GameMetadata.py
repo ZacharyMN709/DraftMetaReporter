@@ -3,7 +3,7 @@ from functools import cmp_to_key
 from datetime import date, time, datetime, timedelta
 
 from Utilities import Logger
-from WUBRG.funcs import color_compare
+from WUBRG.funcs import color_compare_wubrg
 
 from game_metadata.utils.settings import SETS, FORMATS, SET_CONFIG
 from game_metadata.CallScryfall import CallScryfall
@@ -71,7 +71,7 @@ class SetMetadata:
             else:
                 return 1
         else:
-            return color_compare(col_1, col_2)
+            return color_compare_wubrg(col_1, col_2)
 
     def find_card(self, card_name) -> Optional[Card]:
         """
