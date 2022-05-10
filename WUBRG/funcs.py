@@ -173,3 +173,18 @@ def color_compare_group(col1: str, col2: str) -> int:
 
 wubrg_compare_key: Callable = cmp_to_key(color_compare_wubrg)
 group_compare_key: Callable = cmp_to_key(color_compare_group)
+
+
+def gen_color_filter(color: str, enum_val) -> list[str]:
+    # TODO: Have this implement a function which returns a set of colours based on an enum
+    #  filters = ['exact', 'subset', 'contains', 'adjacent'*]
+    #  'exact': 'U' --> 'U'
+    #  'subset': 'UW' --> 'U', 'W', 'WU'
+    #  'contains': 'U' --> 'U', 'UW', 'UB', 'UR', 'UG'...
+    #  'contains': 'UW' --> 'UW', 'UBW', 'URW', 'UGW'...
+    #  'superset': 'UW' --> 'UW', 'UBW', 'URW', 'UGW'...
+    #  'adjacent': 'UW' --> 'U', 'W', 'UW', 'UG', 'WG', 'UWG'...
+
+    # TODO: Determine how to handle colourless cards.
+    pass
+

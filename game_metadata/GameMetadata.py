@@ -89,6 +89,21 @@ class SetMetadata:
         else:
             return None
 
+    def get_cards_by_colors(self, colors: list[str]) -> list[Card]:
+        """
+        Get cards which have colour identities which are contained in the provided list
+        :param colors: A list of colours.
+        :return: A list of cards which are one of the colours.
+        """
+        ret = []
+        for card in self.CARD_LIST:
+            for color in colors:
+                if card.COLOR_IDENTITY == color:
+                    ret.append(card)
+                    break
+
+        return ret
+
     @classmethod
     def __class_getitem__(cls, set_code):
         return cls.METADATA[set_code]
