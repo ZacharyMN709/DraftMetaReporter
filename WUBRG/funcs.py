@@ -9,7 +9,7 @@ from WUBRG.consts import COLORS, FAILSAFE, ALL_COLOR_ALIAS_MAP, COLOR_COMBINATIO
 mana_cost_re = re.compile(r'{(.*?)}')
 
 
-def get_color_string(s: str) -> str:
+def get_color_string(s: Optional[str]) -> str:
     """
     Takes in a string, and attempts to convert it to a color string.
     If the string is invalid, returns ''.

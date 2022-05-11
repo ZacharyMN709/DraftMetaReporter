@@ -153,28 +153,29 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(len(arc_frame), 0)
 
     def test_name_index_helpers(self):
-        # Handle slices
-        self.assertEqual(get_name_slice(slice(None)), slice(None))
-        self.assertEqual(get_name_slice(slice('Angelic Observer', 'Celebrity Fencer')),
-                         slice('Angelic Observer', 'Celebrity Fencer'))
-
         # Handle None
         self.assertEqual(get_name_slice(None), slice(None))
 
         # Handle string
-        self.assertListEqual(get_name_slice('Angelic Observer'), ['Angelic Observer'])
+        self.assertListEqual(get_name_slice('Mesa Unicorn'), ['Mesa Unicorn'])
+
+        # Handle slices
+        self.assertEqual(get_name_slice(slice(None)), slice(None))
+        self.assertEqual(get_name_slice(slice('Mesa Unicorn', 'Celebrity Fencer')),
+                         slice('Mesa Unicorn', 'Celebrity Fencer'))
 
         # Handle list
-        self.assertListEqual(get_name_slice(['Angelic Observer', 'Girder Goons', 'Run Out of Town']),
-                             ['Angelic Observer', 'Girder Goons', 'Run Out of Town'])
+        self.assertListEqual(get_name_slice(['Mesa Unicorn', 'Deathbloom Thallid', 'Blink of an Eye']),
+                             ['Mesa Unicorn', 'Deathbloom Thallid', 'Blink of an Eye'])
 
-        # Handle iterables
-        self.assertTupleEqual(get_name_slice(('Angelic Observer', 'Girder Goons')),
-                              ('Angelic Observer', 'Girder Goons'))
-        self.assertListEqual(get_name_slice({'Angelic Observer', 'Girder Goons'}),
-                             ['Angelic Observer', 'Girder Goons'])
-        self.assertDictEqual(get_name_slice({'Angelic Observer': '', 'Girder Goons': ''}),
-                             {'Angelic Observer': '', 'Girder Goons': ''})
+        # Handle range
+        self.assertEqual(get_name_slice(('Mesa Unicorn', 'Deathbloom Thallid')),
+                         slice('Mesa Unicorn', 'Deathbloom Thallid'))
+
+        # Handle invalid
+        self.assertRaises(TypeError, get_name_slice, {'Mesa Unicorn'})
+        self.assertRaises(TypeError, get_name_slice, {'Mesa Unicorn': ''})
+        self.assertRaises(TypeError, get_name_slice, ('Mesa Unicorn', 'Deathbloom Thallid', 'Blink of an Eye'))
 
     def test_color_index_helpers(self):
         # Check Nones
@@ -189,33 +190,31 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(get_color_slice(slice('', 'G')), slice('', 'G'))
         self.assertEqual(get_color_slice(slice('WU', 'RG')), slice('WU', 'RG'))
 
-        # Handle ranges
-        self.assertEqual(get_color_slice(('', 'G')), slice('', 'G'))
-        self.assertEqual(get_color_slice(('WU', 'RG')), slice('WU', 'RG'))
-
-        # Handle sets
-        self.assertListEqual(get_color_slice({'WU', 'WB', 'WR', 'WG'}), ['WU', 'WB', 'WR', 'WG'])
-
         # Handle lists
         self.assertListEqual(get_color_slice(['WU', 'WB']), ['WU', 'WB'])
         self.assertListEqual(get_color_slice(['WU', 'BW']), ['WU', 'WB'])
         self.assertListEqual(get_color_slice(['WU', 'WB', 'WR', 'WG']), ['WU', 'WB', 'WR', 'WG'])
         self.assertListEqual(get_color_slice(['UW', 'BW', 'RW', 'GW']), ['WU', 'WB', 'WR', 'WG'])
-        self.assertListEqual(get_color_slice(['UW', 'BW', 'RW', 'GW', 'WG']), ['WU', 'WB', 'WR', 'WG'])
-        self.assertListEqual(get_color_slice(['UW', 'BW', 'WR', 'RW', 'GW', 'WG']), ['WU', 'WB', 'WR', 'WG'])
+        self.assertListEqual(get_color_slice(['UW', 'BW', 'RW', 'GW', 'WG']), ['WU', 'WB', 'WR', 'WG', 'WG'])
 
-        # Handle iterables
-        self.assertListEqual(get_color_slice(('WU',)), ['WU'])
-        self.assertListEqual(get_color_slice({'WU': '', 'WB': '', 'WR': '', 'WG': ''}), ['WU', 'WB', 'WR', 'WG'])
-        self.assertListEqual(get_color_slice(('WU', 'WB', 'WR', 'WG')), ['WU', 'WB', 'WR', 'WG'])
+        # Handle ranges
+        self.assertEqual(get_color_slice(('', 'G')), slice('', 'G'))
+        self.assertEqual(get_color_slice(('WU', 'RG')), slice('WU', 'RG'))
+        self.assertEqual(get_color_slice(('RG', 'WU')), slice('RG', 'WU'))
+        self.assertEqual(get_color_slice(('RG', 'UW')), slice('RG', 'WU'))
+
+        # Handle invalid
+        self.assertRaises(TypeError, get_color_slice, ('WU',))
+        self.assertRaises(TypeError, get_color_slice, {'WU': '', 'WB': '', 'WR': '', 'WG': ''})
+        self.assertRaises(TypeError, get_color_slice, ('WU', 'WB', 'WR', 'WG'))
 
     def test_date_index_helpers(self):
         # Check Date Stringifier
         self.assertEqual(_stringify_for_date_slice('2022-05-09'), '2022-05-09')
         self.assertEqual(_stringify_for_date_slice(date(2022, 5, 9)), '2022-05-09')
         self.assertEqual(_stringify_for_date_slice(datetime(2022, 5, 9, 5, 6)), '2022-05-09')
-        self.assertEqual(_stringify_for_date_slice(None), None)
-        self.assertEqual(_stringify_for_date_slice(True), True)
+        self.assertRaises(TypeError, _stringify_for_date_slice, None)
+        self.assertRaises(TypeError, _stringify_for_date_slice, True)
 
         # Check Nones
         self.assertEqual(get_date_slice(None), slice(None))
@@ -229,28 +228,23 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(get_date_slice(slice('2022-05-09')), slice('2022-05-09'))
         self.assertEqual(get_date_slice(slice('2022-05-09', '2022-05-19')), slice('2022-05-09', '2022-05-19'))
 
-        # Handle ranges
-        self.assertEqual(get_date_slice(('2022-05-19', '2022-05-09')), slice('2022-05-09', '2022-05-19'))
-        self.assertEqual(get_date_slice(('2022-05-09', '2022-05-19')), slice('2022-05-09', '2022-05-19'))
-
-        # Handle sets
-        self.assertListEqual(get_date_slice({'2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09'}),
-                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
-
         # Handle lists
         self.assertListEqual(get_date_slice(['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12']),
                              ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
         self.assertListEqual(get_date_slice(['2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09']),
-                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
+                             ['2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09'])
         self.assertListEqual(get_date_slice(['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09']),
-                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
+                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09'])
 
-        # Handle iterables
-        self.assertListEqual(get_date_slice(('2022-05-09',)), ['2022-05-09'])
-        self.assertListEqual(get_date_slice({'2022-05-09': '', '2022-05-10': '', '2022-05-11': '', '2022-05-12': ''}),
-                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
-        self.assertListEqual(get_date_slice(('2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12')),
-                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
+        # Handle ranges
+        self.assertEqual(get_date_slice(('2022-05-19', '2022-05-09')), slice('2022-05-19', '2022-05-09'))
+        self.assertEqual(get_date_slice(('2022-05-09', '2022-05-19')), slice('2022-05-09', '2022-05-19'))
+
+        # Handle invalid
+        self.assertRaises(TypeError, get_date_slice, {'2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09'})
+        self.assertRaises(TypeError, get_date_slice, ('2022-05-09',))
+        self.assertRaises(TypeError, get_date_slice, {'2022-05-09': '', '2022-05-10': '', '2022-05-11': '', '2022-05-12': ''})
+        self.assertRaises(TypeError, get_date_slice, ('2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'))
 
 
 class TestDataLoader(unittest.TestCase):
@@ -413,12 +407,13 @@ class TestLoadedData(unittest.TestCase):
 
 class TestDataFramer(unittest.TestCase):
     ARCHETYPE_COLS = ['Colors', 'Splash', 'Wins', 'Games', 'Win %']
-    CARD_COLS = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR', '# GD', 'GD WR',
-                 '# GIH', 'GIH WR', '# GND', 'GND WR', 'IWD', 'Rarity', 'Color',
-                 'Cast Color', 'CMC', 'Type Line', 'Supertypes', 'Types', 'Subtypes', 'Power', 'Toughness']
+    CARD_COLS = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', 'GP GW', '# OH', 'OH WR', 'OH GW',
+                 '# GD', 'GD WR', 'GD GW', '# GIH', 'GIH WR', 'GIH GW', '# GND', 'GND WR', 'GND GW', 'IWD',
+                 'Rarity', 'Color', 'Cast Color', 'CMC',
+                 'Type Line', 'Supertypes', 'Types', 'Subtypes', 'Power', 'Toughness']
 
     def test_gen_hist(self):
-        framer = DataFramer('NEO', 'PremierDraft')
+        framer = DataFramer('DOM', 'PremierDraft')
         framer.gen_hist()
         self.assertIsInstance(framer.GROUPED_ARCHETYPE_HISTORY_FRAME, DataFrame)
         self.assertIsInstance(framer.SINGLE_ARCHETYPE_HISTORY_FRAME, DataFrame)
@@ -429,7 +424,7 @@ class TestDataFramer(unittest.TestCase):
         self.assertListEqual(list(framer.CARD_HISTORY_FRAME.columns), self.CARD_COLS)
 
     def test_gen_summary(self):
-        framer = DataFramer('NEO', 'PremierDraft')
+        framer = DataFramer('DOM', 'PremierDraft')
         framer.gen_summary()
         self.assertIsInstance(framer.GROUPED_ARCHETYPE_SUMMARY_FRAME, DataFrame)
         self.assertIsInstance(framer.SINGLE_ARCHETYPE_SUMMARY_FRAME, DataFrame)
@@ -442,7 +437,7 @@ class TestDataFramer(unittest.TestCase):
 
 class TestFramedData(unittest.TestCase):
     def test_(self):
-        framer = FramedData('NEO', 'PremierDraft')
+        framer = FramedData('DOM', 'PremierDraft')
 
         framer.deck_group_frame()
         framer.deck_group_frame(summary=True)

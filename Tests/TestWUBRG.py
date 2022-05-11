@@ -1,23 +1,20 @@
 import unittest
 
-from WUBRG.funcs import get_color_string, get_color_identity, get_color_alias
-from WUBRG.funcs import get_color_supersets, get_color_subsets, parse_cost
+from WUBRG.funcs import get_color_string, get_color_identity, get_color_alias, \
+    get_color_supersets, get_color_subsets, parse_cost, color_compare_wubrg, color_compare_group
 from WUBRG.consts import FAILSAFE, COLOR_COMBINATIONS
 
 
 class TestWUBRGStringFuncs(unittest.TestCase):
-    def test_consts(self):
-        #COLOR_COMBINATIONS: list[str] = [SIMPLE_COLOR_ALIASES[x] for x in SIMPLE_COLOR_ALIASES]
-        #COLOR_SINGLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 1]
-        #COLOR_PAIRS: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 2]
-        #COLOR_TRIPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 3]
-        #COLOR_QUADRUPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 4]
-        pass
-
     def test_get_color_string(self):
         s = 'RU'
         ret = get_color_string(s)
         self.assertEqual(ret, 'RU')
+
+    def test_get_color_string_none(self):
+        s = None
+        ret = get_color_string(s)
+        self.assertEqual(ret, FAILSAFE)
 
     def test_get_color_string_invalid(self):
         s = 'V'
@@ -115,3 +112,30 @@ class TestWUBRGListFuncs(unittest.TestCase):
         s = '{2}{V}U}'
         ret = parse_cost(s)
         self.assertListEqual(ret, ['A'])
+
+
+class TestWUBRGSortFuncs(unittest.TestCase):
+    def test_compare_wubrg(self):
+        self.assertEqual(color_compare_wubrg('', 'W'), -1)
+        self.assertEqual(color_compare_wubrg('W', 'U'), -1)
+        self.assertEqual(color_compare_wubrg('U', 'W'), 1)
+        self.assertEqual(color_compare_wubrg('U', ''), 1)
+        self.assertEqual(color_compare_wubrg('G', 'UB'), -1)
+        self.assertEqual(color_compare_wubrg('UB', 'WUB'), -1)
+        self.assertEqual(color_compare_wubrg('WUB', 'UBRG'), -1)
+        self.assertEqual(color_compare_wubrg('UBRG', 'WUBRG'), -1)
+        self.assertEqual(color_compare_wubrg('WUBRG', 'WUBRG'), 1)
+        self.assertRaises(KeyError, color_compare_wubrg, 'UW', 'BU')
+
+    def test_get_color_group(self):
+        self.assertEqual(color_compare_group('W', 'UB'), -1)
+        self.assertEqual(color_compare_group('WU', 'UB'), -1)
+        self.assertEqual(color_compare_group('UB', 'WU'), 1)
+        self.assertEqual(color_compare_group('WB', 'UB'), 1)
+        self.assertEqual(color_compare_group('WB', 'WR'), -1)
+        self.assertEqual(color_compare_group('WUR', 'WBG'), -1)
+        self.assertEqual(color_compare_group('WUB', 'WUG'), -1)
+        self.assertEqual(color_compare_group('WUB', 'WUR'), 1)
+        self.assertEqual(color_compare_group('WUBR', 'UBRG'), -1)
+        self.assertEqual(color_compare_group('WUBRG', 'WUBRG'), 1)
+        self.assertRaises(KeyError, color_compare_group, 'UW', 'BU')
