@@ -214,7 +214,12 @@ class Card:
         return self.DEFAULT_FACE.MANA_COST
 
     @property
-    def CMC(self) -> str:
+    def CAST_IDENTITY(self) -> str:
+        """Gets the colour identity of the mana cost of the card"""
+        return get_color_identity(self.MANA_COST)
+
+    @property
+    def CMC(self) -> int:
         """Gets the converted mana cost of the card"""
         return self._CMC
 
