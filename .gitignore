@@ -1,6 +1,6 @@
 __pychache__
 *.pyc
-.ipynb_checkpoints/Scratch-checkpoint.ipynb
+.ipynb_checkpoints/*
 .idea
 .coverage
 Tests/test.txt
