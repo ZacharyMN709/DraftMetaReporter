@@ -159,6 +159,10 @@ def color_compare_wubrg(col1: str, col2: str) -> int:
         return 1
 
 
+def list_color_dict(d: dict[str, str]) -> list[str]:
+    return [d[s] for s in d]
+
+
 # Creating a custom sorting algorithm to order in group order
 def color_compare_group(col1: str, col2: str) -> int:
     # Convert the colors into numeric indexes

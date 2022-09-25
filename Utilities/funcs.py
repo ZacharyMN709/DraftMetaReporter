@@ -26,7 +26,7 @@ def load_json_file(folder: str, filename: str) -> Union[dict, list[dict], None]:
         return None
 
 
-def save_json_file(folder: str, filename: str, data: dict) -> bool:
+def save_json_file(folder: str, filename: str, data: [dict, list[dict]]) -> bool:
     """
     Saves provided data into the specified json file.
     :param folder: The folder the json file is in.
