@@ -9,6 +9,7 @@ from Utilities import save_json_file, load_json_file
 from data_fetching import utc_today
 
 from data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
+from game_metadata import CardManager
 
 
 class DataLoader:
@@ -95,7 +96,8 @@ class DataLoader:
             Logger.LOGGER.log(f'{filename} contained no data!', Logger.FLG.DEBUG)
         return valid
 
-    def _get_data(self, url: str, filename: str, overwrite: bool = False) -> list[dict]:  # pragma: no cover
+    def _get_data(self, url: str, filename: str, overwrite: bool = False,
+                  corrector: callable = None) -> list[dict]:  # pragma: no cover
         """
         Automatically gets the appropriate data. If it saved locally, it will query 17Lands for the data
         and then save it to a file. Otherwise, it will load it from the file.
@@ -112,6 +114,12 @@ class DataLoader:
                 Logger.LOGGER.log(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...",
                                   Logger.FLG.DEFAULT)
             data = self._fetcher.fetch(url)
+
+            # Have an optional function available for handling and correcting data from 17Lands, in the event
+            #  that data coming back is wrong (likely due to MTGA), or naming needs to be revised.
+            if corrector is not None:
+                data = corrector(data)
+
             save_json_file(self.get_folder_path(), filename, data)
         else:
             data = load_json_file(self.get_folder_path(), filename)
@@ -124,7 +132,15 @@ class DataLoader:
         :param overwrite: Forcibly overwrite the data in the file
         :return: A list of dictionaries with card value mapping to their data.
         """
-        return self._get_data(self.get_card_rating_url(color), f'{color}CardRatings.json', overwrite)
+
+        # Forcibly re-assigns names to match those on scryfall.
+        def _corrector(data: list[dict]) -> list[dict]:
+            for raw_card in data:
+                name = raw_card['name']
+                raw_card['name'] = CardManager.from_name(name).NAME
+            return data
+
+        return self._get_data(self.get_card_rating_url(color), f'{color}CardRatings.json', overwrite, _corrector)
 
     def get_meta_data(self, overwrite: bool = False) -> list[dict]:
         """
