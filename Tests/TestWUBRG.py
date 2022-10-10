@@ -1,8 +1,8 @@
 import unittest
 
-from WUBRG.funcs import get_color_string, get_color_identity, get_color_alias, \
+from WUBRG.funcs import get_color_string, get_color_identity, get_color_alias, list_color_dict, \
     get_color_supersets, get_color_subsets, parse_cost, color_compare_wubrg, color_compare_group
-from WUBRG.consts import FAILSAFE, COLOR_COMBINATIONS
+from WUBRG.consts import FAILSAFE, COLOR_COMBINATIONS, ALLIED, ENEMY, GUILDS
 
 
 class TestWUBRGStringFuncs(unittest.TestCase):
@@ -112,6 +112,16 @@ class TestWUBRGListFuncs(unittest.TestCase):
         s = '{2}{V}U}'
         ret = parse_cost(s)
         self.assertListEqual(ret, ['A'])
+
+    def test_list_color_dict(self):
+        ret = list_color_dict(ALLIED)
+        self.assertListEqual(ret, ["WU", "UB", "BR", "RG", "WG"])
+
+        ret = list_color_dict(ENEMY)
+        self.assertListEqual(ret, ["WB", "BG", "UG", "UR", "WR"])
+
+        ret = list_color_dict(GUILDS)
+        self.assertListEqual(ret, ["WU", "UB", "BR", "RG", "WG", "WB", "BG", "UG",  "UR", "WR"])
 
 
 class TestWUBRGSortFuncs(unittest.TestCase):

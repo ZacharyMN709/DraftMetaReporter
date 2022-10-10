@@ -96,8 +96,7 @@ class DataLoader:
             Logger.LOGGER.log(f'{filename} contained no data!', Logger.FLG.DEBUG)
         return valid
 
-    def _get_data(self, url: str, filename: str, overwrite: bool = False,
-                  corrector: callable = None) -> list[dict]:  # pragma: no cover
+    def _get_data(self, url: str, filename: str, overwrite: bool = False) -> list[dict]:  # pragma: no cover
         """
         Automatically gets the appropriate data. If it saved locally, it will query 17Lands for the data
         and then save it to a file. Otherwise, it will load it from the file.
@@ -117,8 +116,10 @@ class DataLoader:
 
             # Have an optional function available for handling and correcting data from 17Lands, in the event
             #  that data coming back is wrong (likely due to MTGA), or naming needs to be revised.
-            if corrector is not None:
-                data = corrector(data)
+            for raw_card in data:
+                name = raw_card['name']
+                card_obj = CardManager.from_name(name)
+                raw_card['name'] = card_obj.NAME
 
             save_json_file(self.get_folder_path(), filename, data)
         else:
@@ -132,16 +133,7 @@ class DataLoader:
         :param overwrite: Forcibly overwrite the data in the file
         :return: A list of dictionaries with card value mapping to their data.
         """
-
-        # Forcibly re-assigns names to match those on scryfall.
-        def _corrector(data: list[dict]) -> list[dict]:
-            for raw_card in data:
-                name = raw_card['name']
-                card_obj = CardManager.from_name(name)
-                raw_card['name'] = card_obj.NAME
-            return data
-
-        return self._get_data(self.get_card_rating_url(color), f'{color}CardRatings.json', overwrite, _corrector)
+        return self._get_data(self.get_card_rating_url(color), f'{color}CardRatings.json', overwrite)
 
     def get_meta_data(self, overwrite: bool = False) -> list[dict]:
         """

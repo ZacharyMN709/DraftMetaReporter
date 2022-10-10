@@ -436,6 +436,7 @@ class TestDataFramer(unittest.TestCase):
 
 
 class TestFramedData(unittest.TestCase):
+    # TODO: Complete this test.
     def test_(self):
         framer = FramedData('DOM', 'PremierDraft')
 
@@ -444,9 +445,9 @@ class TestFramedData(unittest.TestCase):
         framer.deck_archetype_frame()
         framer.deck_archetype_frame(summary=True)
         framer.card_frame()
-        framer.card_frame(card_rarity='C')
-        framer.card_frame(card_color='U')
         framer.card_frame(summary=True)
-        framer.aggregate_card_performance_data('2022-04-01', '2022-04-08')
+
+        # frame = card_frame(date=('2022-04-01', '2022-04-08'))
+        # framer.aggregate_card_frame()
 
         self.assertTrue(False)

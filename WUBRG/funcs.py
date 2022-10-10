@@ -179,7 +179,7 @@ wubrg_compare_key: Callable = cmp_to_key(color_compare_wubrg)
 group_compare_key: Callable = cmp_to_key(color_compare_group)
 
 
-def gen_color_filter(color: str, enum_val) -> list[str]:
+def gen_color_filter(color: str, enum_val) -> list[str]:  # pragma: no cover
     # TODO: Have this implement a function which returns a set of colours based on an enum
     #  filters = ['exact', 'subset', 'contains', 'adjacent'*]
     #  'exact': 'U' --> 'U'

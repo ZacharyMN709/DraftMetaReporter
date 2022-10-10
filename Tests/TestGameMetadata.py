@@ -137,6 +137,7 @@ class TestCard(unittest.TestCase):
         self.assertEqual(repr(card), name)
         self.assertEqual(card.NAME, name)
         self.assertEqual(card.MANA_COST, '{3}{G}')
+        self.assertEqual(card.CAST_IDENTITY, 'G')
 
     def test_card_dual_name(self):
         name = 'Boseiju Reaches Skyward'
@@ -147,6 +148,7 @@ class TestCard(unittest.TestCase):
         self.assertEqual(repr(card), full_name)
         self.assertEqual(card.NAME, name)
         self.assertEqual(card.MANA_COST, '{3}{G}')
+        self.assertEqual(card.CAST_IDENTITY, 'G')
 
     def test_card_full_name(self):
         name = 'Invert // Invent'
@@ -156,6 +158,7 @@ class TestCard(unittest.TestCase):
         self.assertEqual(repr(card), name)
         self.assertEqual(card.NAME, name)
         self.assertEqual(card.MANA_COST, '{U/R} // {4}{U}{R}')
+        self.assertEqual(card.CAST_IDENTITY, 'UR')
 
     def test_card_links(self):
         name = 'Shatterskull Smashing'
@@ -254,6 +257,19 @@ class TestSetMetadata(unittest.TestCase):
 
         card_3 = meta.find_card('Shock')
         self.assertIsNone(card_3)
+
+    def test_get_cards_by_color(self):
+        meta = SetMetadata.get_metadata('NEO')
+        red_or_blue = meta.get_cards_by_colors(['R', 'U'])
+        izzet = meta.get_cards_by_colors(['R', 'U', 'UR', 'RU'])
+
+        self.assertGreater(len(izzet), len(red_or_blue))
+        self.assertEqual(len(red_or_blue), 86)
+        self.assertEqual(len(izzet),  88)
+
+        card = meta.find_card('Enthusiastic Mechanaut')
+        self.assertIn(card, izzet)
+        self.assertNotIn(card, red_or_blue)
 
     def test_sort_compare(self):
         meta = SetMetadata.get_metadata('NEO')
