@@ -20,6 +20,7 @@ class DataLoader:
     """
 
     # TODO: This could be made more space efficient by converting fetched data into a csv format before saving.
+    # TODO: Add a check to handle instances of getting back "dummy" data (where all values are 0)
     _DEFAULT_DATE: date = date(2020, 1, 1)
     _BASE_URL: str = 'https://www.17lands.com/'
     _MIN_FILE_SIZE: int = 265
@@ -114,18 +115,19 @@ class DataLoader:
             else:
                 Logger.LOGGER.log(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...",
                                   Logger.FLG.DEFAULT)
-            data = self._fetcher.fetch(url)
+            raw_data = self._fetcher.fetch(url)
 
             # Handles correcting data from 17Lands, in the event since data coming back from MTGA can't be trusted.
-            for raw_card in data:
-                name = raw_card['name']
-                card_obj = CardManager.from_name(name)
-                raw_card['name'] = card_obj.NAME
+            for data in raw_data:
+                if 'name' in data:
+                    name = data['name']
+                    card_obj = CardManager.from_name(name)
+                    data['name'] = card_obj.NAME
 
-            save_json_file(self.get_folder_path(), filename, data)
+            save_json_file(self.get_folder_path(), filename, raw_data)
         else:
-            data = load_json_file(self.get_folder_path(), filename)
-        return data
+            raw_data = load_json_file(self.get_folder_path(), filename)
+        return raw_data
 
     def get_card_data(self, color: str = '', overwrite: bool = False) -> CARD_DATA:
         """

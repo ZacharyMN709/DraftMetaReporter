@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import NoReturn
+from typing import NoReturn, Optional
 
 from WUBRG import get_color_identity
 
@@ -76,9 +76,12 @@ class CardFace:
 
         # The remaining text is all of the types, separated by spaces.
         self.TYPES = half_one.strip().split(' ')
+        valid_subtypes = set()
         for t in self.TYPES:
             if t not in TYPES:  # pragma: no cover
                 raise Exception(f"Invalid type '{t}' for card '{self.NAME}'")
+
+            valid_subtypes = valid_subtypes | SUBTYPE_DICT[t]
 
         # If the second half of the type line exists, handle it.
         if len(lst) == 2:
@@ -86,13 +89,12 @@ class CardFace:
 
             # For each subtype found,
             for subtype in subtypes:
-                for t in self.TYPES:
-                    # Check that it's a valid subtype among the cards types.
-                    if subtype in SUBTYPE_DICT[t]:
-                        self.SUBTYPES.append(subtype)
-                    # And raise an exception if not.
-                    else:  # pragma: no cover
-                        raise Exception(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
+                # Check that it's a valid subtype among the cards types.
+                if subtype in valid_subtypes:
+                    self.SUBTYPES.append(subtype)
+                # And raise an exception if not.
+                else:  # pragma: no cover
+                    raise Exception(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
 
     def __init__(self, json: CARD_INFO, side: str):
         if side in ['back', 'adventure', 'right']:
@@ -106,7 +108,7 @@ class CardFace:
         self.ID: str = json['id']
         self.NAME: str = sub_json.get('name')
         self.MANA_COST: str = sub_json.get('mana_cost')
-        # self.CMC = sub_json.get('cmc')  # TODO: Handle this more precisely later.
+        self.CMC = int(sub_json.get('cmc'))
 
         _colors = sub_json.get('colors')
         self.COLORS: str = ""
@@ -147,10 +149,6 @@ class Card:
         Automatically generates and sets the CardFaces for the Card object.
         :param json: The card data.
         """
-        self.DEFAULT_FACE: CardFace
-        self.FACE_1: CardFace
-        self.FACE_2: CardFace
-
         if self.LAYOUT == CardLayouts.NORMAL:
             self.DEFAULT_FACE = CardFace.single_face(json)
             self.FACE_1 = self.DEFAULT_FACE
@@ -186,6 +184,15 @@ class Card:
         if json['object'] != 'card':
             raise Exception("Invalid JSON provided! Object type is not 'card'")
 
+        self.LAYOUT: CardLayouts = LAYOUT_DICT[json['layout']]
+        self.TWO_SIDED: bool = self.LAYOUT is CardLayouts.TWO_SIDED
+        self.SPLIT: bool = self.LAYOUT is CardLayouts.FUSED
+
+        self.DEFAULT_FACE: CardFace
+        self.FACE_1: CardFace
+        self.FACE_2: Optional[CardFace]
+        self._handle_card_faces(json)
+
         # Card ID info
         self.ID: str = json['id']
         self.ARENA_ID: int = json.get('arena_id')  # TODO: Handle Remastered Arena sets.
@@ -195,10 +202,7 @@ class Card:
         self.COLOR_IDENTITY: str = get_color_identity("".join(json['color_identity']))
         self.CAST_IDENTITY: str = get_color_identity(self.MANA_COST)
         self.CMC: int = int(json['cmc'])
-        self.LAYOUT: CardLayouts = LAYOUT_DICT[json['layout']]
-        self.TWO_SIDED: bool = self.LAYOUT is CardLayouts.TWO_SIDED
-        self.SPLIT: bool = self.LAYOUT is CardLayouts.FUSED
-        self._handle_card_faces(json)
+
 
     @property
     def NAME(self) -> str:
