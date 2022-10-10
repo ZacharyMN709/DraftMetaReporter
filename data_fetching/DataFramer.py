@@ -1,3 +1,4 @@
+from typing import NoReturn
 import pandas as pd
 
 from Utilities import Logger
@@ -91,19 +92,21 @@ class DataFramer:
         # TODO: Attempt to handle this in a way so the entire history frames
         #  aren't reloaded each time this function is called.
 
-        grouped_arch_frame_dict = dict()
-        single_arch_frame_dict = dict()
-        card_frame_dict = dict()
+        grouped_arch_frame_dict: dict[str, pd.DataFrame] = dict()
+        single_arch_frame_dict: dict[str, pd.DataFrame] = dict()
+        card_frame_dict: dict[str, pd.DataFrame] = dict()
 
         Logger.LOGGER.log(f'Pandafying historical data for {self.SET} {self.FORMAT}...', Logger.FLG.VERBOSE)
 
         for date in hist_meta:
-            grouped_arch_frame_dict[date], single_arch_frame_dict[date] = gen_meta_frame(hist_meta[date])
+            grouped, single = gen_meta_frame(hist_meta[date])
+            grouped_arch_frame_dict[date] = grouped
+            single_arch_frame_dict[date] = single
         grouped_arch_frame = pd.concat(grouped_arch_frame_dict, names=["Date", "Name"])
         single_arch_frame = pd.concat(single_arch_frame_dict, names=["Date", "Name"])
 
         for date in hist_card:
-            color_dict = dict()
+            color_dict: dict[str, pd.DataFrame] = dict()
             for color in hist_card[date]:
                 frame = gen_card_frame(hist_card[date][color])
                 frame = append_card_info(frame, self._format_metadata.CARD_DICT)
@@ -117,7 +120,7 @@ class DataFramer:
         self._SINGLE_ARCHETYPE_HISTORY_FRAME = single_arch_frame
         self._CARD_HISTORY_FRAME = card_frame
 
-    def gen_summary(self, reload: bool = False, overwrite: bool = False) -> None:
+    def gen_summary(self, reload: bool = False, overwrite: bool = False) -> NoReturn:
         """Populates and updates the three 'SUMMARY' properties."""
         hist_card, hist_meta = self._FETCHER.get_summary_data(reload, overwrite)
         if (not hist_card) and (not hist_meta):  # pragma: no cover
@@ -136,7 +139,7 @@ class DataFramer:
         self._SINGLE_ARCHETYPE_SUMMARY_FRAME = single_arch_frame
         self._CARD_SUMMARY_FRAME = card_frame
 
-    def check_for_updates(self) -> None:  # pragma: no cover
+    def check_for_updates(self) -> NoReturn:  # pragma: no cover
         """Populates and updates data properties, filling in missing selected data."""
         Logger.LOGGER.log(f'Checking for missing data for {self.SET} {self.FORMAT}...', Logger.FLG.KEY)
         if self.load_summary:
@@ -145,7 +148,7 @@ class DataFramer:
             self.gen_hist()
         Logger.LOGGER.log(f'Finished checking for missing data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
 
-    def reload_data(self) -> None:  # pragma: no cover
+    def reload_data(self) -> NoReturn:  # pragma: no cover
         """Populates and updates data properties, reloading selected data."""
         Logger.LOGGER.log(f'Loading data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
         if self.load_summary:
@@ -154,7 +157,7 @@ class DataFramer:
             self.gen_hist(True)
         Logger.LOGGER.log(f'Finished loading data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
 
-    def force_update(self) -> None:  # pragma: no cover
+    def force_update(self) -> NoReturn:  # pragma: no cover
         """Forcibly re-fetches and overwrites selected data."""
         Logger.LOGGER.log(f'Re-downloading data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
         if self.load_summary:

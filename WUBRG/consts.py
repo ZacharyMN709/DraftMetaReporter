@@ -304,3 +304,12 @@ MANA_SYMBOLS: list[str] = BASE_MANA_SYMBOLS + NUMERIC_MANA_SYMBOLS + HYBRID_MANA
                          + PHYREXIAN_MANA_SYMBOLS + HYBRID_PHYREXIAN_MANA_SYMBOLS \
                          + COLORLESS_HYBRID_MANA_SYMBOLS + SPECIAL_MANA_SYMBOLS + COST_SYMBOLS
 # endregion Mana Symbol Lists
+
+# TODO: Consider using this for stricter handling of color strings.
+from typing import Literal
+COLOR_STRING = Literal[
+    '', 'W', 'U', 'B', 'R', 'G',
+    'WU', 'WB', 'WR', 'WG', 'UB', 'UR', 'UG', 'BR', 'BG', 'RG',
+    'WUB', 'WUR', 'WUG', 'WBR', 'WBG', 'WRG', 'UBR', 'UBG', 'URG', 'BRG',
+    'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'
+]

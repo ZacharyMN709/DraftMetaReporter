@@ -1,9 +1,10 @@
-from typing import Union
+from __future__ import annotations
+from typing import Union, NoReturn
 
 from WUBRG import get_color_identity
 
 from game_metadata.utils.consts import RARITY_ALIASES, LAYOUT_DICT, CardLayouts
-from game_metadata.utils import SUPERTYPES, TYPES, ALL_SUBTYPES, SUBTYPE_DICT
+from game_metadata.utils import SUPERTYPES, TYPES, SUBTYPE_DICT
 
 
 class CardFace:
@@ -15,7 +16,7 @@ class CardFace:
 
     # sides = ['default', 'left', 'right', 'creature', 'adventure']
     @classmethod
-    def single_face(cls, json: dict[str, Union[str, dict[str, str], list[str]]], side: str = 'default') -> 'CardFace':
+    def single_face(cls, json: dict[str, Union[str, dict[str, str], list[str]]], side: str = 'default') -> CardFace:
         """
         Returns the appropriately configured card face for the side given.
         :param json: The data for the card.
@@ -34,7 +35,7 @@ class CardFace:
 
     # sides = ['default', 'front', 'back']
     @classmethod
-    def double_faced(cls, json: dict[str, Union[str, dict[str, str]], list[str]], side: str = 'default') -> 'CardFace':
+    def double_faced(cls, json: dict[str, Union[str, dict[str, str]], list[str]], side: str = 'default') -> CardFace:
         """
         Returns the appropriately configured card face for the side given.
         :param json: The data for the card.
@@ -50,7 +51,12 @@ class CardFace:
 
         return face
 
-    def handle_types(self, type_line):
+    def handle_types(self, type_line: str) -> NoReturn:
+        """
+        Takes in the typeline as a string, and parses it into its supertypes, types and subtypes.
+        The values are assigned to the properties of the object rather than returned.
+        :param type_line:
+        """
         # Check that a type line was found.
         if type_line is None:  # pragma: no cover
             return
@@ -189,7 +195,8 @@ class Card:
         self.RARITY = RARITY_ALIASES[json['rarity']]
         self.NUMBER = json['collector_number']
         self.COLOR_IDENTITY = get_color_identity("".join(json['color_identity']))
-        self._CMC = int(json['cmc'])  # TODO: Have this handled by a card face later.
+        self.CAST_IDENTITY = get_color_identity(self.MANA_COST)
+        self.CMC = int(json['cmc'])
         self.LAYOUT = LAYOUT_DICT[json['layout']]
         self.TWO_SIDED = self.LAYOUT is CardLayouts.TWO_SIDED
         self.SPLIT = self.LAYOUT is CardLayouts.FUSED
@@ -214,33 +221,23 @@ class Card:
         return self.DEFAULT_FACE.MANA_COST
 
     @property
-    def CAST_IDENTITY(self) -> str:
-        """Gets the colour identity of the mana cost of the card"""
-        return get_color_identity(self.MANA_COST)
-
-    @property
-    def CMC(self) -> int:
-        """Gets the converted mana cost of the card"""
-        return self._CMC
-
-    @property
     def TYPE_LINE(self) -> str:
         """Gets the type line of the card"""
         return self.DEFAULT_FACE.TYPE_LINE
 
     @property
     def SUPERTYPES(self) -> str:
-        """Gets the type line of the card"""
+        """Gets the supertypes of the card"""
         return self.DEFAULT_FACE.SUPERTYPES
 
     @property
     def TYPES(self) -> str:
-        """Gets the type line of the card"""
+        """Gets the types of the card"""
         return self.DEFAULT_FACE.TYPES
 
     @property
     def SUBTYPES(self) -> str:
-        """Gets the type line of the card"""
+        """Gets the subtypes of the card"""
         return self.DEFAULT_FACE.SUBTYPES
 
     @property

@@ -1,9 +1,10 @@
+from data_fetching.utils import META_DATA, WUBRG_CARD_DATA
 from datetime import time, date, datetime, timedelta
 
 from Utilities import Logger
 from game_metadata import FormatMetadata
 
-from data_fetching.utils.date_helper import get_prev_17lands_update_time, utc_today
+from data_fetching.utils.date_helper import get_prev_17lands_update_time
 from data_fetching.DataLoader import DataLoader
 
 
@@ -19,13 +20,14 @@ class LoadedData:
         self.FORMAT = format_name
         self._format_metadata = FormatMetadata.get_metadata(set_code, format_name)
 
-        self._META_DICT = dict()
-        self._CARD_DICTS = dict()
+        self._CARD_DATA_DICT: dict[str, WUBRG_CARD_DATA] = dict()
+        self._META_DATA_DICT: dict[str, META_DATA] = dict()
 
-        self._SUMMARY_META_DICT: list[dict] = list()
-        self._SUMMARY_CARD_DICTS: dict[str, list[dict]] = dict()
+        self._CARD_SUMMARY_DICTS = dict()
+        self._META_SUMMARY_DICT = list()
 
-    def get_day_data(self, check_date: date, reload: bool = False, overwrite: bool = False) -> tuple[dict, dict]:
+    def get_day_data(self, check_date: date, reload: bool = False, overwrite: bool = False) \
+            -> tuple[WUBRG_CARD_DATA, META_DATA]:
         """
         Gets all of the data for a given day, for the object's set and format.
         If the data does not exist locally, it will be fetched from 17Lands and saved locally.
@@ -36,25 +38,26 @@ class LoadedData:
         """
 
         str_date = str(check_date)
-        data_missing = (str_date not in self._META_DICT) or (str_date not in self._CARD_DICTS)
+        data_missing = (str_date not in self._META_DATA_DICT) or (str_date not in self._CARD_DATA_DICT)
         update = data_missing or reload
 
         if update:
             loader = DataLoader(self.SET, self.FORMAT, check_date)
             Logger.LOGGER.log(f'Getting data for {self.SET} {self.FORMAT}, date: {str_date}', Logger.FLG.DEFAULT)
-            card_dict, meta_dict = loader.get_day_data(overwrite)
+            card_data, meta_data = loader.get_day_data(overwrite)
 
-            if not card_dict:  # pragma: no cover
-                Logger.LOGGER.log(f'`card_dict` for {str_date} is empty.', Logger.FLG.VERBOSE)
-            if not meta_dict:  # pragma: no cover
-                Logger.LOGGER.log(f'`meta_dict` for {str_date} is empty.', Logger.FLG.VERBOSE)
+            if not card_data:  # pragma: no cover
+                Logger.LOGGER.log(f'`card_data` for {str_date} is empty.', Logger.FLG.VERBOSE)
+            if not meta_data:  # pragma: no cover
+                Logger.LOGGER.log(f'`meta_data` for {str_date} is empty.', Logger.FLG.VERBOSE)
 
-            self._CARD_DICTS[str_date] = {color: card_dict[color] for color in card_dict}
-            self._META_DICT[str_date] = meta_dict
+            self._CARD_DATA_DICT[str_date] = {color: card_data[color] for color in card_data}
+            self._META_DATA_DICT[str_date] = meta_data
 
-        return self._CARD_DICTS[str_date], self._META_DICT[str_date]
+        return self._CARD_DATA_DICT[str_date], self._META_DATA_DICT[str_date]
 
-    def _is_historic_data_available(self, requested_date: datetime, last_17l_update: datetime) -> bool:
+    def _is_historic_data_available(self, requested_date: datetime, last_17l_update: datetime) \
+            -> bool:
         # Data for a given day will be exist at 2am UTC the following day.
         update_date = datetime.combine(requested_date, time(2, 0)) + timedelta(days=1)
         has_updated = update_date <= last_17l_update
@@ -68,7 +71,8 @@ class LoadedData:
 
         return has_updated and is_active
 
-    def get_historic_data(self, reload: bool = False, overwrite: bool = False) -> tuple[dict, dict]:
+    def get_historic_data(self, reload: bool = False, overwrite: bool = False) \
+            -> tuple[dict[str, WUBRG_CARD_DATA], dict[str, META_DATA]]:
         """
         Gets all of the data by day for the set and format.
         If any data does not exist locally, it will be fetched from 17Lands and saved locally.
@@ -93,9 +97,10 @@ class LoadedData:
                 self.get_day_data(requested_date.date(), reload, overwrite)
             requested_date += timedelta(days=1)
 
-        return self._CARD_DICTS, self._META_DICT
+        return self._CARD_DATA_DICT, self._META_DATA_DICT
 
-    def _is_summary_data_stale(self, last_write: datetime, last_17l_update: datetime) -> bool:
+    def _is_summary_data_stale(self, last_write: datetime, last_17l_update: datetime) \
+            -> bool:
         # Check if the data has been updated since last write and that the format is still open.
         end_date = self._format_metadata.END_DATE + timedelta(days=3)
         data_updated = last_write < last_17l_update
@@ -110,7 +115,7 @@ class LoadedData:
         return data_updated and data_live
 
     def get_summary_data(self, reload: bool = False, overwrite: bool = False) -> \
-            tuple[dict[str, list[dict]], list[dict]]:
+            tuple[WUBRG_CARD_DATA, META_DATA]:
         """
         Gets the aggregated data for the set and format
         Depending on the age of the data, it will be updated automatically.
@@ -128,7 +133,7 @@ class LoadedData:
         loader = DataLoader(self.SET, self.FORMAT, None)
 
         # Determine the object is missing data.
-        data_unloaded = (not self._SUMMARY_META_DICT) or (not self._SUMMARY_CARD_DICTS)
+        data_unloaded = (not self._META_SUMMARY_DICT) or (not self._CARD_SUMMARY_DICTS)
 
         # Get the relevant times for updates, and check if the data is stale.
         last_write = loader.get_last_summary_update_time()
@@ -140,6 +145,6 @@ class LoadedData:
             # If we want to force an overwrite or if the existing data is stale, set the overwrite flag.
             overwrite = overwrite or stale_data
             Logger.LOGGER.log(f'Getting overall data for {self.SET} {self.FORMAT}', Logger.FLG.DEFAULT)
-            self._SUMMARY_CARD_DICTS, self._SUMMARY_META_DICT = loader.get_day_data(overwrite)
+            self._CARD_SUMMARY_DICTS, self._META_SUMMARY_DICT = loader.get_day_data(overwrite)
 
-        return self._SUMMARY_CARD_DICTS, self._SUMMARY_META_DICT
+        return self._CARD_SUMMARY_DICTS, self._META_SUMMARY_DICT

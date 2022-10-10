@@ -1,3 +1,4 @@
+from typing import NoReturn
 import pandas as pd
 
 from game_metadata import SetMetadata
@@ -26,11 +27,11 @@ class FramedData:
         self.load_summary = load_summary
         self.load_history = load_history
 
-    def check_for_updates(self) -> None:  # pragma: no cover
+    def check_for_updates(self) -> NoReturn:  # pragma: no cover
         """Populates and updates all data properties, filling in missing data."""
         self.DATA.check_for_updates()
 
-    def reload_data(self) -> None:  # pragma: no cover
+    def reload_data(self) -> NoReturn:  # pragma: no cover
         """Populates and updates all data properties, reloading all data."""
         self.DATA.reload_data()
 

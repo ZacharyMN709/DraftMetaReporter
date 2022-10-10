@@ -23,7 +23,10 @@ FILTER_KWARGS: dict[str, str] = {
 TITLE_SIZE: float = 16.5
 LABEL_SIZE: float = 13.5
 
-STATS_COLOR_DICT: dict[str, tuple[float, float, float, float]] = {
+# Type information for colors used in graphing.
+Color = tuple[float, float, float, float]
+
+STATS_COLOR_DICT: dict[str, Color] = {
     'GIH WR': (0.33, 0.66, 0.41, 0.9),
     'GND WR': (0.77, 0.31, 0.32, 0.9),
     'ATA': (0.87, 0.52, 0.32, 0.9),
@@ -35,7 +38,7 @@ STATS_COLOR_DICT: dict[str, tuple[float, float, float, float]] = {
 }
 
 
-ARCHETYPES_COLOR_DICT: dict[str, tuple[float, float, float, float]] = {
+ARCHETYPES_COLOR_DICT: dict[str, Color] = {
              'WG': (0.87, 0.52, 0.32, 0.9),
              'WU': (0.3, 0.45, 0.69, 0.9),
              'UB': (0.15, 0.15, 0.15, 0.9),

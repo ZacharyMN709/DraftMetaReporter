@@ -45,7 +45,7 @@ def append_card_info(frame: pd.DataFrame, card_dict: dict[str, Card]) -> pd.Data
     :param card_dict: The dictionary of card names and card objects.
     :return: A DataFrame with the card information attached.
     """
-    frame['Cast Color'] = [get_color_identity(card_dict[card_name].MANA_COST) for card_name in frame.index]
+    frame['Cast Color'] = [card_dict[card_name].CAST_IDENTITY for card_name in frame.index]
     frame['CMC'] = [card_dict[card_name].CMC for card_name in frame.index]
     frame['Type Line'] = [card_dict[card_name].TYPE_LINE for card_name in frame.index]
     frame['Supertypes'] = [card_dict[card_name].SUPERTYPES for card_name in frame.index]
