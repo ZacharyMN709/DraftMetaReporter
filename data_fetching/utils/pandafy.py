@@ -3,9 +3,9 @@ import pandas as pd
 from WUBRG import ALL_COLOR_ALIAS_MAP, get_color_identity
 from WUBRG.consts import COLOR_COUNT_MAP
 
-from data_fetching.utils.consts import RARITY_ALIAS_DICT, STAT_NAME_DICT, META_COLS_ALIAS_DICT, \
+from data_fetching.utils.consts import STAT_NAME_DICT, META_COLS_ALIAS_DICT, \
     STAT_COL_NAMES, SHARED_COL_NAMES, CARD_INFO_COL_NAMES
-from game_metadata import Card
+from game_metadata import Card, RARITY_ALIASES
 
 
 def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
@@ -29,7 +29,7 @@ def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
 
     frame["IWD"] = frame["IWD"] * 100
     frame = frame.drop(['sideboard_game_count', 'sideboard_win_rate', 'url', 'url_back'], axis=1)
-    frame['Rarity'] = frame['Rarity'].map(RARITY_ALIAS_DICT)
+    frame['Rarity'] = frame['Rarity'].map(RARITY_ALIASES)
 
     column_names = STAT_COL_NAMES + SHARED_COL_NAMES
     frame = frame.reindex(columns=column_names)

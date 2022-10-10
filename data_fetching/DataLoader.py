@@ -137,7 +137,8 @@ class DataLoader:
         def _corrector(data: list[dict]) -> list[dict]:
             for raw_card in data:
                 name = raw_card['name']
-                raw_card['name'] = CardManager.from_name(name).NAME
+                card_obj = CardManager.from_name(name)
+                raw_card['name'] = card_obj.NAME
             return data
 
         return self._get_data(self.get_card_rating_url(color), f'{color}CardRatings.json', overwrite, _corrector)

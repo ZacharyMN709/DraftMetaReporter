@@ -1,11 +1,4 @@
 # Set Consts
-RARITY_ALIAS_DICT: dict[str, str] = {
-    'common': "C",
-    'uncommon': "U",
-    'rare': "R",
-    'mythic': "M"
-}
-
 FORMAT_NICKNAME_DICT: dict[str, str] = {
     'PremierDraft': 'Bo1',
     'TradDraft': 'Bo3',
