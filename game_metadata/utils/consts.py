@@ -1,7 +1,11 @@
+from typing import Union
 from enum import Flag, auto
 
-# Card Consts
+# Type information for the card json Scryfall returns.
+CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str]]]
 
+
+# Card Consts
 RARITY_ALIASES: dict[str, str] = {
     'common': "C",
     'uncommon': "U",

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Optional, Union
 from data_fetching.utils import CARD_DATA, META_DATA, WUBRG_CARD_DATA
 import os

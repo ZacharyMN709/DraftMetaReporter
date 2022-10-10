@@ -16,15 +16,15 @@ class LoadedData:
     """
 
     def __init__(self, set_code: str, format_name: str):
-        self.SET = set_code
-        self.FORMAT = format_name
-        self._format_metadata = FormatMetadata.get_metadata(set_code, format_name)
+        self.SET: str = set_code
+        self.FORMAT: str = format_name
+        self._format_metadata: FormatMetadata = FormatMetadata.get_metadata(set_code, format_name)
 
         self._CARD_DATA_DICT: dict[str, WUBRG_CARD_DATA] = dict()
         self._META_DATA_DICT: dict[str, META_DATA] = dict()
 
-        self._CARD_SUMMARY_DICTS = dict()
-        self._META_SUMMARY_DICT = list()
+        self._CARD_SUMMARY_DICTS: WUBRG_CARD_DATA = dict()
+        self._META_SUMMARY_DICT: META_DATA = list()
 
     def get_day_data(self, check_date: date, reload: bool = False, overwrite: bool = False) \
             -> tuple[WUBRG_CARD_DATA, META_DATA]:
@@ -37,12 +37,12 @@ class LoadedData:
         :return: A tuple of dictionaries filled with the archetype data and card data
         """
 
-        str_date = str(check_date)
-        data_missing = (str_date not in self._META_DATA_DICT) or (str_date not in self._CARD_DATA_DICT)
-        update = data_missing or reload
+        str_date: str = str(check_date)
+        data_missing: bool = (str_date not in self._META_DATA_DICT) or (str_date not in self._CARD_DATA_DICT)
+        update: bool = data_missing or reload
 
         if update:
-            loader = DataLoader(self.SET, self.FORMAT, check_date)
+            loader: DataLoader = DataLoader(self.SET, self.FORMAT, check_date)
             Logger.LOGGER.log(f'Getting data for {self.SET} {self.FORMAT}, date: {str_date}', Logger.FLG.DEFAULT)
             card_data, meta_data = loader.get_day_data(overwrite)
 
@@ -59,9 +59,9 @@ class LoadedData:
     def _is_historic_data_available(self, requested_date: datetime, last_17l_update: datetime) \
             -> bool:
         # Data for a given day will be exist at 2am UTC the following day.
-        update_date = datetime.combine(requested_date, time(2, 0)) + timedelta(days=1)
-        has_updated = update_date <= last_17l_update
-        is_active = self._format_metadata.is_active(requested_date)
+        update_date: datetime = datetime.combine(requested_date, time(2, 0)) + timedelta(days=1)
+        has_updated: bool = update_date <= last_17l_update
+        is_active: bool = self._format_metadata.is_active(requested_date)
 
         Logger.LOGGER.log(f'Date to get data for:          {requested_date}', Logger.FLG.DEBUG)
         Logger.LOGGER.log(f'Date this data is available:   {update_date}', Logger.FLG.DEBUG)
@@ -87,8 +87,8 @@ class LoadedData:
             return dict(), dict()
 
         # Initialize the relevant dates to determine if data is available.
-        requested_date = datetime.combine(self._format_metadata.START_DATE, time(0, 0))
-        last_17l_update_date = get_prev_17lands_update_time()
+        requested_date: datetime = datetime.combine(self._format_metadata.START_DATE, time(0, 0))
+        last_17l_update_date: datetime = get_prev_17lands_update_time()
 
         # If the update date is before the last time 17Lands updated, the data could exist so,
         while requested_date <= last_17l_update_date:

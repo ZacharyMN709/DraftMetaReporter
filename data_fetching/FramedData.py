@@ -1,4 +1,4 @@
-from typing import NoReturn
+from typing import NoReturn, Callable
 import pandas as pd
 
 from game_metadata import SetMetadata
@@ -17,15 +17,15 @@ class FramedData:
 
     def __init__(self, set_code: str, format_name: str, load_summary: bool = True, load_history: bool = True):
         self._set_metadata = SetMetadata.get_metadata(set_code)
-        self.SET = set_code
-        self.SET_NAME = self._set_metadata.FULL_NAME
-        self.FORMAT = format_name
-        self.FORMAT_ALIAS = FORMAT_NICKNAME_DICT[self.FORMAT].upper()
-        self.DATA = DataFramer(set_code, format_name, load_summary, load_history)
-        self._compare_key = self._set_metadata.FRAME_COMPARE_KEY
+        self.SET: str = set_code
+        self.SET_NAME: str = self._set_metadata.FULL_NAME
+        self.FORMAT: str = format_name
+        self.FORMAT_ALIAS: str = FORMAT_NICKNAME_DICT[self.FORMAT].upper()
+        self.DATA: DataFramer = DataFramer(set_code, format_name, load_summary, load_history)
+        self._compare_key: Callable = self._set_metadata.FRAME_COMPARE_KEY
 
-        self.load_summary = load_summary
-        self.load_history = load_history
+        self.load_summary: bool = load_summary
+        self.load_history: bool = load_history
 
     def check_for_updates(self) -> NoReturn:  # pragma: no cover
         """Populates and updates all data properties, filling in missing data."""

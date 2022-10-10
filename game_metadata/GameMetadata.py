@@ -1,11 +1,12 @@
-from typing import Optional, Union
+from __future__ import annotations
+from typing import Optional, Union, Callable
 from functools import cmp_to_key
 from datetime import date, time, datetime, timedelta
 
 from Utilities import Logger
 from WUBRG.funcs import color_compare_wubrg
 
-from game_metadata.utils.settings import SETS, FORMATS, SET_CONFIG
+from game_metadata.utils.settings import SET_CONFIG
 from game_metadata.CallScryfall import CallScryfall
 from game_metadata.CardManager import CardManager
 from game_metadata.Card import Card
@@ -18,11 +19,11 @@ class SetMetadata:
     multiple time is unnecessary, so this acts as a central hub for that data. In particular, the costly operation of
     getting all cards in a set only needs to be done once, and then can be accessed from any place in the code.
     """
-    METADATA: dict[str, Optional['SetMetadata']] = dict()
+    METADATA: dict[str, Optional[SetMetadata]] = dict()
     __cls_lock = object()
 
     @classmethod
-    def get_metadata(cls, set_code: str) -> Optional['SetMetadata']:
+    def get_metadata(cls, set_code: str) -> Optional[SetMetadata]:
         """
         Returns an existing instance of a FormatMetadata object, or creates one if none exists.
         :param set_code: The three-letter code for the set.
@@ -37,21 +38,23 @@ class SetMetadata:
         if cls_lock != self.__cls_lock:
             raise Exception("Must use 'SetMetadata.get_metadata' class method.")
 
-        self.SET = set_code
+        self.SET: str = set_code
         Logger.LOGGER.log(f"Loading set metadata for: {set_code}", Logger.FLG.DEFAULT)
-        self.FULL_NAME, self.ICON_URL = CallScryfall.get_set_info(set_code)
-        self.RELEASE_DATE = SET_CONFIG[self.SET]["PremierDraft"][0][0]
+        _full_name, _icon_url = CallScryfall.get_set_info(set_code)
+        self.FULL_NAME: str = _full_name
+        self.ICON_URL: str = _icon_url
+        self.RELEASE_DATE: date = SET_CONFIG[self.SET]["PremierDraft"][0][0]
         # Set up a dictionary for quicker sorting.
-        self.CARD_INDEXES = {card.NAME: card.NUMBER for card in self.CARD_LIST}
-        self.FRAME_COMPARE_KEY = cmp_to_key(self._frame_compare)
+        self.CARD_INDEXES: dict[str, int] = {card.NAME: card.NUMBER for card in self.CARD_LIST}
+        self.FRAME_COMPARE_KEY: Callable = cmp_to_key(self._frame_compare)
         Logger.LOGGER.log(f"Done!\n", Logger.FLG.DEFAULT)
 
     @property
-    def CARD_DICT(self):
+    def CARD_DICT(self) -> dict[str, Card]:
         return CardManager.from_set(self.SET)
 
     @property
-    def CARD_LIST(self):
+    def CARD_LIST(self) -> list[Card]:
         return [self.CARD_DICT[name] for name in self.CARD_DICT]
 
     # Creating a custom sorting algorithm to order frames
@@ -83,7 +86,6 @@ class SetMetadata:
             old_name = card_name
             card_name = CardManager.REDIRECT[card_name]
             Logger.LOGGER.log(f"Changing '{old_name}' to '{card_name}'", Logger.FLG.VERBOSE)
-            print()
         if card_name in self.CARD_DICT:
             return self.CARD_DICT[card_name]
         else:
@@ -95,7 +97,7 @@ class SetMetadata:
         :param colors: A list of colours.
         :return: A list of cards which are one of the colours.
         """
-        ret = []
+        ret = list()
         for card in self.CARD_LIST:
             for color in colors:
                 if card.COLOR_IDENTITY == color:
@@ -115,11 +117,11 @@ class FormatMetadata:
     code, along with the string description of the format/game-type. FormatMetadata has access to all of the relevant
     SetMetadata, along with data specific to the format, such as dates.
     """
-    METADATA: dict[str, dict[str, Optional['FormatMetadata']]] = dict()
+    METADATA: dict[str, dict[str, Optional[FormatMetadata]]] = dict()
     __cls_lock = object()
 
     @staticmethod
-    def get_metadata(set_code: str, format_name: str) -> Optional['FormatMetadata']:
+    def get_metadata(set_code: str, format_name: str) -> Optional[FormatMetadata]:
         """
         Returns an existing instance of a FormatMetadata object, or creates one if none exists.
         :param set_code: The three-letter code for the set.
@@ -138,24 +140,24 @@ class FormatMetadata:
         if cls_lock != self.__cls_lock:
             raise Exception("Must use 'FormatMetadata.get_metadata' class method.")
 
-        self.SET = set_name
-        self.FORMAT = format_name
+        self.SET: str = set_name
+        self.FORMAT: str = format_name
 
-        self._active_periods = SET_CONFIG[set_name][format_name]
-        self.START_DATE = self._active_periods[0][0]
-        self.END_DATE = self._active_periods[-1][1]
+        self._active_periods: list[tuple[date, date]] = SET_CONFIG[set_name][format_name]
+        self.START_DATE: date = self._active_periods[0][0]
+        self.END_DATE: date = self._active_periods[-1][1]
 
-        self._set_metadata = SetMetadata.get_metadata(set_name)
+        self._set_metadata: SetMetadata = SetMetadata.get_metadata(set_name)
 
     @property
-    def CARD_DICT(self):
+    def CARD_DICT(self) -> dict[str, Card]:
         return self._set_metadata.CARD_DICT
 
     @property
-    def CARD_LIST(self):
+    def CARD_LIST(self) -> list[Card]:
         return self._set_metadata.CARD_LIST
 
-    def find_card(self, card_name: str) -> Card:
+    def find_card(self, card_name: str) -> Optional[Card]:
         """
         Looks for a card name in the list of cards for the set.
         :param card_name: The card name, simple or full. Must be an exact match. If 'NONE', today's date is used.
