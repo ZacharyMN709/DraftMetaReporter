@@ -1,4 +1,3 @@
-from typing import NoReturn
 from game_metadata import SETS, FORMATS, SetMetadata, Card
 
 from data_fetching.FramedData import FramedData
@@ -31,12 +30,12 @@ class SetManager:  # pragma: no cover
         self.load_history: bool = load_history
         self.SET_METADATA: SetMetadata = SetMetadata.get_metadata(set_code)
 
-    def check_for_updates(self) -> NoReturn:
+    def check_for_updates(self) -> None:
         """Populates and updates all data properties, filling in missing data."""
         for format_name in FORMATS:
             self[format_name].check_for_updates()
 
-    def reload_data(self) -> NoReturn:
+    def reload_data(self) -> None:
         """Populates and updates all data properties, reloading all data."""
         for format_name in FORMATS:
             self[format_name].reload_data()
@@ -75,12 +74,12 @@ class CentralManager:  # pragma: no cover
         self.load_summary: bool = load_summary
         self.load_history: bool = load_history
 
-    def check_for_updates(self) -> NoReturn:
+    def check_for_updates(self) -> None:
         """Populates and updates all data properties, filling in missing data."""
         for set_code in SETS:
             self[set_code].check_for_updates()
 
-    def reload_data(self) -> NoReturn:
+    def reload_data(self) -> None:
         """Populates and updates all data properties, reloading all data."""
         for set_code in SETS:
             self[set_code].reload_data()

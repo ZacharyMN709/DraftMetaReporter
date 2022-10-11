@@ -1,4 +1,4 @@
-from typing import Optional, NoReturn
+from typing import Optional
 
 from Utilities import Logger
 
@@ -24,7 +24,7 @@ class CardManager:
     CARDS: dict[str, Card] = dict()
 
     @classmethod
-    def _add_card(cls, card: Card, searched_name: str = '', force_update=True) -> NoReturn:
+    def _add_card(cls, card: Card, searched_name: str = '', force_update=True) -> None:
         """
         An internal method to help more easily track cards as they're found/fetched.
         :param card: The card object to track
@@ -121,7 +121,7 @@ class CardManager:
             return None, False
 
     @classmethod
-    def reset_redirects(cls) -> NoReturn:
+    def reset_redirects(cls) -> None:
         """
         Resets the REDIRECT dictionary, clearing any aliases, but preserving the true card names.
         """
@@ -131,7 +131,7 @@ class CardManager:
             cls._add_card(card, force_update=True)
 
     @classmethod
-    def flush_cache(cls) -> NoReturn:
+    def flush_cache(cls) -> None:
         """
         Clears the caches of cards.
         """

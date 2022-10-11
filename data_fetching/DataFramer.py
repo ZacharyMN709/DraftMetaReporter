@@ -1,4 +1,3 @@
-from typing import NoReturn
 import pandas as pd
 
 from Utilities import Logger
@@ -83,7 +82,7 @@ class DataFramer:
             self.gen_summary()
         return self._CARD_SUMMARY_FRAME
 
-    def gen_hist(self, reload: bool = False, overwrite: bool = False) -> NoReturn:
+    def gen_hist(self, reload: bool = False, overwrite: bool = False) -> None:
         """Populates and updates the three 'HISTORY' properties."""
         hist_card, hist_meta = self._FETCHER.get_historic_data(reload, overwrite)
         if (not hist_card) and (not hist_meta):  # pragma: no cover
@@ -120,7 +119,7 @@ class DataFramer:
         self._SINGLE_ARCHETYPE_HISTORY_FRAME = single_arch_frame
         self._CARD_HISTORY_FRAME = card_frame
 
-    def gen_summary(self, reload: bool = False, overwrite: bool = False) -> NoReturn:
+    def gen_summary(self, reload: bool = False, overwrite: bool = False) -> None:
         """Populates and updates the three 'SUMMARY' properties."""
         hist_card, hist_meta = self._FETCHER.get_summary_data(reload, overwrite)
         if (not hist_card) and (not hist_meta):  # pragma: no cover
@@ -139,7 +138,7 @@ class DataFramer:
         self._SINGLE_ARCHETYPE_SUMMARY_FRAME = single_arch_frame
         self._CARD_SUMMARY_FRAME = card_frame
 
-    def check_for_updates(self) -> NoReturn:  # pragma: no cover
+    def check_for_updates(self) -> None:  # pragma: no cover
         """Populates and updates data properties, filling in missing selected data."""
         Logger.LOGGER.log(f'Checking for missing data for {self.SET} {self.FORMAT}...', Logger.FLG.KEY)
         if self.load_summary:
@@ -148,7 +147,7 @@ class DataFramer:
             self.gen_hist()
         Logger.LOGGER.log(f'Finished checking for missing data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
 
-    def reload_data(self) -> NoReturn:  # pragma: no cover
+    def reload_data(self) -> None:  # pragma: no cover
         """Populates and updates data properties, reloading selected data."""
         Logger.LOGGER.log(f'Loading data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
         if self.load_summary:
@@ -157,7 +156,7 @@ class DataFramer:
             self.gen_hist(True)
         Logger.LOGGER.log(f'Finished loading data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
 
-    def force_update(self) -> NoReturn:  # pragma: no cover
+    def force_update(self) -> None:  # pragma: no cover
         """Forcibly re-fetches and overwrites selected data."""
         Logger.LOGGER.log(f'Re-downloading data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
         if self.load_summary:

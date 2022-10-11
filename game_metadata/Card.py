@@ -51,7 +51,7 @@ class CardFace:
 
         return face
 
-    def handle_types(self, type_line: str) -> NoReturn:
+    def handle_types(self, type_line: str) -> Optional[NoReturn]:
         """
         Takes in the typeline as a string, and parses it into its supertypes, types and subtypes.
         The values are assigned to the properties of the object rather than returned.
@@ -144,7 +144,7 @@ class Card:
     SCRY_URL = 'https://scryfall.com/card/'
     API_URL = 'https://api.scryfall.com/cards/'
 
-    def _handle_card_faces(self, json: CARD_INFO) -> NoReturn:
+    def _handle_card_faces(self, json: CARD_INFO) -> Optional[NoReturn]:
         """
         Automatically generates and sets the CardFaces for the Card object.
         :param json: The card data.
@@ -202,7 +202,6 @@ class Card:
         self.COLOR_IDENTITY: str = get_color_identity("".join(json['color_identity']))
         self.CAST_IDENTITY: str = get_color_identity(self.MANA_COST)
         self.CMC: int = int(json['cmc'])
-
 
     @property
     def NAME(self) -> str:
