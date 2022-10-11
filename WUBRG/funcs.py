@@ -84,8 +84,8 @@ def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -
     :return: A list of color ids.
     """
     color_ids = list()
-
-    cis = set(get_color_identity(color_id))
+    color_id = get_color_identity(color_id)
+    cis = set(color_id)
     for c in COLOR_COMBINATIONS:
         if len(c) <= max_len and cis <= set(c):
             color_ids.append(c)
@@ -106,8 +106,8 @@ def get_color_subsets(color_id: str, min_len: int = 0, strict: bool = False) -> 
     :return: A list of color ids.
     """
     color_ids = list()
-
-    cis = set(get_color_identity(color_id))
+    color_id = get_color_identity(color_id)
+    cis = set(color_id)
     for c in COLOR_COMBINATIONS:
         if len(c) >= min_len and cis >= set(c):
             color_ids.append(c)
@@ -187,7 +187,7 @@ def exact(colors: str) -> list[str]:
     :param colors: A color string.
     :return: A list of color strings.
     """
-    return [colors]
+    return [get_color_identity(colors)]
 
 
 def subset(colors: str) -> list[str]:
@@ -229,11 +229,16 @@ def shares(colors: str) -> list[str]:
     :param colors: A color string.
     :return: A list of color strings.
     """
-    # TODO: Handle ordering of output here.
+
+    if colors == '':
+        return ['']
+
     shared = set()
     for color in colors:
         shared = shared.union(set(get_color_supersets(color)))
-    return list(shared)
+
+    # TODO: Handle ordering of output here.
+    return sorted(list(shared), key=wubrg_compare_key)
 
 
 def color_filter(colors: str, style: ColorSortStyles) -> list[str]:
