@@ -179,7 +179,15 @@ wubrg_compare_key: Callable = cmp_to_key(color_compare_wubrg)
 group_compare_key: Callable = cmp_to_key(color_compare_group)
 
 
-# region Color Set Filtering
+# region Color Set Filtering and Sorting
+def order_by_wubrg(color_list: list[str]) -> list[str]:
+    return sorted(color_list, key=wubrg_compare_key)
+
+
+def order_by_groups(color_list: list[str]) -> list[str]:
+    return sorted(color_list, key=group_compare_key)
+
+
 def exact(colors: str) -> list[str]:
     """
     Returns a list of colours that match the provided string. (Wraps the provided string in a list.)
@@ -236,9 +244,7 @@ def shares(colors: str) -> list[str]:
     shared = set()
     for color in colors:
         shared = shared.union(set(get_color_supersets(color)))
-
-    # TODO: Handle ordering of output here.
-    return sorted(list(shared), key=wubrg_compare_key)
+    return order_by_wubrg(shared)
 
 
 def color_filter(colors: str, style: ColorSortStyles) -> list[str]:

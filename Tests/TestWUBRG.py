@@ -154,6 +154,11 @@ class TestWUBRGSortFuncs(unittest.TestCase):
 
 
 class TestWUBRGColorFilterFuncs(unittest.TestCase):
+    def test_sorting(self):
+        self.assertListEqual(WUBRG.funcs.order_by_wubrg(['U', 'W', 'G', 'B', 'R']), ['W', 'U', 'B', 'R', 'G'])
+        self.assertListEqual(WUBRG.funcs.order_by_groups(WUBRG.consts.COLOR_PAIRS),
+                             WUBRG.consts.GROUP_COLOR_COMBINATIONS[6:16])
+
     def test_exact(self):
         self.assertListEqual(WUBRG.funcs.exact('WUBRG'), ['WUBRG'])
         self.assertListEqual(WUBRG.funcs.exact(''), [''])

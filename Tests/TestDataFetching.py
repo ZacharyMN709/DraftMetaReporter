@@ -3,6 +3,7 @@ from datetime import date, datetime
 from os import path
 from pandas import DataFrame
 
+from data_fetching.utils.frame_filter_helper import _parse_to_set
 from game_metadata import FormatMetadata
 from data_fetching.utils.date_helper import utc_today, get_prev_17lands_update_time, get_next_17lands_update_time
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
@@ -245,6 +246,26 @@ class TestUtils(unittest.TestCase):
         self.assertRaises(TypeError, get_date_slice, ('2022-05-09',))
         self.assertRaises(TypeError, get_date_slice, {'2022-05-09': '', '2022-05-10': '', '2022-05-11': '', '2022-05-12': ''})
         self.assertRaises(TypeError, get_date_slice, ('2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'))
+
+    def test_filter_helpers(self):
+        # Check string
+        self.assertSetEqual(_parse_to_set('WU'), {'W', 'U'})
+        self.assertSetEqual(_parse_to_set('UW'), {'W', 'U'})
+        self.assertSetEqual(_parse_to_set('wu'), {'W', 'U'})
+        self.assertSetEqual(_parse_to_set('RM'), {'R', 'M'})
+
+        # Check list
+        self.assertSetEqual(_parse_to_set({'WU'}), {'W', 'U'})
+        self.assertSetEqual(_parse_to_set('WU'), {'W', 'U'})
+        self.assertSetEqual(_parse_to_set('UW'), {'WU'})
+        self.assertSetEqual(_parse_to_set('wu'), {'W', 'U'})
+        self.assertSetEqual(_parse_to_set({'W', 'U'}), {'W', 'U'})
+        self.assertSetEqual(_parse_to_set({'R', 'M'}), {'R', 'M'})
+        self.assertSetEqual(_parse_to_set({'W', 'U'}), {'R', 'M'})
+
+        # Check set
+        self.assertSetEqual(_parse_to_set('WU'), {'W', 'U'})
+        self.assertSetEqual(_parse_to_set('RM'), {'R', 'M'})
 
 
 class TestDataLoader(unittest.TestCase):

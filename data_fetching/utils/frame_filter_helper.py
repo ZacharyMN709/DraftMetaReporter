@@ -1,50 +1,33 @@
 import functools
 from typing import Callable, Literal, Union, NoReturn
 import pandas as pd
-
-import WUBRG.funcs
-from WUBRG import get_color_identity, COLORS, ColorSortStyles
-from game_metadata.utils.consts import RARITIES
-
-
-# region Set Parsing
-@functools.singledispatch
-def _parse_to_set(arg) -> Union[set[str], NoReturn]:
-    """
-    Takes string, lists and sets, and standardizes them into sets with uppercase values.
-    """
-    # By default, if we don't have a specific way of handling a parameter, raise an error.
-    raise TypeError(f"Cannot use type '{type(arg)}' for a name slice. \n"
-                    f"Please use one of 'str', 'list[str]' or 'set[str]'.")
-
-
-@_parse_to_set.register(str)
-def _parse_to_set_string(val: str) -> set[str]:
-    # Convert the string into uppercase, then into a set.
-    return {i for i in set(val.upper())}
-
-
-@_parse_to_set.register(list[str])
-def _parse_to_set_list(val: list[str]) -> set[str]:
-    # Convert each element in the list into uppercase, adn add to the set.
-    return {i.upper() for i in set(val)}
-
-
-@_parse_to_set.register(set[str])
-def _parse_to_set_slice(val: set[str]) -> set[str]:
-    # Uppercase each element in the set.
-    return {i.upper() for i in val}
-# endregion Set Parsing
+from WUBRG import get_color_identity
 
 
 # region Rarity Filtering
-def rarity_filter(rarities: Union[str, set]) \
-        -> Callable[[pd.DataFrame], pd.DataFrame]:
-    rarities = _parse_to_set(rarities)
-    if len(rarities - RARITIES) != 0:
-        raise ValueError(f"Set must be composed of subset of {RARITIES}")
+@functools.singledispatch
+def rarity_filter(rarities: Union[str, list[str], set[str]]) -> Union[Callable[[pd.DataFrame], pd.DataFrame], NoReturn]:
+    # By default, if we don't have a specific way of handling a parameter, raise an error.
+    raise TypeError(f"Cannot use type '{type(rarities)}' for a name slice. \n"
+                    f"Please use one of 'str', 'list[str]' or 'set[str]'.")
 
-    return lambda frame: frame['Rarity'].isin(rarities)
+
+@rarity_filter.register(str)
+def _rarity_filter_string(rarities: str) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    # Convert the string into uppercase, then into a set.
+    return lambda frame: frame['Rarity'].isin({i for i in set(rarities.upper())})
+
+
+@rarity_filter.register(list[str])
+def _rarity_filter_list(rarities: list[str]) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    # Convert each element in the list into uppercase, and add to the set.
+    return lambda frame: frame['Rarity'].isin({i.upper() for i in set(rarities)})
+
+
+@rarity_filter.register(set[str])
+def _rarity_filter_set(rarities: set[str]) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    # Uppercase each element in the set.
+    return lambda frame: frame['Rarity'].isin({i.upper() for i in rarities})
 # endregion Rarity Filtering
 
 
@@ -79,30 +62,37 @@ def cmc_filter(cmc: int, op: OPERANDS = "==") \
 
 
 # region Color Filtering
-def _color_filter(colors: Union[str, set], style: ColorSortStyles, col_name: str) \
-        -> Callable[[pd.DataFrame], pd.DataFrame]:
-    # TODO: Consider if/how this should handle sets of colours.
+@functools.singledispatch
+def _color_filter(colors: Union[str, list[str], set[str]], col_name: str) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    # By default, if we don't have a specific way of handling a parameter, raise an error.
+    raise TypeError(f"Cannot use type '{type(colors)}' for a color filter. \n"
+                    f"Please use one of 'str', 'list[str]' or 'set[str]'.")
 
-    # Validate the color string passed in.
-    colors = _parse_to_set(colors)
-    if len(colors - COLORS) != 0:
-        raise ValueError(f"Set must be composed of subset of {COLORS}")
 
-    # Take the set of colours, and merge it into a single string.
-    colors = get_color_identity(''.join(colors))
+@_color_filter.register(str)
+def _color_filter_string(colors: str, col_name: str) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    # Convert the string into uppercase, then into single element list.
+    return lambda frame: frame[col_name].isin({get_color_identity(colors)})
 
+
+@_color_filter.register(list[str])
+def _color_filter_list(colors: list[str], col_name: str) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    # Convert each element in the list into uppercase, and add to the set.
+    return _color_filter_set({i.upper() for i in set(colors)}, col_name)
+
+
+@_color_filter.register(set[str])
+def _color_filter_set(colors: set[str], col_name: str) -> Callable[[pd.DataFrame], pd.DataFrame]:
     # Return a function, based on the provided filter value.
-    return lambda frame: frame[col_name].isin(WUBRG.funcs.color_filter(colors, style))
+    return lambda frame: frame[col_name].isin(colors)
 
 
-def card_color_filter(colors: Union[str, set], style: ColorSortStyles = ColorSortStyles.exact) \
-        -> Callable[[pd.DataFrame], pd.DataFrame]:
-    return _color_filter(colors, style, 'Color')
+def card_color_filter(colors: Union[str, list[str], set[str]]) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    return _color_filter(colors, 'Color')
 
 
-def cast_color_filter(colors: Union[str, set], style: ColorSortStyles = ColorSortStyles.exact) \
-        -> Callable[[pd.DataFrame], pd.DataFrame]:
-    return _color_filter(colors, style, 'Cast Color')
+def cast_color_filter(colors: Union[str, list[str], set[str]]) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    return _color_filter(colors, 'Cast Color')
 # endregion Color Filtering
 
 
