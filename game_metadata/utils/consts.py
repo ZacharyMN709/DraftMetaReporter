@@ -6,6 +6,8 @@ CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str]]]
 
 
 # Card Consts
+RARITIES: set[str] = {'C', 'U', 'R', 'M'}
+
 RARITY_ALIASES: dict[str, str] = {
     'common': "C",
     'uncommon': "U",
@@ -61,7 +63,9 @@ ARTIFACT_SUBTYPES: set[str] = {
     "Gold", "Fortification", "Treasure", "Vehicle"
 }
 
-ENCHANTMENT_SUBTYPES: set[str] = {"Aura", "Cartouche", "Curse", "Rune", "Background", "Class", "Saga", "Shard", "Shrine"}
+ENCHANTMENT_SUBTYPES: set[str] = {
+    "Aura", "Cartouche", "Curse", "Rune", "Background", "Class", "Saga", "Shard", "Shrine"
+}
 
 PLANESWALKER_SUBTYPES: set[str] = {
     "Ajani", "Aminatou", "Angrath", "Arlinn", "Ashiok", "Bahamut", "Basri", "Bolas", "Calix",
@@ -78,8 +82,8 @@ INSTANT_SUBTYPES: set[str] = {"Adventure", "Arcane", "Trap"}
 
 SORCERY_SUBTYPES: set[str] = {"Adventure", "Arcane", "Lesson"}
 
-ALL_SUBTYPES: set[str] = LAND_SUBTYPES | CREATURE_SUBTYPES | ARTIFACT_SUBTYPES | ENCHANTMENT_SUBTYPES | PLANESWALKER_SUBTYPES \
-               | INSTANT_SUBTYPES | SORCERY_SUBTYPES
+ALL_SUBTYPES: set[str] = LAND_SUBTYPES | CREATURE_SUBTYPES | ARTIFACT_SUBTYPES | ENCHANTMENT_SUBTYPES |\
+                         PLANESWALKER_SUBTYPES | INSTANT_SUBTYPES | SORCERY_SUBTYPES
 
 SUBTYPE_DICT: dict[str, set[str]] = {
     "Land": LAND_SUBTYPES,

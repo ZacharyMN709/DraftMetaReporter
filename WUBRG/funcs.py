@@ -4,7 +4,7 @@ import re
 
 from Utilities import Logger
 from WUBRG.consts import COLORS, FAILSAFE, ALL_COLOR_ALIAS_MAP, COLOR_COMBINATIONS, REVERSE_COLOR_MAP, MANA_SYMBOLS, \
-    WUBRG_COLOR_INDEXES, GROUP_COLOR_INDEXES
+    WUBRG_COLOR_INDEXES, GROUP_COLOR_INDEXES, ColorSortStyles
 
 mana_cost_re = re.compile(r'{(.*?)}')
 
@@ -179,16 +179,84 @@ wubrg_compare_key: Callable = cmp_to_key(color_compare_wubrg)
 group_compare_key: Callable = cmp_to_key(color_compare_group)
 
 
-def gen_color_filter(color: str, enum_val) -> list[str]:  # pragma: no cover
-    # TODO: Have this implement a function which returns a set of colours based on an enum
-    #  filters = ['exact', 'subset', 'contains', 'adjacent'*]
-    #  'exact': 'U' --> 'U'
-    #  'subset': 'UW' --> 'U', 'W', 'WU'
-    #  'contains': 'U' --> 'U', 'UW', 'UB', 'UR', 'UG'...
-    #  'contains': 'UW' --> 'UW', 'UBW', 'URW', 'UGW'...
-    #  'superset': 'UW' --> 'UW', 'UBW', 'URW', 'UGW'...
-    #  'adjacent': 'UW' --> 'U', 'W', 'UW', 'UG', 'WG', 'UWG'...
+# region Color Set Filtering
+def exact(colors: str) -> list[str]:
+    """
+    Returns a list of colours that match the provided string. (Wraps the provided string in a list.)
+    'exact': 'U' --> 'U'
+    :param colors: A color string.
+    :return: A list of color strings.
+    """
+    return [colors]
 
-    # TODO: Determine how to handle colourless cards.
-    pass
 
+def subset(colors: str) -> list[str]:
+    """
+    Returns a list of the subsets of the provided colour string.
+    'subset': 'UW' --> 'U', 'W', 'WU'
+    :param colors: A color string.
+    :return: A list of color strings.
+    """
+    return get_color_subsets(colors)
+
+
+def superset(colors: str) -> list[str]:
+    """
+    Returns a list of the supersets of the provided colour string.
+    'superset': 'UW' --> 'UW', 'UBW', 'URW', 'UGW'...
+    :param colors: A color string.
+    :return: A list of color strings.
+    """
+    return get_color_supersets(colors)
+
+
+def adjacent(colors: str) -> list[str]:
+    """
+    Returns a list of color strings with no more than one colour different than the provided colour string.
+    'adjacent': 'UW' --> 'U', 'W', 'UW', 'UG', 'WG', 'UWG'...
+    :param colors: A color string.
+    :return: A list of color strings.
+    """
+    _subset = get_color_subsets(colors, len(colors) - 1, True)
+    _superset = get_color_supersets(colors, len(colors) + 1)
+    return _subset + _superset
+
+
+def shares(colors: str) -> list[str]:
+    """
+    Returns a list of color strings which share any colour with the provided colour string.
+    'adjacent': 'UW' --> 'U', 'W', 'UW', 'UG', 'UWG', 'UWRG', 'WUBRG'...
+    :param colors: A color string.
+    :return: A list of color strings.
+    """
+    # TODO: Handle ordering of output here.
+    shared = set()
+    for color in colors:
+        shared = shared.union(set(get_color_supersets(color)))
+    return list(shared)
+
+
+def color_filter(colors: str, style: ColorSortStyles) -> list[str]:
+    """
+    Returns a list of color strings based on the provided colour string and filter.
+    :param colors: A color string.
+    :param style: The style of filter to apply.
+    :return: A list of color strings.
+    """
+    # Map each of the enumeration values to a sort function.
+    funcs = {
+        ColorSortStyles.exact: exact,
+        ColorSortStyles.subset: subset,
+        ColorSortStyles.contains: superset,
+        ColorSortStyles.superset: superset,
+        ColorSortStyles.adjacent: adjacent,
+        ColorSortStyles.shares: shares
+    }
+
+    # Verify that the provided filter value is valid.
+    if style not in funcs:
+        raise ValueError(f"`style` must be one of `ColorSortStyles` enums")
+
+    # Return a function, based on the provided filter value.
+    return funcs[style](get_color_identity(colors))
+# endregion Color Set Filtering
