@@ -108,7 +108,10 @@ class CardFace:
         self.ID: str = json['id']
         self.NAME: str = sub_json.get('name')
         self.MANA_COST: str = sub_json.get('mana_cost')
-        self.CMC = int(sub_json.get('cmc'))
+        _cmc = sub_json.get('cmc')
+        self.CMC: Optional[int] = None  # TODO: Handle this base on mana_cost later.
+        if _cmc is not None:
+            self.CMC = int(_cmc)
 
         _colors = sub_json.get('colors')
         self.COLORS: str = ""

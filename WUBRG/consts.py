@@ -23,6 +23,7 @@ class ColorSortStyles(Flag):
 
 # Colour Mapping
 COLORS: set = {'W', 'U', 'B', 'R', 'G'}
+WUBRG: str = 'WUBRG'
 FAILSAFE: str = ''
 
 

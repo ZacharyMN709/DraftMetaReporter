@@ -3,7 +3,7 @@ from typing import Optional, Callable
 import re
 
 from Utilities import Logger
-from WUBRG.consts import COLORS, FAILSAFE, ALL_COLOR_ALIAS_MAP, COLOR_COMBINATIONS, REVERSE_COLOR_MAP, MANA_SYMBOLS, \
+from WUBRG.consts import WUBRG, FAILSAFE, ALL_COLOR_ALIAS_MAP, COLOR_COMBINATIONS, REVERSE_COLOR_MAP, MANA_SYMBOLS, \
     WUBRG_COLOR_INDEXES, GROUP_COLOR_INDEXES, ColorSortStyles
 
 mana_cost_re = re.compile(r'{(.*?)}')
@@ -32,7 +32,7 @@ def get_color_string(s: Optional[str]) -> str:
     ret = ''
     for c in s.upper():
         # If it's one of the colours,
-        if c in COLORS:
+        if c in WUBRG:
             # Add it to the string.
             ret += c
 
@@ -54,7 +54,7 @@ def get_color_identity(color_string: str) -> str:
     """
     char_set = set(get_color_string(color_string))
     s = ''
-    for c in COLORS:
+    for c in WUBRG:
         if c in char_set:
             s += c
     return s
@@ -254,7 +254,7 @@ def color_filter(colors: str, style: ColorSortStyles) -> list[str]:
     }
 
     # Verify that the provided filter value is valid.
-    if style not in funcs:
+    if style not in funcs:  # pragma: no cover
         raise ValueError(f"`style` must be one of `ColorSortStyles` enums")
 
     # Return a function, based on the provided filter value.
