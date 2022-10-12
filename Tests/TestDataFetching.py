@@ -1,14 +1,18 @@
 import unittest
 from datetime import date, datetime
 from os import path
+
+import pandas as pd
 from pandas import DataFrame
 
-from data_fetching.utils.frame_filter_helper import _parse_to_set
+import WUBRG.funcs
 from game_metadata import FormatMetadata
 from data_fetching.utils.date_helper import utc_today, get_prev_17lands_update_time, get_next_17lands_update_time
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
 from data_fetching.utils.index_slice_helper import get_name_slice, get_color_slice, _stringify_for_date_slice, \
     get_date_slice
+from data_fetching.utils.frame_filter_helper import rarity_filter, cmc_filter, card_color_filter, cast_color_filter, \
+    compose_filters
 
 from data_fetching import DataLoader, LoadedData, DataFramer, FramedData
 
@@ -248,24 +252,53 @@ class TestUtils(unittest.TestCase):
         self.assertRaises(TypeError, get_date_slice, ('2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'))
 
     def test_filter_helpers(self):
-        # Check string
-        self.assertSetEqual(_parse_to_set('WU'), {'W', 'U'})
-        self.assertSetEqual(_parse_to_set('UW'), {'W', 'U'})
-        self.assertSetEqual(_parse_to_set('wu'), {'W', 'U'})
-        self.assertSetEqual(_parse_to_set('RM'), {'R', 'M'})
+        # Load test data from Dominaria Premier Draft.
+        test_data = FramedData('DOM', 'PremierDraft', load_history=False)
+        frame = test_data.card_frame(deck_color='', summary=True)
 
-        # Check list
-        self.assertSetEqual(_parse_to_set({'WU'}), {'W', 'U'})
-        self.assertSetEqual(_parse_to_set('WU'), {'W', 'U'})
-        self.assertSetEqual(_parse_to_set('UW'), {'WU'})
-        self.assertSetEqual(_parse_to_set('wu'), {'W', 'U'})
-        self.assertSetEqual(_parse_to_set({'W', 'U'}), {'W', 'U'})
-        self.assertSetEqual(_parse_to_set({'R', 'M'}), {'R', 'M'})
-        self.assertSetEqual(_parse_to_set({'W', 'U'}), {'R', 'M'})
+        # Check rarity filter
+        filter_1 = rarity_filter('MR')
+        filter_2 = rarity_filter(['M', 'R'])
+        filter_3 = rarity_filter({'M', 'R'})
+        num = 68
+        self.assertRaises(TypeError, rarity_filter, None)
+        self.assertEqual(filter_1(frame).sum(), num)
+        self.assertEqual(filter_2(frame).sum(), num)
+        self.assertEqual(filter_3(frame).sum(), num)
 
-        # Check set
-        self.assertSetEqual(_parse_to_set('WU'), {'W', 'U'})
-        self.assertSetEqual(_parse_to_set('RM'), {'R', 'M'})
+        # Check cmc filter
+        filter_1 = cmc_filter(1)
+        num = 27
+        self.assertRaises(TypeError, cmc_filter, None)
+        self.assertEqual(filter_1(frame).sum(), num)
+
+        # Check card color filter
+        filter_1 = card_color_filter('WR')
+        filter_2 = card_color_filter(['', 'W', 'R', 'WR'])
+        filter_3 = card_color_filter({'', 'W', 'R', 'WR'})
+        filter_4 = card_color_filter(WUBRG.funcs.subset('WR'))
+        num = 110
+        self.assertRaises(TypeError, card_color_filter, None)
+        self.assertEqual(filter_1(frame).sum(), 2)
+        self.assertEqual(filter_2(frame).sum(), num)
+        self.assertEqual(filter_3(frame).sum(), num)
+        self.assertEqual(filter_4(frame).sum(), num)
+
+        # Check cast color filter
+        filter_1 = cast_color_filter('WR')
+        filter_2 = cast_color_filter(['', 'W', 'R', 'WR'])
+        filter_3 = cast_color_filter({'', 'W', 'R', 'WR'})
+        filter_4 = cast_color_filter(WUBRG.funcs.subset('WR'))
+        num = 119
+        self.assertRaises(TypeError, cast_color_filter, None)
+        self.assertEqual(filter_1(frame).sum(), 1)
+        self.assertEqual(filter_2(frame).sum(), num)
+        self.assertEqual(filter_3(frame).sum(), num)
+        self.assertEqual(filter_4(frame).sum(), num)
+
+        # Compose functions
+        filter_1 = compose_filters([cast_color_filter('W'), card_color_filter('W'), rarity_filter('R')])
+        self.assertEqual(filter_1(frame).sum(), 6)
 
 
 class TestDataLoader(unittest.TestCase):
