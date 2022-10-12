@@ -7,7 +7,7 @@ sns.set_theme()
 sns.set_color_codes()
 
 
-class ColorHandler:
+class ColorHandler:  # pragma: no cover
     def __init__(self, palette=None, color_dict=None):
         self.PALETTE = sns.color_palette(palette)
         self.COLOR_DICT = color_dict

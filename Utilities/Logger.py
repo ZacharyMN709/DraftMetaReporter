@@ -11,7 +11,7 @@ class Flags(IntEnum):
     DEBUG = 5
 
 
-class Logger:
+class Logger:  # pragma: no cover
     FLG = Flags
     LOGGER = None
 

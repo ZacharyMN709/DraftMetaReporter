@@ -2,8 +2,9 @@ import pandas as pd
 
 from Utilities import Logger
 
-from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
+from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame, append_card_info
 from data_fetching.LoadedData import LoadedData
+from game_metadata import FormatMetadata
 
 
 class DataFramer:
@@ -16,6 +17,7 @@ class DataFramer:
         self._SET = set_code
         self._FORMAT = format_name
         self._FETCHER = LoadedData(set_code, format_name)
+        self._format_metadata = FormatMetadata.get_metadata(set_code, format_name)
 
         self.load_summary = load_summary
         self.load_history = load_history
@@ -29,52 +31,52 @@ class DataFramer:
         self._CARD_SUMMARY_FRAME = None
 
     @property
-    def SET(self):  # pragma: no cover
+    def SET(self) -> str:  # pragma: no cover
         """The draft set."""
         return self._SET
 
     @property
-    def FORMAT(self):  # pragma: no cover
+    def FORMAT(self) -> str:  # pragma: no cover
         """The queue type."""
         return self._FORMAT
 
     @property
-    def GROUPED_ARCHETYPE_HISTORY_FRAME(self):
+    def GROUPED_ARCHETYPE_HISTORY_FRAME(self) -> pd.DataFrame:
         """The daily data about how decks, grouped by number of colours, performs."""
         if self.load_history and self._GROUPED_ARCHETYPE_HISTORY_FRAME is None:  # pragma: no cover
             self.gen_hist()
         return self._GROUPED_ARCHETYPE_HISTORY_FRAME
 
     @property
-    def SINGLE_ARCHETYPE_HISTORY_FRAME(self):
+    def SINGLE_ARCHETYPE_HISTORY_FRAME(self) -> pd.DataFrame:
         """The daily data for each deck archetype."""
         if self.load_history and self._SINGLE_ARCHETYPE_HISTORY_FRAME is None:  # pragma: no cover
             self.gen_hist()
         return self._SINGLE_ARCHETYPE_HISTORY_FRAME
 
     @property
-    def CARD_HISTORY_FRAME(self):
+    def CARD_HISTORY_FRAME(self) -> pd.DataFrame:
         """The daily data for individual card performance."""
         if self.load_history and self._CARD_HISTORY_FRAME is None:  # pragma: no cover
             self.gen_hist()
         return self._CARD_HISTORY_FRAME
 
     @property
-    def GROUPED_ARCHETYPE_SUMMARY_FRAME(self):
+    def GROUPED_ARCHETYPE_SUMMARY_FRAME(self) -> pd.DataFrame:
         """The overall data, about how decks, grouped by number of colours, performs."""
         if self.load_summary and self._GROUPED_ARCHETYPE_SUMMARY_FRAME is None:  # pragma: no cover
             self.gen_summary()
         return self._GROUPED_ARCHETYPE_SUMMARY_FRAME
 
     @property
-    def SINGLE_ARCHETYPE_SUMMARY_FRAME(self):
+    def SINGLE_ARCHETYPE_SUMMARY_FRAME(self) -> pd.DataFrame:
         """The overall data, for each deck archetype."""
         if self.load_summary and self._SINGLE_ARCHETYPE_SUMMARY_FRAME is None:  # pragma: no cover
             self.gen_summary()
         return self._SINGLE_ARCHETYPE_SUMMARY_FRAME
 
     @property
-    def CARD_SUMMARY_FRAME(self):
+    def CARD_SUMMARY_FRAME(self) -> pd.DataFrame:
         """The overall data, about individual card performance."""
         if self.load_summary and self._CARD_SUMMARY_FRAME is None:  # pragma: no cover
             self.gen_summary()
@@ -89,21 +91,25 @@ class DataFramer:
         # TODO: Attempt to handle this in a way so the entire history frames
         #  aren't reloaded each time this function is called.
 
-        grouped_arch_frame_dict = dict()
-        single_arch_frame_dict = dict()
-        card_frame_dict = dict()
+        grouped_arch_frame_dict: dict[str, pd.DataFrame] = dict()
+        single_arch_frame_dict: dict[str, pd.DataFrame] = dict()
+        card_frame_dict: dict[str, pd.DataFrame] = dict()
 
         Logger.LOGGER.log(f'Pandafying historical data for {self.SET} {self.FORMAT}...', Logger.FLG.VERBOSE)
 
         for date in hist_meta:
-            grouped_arch_frame_dict[date], single_arch_frame_dict[date] = gen_meta_frame(hist_meta[date])
+            grouped, single = gen_meta_frame(hist_meta[date])
+            grouped_arch_frame_dict[date] = grouped
+            single_arch_frame_dict[date] = single
         grouped_arch_frame = pd.concat(grouped_arch_frame_dict, names=["Date", "Name"])
         single_arch_frame = pd.concat(single_arch_frame_dict, names=["Date", "Name"])
 
         for date in hist_card:
-            color_dict = dict()
+            color_dict: dict[str, pd.DataFrame] = dict()
             for color in hist_card[date]:
-                color_dict[color] = gen_card_frame(hist_card[date][color])
+                frame = gen_card_frame(hist_card[date][color])
+                frame = append_card_info(frame, self._format_metadata.CARD_DICT)
+                color_dict[color] = frame
             card_frame_dict[date] = pd.concat(color_dict, names=["Deck Colors", "Name"])
         card_frame = pd.concat(card_frame_dict, names=["Date", "Deck Colors", "Name"])
 
@@ -123,7 +129,9 @@ class DataFramer:
 
         color_dict = dict()
         for color in hist_card:
-            color_dict[color] = gen_card_frame(hist_card[color])
+            frame = gen_card_frame(hist_card[color])
+            frame = append_card_info(frame, self._format_metadata.CARD_DICT)
+            color_dict[color] = frame
         card_frame = pd.concat(color_dict, names=["Deck Colors", "Name"])
 
         self._GROUPED_ARCHETYPE_SUMMARY_FRAME = grouped_arch_frame

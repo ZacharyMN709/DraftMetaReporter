@@ -1,12 +1,12 @@
-# Set Consts
-RARITY_ALIASES: dict[str, str] = {
-    'common': "C",
-    'uncommon': "U",
-    'rare': "R",
-    'mythic': "M"
-}
+from typing import Union
 
-FORMAT_NICKNAMES: dict[str, str] = {
+# Typing Consts
+CARD_DATA = list[dict[str, Union[str, int, float]]]
+META_DATA = list[dict[str, Union[str, int, bool]]]
+WUBRG_CARD_DATA = dict[str, CARD_DATA]
+
+# Set Consts
+FORMAT_NICKNAME_DICT: dict[str, str] = {
     'PremierDraft': 'Bo1',
     'TradDraft': 'Bo3',
     'QuickDraft': 'Quick',
@@ -15,7 +15,7 @@ FORMAT_NICKNAMES: dict[str, str] = {
     'DraftChallenge': 'Chal.',
 }
 
-STAT_NAMES: dict[str, str] = {
+STAT_NAME_DICT: dict[str, str] = {
     "name": "Name",
     "color": "Color",
     "rarity": "Rarity",
@@ -36,7 +36,7 @@ STAT_NAMES: dict[str, str] = {
     "drawn_improvement_win_rate": "IWD"
 }
 
-META_COLS: dict[str, str] = {
+META_COLS_ALIAS_DICT: dict[str, str] = {
     "is_summary": "is_summary",
     "color_name": "Color Name",
     "wins": "Wins",
@@ -65,3 +65,12 @@ STAT_FORMAT_STRINGS: dict[str, str] = {
 }
 
 PERCENT_COLUMNS: list[str] = ["GP WR", "OH WR", "GD WR", "GIH WR", "GND WR", "IWD"]
+
+STAT_COL_NAMES: list[str] = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', 'GP GW',
+                             '# OH', 'OH WR', 'OH GW', '# GD', 'GD WR', 'GD GW',
+                             '# GIH', 'GIH WR', 'GIH GW', '# GND', 'GND WR', 'GND GW', 'IWD']
+
+SHARED_COL_NAMES: list[str] = ['Rarity', 'Color']
+
+CARD_INFO_COL_NAMES: list[str] = ['Cast Color', 'CMC', 'Type Line', 'Supertypes', 'Types', 'Subtypes',
+                                  'Power', 'Toughness']

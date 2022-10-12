@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+from typing import Optional, Union
+from data_fetching.utils import CARD_DATA, META_DATA, WUBRG_CARD_DATA
 import os
 from datetime import date, datetime, time
 
@@ -6,9 +8,9 @@ from WUBRG import COLOR_COMBINATIONS
 from Utilities import Logger
 from Utilities import Fetcher
 from Utilities import save_json_file, load_json_file
-from data_fetching import utc_today
 
 from data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
+from game_metadata import CardManager
 
 
 class DataLoader:
@@ -18,6 +20,7 @@ class DataLoader:
     """
 
     # TODO: This could be made more space efficient by converting fetched data into a csv format before saving.
+    # TODO: Add a check to handle instances of getting back "dummy" data (where all values are 0)
     _DEFAULT_DATE: date = date(2020, 1, 1)
     _BASE_URL: str = 'https://www.17lands.com/'
     _MIN_FILE_SIZE: int = 265
@@ -95,7 +98,8 @@ class DataLoader:
             Logger.LOGGER.log(f'{filename} contained no data!', Logger.FLG.DEBUG)
         return valid
 
-    def _get_data(self, url: str, filename: str, overwrite: bool = False) -> list[dict]:  # pragma: no cover
+    def _get_data(self, url: str, filename: str, overwrite: bool = False) -> \
+            Union[CARD_DATA, META_DATA]:  # pragma: no cover
         """
         Automatically gets the appropriate data. If it saved locally, it will query 17Lands for the data
         and then save it to a file. Otherwise, it will load it from the file.
@@ -111,13 +115,21 @@ class DataLoader:
             else:
                 Logger.LOGGER.log(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...",
                                   Logger.FLG.DEFAULT)
-            data = self._fetcher.fetch(url)
-            save_json_file(self.get_folder_path(), filename, data)
-        else:
-            data = load_json_file(self.get_folder_path(), filename)
-        return data
+            raw_data = self._fetcher.fetch(url)
 
-    def get_card_data(self, color: str = '', overwrite: bool = False) -> list[dict]:
+            # Handles correcting data from 17Lands, in the event since data coming back from MTGA can't be trusted.
+            for data in raw_data:
+                if 'name' in data:
+                    name = data['name']
+                    card_obj = CardManager.from_name(name)
+                    data['name'] = card_obj.NAME
+
+            save_json_file(self.get_folder_path(), filename, raw_data)
+        else:
+            raw_data = load_json_file(self.get_folder_path(), filename)
+        return raw_data
+
+    def get_card_data(self, color: str = '', overwrite: bool = False) -> CARD_DATA:
         """
         Get the data on individual card performance.
         :param color: The colours to filter card performance on
@@ -126,7 +138,7 @@ class DataLoader:
         """
         return self._get_data(self.get_card_rating_url(color), f'{color}CardRatings.json', overwrite)
 
-    def get_meta_data(self, overwrite: bool = False) -> list[dict]:
+    def get_meta_data(self, overwrite: bool = False) -> META_DATA:
         """
         Gets data on archetype performance.
         :param overwrite: Forcibly overwrite the data in the file
@@ -134,25 +146,25 @@ class DataLoader:
         """
         return self._get_data(self.get_color_rating_url(), f'ColorRatings.json', overwrite)
 
-    def get_all_card_data(self, overwrite: bool = False) -> dict[str, list[dict]]:  # pragma: no cover
+    def get_all_card_data(self, overwrite: bool = False) -> WUBRG_CARD_DATA:  # pragma: no cover
         """
         Gets data on card performance for all colour combinations.
         :param overwrite: Forcibly overwrite the data in the file
         :return: A dictionary of dictionaries, with deck colours as keys
         """
-        card_dict = dict()
+        all_card_data = dict()
         for color in COLOR_COMBINATIONS:
-            card_dict[color] = self.get_card_data(color, overwrite)
+            all_card_data[color] = self.get_card_data(color, overwrite)
 
-        return card_dict
+        return all_card_data
 
-    def get_day_data(self, overwrite: bool = False) -> tuple[dict[str, list[dict]], list[dict]]:  # pragma: no cover
+    def get_day_data(self, overwrite: bool = False) -> tuple[WUBRG_CARD_DATA, META_DATA]:  # pragma: no cover
         """
         Gets all data available for the day.
         :param overwrite: Forcibly overwrite the data in the file
         :return: A tuple of dictionaries containing data from 17Lands
         """
-        card_dict = self.get_all_card_data(overwrite)
-        meta_dict = self.get_meta_data(overwrite)
+        card_data = self.get_all_card_data(overwrite)
+        meta_data = self.get_meta_data(overwrite)
 
-        return card_dict, meta_dict
+        return card_data, meta_data

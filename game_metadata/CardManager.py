@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional
 
 from Utilities import Logger
 
@@ -15,9 +15,13 @@ class CardManager:
     It's possible this should be reset at the release of a new set to let the object "re-link" names as their mappings
     may end up changing with the release of new cards, or after a certain amount of time to free up memory.
     """
-    REDIRECT = dict()
-    SETS = dict()
-    CARDS = dict()
+
+    # Used to map misspellings back to the correct name, without having to re-query scryfall.
+    REDIRECT: dict[str, str] = dict()
+
+    # Used to maintain a constant-time lookup cache of previously requested cards.
+    SETS: dict[str, dict[str, Card]] = dict()
+    CARDS: dict[str, Card] = dict()
 
     @classmethod
     def _add_card(cls, card: Card, searched_name: str = '', force_update=True) -> None:
@@ -40,7 +44,7 @@ class CardManager:
             cls.REDIRECT[searched_name] = card.NAME
 
     @classmethod
-    def from_name(cls, name: str) -> Union[Card, None]:
+    def from_name(cls, name: str) -> Optional[Card]:
         """
         Searches for a card by name. If not already known, will attempt to query Scryfall for
         the card.
@@ -98,7 +102,7 @@ class CardManager:
         return cls.SETS[set_code]
 
     @classmethod
-    def _find_card(cls, card_name: str) -> tuple[Union[Card, None], bool]:
+    def _find_card(cls, card_name: str) -> tuple[Optional[Card], bool]:
         """
         Attempts to find a saved instance of a card.
         :param card_name: The card name to find
@@ -127,7 +131,10 @@ class CardManager:
             cls._add_card(card, force_update=True)
 
     @classmethod
-    def flush_cache(cls):
+    def flush_cache(cls) -> None:
+        """
+        Clears the caches of cards.
+        """
         del cls.REDIRECT
         del cls.SETS
         del cls.CARDS

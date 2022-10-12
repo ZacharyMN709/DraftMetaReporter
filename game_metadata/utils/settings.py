@@ -1,7 +1,7 @@
 from datetime import date
 
 # Game Format Defaults and Data
-SETS: list[str] = ["SNC", "NEO", "VOW", "MID"]  # ['AFR', 'STX', 'KHM', 'ZNR']
+SETS: list[str] = ["DMU", "SNC", "NEO", "VOW", "MID"]  # ['AFR', 'STX', 'KHM', 'ZNR']
 
 FORMATS: list[str] = ["PremierDraft", "TradDraft", "QuickDraft"]
 
@@ -9,6 +9,11 @@ FORMATS: list[str] = ["PremierDraft", "TradDraft", "QuickDraft"]
 #  This will allow for the SET_CONFIG to be updated from a JSON file and have the Set/FormatMetadata objects re-
 #  parse the data to update the sets information.
 SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
+    "DMU": {
+        "PremierDraft": [(date(2022, 9, 1), date(2022, 11, 15))],
+        "TradDraft": [(date(2022, 9, 1), date(2022, 11, 15))],
+        "QuickDraft": [(date(2022, 9, 16), date(2022, 9, 30))]
+    },
     "SNC": {
         "PremierDraft": [(date(2022, 4, 28), date(2022, 7, 7))],
         "TradDraft": [(date(2022, 4, 28), date(2022, 7, 7))],

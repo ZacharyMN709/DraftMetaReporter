@@ -1,19 +1,25 @@
 import unittest
 from datetime import date, datetime
 from os import path
+
+import pandas as pd
 from pandas import DataFrame
 
-from Utilities import Logger
-from game_metadata import SETS, FORMATS, FormatMetadata
+import WUBRG.funcs
+from game_metadata import FormatMetadata
 from data_fetching.utils.date_helper import utc_today, get_prev_17lands_update_time, get_next_17lands_update_time
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
+from data_fetching.utils.index_slice_helper import get_name_slice, get_color_slice, _stringify_for_date_slice, \
+    get_date_slice
+from data_fetching.utils.frame_filter_helper import rarity_filter, cmc_filter, card_color_filter, cast_color_filter, \
+    compose_filters
 
-from data_fetching import DataLoader, LoadedData, DataFramer, FramedData, SetManager, CentralManager
+from data_fetching import DataLoader, LoadedData, DataFramer, FramedData
 
-CARD_KEYS_REQ = ['seen_count', 'avg_seen', 'pick_count', 'avg_pick', 'game_count', 'win_rate', 'opening_hand_game_count',
-                 'opening_hand_win_rate', 'drawn_game_count', 'drawn_win_rate', 'ever_drawn_game_count',
-                 'ever_drawn_win_rate', 'never_drawn_game_count', 'never_drawn_win_rate', 'drawn_improvement_win_rate',
-                 'name', 'color', 'rarity']
+CARD_KEYS_REQ = ['seen_count', 'avg_seen', 'pick_count', 'avg_pick', 'game_count', 'win_rate',
+                 'opening_hand_game_count', 'opening_hand_win_rate', 'drawn_game_count', 'drawn_win_rate',
+                 'ever_drawn_game_count', 'ever_drawn_win_rate', 'never_drawn_game_count', 'never_drawn_win_rate',
+                 'drawn_improvement_win_rate', 'name', 'color', 'rarity']
 CARD_KEYS_EXTRA = ['sideboard_game_count', 'sideboard_win_rate', 'url', 'url_back']
 CARD_KEYS = CARD_KEYS_REQ + CARD_KEYS_EXTRA
 
@@ -129,10 +135,11 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(len(arc_frame), 10)
 
         def compare_summary_frame(row_name: str, games: int, wins: int, winrate: float, splash: bool):
-            self.assertEqual(sum_frame.loc[row_name]['Games'], games)
-            self.assertEqual(sum_frame.loc[row_name]['Wins'], wins)
-            self.assertAlmostEqual(sum_frame.loc[row_name]['Win %'], winrate, delta=0.05)
-            self.assertEqual(sum_frame.loc[row_name]['Splash'], splash)
+            frame_slice = sum_frame.loc[row_name]
+            test_slice = frame_slice[frame_slice['Splash'] == splash]
+            self.assertEqual(test_slice['Games'][0], games)
+            self.assertEqual(test_slice['Wins'][0], wins)
+            self.assertAlmostEqual(test_slice['Win %'][0], winrate, delta=0.05)
 
         def compare_archetype_frame(row_name: str, games: int, wins: int, winrate: float, splash: bool):
             self.assertEqual(arc_frame.loc[row_name]['Games'], games)
@@ -140,8 +147,8 @@ class TestUtils(unittest.TestCase):
             self.assertAlmostEqual(arc_frame.loc[row_name]['Win %'], winrate, delta=0.05)
             self.assertEqual(arc_frame.loc[row_name]['Splash'], splash)
 
-        compare_summary_frame('Two-color', 1967, 1142, 58.060, False)
-        compare_summary_frame('Two-color + Splash', 697, 395, 56.670060, True)
+        compare_summary_frame('Two-Color', 1967, 1142, 58.060, False)
+        compare_summary_frame('Two-Color', 697, 395, 56.670060, True)
 
         compare_archetype_frame('UR', 608, 361, 59.380, False)
 
@@ -149,6 +156,149 @@ class TestUtils(unittest.TestCase):
         sum_frame, arc_frame = gen_meta_frame(list())
         self.assertEqual(len(sum_frame), 0)
         self.assertEqual(len(arc_frame), 0)
+
+    def test_name_index_helpers(self):
+        # Handle None
+        self.assertEqual(get_name_slice(None), slice(None))
+
+        # Handle string
+        self.assertListEqual(get_name_slice('Mesa Unicorn'), ['Mesa Unicorn'])
+
+        # Handle slices
+        self.assertEqual(get_name_slice(slice(None)), slice(None))
+        self.assertEqual(get_name_slice(slice('Mesa Unicorn', 'Celebrity Fencer')),
+                         slice('Mesa Unicorn', 'Celebrity Fencer'))
+
+        # Handle list
+        self.assertListEqual(get_name_slice(['Mesa Unicorn', 'Deathbloom Thallid', 'Blink of an Eye']),
+                             ['Mesa Unicorn', 'Deathbloom Thallid', 'Blink of an Eye'])
+
+        # Handle range
+        self.assertEqual(get_name_slice(('Mesa Unicorn', 'Deathbloom Thallid')),
+                         slice('Mesa Unicorn', 'Deathbloom Thallid'))
+
+        # Handle invalid
+        self.assertRaises(TypeError, get_name_slice, {'Mesa Unicorn'})
+        self.assertRaises(TypeError, get_name_slice, {'Mesa Unicorn': ''})
+        self.assertRaises(TypeError, get_name_slice, ('Mesa Unicorn', 'Deathbloom Thallid', 'Blink of an Eye'))
+
+    def test_color_index_helpers(self):
+        # Check Nones
+        self.assertEqual(get_color_slice(None), slice(None))
+
+        # Check string
+        self.assertListEqual(get_color_slice('WU'), ['WU'])
+        self.assertListEqual(get_color_slice('UW'), ['WU'])
+
+        # Check slices
+        self.assertEqual(get_color_slice(slice(None)), slice(None))
+        self.assertEqual(get_color_slice(slice('', 'G')), slice('', 'G'))
+        self.assertEqual(get_color_slice(slice('WU', 'RG')), slice('WU', 'RG'))
+
+        # Handle lists
+        self.assertListEqual(get_color_slice(['WU', 'WB']), ['WU', 'WB'])
+        self.assertListEqual(get_color_slice(['WU', 'BW']), ['WU', 'WB'])
+        self.assertListEqual(get_color_slice(['WU', 'WB', 'WR', 'WG']), ['WU', 'WB', 'WR', 'WG'])
+        self.assertListEqual(get_color_slice(['UW', 'BW', 'RW', 'GW']), ['WU', 'WB', 'WR', 'WG'])
+        self.assertListEqual(get_color_slice(['UW', 'BW', 'RW', 'GW', 'WG']), ['WU', 'WB', 'WR', 'WG', 'WG'])
+
+        # Handle ranges
+        self.assertEqual(get_color_slice(('', 'G')), slice('', 'G'))
+        self.assertEqual(get_color_slice(('WU', 'RG')), slice('WU', 'RG'))
+        self.assertEqual(get_color_slice(('RG', 'WU')), slice('RG', 'WU'))
+        self.assertEqual(get_color_slice(('RG', 'UW')), slice('RG', 'WU'))
+
+        # Handle invalid
+        self.assertRaises(TypeError, get_color_slice, ('WU',))
+        self.assertRaises(TypeError, get_color_slice, {'WU': '', 'WB': '', 'WR': '', 'WG': ''})
+        self.assertRaises(TypeError, get_color_slice, ('WU', 'WB', 'WR', 'WG'))
+
+    def test_date_index_helpers(self):
+        # Check Date Stringifier
+        self.assertEqual(_stringify_for_date_slice('2022-05-09'), '2022-05-09')
+        self.assertEqual(_stringify_for_date_slice(date(2022, 5, 9)), '2022-05-09')
+        self.assertEqual(_stringify_for_date_slice(datetime(2022, 5, 9, 5, 6)), '2022-05-09')
+        self.assertRaises(TypeError, _stringify_for_date_slice, None)
+        self.assertRaises(TypeError, _stringify_for_date_slice, True)
+
+        # Check Nones
+        self.assertEqual(get_date_slice(None), slice(None))
+
+        # Check String and Dates
+        self.assertListEqual(get_date_slice('2022-05-09'), ['2022-05-09'])
+        self.assertListEqual(get_date_slice(date(2022, 5, 9)), ['2022-05-09'])
+        self.assertListEqual(get_date_slice(datetime(2022, 5, 9, 5, 6)), ['2022-05-09'])
+
+        # Check slices
+        self.assertEqual(get_date_slice(slice('2022-05-09')), slice('2022-05-09'))
+        self.assertEqual(get_date_slice(slice('2022-05-09', '2022-05-19')), slice('2022-05-09', '2022-05-19'))
+
+        # Handle lists
+        self.assertListEqual(get_date_slice(['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12']),
+                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'])
+        self.assertListEqual(get_date_slice(['2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09']),
+                             ['2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09'])
+        self.assertListEqual(get_date_slice(['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09']),
+                             ['2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09'])
+
+        # Handle ranges
+        self.assertEqual(get_date_slice(('2022-05-19', '2022-05-09')), slice('2022-05-19', '2022-05-09'))
+        self.assertEqual(get_date_slice(('2022-05-09', '2022-05-19')), slice('2022-05-09', '2022-05-19'))
+
+        # Handle invalid
+        self.assertRaises(TypeError, get_date_slice, {'2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09'})
+        self.assertRaises(TypeError, get_date_slice, ('2022-05-09',))
+        self.assertRaises(TypeError, get_date_slice, {'2022-05-09': '', '2022-05-10': '', '2022-05-11': '', '2022-05-12': ''})
+        self.assertRaises(TypeError, get_date_slice, ('2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'))
+
+    def test_filter_helpers(self):
+        # Load test data from Dominaria Premier Draft.
+        test_data = FramedData('DOM', 'PremierDraft', load_history=False)
+        frame = test_data.card_frame(deck_color='', summary=True)
+
+        # Check rarity filter
+        filter_1 = rarity_filter('MR')
+        filter_2 = rarity_filter(['M', 'R'])
+        filter_3 = rarity_filter({'M', 'R'})
+        num = 68
+        self.assertRaises(TypeError, rarity_filter, None)
+        self.assertEqual(filter_1(frame).sum(), num)
+        self.assertEqual(filter_2(frame).sum(), num)
+        self.assertEqual(filter_3(frame).sum(), num)
+
+        # Check cmc filter
+        filter_1 = cmc_filter(1)
+        num = 27
+        self.assertRaises(TypeError, cmc_filter, None)
+        self.assertEqual(filter_1(frame).sum(), num)
+
+        # Check card color filter
+        filter_1 = card_color_filter('WR')
+        filter_2 = card_color_filter(['', 'W', 'R', 'WR'])
+        filter_3 = card_color_filter({'', 'W', 'R', 'WR'})
+        filter_4 = card_color_filter(WUBRG.funcs.subset('WR'))
+        num = 110
+        self.assertRaises(TypeError, card_color_filter, None)
+        self.assertEqual(filter_1(frame).sum(), 2)
+        self.assertEqual(filter_2(frame).sum(), num)
+        self.assertEqual(filter_3(frame).sum(), num)
+        self.assertEqual(filter_4(frame).sum(), num)
+
+        # Check cast color filter
+        filter_1 = cast_color_filter('WR')
+        filter_2 = cast_color_filter(['', 'W', 'R', 'WR'])
+        filter_3 = cast_color_filter({'', 'W', 'R', 'WR'})
+        filter_4 = cast_color_filter(WUBRG.funcs.subset('WR'))
+        num = 119
+        self.assertRaises(TypeError, cast_color_filter, None)
+        self.assertEqual(filter_1(frame).sum(), 1)
+        self.assertEqual(filter_2(frame).sum(), num)
+        self.assertEqual(filter_3(frame).sum(), num)
+        self.assertEqual(filter_4(frame).sum(), num)
+
+        # Compose functions
+        filter_1 = compose_filters([cast_color_filter('W'), card_color_filter('W'), rarity_filter('R')])
+        self.assertEqual(filter_1(frame).sum(), 6)
 
 
 class TestDataLoader(unittest.TestCase):
@@ -310,51 +460,48 @@ class TestLoadedData(unittest.TestCase):
 
 
 class TestDataFramer(unittest.TestCase):
+    ARCHETYPE_COLS = ['Colors', 'Splash', 'Wins', 'Games', 'Win %']
+    CARD_COLS = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', 'GP GW', '# OH', 'OH WR', 'OH GW',
+                 '# GD', 'GD WR', 'GD GW', '# GIH', 'GIH WR', 'GIH GW', '# GND', 'GND WR', 'GND GW', 'IWD',
+                 'Rarity', 'Color', 'Cast Color', 'CMC',
+                 'Type Line', 'Supertypes', 'Types', 'Subtypes', 'Power', 'Toughness']
+
     def test_gen_hist(self):
-        framer = DataFramer('NEO', 'PremierDraft')
+        framer = DataFramer('DOM', 'PremierDraft')
         framer.gen_hist()
         self.assertIsInstance(framer.GROUPED_ARCHETYPE_HISTORY_FRAME, DataFrame)
         self.assertIsInstance(framer.SINGLE_ARCHETYPE_HISTORY_FRAME, DataFrame)
         self.assertIsInstance(framer.CARD_HISTORY_FRAME, DataFrame)
 
-        self.assertListEqual(list(framer.GROUPED_ARCHETYPE_HISTORY_FRAME.columns),
-                             ['Colors', 'Splash', 'Wins', 'Games', 'Win %'])
-        self.assertListEqual(list(framer.SINGLE_ARCHETYPE_HISTORY_FRAME.columns),
-                             ['Colors', 'Splash', 'Wins', 'Games', 'Win %'])
-        self.assertListEqual(list(framer.CARD_HISTORY_FRAME.columns),
-                             ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR',
-                              '# GD', 'GD WR', '# GIH', 'GIH WR', '# GND', 'GND WR', 'IWD', 'Color',
-                              'Rarity'])
+        self.assertListEqual(list(framer.GROUPED_ARCHETYPE_HISTORY_FRAME.columns), self.ARCHETYPE_COLS)
+        self.assertListEqual(list(framer.SINGLE_ARCHETYPE_HISTORY_FRAME.columns), self.ARCHETYPE_COLS)
+        self.assertListEqual(list(framer.CARD_HISTORY_FRAME.columns), self.CARD_COLS)
 
     def test_gen_summary(self):
-        framer = DataFramer('NEO', 'PremierDraft')
+        framer = DataFramer('DOM', 'PremierDraft')
         framer.gen_summary()
         self.assertIsInstance(framer.GROUPED_ARCHETYPE_SUMMARY_FRAME, DataFrame)
         self.assertIsInstance(framer.SINGLE_ARCHETYPE_SUMMARY_FRAME, DataFrame)
         self.assertIsInstance(framer.CARD_SUMMARY_FRAME, DataFrame)
 
-        self.assertListEqual(list(framer.GROUPED_ARCHETYPE_SUMMARY_FRAME.columns),
-                             ['Colors', 'Splash', 'Wins', 'Games', 'Win %'])
-        self.assertListEqual(list(framer.SINGLE_ARCHETYPE_SUMMARY_FRAME.columns),
-                             ['Colors', 'Splash', 'Wins', 'Games', 'Win %'])
-        self.assertListEqual(list(framer.CARD_SUMMARY_FRAME.columns),
-                             ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', '# OH', 'OH WR',
-                              '# GD', 'GD WR', '# GIH', 'GIH WR', '# GND', 'GND WR', 'IWD', 'Color',
-                              'Rarity'])
+        self.assertListEqual(list(framer.GROUPED_ARCHETYPE_SUMMARY_FRAME.columns), self.ARCHETYPE_COLS)
+        self.assertListEqual(list(framer.SINGLE_ARCHETYPE_SUMMARY_FRAME.columns), self.ARCHETYPE_COLS)
+        self.assertListEqual(list(framer.CARD_SUMMARY_FRAME.columns), self.CARD_COLS)
 
 
 class TestFramedData(unittest.TestCase):
+    # TODO: Complete this test.
     def test_(self):
-        framer = FramedData('NEO', 'PremierDraft')
+        framer = FramedData('DOM', 'PremierDraft')
 
         framer.deck_group_frame()
         framer.deck_group_frame(summary=True)
         framer.deck_archetype_frame()
         framer.deck_archetype_frame(summary=True)
         framer.card_frame()
-        framer.card_frame(card_rarity='C')
-        framer.card_frame(card_color='U')
         framer.card_frame(summary=True)
-        framer.compress_date_range_data('2022-04-01', '2022-04-08')
+
+        # frame = card_frame(date=('2022-04-01', '2022-04-08'))
+        # framer.aggregate_card_frame()
 
         self.assertTrue(False)

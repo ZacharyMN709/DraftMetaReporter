@@ -1,8 +1,10 @@
-from typing import Union
+from __future__ import annotations
+from typing import NoReturn, Optional
 
 from WUBRG import get_color_identity
 
-from game_metadata.utils.consts import RARITY_ALIASES, LAYOUT_DICT, CardLayouts
+from game_metadata.utils.consts import RARITY_ALIASES, LAYOUT_DICT, CardLayouts, CARD_INFO
+from game_metadata.utils import SUPERTYPES, TYPES, SUBTYPE_DICT
 
 
 class CardFace:
@@ -14,7 +16,7 @@ class CardFace:
 
     # sides = ['default', 'left', 'right', 'creature', 'adventure']
     @classmethod
-    def single_face(cls, json: dict[str, Union[str, dict[str, str], list[str]]], side: str = 'default') -> 'CardFace':
+    def single_face(cls, json: CARD_INFO, side: str = 'default') -> CardFace:
         """
         Returns the appropriately configured card face for the side given.
         :param json: The data for the card.
@@ -33,7 +35,7 @@ class CardFace:
 
     # sides = ['default', 'front', 'back']
     @classmethod
-    def double_faced(cls, json: dict[str, Union[str, dict[str, str]], list[str]], side: str = 'default') -> 'CardFace':
+    def double_faced(cls, json: CARD_INFO, side: str = 'default') -> CardFace:
         """
         Returns the appropriately configured card face for the side given.
         :param json: The data for the card.
@@ -49,7 +51,52 @@ class CardFace:
 
         return face
 
-    def __init__(self, json: dict[str, Union[str, dict[str, str], list[str]]], side: str):
+    def handle_types(self, type_line: str) -> Optional[NoReturn]:
+        """
+        Takes in the typeline as a string, and parses it into its supertypes, types and subtypes.
+        The values are assigned to the properties of the object rather than returned.
+        :param type_line:
+        """
+        # Check that a type line was found.
+        if type_line is None:  # pragma: no cover
+            return
+        self.TYPE_LINE = type_line
+
+        # Split the type line on the dash to separate any subtypes
+        lst = type_line.split('—')
+
+        # Handle the first half of the type line
+        half_one = lst[0].strip()
+
+        # Remove the super types from the first half, and save them
+        for t in SUPERTYPES:
+            if t in half_one:
+                half_one = half_one.replace(t, '')
+                self.SUPERTYPES.append(t)
+
+        # The remaining text is all of the types, separated by spaces.
+        self.TYPES = half_one.strip().split(' ')
+        valid_subtypes = set()
+        for t in self.TYPES:
+            if t not in TYPES:  # pragma: no cover
+                raise Exception(f"Invalid type '{t}' for card '{self.NAME}'")
+
+            valid_subtypes = valid_subtypes | SUBTYPE_DICT[t]
+
+        # If the second half of the type line exists, handle it.
+        if len(lst) == 2:
+            subtypes = lst[1].strip().split(' ')
+
+            # For each subtype found,
+            for subtype in subtypes:
+                # Check that it's a valid subtype among the cards types.
+                if subtype in valid_subtypes:
+                    self.SUBTYPES.append(subtype)
+                # And raise an exception if not.
+                else:  # pragma: no cover
+                    raise Exception(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
+
+    def __init__(self, json: CARD_INFO, side: str):
         if side in ['back', 'adventure', 'right']:
             sub_json = json['card_faces'][1]
         else:
@@ -58,23 +105,33 @@ class CardFace:
             else:
                 sub_json = json
 
-        self.ID = json['id']
-        self.NAME = sub_json.get('name')
-        self.MANA_COST = sub_json.get('mana_cost')
-        # self.CMC = sub_json.get('cmc')  # TODO: Handle this more precisely later.
-        self.COLORS = sub_json.get('colors')
-        if self.COLORS is not None:
-            self.COLORS = get_color_identity("".join(self.COLORS))
-        self.TYPE_LINE = sub_json.get('type_line')
+        self.ID: str = json['id']
+        self.NAME: str = sub_json.get('name')
+        self.MANA_COST: str = sub_json.get('mana_cost')
+        _cmc = sub_json.get('cmc')
+        self.CMC: Optional[int] = None  # TODO: Handle this base on mana_cost later.
+        if _cmc is not None:
+            self.CMC = int(_cmc)
 
-        self.ORACLE = sub_json.get('oracle_text')
-        self.FLAVOR_TEXT = sub_json.get('flavor_text')
+        _colors = sub_json.get('colors')
+        self.COLORS: str = ""
+        if _colors is not None:
+            self.COLORS = get_color_identity("".join(_colors))
 
-        self.POW = sub_json.get('power')
-        self.TOU = sub_json.get('toughness')
+        self.TYPE_LINE: str = ""
+        self.SUPERTYPES: list[str] = list()
+        self.TYPES: list[str] = list()
+        self.SUBTYPES: list[str] = list()
+        self.handle_types(sub_json.get('type_line'))
 
-        self.CARD_SIDE = side
-        self.IMG_SIDE = 'back' if side == 'back' else 'front'
+        self.ORACLE: str = sub_json.get('oracle_text')
+        self.FLAVOR_TEXT: str = sub_json.get('flavor_text')
+
+        self.POW: str = sub_json.get('power')
+        self.TOU: str = sub_json.get('toughness')
+
+        self.CARD_SIDE: str = side
+        self.IMG_SIDE: str = 'back' if side == 'back' else 'front'
 
     # sizes = ['small', 'normal', 'large', 'png', 'art_crop', 'border_crop']
     def image_url(self, size: str = 'normal') -> str:
@@ -90,7 +147,7 @@ class Card:
     SCRY_URL = 'https://scryfall.com/card/'
     API_URL = 'https://api.scryfall.com/cards/'
 
-    def _handle_card_faces(self, json: dict[str, Union[str, dict[str, str], list[str]]]) -> None:
+    def _handle_card_faces(self, json: CARD_INFO) -> Optional[NoReturn]:
         """
         Automatically generates and sets the CardFaces for the Card object.
         :param json: The card data.
@@ -126,22 +183,28 @@ class Card:
         else:
             raise Exception(f"Unknown layout '{self.LAYOUT}'")
 
-    def __init__(self, json: dict[str, Union[str, dict[str, str], list[str]]]):
+    def __init__(self, json: CARD_INFO):
         if json['object'] != 'card':
             raise Exception("Invalid JSON provided! Object type is not 'card'")
 
-        # Card ID info
-        self.ID = json['id']
-        self.ARENA_ID = json.get('arena_id')  # TODO: Handle Remastered Arena sets.
-        self.SET = json['set'].upper()
-        self.RARITY = RARITY_ALIASES[json['rarity']]
-        self.NUMBER = json['collector_number']
-        self.COLOR_IDENTITY = get_color_identity("".join(json['color_identity']))
-        self.CMC = json['cmc']  # TODO: Have this handled by a card face later.
-        self.LAYOUT = LAYOUT_DICT[json['layout']]
-        self.TWO_SIDED = self.LAYOUT is CardLayouts.TWO_SIDED
-        self.SPLIT = self.LAYOUT is CardLayouts.FUSED
+        self.LAYOUT: CardLayouts = LAYOUT_DICT[json['layout']]
+        self.TWO_SIDED: bool = self.LAYOUT is CardLayouts.TWO_SIDED
+        self.SPLIT: bool = self.LAYOUT is CardLayouts.FUSED
+
+        self.DEFAULT_FACE: CardFace
+        self.FACE_1: CardFace
+        self.FACE_2: Optional[CardFace]
         self._handle_card_faces(json)
+
+        # Card ID info
+        self.ID: str = json['id']
+        self.ARENA_ID: int = json.get('arena_id')  # TODO: Handle Remastered Arena sets.
+        self.SET: str = json['set'].upper()
+        self.RARITY: str = RARITY_ALIASES[json['rarity']]
+        self.NUMBER = json['collector_number']
+        self.COLOR_IDENTITY: str = get_color_identity("".join(json['color_identity']))
+        self.CAST_IDENTITY: str = get_color_identity(self.MANA_COST)
+        self.CMC: int = int(json['cmc'])
 
     @property
     def NAME(self) -> str:
@@ -160,6 +223,36 @@ class Card:
     def MANA_COST(self) -> str:
         """Gets the mana cost of the card"""
         return self.DEFAULT_FACE.MANA_COST
+
+    @property
+    def TYPE_LINE(self) -> str:
+        """Gets the type line of the card"""
+        return self.DEFAULT_FACE.TYPE_LINE
+
+    @property
+    def SUPERTYPES(self) -> list[str]:
+        """Gets the supertypes of the card"""
+        return self.DEFAULT_FACE.SUPERTYPES
+
+    @property
+    def TYPES(self) -> list[str]:
+        """Gets the types of the card"""
+        return self.DEFAULT_FACE.TYPES
+
+    @property
+    def SUBTYPES(self) -> list[str]:
+        """Gets the subtypes of the card"""
+        return self.DEFAULT_FACE.SUBTYPES
+
+    @property
+    def POW(self) -> str:
+        """Gets the power of the card"""
+        return self.DEFAULT_FACE.POW
+
+    @property
+    def TOU(self) -> str:
+        """Gets the toughness of the card"""
+        return self.DEFAULT_FACE.TOU
 
     @property
     def API(self) -> str:
