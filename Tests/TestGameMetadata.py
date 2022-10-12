@@ -2,15 +2,9 @@ import unittest
 from datetime import date
 
 import WUBRG
-from game_metadata import CallScryfall
+from game_metadata import CallScryfall, Card, CardManager, SetMetadata, FormatMetadata
 from game_metadata.CallScryfall import trap_error
-
-from game_metadata import Card
 from game_metadata.utils.consts import CardLayouts
-
-from game_metadata import CardManager
-
-from game_metadata import SetMetadata, FormatMetadata
 
 
 class TestCallScryfall(unittest.TestCase):
@@ -18,8 +12,6 @@ class TestCallScryfall(unittest.TestCase):
         def raise_test_error(v=True, void=None):
             if v:
                 raise Exception("Test Error!")
-            else:  # pragma: no cover
-                return list()
 
         val = trap_error(raise_test_error)(True, None)
         self.assertIsNone(val)
