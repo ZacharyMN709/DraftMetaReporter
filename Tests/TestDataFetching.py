@@ -267,10 +267,14 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(filter_3(frame).sum(), num)
 
         # Check cmc filter
-        filter_1 = cmc_filter(1)
-        num = 27
+        filter_1 = cmc_filter(3)
+        filter_2 = cmc_filter(3, op=">=")
+        filter_3 = cmc_filter(3, op="<=")
         self.assertRaises(TypeError, cmc_filter, None)
-        self.assertEqual(filter_1(frame).sum(), num)
+        self.assertRaises(TypeError, cmc_filter, "None")
+        self.assertEqual(filter_1(frame).sum(), 46)
+        self.assertEqual(filter_2(frame).sum(), 154)
+        self.assertEqual(filter_3(frame).sum(), 141)
 
         # Check card color filter
         filter_1 = card_color_filter('WR')

@@ -53,7 +53,7 @@ def cmc_filter(cmc: int, op: OPERANDS = "==") \
     }
 
     # Verify that the provided filter value is valid.
-    if op not in ops:  # pragma: no cover
+    if op not in ops:
         raise ValueError(f"`op` must be one of {OPERANDS}")
 
     # Return a function, based on the provided filter value.

@@ -265,7 +265,7 @@ def color_filter(colors: str, style: ColorSortStyles) -> list[str]:
     }
 
     # Verify that the provided filter value is valid.
-    if style not in funcs:  # pragma: no cover
+    if style not in funcs:
         raise ValueError(f"`style` must be one of `ColorSortStyles` enums")
 
     # Return a function, based on the provided filter value.

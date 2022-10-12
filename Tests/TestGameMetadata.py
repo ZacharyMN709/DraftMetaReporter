@@ -247,6 +247,14 @@ class TestSetMetadata(unittest.TestCase):
     def test_get_metadata_invalid_constructor(self):
         self.assertRaises(Exception, SetMetadata, object(), 'NEO')
 
+    def test_card_type_parsing(self):
+        meta = SetMetadata.get_metadata('NEO')
+        card = meta.find_card('Enthusiastic Mechanaut')
+
+        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, None)
+        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Gobbledygook')
+        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Creature - Gobbledygook')
+
     def test_find_card(self):
         meta = SetMetadata.get_metadata('NEO')
         card_1 = meta.find_card('Boseiju Reaches Skyward')

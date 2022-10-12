@@ -58,8 +58,8 @@ class CardFace:
         :param type_line:
         """
         # Check that a type line was found.
-        if type_line is None:  # pragma: no cover
-            return
+        if type_line is None:
+            raise ValueError(f"'type_line' is empty for card '{self.NAME}'")
         self.TYPE_LINE = type_line
 
         # Split the type line on the dash to separate any subtypes
@@ -78,8 +78,8 @@ class CardFace:
         self.TYPES = half_one.strip().split(' ')
         valid_subtypes = set()
         for t in self.TYPES:
-            if t not in TYPES:  # pragma: no cover
-                raise Exception(f"Invalid type '{t}' for card '{self.NAME}'")
+            if t not in TYPES:
+                raise ValueError(f"Invalid type '{t}' for card '{self.NAME}'")
 
             valid_subtypes = valid_subtypes | SUBTYPE_DICT[t]
 
@@ -93,8 +93,8 @@ class CardFace:
                 if subtype in valid_subtypes:
                     self.SUBTYPES.append(subtype)
                 # And raise an exception if not.
-                else:  # pragma: no cover
-                    raise Exception(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
+                else:
+                    raise ValueError(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
 
     def __init__(self, json: CARD_INFO, side: str):
         if side in ['back', 'adventure', 'right']:
