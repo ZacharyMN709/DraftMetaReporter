@@ -245,7 +245,7 @@ class TestSetMetadata(unittest.TestCase):
 
         self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, None)
         self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Gobbledygook')
-        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Creature - Gobbledygook')
+        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Creature — Gobbledygook')
 
     def test_find_card(self):
         meta = SetMetadata.get_metadata('NEO')
