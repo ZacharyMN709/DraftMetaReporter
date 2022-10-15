@@ -1,6 +1,6 @@
 from typing import Union, Callable, Optional
 
-from Utilities import Logger
+from Utilities.auto_logging import logging
 from Utilities import Fetcher
 
 
@@ -10,11 +10,11 @@ def trap_error(func: Callable) -> Callable:
         try:
             return func(arg1, arg2)
         except Exception as ex:
-            Logger.LOGGER.log(f'Error: Error occurred while querying Scryfall!', Logger.FLG.ERROR)
+            logging.error(f'Error: Error occurred while querying Scryfall!')
             if isinstance(ex, KeyError):
-                Logger.LOGGER.log(f"{ex} was not found in the returned json.", Logger.FLG.ERROR)
+                logging.error(f"{ex} was not found in the returned json.")
             else:
-                Logger.LOGGER.log(ex, Logger.FLG.ERROR)
+                logging.error(ex)
             return None
     return arg_wrapper
 
@@ -32,15 +32,15 @@ class CallScryfall:
         next_page = True
         url = f'{cls._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
               f'&order=set&page=1&q=e%3A{set_code}&unique=cards'
-        Logger.LOGGER.log(f"Fetching card data for set: {set_code}", Logger.FLG.DEFAULT)
+        logging.info(f"Fetching card data for set: {set_code}")
 
         while next_page:
             response: dict[str, object] = cls.FETCHER.fetch(url)
             cards += response['data']
             if response['has_more']:
                 url = response['next_page']
-                Logger.LOGGER.log(f"Fetching next page for set: {set_code}", Logger.FLG.DEBUG)
-                Logger.LOGGER.log(f"URL: {url}", Logger.FLG.DEBUG)
+                logging.debug(f"Fetching next page for set: {set_code}")
+                logging.debug(f"URL: {url}")
             else:
                 next_page = False
 
@@ -50,7 +50,7 @@ class CallScryfall:
     @trap_error
     def get_set_info(cls, set_code: str) -> Optional[tuple[str, str]]:
         url = f'{cls._BASE_URL}sets/{set_code}'
-        Logger.LOGGER.log(f"Fetching data for set: {set_code}", Logger.FLG.DEFAULT)
+        logging.info(f"Fetching data for set: {set_code}")
         response: dict[str, str] = cls.FETCHER.fetch(url)
         return response['name'], response['icon_svg_uri']
 
@@ -68,12 +68,12 @@ class CallScryfall:
         card_info['name'] = name
 
         # Attempt to get information on the card.
-        Logger.LOGGER.log(f"Fetching data for card: {name}", Logger.FLG.DEFAULT)
+        logging.info(f"Fetching data for card: {name}")
         response = cls.FETCHER.fetch(f'{cls._BASE_URL}cards/named?fuzzy={name}')
 
         # If is not a card, do some processing and return the struct with some information.
         if response['object'] != 'card':
-            Logger.LOGGER.log(f"A non-card was returned for {name}", Logger.FLG.VERBOSE)
+            logging.verbose(f"A non-card was returned for {name}")
             # If the response type is an error, use that as the message.
             if response['details'][:20] == 'Too many cards match':
                 response['err_msg'] = f'Error: Multiple card matches for "{name}"'

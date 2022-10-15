@@ -1,6 +1,6 @@
 import pandas as pd
 
-from Utilities import Logger
+from Utilities.auto_logging import logging
 
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame, append_card_info
 from data_fetching.LoadedData import LoadedData
@@ -95,7 +95,7 @@ class DataFramer:
         single_arch_frame_dict: dict[str, pd.DataFrame] = dict()
         card_frame_dict: dict[str, pd.DataFrame] = dict()
 
-        Logger.LOGGER.log(f'Pandafying historical data for {self.SET} {self.FORMAT}...', Logger.FLG.VERBOSE)
+        logging.verbose(f'Pandafying historical data for {self.SET} {self.FORMAT}...')
 
         for date in hist_meta:
             grouped, single = gen_meta_frame(hist_meta[date])
@@ -113,7 +113,7 @@ class DataFramer:
             card_frame_dict[date] = pd.concat(color_dict, names=["Deck Colors", "Name"])
         card_frame = pd.concat(card_frame_dict, names=["Date", "Deck Colors", "Name"])
 
-        Logger.LOGGER.log(f'Finished pandafying data.', Logger.FLG.VERBOSE)
+        logging.verbose(f'Finished pandafying data.')
 
         self._GROUPED_ARCHETYPE_HISTORY_FRAME = grouped_arch_frame
         self._SINGLE_ARCHETYPE_HISTORY_FRAME = single_arch_frame
@@ -140,27 +140,27 @@ class DataFramer:
 
     def check_for_updates(self) -> None:  # pragma: no cover
         """Populates and updates data properties, filling in missing selected data."""
-        Logger.LOGGER.log(f'Checking for missing data for {self.SET} {self.FORMAT}...', Logger.FLG.KEY)
+        logging.sparse(f'Checking for missing data for {self.SET} {self.FORMAT}...')
         if self.load_summary:
             self.gen_summary()
         if self.load_history:
             self.gen_hist()
-        Logger.LOGGER.log(f'Finished checking for missing data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
+        logging.sparse(f'Finished checking for missing data for {self.SET} {self.FORMAT}.\r\n')
 
     def reload_data(self) -> None:  # pragma: no cover
         """Populates and updates data properties, reloading selected data."""
-        Logger.LOGGER.log(f'Loading data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
+        logging.sparse(f'Loading data for {self.SET} {self.FORMAT}')
         if self.load_summary:
             self.gen_summary(True)
         if self.load_history:
             self.gen_hist(True)
-        Logger.LOGGER.log(f'Finished loading data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
+        logging.sparse(f'Finished loading data for {self.SET} {self.FORMAT}.\r\n')
 
     def force_update(self) -> None:  # pragma: no cover
         """Forcibly re-fetches and overwrites selected data."""
-        Logger.LOGGER.log(f'Re-downloading data for {self.SET} {self.FORMAT}', Logger.FLG.KEY)
+        logging.sparse(f'Re-downloading data for {self.SET} {self.FORMAT}')
         if self.load_summary:
             self.gen_summary(True, True)
         if self.load_history:
             self.gen_hist(True, True)
-        Logger.LOGGER.log(f'Finished re-downloading data for {self.SET} {self.FORMAT}.\r\n', Logger.FLG.KEY)
+        logging.sparse(f'Finished re-downloading data for {self.SET} {self.FORMAT}.\r\n')

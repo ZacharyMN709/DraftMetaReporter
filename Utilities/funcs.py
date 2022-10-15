@@ -2,7 +2,7 @@ from typing import Union
 from os import path
 import json
 
-from Utilities.Logger import Logger
+from Utilities.auto_logging import logging
 
 
 def load_json_file(folder: str, filename: str) -> Union[dict, list[dict], None]:
@@ -18,11 +18,11 @@ def load_json_file(folder: str, filename: str) -> Union[dict, list[dict], None]:
         with open(filepath, 'r') as f:
             json_str = f.read()
             f.close()
-            Logger.LOGGER.log(f'File {filename} read successfully.', Logger.FLG.VERBOSE)
+            logging.verbose(f'File {filename} read successfully.')
             return json.loads(json_str)
     except Exception as ex:
-        Logger.LOGGER.log(f'Error reading json file {filename}', Logger.FLG.ERROR)
-        Logger.LOGGER.log(ex, Logger.FLG.ERROR)
+        logging.error(f'Error reading json file {filename}')
+        logging.error(ex)
         return None
 
 
@@ -40,9 +40,9 @@ def save_json_file(folder: str, filename: str, data: [dict, list[dict]]) -> bool
         with open(filepath, 'w') as f:
             f.write(json.dumps(data, indent=4))
             f.close()
-        Logger.LOGGER.log(f'File {filename} written to.', Logger.FLG.VERBOSE)
+        logging.verbose(f'File {filename} written to.')
         return True
     except Exception as ex:
-        Logger.LOGGER.log(f'Error writing to json file {filename}', Logger.FLG.ERROR)
-        Logger.LOGGER.log(ex, Logger.FLG.ERROR)
+        logging.error(f'Error writing to json file {filename}')
+        logging.error(ex)
         return False

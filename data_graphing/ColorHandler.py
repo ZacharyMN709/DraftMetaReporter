@@ -1,6 +1,6 @@
 import seaborn as sns
 
-from Utilities import Logger
+from Utilities.auto_logging import logging
 
 
 sns.set_theme()
@@ -26,12 +26,12 @@ class ColorHandler:  # pragma: no cover
             try:
                 self._PALETTE = sns.color_palette(val)
             except ValueError:
-                Logger.LOGGER.log(f"'{val}' is not a valid palette name. Using default.", Logger.FLG.KEY)
+                logging.sparse(f"'{val}' is not a valid palette name. Using default.")
                 self._PALETTE = sns.color_palette(None)
         elif isinstance(val, sns.palettes._ColorPalette):
             self._PALETTE = sns.color_palette(val)
         else:
-            Logger.LOGGER.log(f"Cannot derive palette from '{type(val)}'. Using default.", Logger.FLG.KEY)
+            logging.sparse(f"Cannot derive palette from '{type(val)}'. Using default.")
             self._PALETTE = sns.color_palette(None)
 
         self._PALETTE_IDX = 0
@@ -47,7 +47,7 @@ class ColorHandler:  # pragma: no cover
         elif isinstance(val, dict):
             self._COLOR_DICT = val
         else:
-            Logger.LOGGER.log(f"'{type(val)}' is not 'dict' or 'None'. Defaulting to None.", Logger.FLG.KEY)
+            logging.sparse(f"'{type(val)}' is not 'dict' or 'None'. Defaulting to None.")
             self._COLOR_DICT = None
 
     @COLOR_DICT.deleter

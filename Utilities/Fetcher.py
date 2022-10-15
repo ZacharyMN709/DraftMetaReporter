@@ -2,7 +2,7 @@ from typing import Union
 import requests
 from time import sleep
 
-from Utilities import Logger
+from Utilities.auto_logging import logging
 from Utilities import TRIES, FAIL_DELAY, SUCCESS_DELAY
 
 
@@ -28,7 +28,7 @@ class Fetcher:
             count += 1
 
             try:
-                Logger.LOGGER.log(f"Attempting to get data from '{url}'.", Logger.FLG.DEBUG)
+                logging.debug(f"Attempting to get data from '{url}'.")
                 response = requests.get(url)
                 data = response.json()
 
@@ -38,12 +38,11 @@ class Fetcher:
             # TODO: Consider handling errors based on specific connection issue.
             except Exception as ex:
                 if count < self._TRIES:
-                    Logger.LOGGER.log(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.',
-                                      Logger.FLG.DEFAULT)
+                    logging.info(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.')
                     sleep(self._FAIL_DELAY)
                     continue
                 else:
-                    Logger.LOGGER.log(f'Failed to get data after {self._TRIES} attempts.', Logger.FLG.ERROR)
-                    Logger.LOGGER.log(f'Failed URL: {url}', Logger.FLG.ERROR)
-                    Logger.LOGGER.log(f'Exception: {ex}', Logger.FLG.ERROR)
+                    logging.error(f'Failed to get data after {self._TRIES} attempts.')
+                    logging.error(f'Failed URL: {url}')
+                    logging.error(f'Exception: {ex}')
                     return None

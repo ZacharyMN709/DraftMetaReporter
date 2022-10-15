@@ -37,9 +37,11 @@ OPERANDS = Literal['>', '<', '=', '==', '!=', '>=', '<=']
 
 def cmc_filter(cmc: int, op: OPERANDS = "==") \
         -> Callable[[pd.DataFrame], pd.Series]:
-    # Make sure the mana value is an int.
+    # Make sure the mana value is an int, and op is str
     if type(cmc) is not int:
         raise TypeError("`cmc` must be an int.")
+    if type(op) is not str:
+        raise TypeError("`op` must be a str.")
 
     # Map each of the enumeration values to a sort function.
     ops = {
@@ -53,7 +55,7 @@ def cmc_filter(cmc: int, op: OPERANDS = "==") \
     }
 
     # Verify that the provided filter value is valid.
-    if op not in ops:  # pragma: no cover
+    if op not in ops:
         raise ValueError(f"`op` must be one of {OPERANDS}")
 
     # Return a function, based on the provided filter value.

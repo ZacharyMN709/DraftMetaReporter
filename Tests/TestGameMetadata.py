@@ -2,15 +2,9 @@ import unittest
 from datetime import date
 
 import WUBRG
-from game_metadata import CallScryfall
+from game_metadata import CallScryfall, Card, CardManager, SetMetadata, FormatMetadata
 from game_metadata.CallScryfall import trap_error
-
-from game_metadata import Card
 from game_metadata.utils.consts import CardLayouts
-
-from game_metadata import CardManager
-
-from game_metadata import SetMetadata, FormatMetadata
 
 
 class TestCallScryfall(unittest.TestCase):
@@ -18,8 +12,6 @@ class TestCallScryfall(unittest.TestCase):
         def raise_test_error(v=True, void=None):
             if v:
                 raise Exception("Test Error!")
-            else:  # pragma: no cover
-                return list()
 
         val = trap_error(raise_test_error)(True, None)
         self.assertIsNone(val)
@@ -246,6 +238,14 @@ class TestSetMetadata(unittest.TestCase):
 
     def test_get_metadata_invalid_constructor(self):
         self.assertRaises(Exception, SetMetadata, object(), 'NEO')
+
+    def test_card_type_parsing(self):
+        meta = SetMetadata.get_metadata('NEO')
+        card = meta.find_card('Enthusiastic Mechanaut')
+
+        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, None)
+        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Gobbledygook')
+        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Creature — Gobbledygook')
 
     def test_find_card(self):
         meta = SetMetadata.get_metadata('NEO')
