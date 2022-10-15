@@ -5,7 +5,7 @@ import os
 from datetime import date, datetime, time
 
 from WUBRG import COLOR_COMBINATIONS
-from Utilities import Logger
+from Utilities.auto_logging import logging
 from Utilities import Fetcher
 from Utilities import save_json_file, load_json_file
 
@@ -83,7 +83,7 @@ class DataLoader:
                 wrt_tm = min(datetime.utcfromtimestamp(os.path.getmtime(sum_path)), wrt_tm)
         except FileNotFoundError:  # pragma: no cover
             wrt_tm = datetime.combine(self._DEFAULT_DATE, time(0, 0))
-        Logger.LOGGER.log(f'Last write-time: {wrt_tm}', Logger.FLG.DEBUG)
+        logging.debug(f'Last write-time: {wrt_tm}')
         return wrt_tm
 
     def _file_valid(self, filename: str) -> bool:
@@ -95,7 +95,7 @@ class DataLoader:
         file_path = self.get_file_path(filename)
         valid = os.path.getsize(file_path) > self._MIN_FILE_SIZE
         if not valid:  # pragma: no cover
-            Logger.LOGGER.log(f'{filename} contained no data!', Logger.FLG.DEBUG)
+            logging.debug(f'{filename} contained no data!')
         return valid
 
     def _get_data(self, url: str, filename: str, overwrite: bool = False) -> \
@@ -111,10 +111,9 @@ class DataLoader:
         fetch = overwrite or (not self.file_exists(filename)) or (not self._file_valid(filename))
         if fetch:
             if overwrite:
-                Logger.LOGGER.log(f"Updating data for '{filename}'. Fetching from 17Lands site...", Logger.FLG.DEFAULT)
+                logging.info(f"Updating data for '{filename}'. Fetching from 17Lands site...")
             else:
-                Logger.LOGGER.log(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...",
-                                  Logger.FLG.DEFAULT)
+                logging.info(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...")
             raw_data = self._fetcher.fetch(url)
 
             # Handles correcting data from 17Lands, in the event since data coming back from MTGA can't be trusted.

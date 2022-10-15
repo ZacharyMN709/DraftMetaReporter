@@ -3,7 +3,7 @@ from typing import Optional, Union, Callable
 from functools import cmp_to_key
 from datetime import date, time, datetime, timedelta
 
-from Utilities import Logger
+from Utilities.auto_logging import logging
 from WUBRG.funcs import color_compare_wubrg
 
 from game_metadata.utils.settings import SET_CONFIG
@@ -39,7 +39,7 @@ class SetMetadata:
             raise Exception("Must use 'SetMetadata.get_metadata' class method.")
 
         self.SET: str = set_code
-        Logger.LOGGER.log(f"Loading set metadata for: {set_code}", Logger.FLG.DEFAULT)
+        logging.info(f"Loading set metadata for: {set_code}")
         _full_name, _icon_url = CallScryfall.get_set_info(set_code)
         self.FULL_NAME: str = _full_name
         self.ICON_URL: str = _icon_url
@@ -47,7 +47,7 @@ class SetMetadata:
         # Set up a dictionary for quicker sorting.
         self.CARD_INDEXES: dict[str, int] = {card.NAME: card.NUMBER for card in self.CARD_LIST}
         self.FRAME_COMPARE_KEY: Callable = cmp_to_key(self._frame_compare)
-        Logger.LOGGER.log(f"Done!\n", Logger.FLG.DEFAULT)
+        logging.info(f"Done!\n")
 
     @property
     def CARD_DICT(self) -> dict[str, Card]:
@@ -85,7 +85,7 @@ class SetMetadata:
         if card_name in CardManager.REDIRECT:
             old_name = card_name
             card_name = CardManager.REDIRECT[card_name]
-            Logger.LOGGER.log(f"Changing '{old_name}' to '{card_name}'", Logger.FLG.VERBOSE)
+            logging.verbose(f"Changing '{old_name}' to '{card_name}'")
         if card_name in self.CARD_DICT:
             return self.CARD_DICT[card_name]
         else:

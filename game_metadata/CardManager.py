@@ -1,6 +1,6 @@
 from typing import Optional
 
-from Utilities import Logger
+from Utilities.auto_logging import logging
 
 from game_metadata.CallScryfall import CallScryfall
 from game_metadata.Card import Card
@@ -60,8 +60,8 @@ class CardManager:
             json = CallScryfall.get_card_by_name(name)
             # If there's an error, log it, mark the alias as '' and return None.
             if 'err_msg' in json:
-                Logger.LOGGER.log(f'Could not get card for {name}', Logger.FLG.DEFAULT)
-                Logger.LOGGER.log(f'Error: {json["err_msg"]}', Logger.FLG.DEFAULT)
+                logging.info(f'Could not get card for {name}')
+                logging.info(f'Error: {json["err_msg"]}')
                 cls.REDIRECT[name] = ''
                 return None
             # If the card is found, return it.
@@ -142,4 +142,3 @@ class CardManager:
         cls.REDIRECT = dict()
         cls.SETS = dict()
         cls.CARDS = dict()
-

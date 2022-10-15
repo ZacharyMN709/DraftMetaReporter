@@ -1,54 +1,18 @@
-from typing import Optional
+from typing import Optional, NoReturn
 from enum import IntEnum, unique
+import logging
 
-
-# https://docs.python.org/3/howto/logging.html#advanced-logging-tutorial
 
 @unique
-class Flags(IntEnum):
-    NONE = 0
-    ERROR = 1
-    KEY = 2
-    DEFAULT = 3
-    VERBOSE = 4
-    DEBUG = 5
-
-
-class Logger:  # pragma: no cover
-    FLG = Flags
-    LOGGER = None
-
-    def void(self, msg, lvl=1):
-        pass
-
-    def prt(self, msg, lvl=1):
-        if lvl <= self.log_lvl:
-            print(msg)
-
-    def pfl(self, msg, lvl=1):
-        if lvl <= self.log_lvl:
-            # TODO: Output message to a file.
-            pass
-
-    def __init__(self, log_lvl, use_timestamp=False):
-        self.log_lvl = log_lvl
-        # TODO: Implement timestamp prepender.
-        self.log = self.prt
-
-    @property
-    def log(self):
-        """Gets the logging function."""
-        return self._log
-
-    @log.setter
-    def log(self, value):
-        """Sets the logging function."""
-        self._log = value
-
-
-# TODO: Use a better way of handling logging.
-Logger.LOGGER = Logger(Flags.DEFAULT)
-
+class LogLvl(IntEnum):
+    CRITICAL = 50
+    ERROR = 40
+    WARNING = 30
+    SPARSE = 25
+    INFO = 20
+    VERBOSE = 15
+    DEBUG = 10
+    NOTSET = 0
 
 
 def add_custom_levels() -> None:
@@ -57,7 +21,7 @@ def add_custom_levels() -> None:
     """
 
     # Taken from: https://stackoverflow.com/q/35804945#35804945
-    def addLoggingLevel(level_name: str, level_num: int, method_name: str = None):
+    def addLoggingLevel(level_name: str, level_num: int, method_name: str = None) -> Optional[NoReturn]:
         """
         Comprehensively adds a new logging level to the `logging` module and the
         currently configured logging class.
@@ -68,7 +32,7 @@ def add_custom_levels() -> None:
         `logging.Logger`). If `method_name` is not specified, `level_name.lower()` is
         used.
 
-        To avoid accidental clobberings of existing attributes, this method will
+        To avoid accidental clobbering of existing attributes, this method will
         raise an `AttributeError` if the level name is already an attribute of the
         `logging` module or if the method name is already present
         """
@@ -97,27 +61,32 @@ def add_custom_levels() -> None:
         setattr(logging.getLoggerClass(), method_name, logForLevel)
         setattr(logging, method_name, logToRoot)
 
+    # TODO: Loop through LogLvl, and add in missing levels, then update docstring.
+
+    # for i in LogLvl:
+    #    addLoggingLevel(i.name.upper(), i.val, i.name.lower() )
+
     addLoggingLevel('SPARSE', 25, 'sparse')
     addLoggingLevel('VERBOSE', 15, 'verbose')
 
 
-def set_log_level(lvl: int, filename: Optional[str] = None, filemode: Optional[str] = 'a'):
+def set_log_level(lvl: LogLvl, filename: Optional[str] = None, filemode: Optional[str] = 'a') -> LogLvl:
     fmt = '[%(asctime)s] %(levelname)-8s: %(message)s'
     datefmt = '%Y/%m/%d %H:%M:%S'
-    logging.basicConfig(level=lvl, filename=filename, filemode=filemode, format=fmt, datefmt=datefmt)
+    logging.basicConfig(level=lvl, filename=filename, filemode=filemode, format=fmt, datefmt=datefmt, force=True)
+    return lvl
 
 
-def auto_log():
+def auto_log() -> None:
     add_custom_levels()
     set_log_level(logging.VERBOSE)
 
 
+# When this module is loaded, automatically add in the custom levels of logging.
+add_custom_levels()
+
+
 if __name__ == "__main__":
-    import logging
-
-    #logger = logging.getLogger('simple_example')
-    #logger.setLevel(logging.DEBUG)
-
     set_log_level(logging.DEBUG)
 
     logging.debug('debug message')
@@ -128,3 +97,5 @@ if __name__ == "__main__":
     logging.verbose('verbose message')
     logging.critical('critical message')
 
+    for i in LogLvl:
+        print(i)

@@ -1,7 +1,7 @@
 from data_fetching.utils import META_DATA, WUBRG_CARD_DATA
 from datetime import time, date, datetime, timedelta
 
-from Utilities import Logger
+from Utilities.auto_logging import logging
 from game_metadata import FormatMetadata
 
 from data_fetching.utils.date_helper import get_prev_17lands_update_time
@@ -43,13 +43,13 @@ class LoadedData:
 
         if update:
             loader: DataLoader = DataLoader(self.SET, self.FORMAT, check_date)
-            Logger.LOGGER.log(f'Getting data for {self.SET} {self.FORMAT}, date: {str_date}', Logger.FLG.DEFAULT)
+            logging.info(f'Getting data for {self.SET} {self.FORMAT}, date: {str_date}')
             card_data, meta_data = loader.get_day_data(overwrite)
 
             if not card_data:  # pragma: no cover
-                Logger.LOGGER.log(f'`card_data` for {str_date} is empty.', Logger.FLG.VERBOSE)
+                logging.verbose('`card_data` for {str_date} is empty.')
             if not meta_data:  # pragma: no cover
-                Logger.LOGGER.log(f'`meta_data` for {str_date} is empty.', Logger.FLG.VERBOSE)
+                logging.verbose(f'`meta_data` for {str_date} is empty.')
 
             self._CARD_DATA_DICT[str_date] = {color: card_data[color] for color in card_data}
             self._META_DATA_DICT[str_date] = meta_data
@@ -63,11 +63,11 @@ class LoadedData:
         has_updated: bool = update_date <= last_17l_update
         is_active: bool = self._format_metadata.is_active(requested_date)
 
-        Logger.LOGGER.log(f'Date to get data for:          {requested_date}', Logger.FLG.DEBUG)
-        Logger.LOGGER.log(f'Date this data is available:   {update_date}', Logger.FLG.DEBUG)
-        Logger.LOGGER.log(f'Last 17Lands Update:           {last_17l_update}', Logger.FLG.DEBUG)
-        Logger.LOGGER.log(f'Data has updated:              {has_updated}', Logger.FLG.DEBUG)
-        Logger.LOGGER.log(f'Set active on date:            {is_active}\n', Logger.FLG.DEBUG)
+        logging.debug(f'Date to get data for:          {requested_date}')
+        logging.debug(f'Date this data is available:   {update_date}')
+        logging.debug(f'Last 17Lands Update:           {last_17l_update}')
+        logging.debug(f'Data has updated:              {has_updated}')
+        logging.debug(f'Set active on date:            {is_active}\n')
 
         return has_updated and is_active
 
@@ -83,7 +83,7 @@ class LoadedData:
 
         # If the set/format has no data yet, log a message and return blank values.
         if not self._format_metadata.has_data:  # pragma: no cover
-            Logger.LOGGER.log(f'{self.SET} {self.FORMAT} has no historic data to get!', Logger.FLG.DEFAULT)
+            logging.info(f'{self.SET} {self.FORMAT} has no historic data to get!')
             return dict(), dict()
 
         # Initialize the relevant dates to determine if data is available.
@@ -106,11 +106,11 @@ class LoadedData:
         data_updated = last_write < last_17l_update
         data_live = last_write.date() < end_date
 
-        Logger.LOGGER.log(f'Last File Write Time:          {last_write}', Logger.FLG.DEBUG)
-        Logger.LOGGER.log(f'Last 17Lands Update:           {last_17l_update}', Logger.FLG.DEBUG)
-        Logger.LOGGER.log(f'End Date:                      {end_date}', Logger.FLG.DEBUG)
-        Logger.LOGGER.log(f'Cached data is stale:          {data_updated}', Logger.FLG.DEBUG)
-        Logger.LOGGER.log(f'The set is live:               {data_live}\n', Logger.FLG.DEBUG)
+        logging.debug(f'Last File Write Time:          {last_write}')
+        logging.debug(f'Last 17Lands Update:           {last_17l_update}')
+        logging.debug(f'End Date:                      {end_date}')
+        logging.debug(f'Cached data is stale:          {data_updated}')
+        logging.debug(f'The set is live:               {data_live}\n')
 
         return data_updated and data_live
 
@@ -126,7 +126,7 @@ class LoadedData:
 
         # If the set/format has no data yet, log a message and return blank values.
         if not self._format_metadata.has_data:  # pragma: no cover
-            Logger.LOGGER.log(f'{self.SET} {self.FORMAT} has no summary data to get!', Logger.FLG.DEFAULT)
+            logging.info(f'{self.SET} {self.FORMAT} has no summary data to get!')
             return dict(), list()
 
         # Initialize the loader
@@ -144,7 +144,7 @@ class LoadedData:
         if reload or data_unloaded or stale_data:
             # If we want to force an overwrite or if the existing data is stale, set the overwrite flag.
             overwrite = overwrite or stale_data
-            Logger.LOGGER.log(f'Getting overall data for {self.SET} {self.FORMAT}', Logger.FLG.DEFAULT)
+            logging.info(f'Getting overall data for {self.SET} {self.FORMAT}')
             self._CARD_SUMMARY_DICTS, self._META_SUMMARY_DICT = loader.get_day_data(overwrite)
 
         return self._CARD_SUMMARY_DICTS, self._META_SUMMARY_DICT

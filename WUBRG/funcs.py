@@ -2,7 +2,7 @@ from functools import cmp_to_key
 from typing import Optional, Callable
 import re
 
-from Utilities import Logger
+from Utilities.auto_logging import logging
 from WUBRG.consts import WUBRG, FAILSAFE, ALL_COLOR_ALIAS_MAP, COLOR_COMBINATIONS, REVERSE_COLOR_MAP, MANA_SYMBOLS, \
     WUBRG_COLOR_INDEXES, GROUP_COLOR_INDEXES, ColorSortStyles
 
@@ -19,9 +19,11 @@ def get_color_string(s: Optional[str]) -> str:
     :return: A color string, which contains only characters found in 'WUBRG'.
     """
     if s is None:
+        logging.warning(f"Invalid color string provided: `None`. Converting to '{FAILSAFE}'")
         return FAILSAFE
 
     s = s.strip()
+    s = re.sub('[0-9{}]', '', s)
 
     # If the colour name exists in the color alias dictionary,
     if s.title() in ALL_COLOR_ALIAS_MAP:
@@ -38,7 +40,7 @@ def get_color_string(s: Optional[str]) -> str:
 
     # If the return string is empty, log a warning message.
     if not ret:
-        Logger.LOGGER.log(f"Invalid color string provided: {s}. Converting to '{FAILSAFE}'", Logger.FLG.VERBOSE)
+        logging.warning(f"Invalid color string provided: {s}. Converting to '{FAILSAFE}'")
         return FAILSAFE
     # Otherwise, return the generated string.
     else:
@@ -140,7 +142,7 @@ def parse_cost(mana_cost: str) -> list[str]:
         # Make sure it is a valid mana symbol.
         if cost not in MANA_SYMBOLS:
             # If not, return a dummy value.
-            Logger.LOGGER.log(f"Invalid mana cost provided: {mana_cost}. Converting to '{default}'", Logger.FLG.VERBOSE)
+            logging.warning(f"Invalid mana cost provided: {mana_cost}. Converting to '{default}'")
             return default
 
     # If all checks passed, return the found values.
