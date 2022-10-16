@@ -105,9 +105,3 @@ class CallScryfall:
                 response['err_msg'] = f'Error: Cannot find card "{name}"'
 
         return response
-
-
-if __name__ == "__main__":
-    set_ord = CallScryfall.get_set_review_order('DMU')
-    print(len(set_ord))
-    print(set_ord)

@@ -271,19 +271,50 @@ class TestSetMetadata(unittest.TestCase):
         self.assertIn(card, izzet)
         self.assertNotIn(card, red_or_blue)
 
-    def test_sort_compare(self):
+    def test_print_order_compare(self):
+        meta = SetMetadata.get_metadata('NEO')
+
+        name_1 = meta.CARD_LIST[0].NAME
+        name_2 = meta.CARD_LIST[-1].NAME
+        name_3 = meta.CARD_LIST[2].NAME
+
+        self.assertLessEqual(meta._print_order_compare(name_1, name_2), -1)
+        self.assertGreaterEqual(meta._print_order_compare(name_2, name_1), 1)
+        self.assertLessEqual(meta._print_order_compare(name_1, name_3), -1)
+        self.assertGreaterEqual(meta._print_order_compare(name_3, name_1), 1)
+        self.assertLessEqual(meta._print_order_compare(name_3, name_2), -1)
+        self.assertGreaterEqual(meta._print_order_compare(name_2, name_3), 1)
+        self.assertEqual(meta._print_order_compare(name_3, name_3), 0)
+
+    def test_review_order_compare(self):
+        meta = SetMetadata.get_metadata('NEO')
+
+        name_1 = meta.CARD_LIST[0].NAME
+        name_2 = meta.CARD_LIST[-1].NAME
+        name_3 = meta.CARD_LIST[2].NAME
+
+        self.assertLessEqual(meta._review_order_compare(name_1, name_2), -1)
+        self.assertGreaterEqual(meta._review_order_compare(name_2, name_1), 1)
+        self.assertLessEqual(meta._review_order_compare(name_1, name_3), -1)
+        self.assertGreaterEqual(meta._review_order_compare(name_3, name_1), 1)
+        self.assertLessEqual(meta._review_order_compare(name_3, name_2), -1)
+        self.assertGreaterEqual(meta._review_order_compare(name_2, name_3), 1)
+        self.assertEqual(meta._review_order_compare(name_3, name_3), 0)
+
+    def test_frame_order_compare(self):
         meta = SetMetadata.get_metadata('NEO')
 
         tup_1 = (WUBRG.COLOR_COMBINATIONS[0], meta.CARD_LIST[0].NAME)
         tup_2 = (WUBRG.COLOR_COMBINATIONS[-1], meta.CARD_LIST[-1].NAME)
         tup_3 = (WUBRG.COLOR_COMBINATIONS[0], meta.CARD_LIST[2].NAME)
 
-        self.assertEqual(meta._frame_order_compare(tup_1, tup_2), -1)
-        self.assertEqual(meta._frame_order_compare(tup_2, tup_1), 1)
-        self.assertEqual(meta._frame_order_compare(tup_1, tup_3), -1)
-        self.assertEqual(meta._frame_order_compare(tup_3, tup_1), 1)
-        self.assertEqual(meta._frame_order_compare(tup_3, tup_2), -1)
-        self.assertEqual(meta._frame_order_compare(tup_2, tup_3), 1)
+        self.assertLessEqual(meta._frame_order_compare(tup_1, tup_2), -1)
+        self.assertGreaterEqual(meta._frame_order_compare(tup_2, tup_1), 1)
+        self.assertLessEqual(meta._frame_order_compare(tup_1, tup_3), -1)
+        self.assertGreaterEqual(meta._frame_order_compare(tup_3, tup_1), 1)
+        self.assertLessEqual(meta._frame_order_compare(tup_3, tup_2), -1)
+        self.assertGreaterEqual(meta._frame_order_compare(tup_2, tup_3), 1)
+        self.assertEqual(meta._frame_order_compare(tup_3, tup_3), 0)
 
 
 class TestFormatMetadata(unittest.TestCase):

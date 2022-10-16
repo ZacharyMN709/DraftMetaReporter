@@ -82,13 +82,13 @@ def gen_meta_frame(meta_dict: list[dict[str, object]]) -> tuple[pd.DataFrame, pd
     frame['Colors'] = frame['Color Name'].map(lambda x: x.replace(' + Splash', '').title())
     frame = frame[['Colors', 'Splash', 'Wins', 'Games', 'Win %', 'is_summary']]
 
-    summary_frame = frame[frame['is_summary'] is True].copy()
+    summary_frame = frame[frame['is_summary'] == True].copy()
     summary_frame = summary_frame.drop(['is_summary'], axis=1)
     summary_frame['Name'] = summary_frame['Colors']
     summary_frame['Colors'] = summary_frame['Colors'].map(COLOR_COUNT_MAP)
     summary_frame = summary_frame.set_index('Name')
 
-    archetype_frame = frame[frame['is_summary'] is False].copy()
+    archetype_frame = frame[frame['is_summary'] == False].copy()
     archetype_frame = archetype_frame.drop(['is_summary'], axis=1)
     archetype_frame['Colors'] = archetype_frame['Colors'].map(
         lambda x: x[0: (x.find('(') if x.find('(') != -1 else len(x))].strip())
