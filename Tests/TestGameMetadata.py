@@ -2,8 +2,8 @@ import unittest
 from datetime import date
 
 import WUBRG
-from game_metadata import CallScryfall, Card, CardManager, SetMetadata, FormatMetadata
-from game_metadata.CallScryfall import trap_error
+from game_metadata import Card, CardManager, SetMetadata, FormatMetadata
+from Utilities.SiteRequests.CallScryfall import CallScryfall, trap_error
 from game_metadata.utils.consts import CardLayouts
 
 

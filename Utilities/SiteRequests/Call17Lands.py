@@ -1,13 +1,14 @@
-from typing import Tuple, Optional
-from datetime import date, datetime, timedelta
-from requests_cache import CachedSession
+from typing import Tuple, Optional, Union
+from datetime import date, datetime
 import json
 import pandas as pd
 
+from Utilities.SiteRequests.Fetcher import Fetcher_2
+from Utilities.utils import TRIES, FAIL_DELAY, SUCCESS_DELAY, CARD_DATA, META_DATA, WUBRG_CARD_DATA
+
 
 # Adapted from 'https://github.com/diogojapinto/mtg-data-mining/blob/main/utils/api_clients/seventeen_lands/client.py'
-class SeventeenLandsClient:
-    CACHE_FOLDER = './data/17lands'
+class Call17Lands(Fetcher_2):
     PREMIER_DRAFT = 'PremierDraft'
 
     COLOR_URL = 'https://www.17lands.com/data/colors'
@@ -21,40 +22,24 @@ class SeventeenLandsClient:
     DRAFT_LOG_URL = 'https://www.17lands.com/data/draft/stream'
     DECK_URL = 'https://www.17lands.com/data/deck'
 
-    def __init__(self, cache_folder: str = CACHE_FOLDER) -> None:
-        self.cache_folder = cache_folder
+    def __init__(self, cache_root: str, tries: int = TRIES,
+                 fail_delay: int = FAIL_DELAY, success_delay: int = SUCCESS_DELAY) -> None:
 
-        # Cache API responses with requests_cache
-        self.session = CachedSession(
-            self.cache_folder,
-            backend='filesystem',
-            serializer='json',
-            expire_after=timedelta(days=180),
-            cache_control=True,
-            allowable_codes=[200],
-            allowable_method=['GET'],
-            stale_if_error=False
-        )
+        self.cache_root = cache_root
+        _cache_folder = cache_root + "/17LandsData/Cache"
+        super().__init__(_cache_folder, tries, fail_delay, success_delay)
 
-    def get_colors(self) -> pd.Series:
-        result = self.session.get(url=self.COLOR_URL).json()
-        colors = pd.Series(result)
-        return colors
+    def get_colors(self) -> list[str]:
+        return self.fetch(url=self.COLOR_URL).json()
 
-    def get_expansions(self) -> pd.Series:
-        result = self.session.get(url=self.EXPANSIONS_URL).json()
-        expansions = pd.Series(result)
-        return expansions
+    def get_expansions(self) -> list[str]:
+        return self.fetch(url=self.EXPANSIONS_URL).json()
 
-    def get_event_types(self) -> pd.Series:
-        result = self.session.get(url=self.FORMATS_URL).json()
-        event_types = pd.Series(result)
-        return event_types
+    def get_event_types(self) -> list[str]:
+        return self.fetch(url=self.FORMATS_URL).json()
 
-    def get_play_draw_stats(self) -> pd.DataFrame:
-        result = self.session.get(url=self.PLAY_DRAW_URL).json()
-        play_draw_stats = pd.DataFrame(result)
-        return play_draw_stats
+    def get_play_draw_stats(self) -> list[dict[str, Union[str, float]]]:
+        return self.fetch(url=self.PLAY_DRAW_URL).json()
 
     def get_color_ratings(self, expansion: str, start_date: date, end_date: date, event_type: str = PREMIER_DRAFT,
                           combine_splash: bool = False, user_group: Optional[str] = None) -> pd.DataFrame:
@@ -66,7 +51,7 @@ class SeventeenLandsClient:
             'combine_splash': combine_splash,
             'user_group': user_group
         }
-        result = self.session.get(url=self.COLOR_RATING_URL, params=params).json()
+        result = self.fetch(url=self.COLOR_RATING_URL, params=params).json()
 
         # Apply a more intuitive columns ordering
         unsorted_df = pd.DataFrame(result)
@@ -90,7 +75,7 @@ class SeventeenLandsClient:
             'user_group': user_group,
             'colors': deck_colors
         }
-        result = self.session.get(url=self.CARD_RATING_URL, params=params).json()
+        result = self.fetch(url=self.CARD_RATING_URL, params=params).json()
 
         # Apply a more intuitive columns ordering, and remove URLs and sideboard metrics
         unsorted_df = pd.DataFrame(result)
@@ -141,7 +126,7 @@ class SeventeenLandsClient:
             'rarity': rarity,
             'color': color
         }
-        result = self.session.get(url=self.CARD_EVAL_URL, params=params).json()
+        result = self.fetch(url=self.CARD_EVAL_URL, params=params).json()
 
         # Tidy up data into a dataframe of one row per date-card combination
         digested_result_accum = []
@@ -172,7 +157,7 @@ class SeventeenLandsClient:
             'expansion': expansion,
             'format': event_type
         }
-        result = self.session.get(url=self.TROPHY_URL, params=params).json()
+        result = self.fetch(url=self.TROPHY_URL, params=params).json()
 
         # Apply a more intuitive columns ordering
         unsorted_df = pd.DataFrame(result)
@@ -200,7 +185,7 @@ class SeventeenLandsClient:
         params = {
             'draft_id': draft_id
         }
-        result = self.session.get(url=self.DRAFT_LOG_URL, params=params)
+        result = self.fetch(url=self.DRAFT_LOG_URL, params=params)
 
         # Process built-in JSON
         response_obj = json.loads(result.text[6:-2])
@@ -261,7 +246,7 @@ class SeventeenLandsClient:
             'draft_id': draft_id,
             'deck_index': deck_index
         }
-        result = self.session.get(url=self.DECK_URL, params=params).json()
+        result = self.fetch(url=self.DECK_URL, params=params).json()
 
         # Compile a deck dataframe
         deck_accum = []

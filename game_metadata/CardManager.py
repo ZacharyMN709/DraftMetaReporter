@@ -1,8 +1,8 @@
 from typing import Optional
 
 from Utilities.auto_logging import logging
+from Utilities.SiteRequests.CallScryfall import CallScryfall
 
-from game_metadata.CallScryfall import CallScryfall
 from game_metadata.Card import Card
 
 

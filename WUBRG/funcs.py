@@ -149,6 +149,11 @@ def parse_cost(mana_cost: str) -> list[str]:
     return costs
 
 
+def list_color_dict(d: dict[str, str]) -> list[str]:
+    return [d[s] for s in d]
+
+
+# region Color Set Filtering and Sorting
 # Creating a custom sorting algorithm to order in WUBRG order
 def color_compare_wubrg(col1: str, col2: str) -> int:
     # Convert the colors into numeric indexes
@@ -181,7 +186,6 @@ wubrg_compare_key: Callable = cmp_to_key(color_compare_wubrg)
 group_compare_key: Callable = cmp_to_key(color_compare_group)
 
 
-# region Color Set Filtering and Sorting
 def order_by_wubrg(color_list: list[str]) -> list[str]:
     return sorted(color_list, key=wubrg_compare_key)
 
