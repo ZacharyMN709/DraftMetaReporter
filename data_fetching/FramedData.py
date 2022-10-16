@@ -22,7 +22,7 @@ class FramedData:
         self.FORMAT: str = format_name
         self.FORMAT_ALIAS: str = FORMAT_NICKNAME_DICT[self.FORMAT].upper()
         self.DATA: DataFramer = DataFramer(set_code, format_name, load_summary, load_history)
-        self._compare_key: Callable = self._set_metadata.FRAME_COMPARE_KEY
+        self._compare_key: Callable = self._set_metadata.FRAME_ORDER_KEY
 
         self.load_summary: bool = load_summary
         self.load_history: bool = load_history

@@ -159,15 +159,7 @@ def color_compare_wubrg(col1: str, col2: str) -> int:
     # Convert the colors into numeric indexes
     col_idx1 = WUBRG_COLOR_INDEXES[col1]
     col_idx2 = WUBRG_COLOR_INDEXES[col2]
-
-    if col_idx1 < col_idx2:
-        return -1
-    else:
-        return 1
-
-
-def list_color_dict(d: dict[str, str]) -> list[str]:
-    return [d[s] for s in d]
+    return col_idx1 - col_idx2
 
 
 # Creating a custom sorting algorithm to order in group order
@@ -175,11 +167,7 @@ def color_compare_group(col1: str, col2: str) -> int:
     # Convert the colors into numeric indexes
     col_idx1 = GROUP_COLOR_INDEXES[col1]
     col_idx2 = GROUP_COLOR_INDEXES[col2]
-
-    if col_idx1 < col_idx2:
-        return -1
-    else:
-        return 1
+    return col_idx1 - col_idx2
 
 
 wubrg_compare_key: Callable = cmp_to_key(color_compare_wubrg)
