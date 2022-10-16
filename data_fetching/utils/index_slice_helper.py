@@ -97,26 +97,26 @@ def _get_color_slice_range(val: tuple[str, str]) -> Union[slice, NoReturn]:
 
 # region Date Slice
 @functools.singledispatch
-def _stringify_for_date_slice(arg) -> Union[str, NoReturn]:
+def stringify_for_date_slice(arg) -> Union[str, NoReturn]:
     # By default, if we don't have a specific way of handling a parameter, raise an error.
     raise TypeError(f"Cannot use type '{type(arg)}' for a value as part of a date slice. \n"
                     f"Values inside 'slice', 'list' and 'tuple' types which can be properly converted are: "
                     f"'str', 'date' and 'datetime.")
 
 
-@_stringify_for_date_slice.register(str)
+@stringify_for_date_slice.register(str)
 def _stringify_for_date_slice_string(arg: str) -> str:
     # Return a string as-is.
     return arg
 
 
-@_stringify_for_date_slice.register(date)
+@stringify_for_date_slice.register(date)
 def _stringify_for_date_slice_date(arg: date) -> str:
     # Convert the date into a string.
     return str(arg)
 
 
-@_stringify_for_date_slice.register(datetime)
+@stringify_for_date_slice.register(datetime)
 def _stringify_for_date_slice_datetime(arg: datetime) -> str:
     # Isolate the date from the datetime, then convert to a string.
     return str(arg.date())
@@ -141,7 +141,7 @@ def _get_date_slice_none(val: None) -> slice:
 @get_date_slice.register(datetime)
 def _get_date_slice_string(val: Union[str, date, datetime]) -> list[str]:
     # If the parameter is a string, date, or datetime, stringify it wap it in a list.
-    return [_stringify_for_date_slice(val)]
+    return [stringify_for_date_slice(val)]
 
 
 @get_date_slice.register(slice)
@@ -153,7 +153,7 @@ def _get_date_slice_slice(val: slice) -> slice:
 @get_date_slice.register(list)
 def _get_date_slice_iterable(val: list[Union[str, date, datetime]]) -> list[str]:
     # For the list, attempt to convert all of its elements, and return it.
-    return [_stringify_for_date_slice(str_date) for str_date in val]
+    return [stringify_for_date_slice(str_date) for str_date in val]
 
 
 @get_date_slice.register(tuple)
@@ -161,7 +161,7 @@ def _get_date_slice_range(val: tuple[Union[str, date, datetime], Union[str, date
     # If the parameter is a tuple, check if it should be a range.
     if len(val) == 2:
         # If it should be a range, get the make sure we have the string version we need for the slice.
-        return slice(_stringify_for_date_slice(val[0]), _stringify_for_date_slice(val[1]))
+        return slice(stringify_for_date_slice(val[0]), stringify_for_date_slice(val[1]))
     else:
         raise TypeError(f"Type 'tuple' can only be used with 2 'Union[str, date, datetime]' elements, "
                         f"to define a range for a date slice. \n"
