@@ -9,7 +9,7 @@ from game_metadata.utils.consts import CardLayouts
 
 class TestCallScryfall(unittest.TestCase):
     def test_trap_error(self):
-        def raise_test_error(v=True, void=None):
+        def raise_test_error(v=True, _=None):
             if v:
                 raise Exception("Test Error!")
 

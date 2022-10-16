@@ -2,14 +2,13 @@ import unittest
 from datetime import date, datetime
 from os import path
 
-import pandas as pd
 from pandas import DataFrame
 
 import WUBRG.funcs
 from game_metadata import FormatMetadata
 from data_fetching.utils.date_helper import utc_today, get_prev_17lands_update_time, get_next_17lands_update_time
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
-from data_fetching.utils.index_slice_helper import get_name_slice, get_color_slice, _stringify_for_date_slice, \
+from data_fetching.utils.index_slice_helper import get_name_slice, get_color_slice, stringify_for_date_slice, \
     get_date_slice
 from data_fetching.utils.frame_filter_helper import rarity_filter, cmc_filter, card_color_filter, cast_color_filter, \
     compose_filters
@@ -46,7 +45,8 @@ CARD_DATA = [
              'name': 'Healing Grace',
              'color': 'W',
              'rarity': 'common',
-             'url': 'https://c1.scryfall.com/file/scryfall-cards/border_crop/front/f/7/f7512d31-dc35-4046-a1ba-49b74239c329.jpg?1562745837',
+             'url': 'https://c1.scryfall.com/file/scryfall-cards/border_crop/'
+                    'front/f/7/f7512d31-dc35-4046-a1ba-49b74239c329.jpg?1562745837',
              'url_back': ''},
             {'seen_count': 25,
              'avg_seen': 1.92,
@@ -68,7 +68,8 @@ CARD_DATA = [
              'name': 'History of Benalia',
              'color': 'W',
              'rarity': 'mythic',
-             'url': 'https://c1.scryfall.com/file/scryfall-cards/border_crop/front/d/1/d134385d-b01c-41c7-bb2d-30722b44dc5a.jpg?1562743350',
+             'url': 'https://c1.scryfall.com/file/scryfall-cards/border_crop/'
+                    'front/d/1/d134385d-b01c-41c7-bb2d-30722b44dc5a.jpg?1562743350',
              'url_back': ''}
 ]
 
@@ -215,11 +216,11 @@ class TestUtils(unittest.TestCase):
 
     def test_date_index_helpers(self):
         # Check Date Stringifier
-        self.assertEqual(_stringify_for_date_slice('2022-05-09'), '2022-05-09')
-        self.assertEqual(_stringify_for_date_slice(date(2022, 5, 9)), '2022-05-09')
-        self.assertEqual(_stringify_for_date_slice(datetime(2022, 5, 9, 5, 6)), '2022-05-09')
-        self.assertRaises(TypeError, _stringify_for_date_slice, None)
-        self.assertRaises(TypeError, _stringify_for_date_slice, True)
+        self.assertEqual(stringify_for_date_slice('2022-05-09'), '2022-05-09')
+        self.assertEqual(stringify_for_date_slice(date(2022, 5, 9)), '2022-05-09')
+        self.assertEqual(stringify_for_date_slice(datetime(2022, 5, 9, 5, 6)), '2022-05-09')
+        self.assertRaises(TypeError, stringify_for_date_slice, None)
+        self.assertRaises(TypeError, stringify_for_date_slice, True)
 
         # Check Nones
         self.assertEqual(get_date_slice(None), slice(None))
@@ -248,7 +249,8 @@ class TestUtils(unittest.TestCase):
         # Handle invalid
         self.assertRaises(TypeError, get_date_slice, {'2022-05-10', '2022-05-11', '2022-05-12', '2022-05-09'})
         self.assertRaises(TypeError, get_date_slice, ('2022-05-09',))
-        self.assertRaises(TypeError, get_date_slice, {'2022-05-09': '', '2022-05-10': '', '2022-05-11': '', '2022-05-12': ''})
+        self.assertRaises(TypeError, get_date_slice, {'2022-05-09': '', '2022-05-10': '',
+                                                      '2022-05-11': '', '2022-05-12': ''})
         self.assertRaises(TypeError, get_date_slice, ('2022-05-09', '2022-05-10', '2022-05-11', '2022-05-12'))
 
     def test_filter_helpers(self):

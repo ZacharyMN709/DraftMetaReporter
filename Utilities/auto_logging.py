@@ -17,7 +17,7 @@ class LogLvl(IntEnum):
 
 def add_custom_levels() -> None:
     """
-    Adds the VERBOSE (15) and SPARSE (15) log levels and functions to the logging module.
+    Adds any missing log levels from LogLvl as values and functions to the logging module.
     """
 
     # Taken from: https://stackoverflow.com/q/35804945#35804945
@@ -61,13 +61,11 @@ def add_custom_levels() -> None:
         setattr(logging.getLoggerClass(), method_name, logForLevel)
         setattr(logging, method_name, logToRoot)
 
-    # TODO: Loop through LogLvl, and add in missing levels, then update docstring.
-
-    # for i in LogLvl:
-    #    addLoggingLevel(i.name.upper(), i.val, i.name.lower() )
-
-    addLoggingLevel('SPARSE', 25, 'sparse')
-    addLoggingLevel('VERBOSE', 15, 'verbose')
+    for lvl in LogLvl:
+        try:
+            addLoggingLevel(lvl.name.upper(), lvl, lvl.name.lower())
+        except AttributeError:
+            pass
 
 
 def set_log_level(lvl: LogLvl, filename: Optional[str] = None, filemode: Optional[str] = 'a') -> LogLvl:
@@ -79,7 +77,7 @@ def set_log_level(lvl: LogLvl, filename: Optional[str] = None, filemode: Optiona
 
 def auto_log() -> None:
     add_custom_levels()
-    set_log_level(logging.VERBOSE)
+    set_log_level(LogLvl.VERBOSE)
 
 
 # When this module is loaded, automatically add in the custom levels of logging.
@@ -87,7 +85,7 @@ add_custom_levels()
 
 
 if __name__ == "__main__":
-    set_log_level(logging.DEBUG)
+    auto_log()
 
     logging.debug('debug message')
     logging.info('info message')
@@ -97,5 +95,3 @@ if __name__ == "__main__":
     logging.verbose('verbose message')
     logging.critical('critical message')
 
-    for i in LogLvl:
-        print(i)

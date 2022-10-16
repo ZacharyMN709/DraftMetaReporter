@@ -83,8 +83,10 @@ class PlotterHelper:  # pragma: no cover
             self.set_x_axis_daily(ax)
         for col in col_list:
             ax.plot(data.index, data[[col]], label=col, color=self.COLORS.get_color(col))
-        if inv_y: ax.invert_yaxis()
-        if inv_x: ax.invert_xaxis()
+        if inv_y:
+            ax.invert_yaxis()
+        if inv_x:
+            ax.invert_xaxis()
         ax.legend()
 
     def set_x_axis_weekly(self, ax):
@@ -100,7 +102,8 @@ class PlotterHelper:  # pragma: no cover
         ax.xaxis.set_minor_locator(days)
 
     def save_fig(self, filename, sub_dir=None, dpi=None):
-        if dpi is None: dpi = settings.DPI
+        if dpi is None:
+            dpi = settings.DPI
         self.FIG.savefig(self.get_file_path(filename.replace(' ', '_'), sub_dir), dpi=dpi)
 
     def frame_to_png(self, frame, file_name):

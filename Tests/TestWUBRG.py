@@ -206,5 +206,6 @@ class TestWUBRGColorFilterFuncs(unittest.TestCase):
         self.assertListEqual(WUBRG.funcs.color_filter('WUBRG', Css.exact), ['WUBRG'])
         self.assertListEqual(WUBRG.funcs.color_filter('WUBRG', Css.subset), WUBRG.consts.COLOR_COMBINATIONS)
         self.assertListEqual(WUBRG.funcs.color_filter('WUBRG', Css.superset), ['WUBRG'])
-        self.assertListEqual(WUBRG.funcs.color_filter('WUBRG', Css.adjacent), ['WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'])
+        self.assertListEqual(WUBRG.funcs.color_filter('WUBRG', Css.adjacent),
+                             ['WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'])
         self.assertListEqual(WUBRG.funcs.color_filter('WUBRG', Css.shares), WUBRG.consts.COLOR_COMBINATIONS[1:])
