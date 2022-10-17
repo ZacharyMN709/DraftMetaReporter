@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union, NoReturn
 from datetime import date, datetime
 import json
 import pandas as pd
@@ -21,6 +21,7 @@ class Request17Lands(Requester_2):
     TROPHY_URL = 'https://www.17lands.com/data/trophies'
     DRAFT_LOG_URL = 'https://www.17lands.com/data/draft/stream'
     DECK_URL = 'https://www.17lands.com/data/deck'
+    DETAILS_URL = 'https://www.17lands.com/data/deck'
 
     def __init__(self, tries: int = TRIES, fail_delay: int = FAIL_DELAY, success_delay: int = SUCCESS_DELAY) -> None:
         super().__init__(tries, fail_delay, success_delay)
@@ -180,7 +181,7 @@ class Request17Lands(Requester_2):
 
         return card_evaluations
 
-    def get_trophy_decks(self, expansion: str, event_type: str = DEFAULT_FORMAT) -> pd.DataFrame:
+    def get_trophy_deck_metadata(self, expansion: str, event_type: str = DEFAULT_FORMAT) -> pd.DataFrame:
         params = {
             'expansion': expansion,
             'format': event_type
@@ -208,10 +209,9 @@ class Request17Lands(Requester_2):
         # Change time column data type
         trophy_decks.loc[:, 'time'] = pd.to_datetime(trophy_decks.time)
 
-        return trophy_decks
+        return result
 
-    def get_deck(self, draft_id: str, deck_index: int) -> Deck:
-        # TODO: Revamp this into a Deck Object.
+    def get_deck(self, draft_id: str, deck_index: int = 0) -> Deck:
         params = {
             'draft_id': draft_id,
             'deck_index': deck_index
@@ -220,16 +220,21 @@ class Request17Lands(Requester_2):
         result = self.request(url=self.DECK_URL, params=params).json()
         return Deck(result)
 
-    def get_draft(self, draft_id: str) -> Draft:
-        # TODO: Revamp into a Draft object
+    def get_details(self, draft_id: str) -> None:
+        params = {
+            'draft_id': draft_id,
+        }
+
+        result = self.request(url=self.DECK_URL, params=params).json()
+        return result
+
+    def get_draft(self, draft_id: str) -> Union[Draft, NoReturn]:
         params = {
             'draft_id': draft_id
         }
 
-        result = self.request(url=self.DRAFT_LOG_URL, params=params)
-
         # Process built-in JSON
-        result = json.loads(result.text[6:-2])
+        result = json.loads(self.request(url=self.DRAFT_LOG_URL, params=params).text[6:-2])
 
         # Only return results if payload is complete
         if result['type'] != 'complete':
@@ -240,21 +245,45 @@ class Request17Lands(Requester_2):
 
 if __name__ == "__main__":
     from Utilities.auto_logging import auto_log, LogLvl
+    from game_metadata.GameObjects.Card import CardManager
+    SET = "DMU"
+    CardManager.from_set(SET)
+
     auto_log(LogLvl.DEBUG)
     DATA_DIR_LOC: str = r'C:\Users\Zachary\Coding\GitHub'
     caller = Request17Lands()
 
-    colors = caller.get_colors()
-    print(colors)
+    # colors = caller.get_colors()
+    # print(colors)
 
-    expansions = caller.get_expansions()
-    print(expansions)
+    # expansions = caller.get_expansions()
+    # print(expansions)
 
-    events = caller.get_event_types()
-    print(events)
+    # events = caller.get_event_types()
+    # print(events)
 
-    play_draw = caller.get_play_draw_stats()
-    print(play_draw)
+    # play_draw = caller.get_play_draw_stats()
+    # print(play_draw)
 
-    meta = caller.get_color_ratings("DMU")
-    print(meta)
+    # meta = caller.get_color_ratings("DMU")
+    # print(meta)
+
+    """
+    deck = caller.get_deck("6f3d1315ede04510862862fb2f1cd293", 1)
+
+    print(deck.maindeck)
+    print(deck.sideboard)
+    print(deck.deck_builds)
+    print(deck.selected_build)
+    print(deck.wins)
+    print(deck.losses)
+    print(deck.DECK_ID)
+    print(deck.SET)
+    print(deck.FORMAT)
+
+    print(deck.deck_link)
+    """
+
+    trophy_decks = caller.get_trophy_deck_metadata(SET)
+    print(trophy_decks)
+

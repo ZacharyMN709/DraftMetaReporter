@@ -10,7 +10,7 @@ from Utilities.Requester import Requester
 from Utilities import save_json_file, load_json_file
 
 from data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
-from game_metadata import CardManager
+from game_metadata import Card
 
 
 class DataLoader:
@@ -120,7 +120,7 @@ class DataLoader:
             for data in raw_data:
                 if 'name' in data:
                     name = data['name']
-                    card_obj = CardManager.from_name(name)
+                    card_obj = Card.from_name(name)
                     data['name'] = card_obj.NAME
 
             save_json_file(self.get_folder_path(), filename, raw_data)
