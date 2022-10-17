@@ -1,16 +1,15 @@
-from typing import Tuple, Optional, Union
+from typing import Optional
 from datetime import date, datetime
 import json
 import pandas as pd
 
-from Utilities.SiteRequests.Fetcher import Fetcher_2
-from Utilities.utils import TRIES, FAIL_DELAY, SUCCESS_DELAY, CARD_DATA, META_DATA, WUBRG_CARD_DATA
+from Utilities.SiteRequests.Requester import Requester, Requester_2
+from Utilities.utils import TRIES, FAIL_DELAY, SUCCESS_DELAY
+from Utilities.utils.settings import DEFAULT_FORMAT, DEFAULT_DATE
 
 
 # Adapted from 'https://github.com/diogojapinto/mtg-data-mining/blob/main/utils/api_clients/seventeen_lands/client.py'
-class Call17Lands(Fetcher_2):
-    PREMIER_DRAFT = 'PremierDraft'
-
+class Request17Lands(Requester_2):
     COLOR_URL = 'https://www.17lands.com/data/colors'
     EXPANSIONS_URL = 'https://www.17lands.com/data/expansions'
     FORMATS_URL = 'https://www.17lands.com/data/formats'
@@ -22,26 +21,25 @@ class Call17Lands(Fetcher_2):
     DRAFT_LOG_URL = 'https://www.17lands.com/data/draft/stream'
     DECK_URL = 'https://www.17lands.com/data/deck'
 
-    def __init__(self, cache_root: str, tries: int = TRIES,
-                 fail_delay: int = FAIL_DELAY, success_delay: int = SUCCESS_DELAY) -> None:
-
-        self.cache_root = cache_root
-        _cache_folder = cache_root + "/17LandsData/Cache"
-        super().__init__(_cache_folder, tries, fail_delay, success_delay)
+    def __init__(self, tries: int = TRIES, fail_delay: int = FAIL_DELAY, success_delay: int = SUCCESS_DELAY) -> None:
+        super().__init__(tries, fail_delay, success_delay)
 
     def get_colors(self) -> list[str]:
-        return self.fetch(url=self.COLOR_URL).json()
+        return self.request(url=self.COLOR_URL).json()
 
     def get_expansions(self) -> list[str]:
-        return self.fetch(url=self.EXPANSIONS_URL).json()
+        return self.request(url=self.EXPANSIONS_URL).json()
 
     def get_event_types(self) -> list[str]:
-        return self.fetch(url=self.FORMATS_URL).json()
+        return self.request(url=self.FORMATS_URL).json()
 
-    def get_play_draw_stats(self) -> list[dict[str, Union[str, float]]]:
-        return self.fetch(url=self.PLAY_DRAW_URL).json()
+    def get_play_draw_stats(self) -> pd.DataFrame:
+        result = self.request(url=self.PLAY_DRAW_URL).json()
+        play_draw_stats = pd.DataFrame(result)
+        return play_draw_stats
 
-    def get_color_ratings(self, expansion: str, start_date: date, end_date: date, event_type: str = PREMIER_DRAFT,
+    def get_color_ratings(self, expansion: str, event_type: str = DEFAULT_FORMAT,
+                          start_date: Optional[date] = DEFAULT_DATE, end_date: Optional[date] = date.today(),
                           combine_splash: bool = False, user_group: Optional[str] = None) -> pd.DataFrame:
         params = {
             'expansion': expansion,
@@ -51,7 +49,8 @@ class Call17Lands(Fetcher_2):
             'combine_splash': combine_splash,
             'user_group': user_group
         }
-        result = self.fetch(url=self.COLOR_RATING_URL, params=params).json()
+
+        result = self.request(url=self.COLOR_RATING_URL, params=params).json()
 
         # Apply a more intuitive columns ordering
         unsorted_df = pd.DataFrame(result)
@@ -61,11 +60,13 @@ class Call17Lands(Fetcher_2):
             'wins',
             'games'
         ]
+
         color_ratings = unsorted_df.loc[:, columns_order]
 
         return color_ratings
 
-    def get_card_ratings(self, expansion: str, start_date: date, end_date: date, event_type: str = PREMIER_DRAFT,
+    def get_card_ratings(self, expansion: str, event_type: str = DEFAULT_FORMAT,
+                         start_date: Optional[date] = DEFAULT_DATE, end_date: Optional[date] = date.today(),
                          user_group: Optional[str] = None, deck_colors: Optional[str] = None) -> pd.DataFrame:
         params = {
             'expansion': expansion,
@@ -75,7 +76,8 @@ class Call17Lands(Fetcher_2):
             'user_group': user_group,
             'colors': deck_colors
         }
-        result = self.fetch(url=self.CARD_RATING_URL, params=params).json()
+
+        result = self.request(url=self.CARD_RATING_URL, params=params).json()
 
         # Apply a more intuitive columns ordering, and remove URLs and sideboard metrics
         unsorted_df = pd.DataFrame(result)
@@ -116,7 +118,8 @@ class Call17Lands(Fetcher_2):
 
         return card_ratings
 
-    def get_card_evaluations(self, expansion: str, start_date: date, end_date: date, event_type: str = PREMIER_DRAFT,
+    def get_card_evaluations(self, expansion: str, event_type: str = DEFAULT_FORMAT,
+                             start_date: Optional[date] = DEFAULT_DATE, end_date: Optional[date] = date.today(),
                              rarity: Optional[str] = None, color: Optional[str] = None) -> pd.DataFrame:
         params = {
             'expansion': expansion,
@@ -126,7 +129,8 @@ class Call17Lands(Fetcher_2):
             'rarity': rarity,
             'color': color
         }
-        result = self.fetch(url=self.CARD_EVAL_URL, params=params).json()
+
+        result = self.request(url=self.CARD_EVAL_URL, params=params).json()
 
         # Tidy up data into a dataframe of one row per date-card combination
         digested_result_accum = []
@@ -152,12 +156,13 @@ class Call17Lands(Fetcher_2):
 
         return card_evaluations
 
-    def get_trophy_decks(self, expansion: str, event_type: str = PREMIER_DRAFT) -> pd.DataFrame:
+    def get_trophy_decks(self, expansion: str, event_type: str = DEFAULT_FORMAT) -> pd.DataFrame:
         params = {
             'expansion': expansion,
             'format': event_type
         }
-        result = self.fetch(url=self.TROPHY_URL, params=params).json()
+
+        result = self.request(url=self.TROPHY_URL, params=params).json()
 
         # Apply a more intuitive columns ordering
         unsorted_df = pd.DataFrame(result)
@@ -181,11 +186,12 @@ class Call17Lands(Fetcher_2):
 
         return trophy_decks
 
-    def get_draft(self, draft_id: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def get_draft(self, draft_id: str) -> tuple[pd.DataFrame, pd.DataFrame]:
         params = {
             'draft_id': draft_id
         }
-        result = self.fetch(url=self.DRAFT_LOG_URL, params=params)
+
+        result = self.request(url=self.DRAFT_LOG_URL, params=params)
 
         # Process built-in JSON
         response_obj = json.loads(result.text[6:-2])
@@ -241,12 +247,13 @@ class Call17Lands(Fetcher_2):
 
         return picks, cards_performance
 
-    def get_deck(self, draft_id: str, deck_index: int) -> Tuple[pd.DataFrame, dict[str, str]]:
+    def get_deck(self, draft_id: str, deck_index: int) -> tuple[pd.DataFrame, dict[str, str]]:
         params = {
             'draft_id': draft_id,
             'deck_index': deck_index
         }
-        result = self.fetch(url=self.DECK_URL, params=params).json()
+
+        result = self.request(url=self.DECK_URL, params=params).json()
 
         # Compile a deck dataframe
         deck_accum = []
@@ -273,3 +280,25 @@ class Call17Lands(Fetcher_2):
         }
 
         return deck, deck_metadata
+
+
+if __name__ == "__main__":
+    from Utilities.auto_logging import auto_log, LogLvl
+    auto_log(LogLvl.DEBUG)
+    DATA_DIR_LOC: str = r'C:\Users\Zachary\Coding\GitHub'
+    caller = Request17Lands()
+
+    colors = caller.get_colors()
+    print(colors)
+
+    expansions = caller.get_expansions()
+    print(expansions)
+
+    events = caller.get_event_types()
+    print(events)
+
+    play_draw = caller.get_play_draw_stats()
+    print(play_draw)
+
+    meta = caller.get_color_ratings("DMU")
+    print(meta)

@@ -3,7 +3,7 @@ from datetime import date
 
 import WUBRG
 from game_metadata import Card, CardManager, SetMetadata, FormatMetadata
-from Utilities.SiteRequests.CallScryfall import CallScryfall, trap_error
+from Utilities.SiteRequests.RequestScryfall import RequestScryfall, trap_error
 from game_metadata.utils.consts import CardLayouts
 
 
@@ -17,42 +17,42 @@ class TestCallScryfall(unittest.TestCase):
         self.assertIsNone(val)
 
     def test_get_set_cards_valid(self):
-        cards = CallScryfall.get_set_cards('NEO')
+        cards = RequestScryfall.get_set_cards('NEO')
         self.assertIsInstance(cards, list)
 
     def test_get_set_cards_invalid(self):
-        ret = CallScryfall.get_set_cards('INVALID')
+        ret = RequestScryfall.get_set_cards('INVALID')
         self.assertIsNone(ret)
 
     def test_get_set_info_valid(self):
-        cards = CallScryfall.get_set_info('NEO')
+        cards = RequestScryfall.get_set_info('NEO')
         self.assertIsInstance(cards, tuple)
 
     def test_get_set_info_invalid(self):
-        ret = CallScryfall.get_set_info('INVALID')
+        ret = RequestScryfall.get_set_info('INVALID')
         self.assertIsNone(ret)
 
     def test_get_card_by_name_valid(self):
-        card = CallScryfall.get_card_by_name('Virus Beetle')
+        card = RequestScryfall.get_card_by_name('Virus Beetle')
         self.assertIsInstance(card, dict)
         self.assertEqual(card['object'], 'card')
         self.assertEqual(card['name'], 'Virus Beetle')
 
     def test_get_card_by_name_valid_misspelled(self):
-        card = CallScryfall.get_card_by_name('Vires Beetle')
+        card = RequestScryfall.get_card_by_name('Vires Beetle')
         self.assertIsInstance(card, dict)
         self.assertEqual(card['object'], 'card')
         self.assertEqual(card['name'], 'Virus Beetle')
 
     def test_get_card_by_name_multiple(self):
         name = 'Bolt'
-        card = CallScryfall.get_card_by_name(name)
+        card = RequestScryfall.get_card_by_name(name)
         self.assertIsInstance(card, dict)
         self.assertEqual(card['err_msg'], f'Error: Multiple card matches for "{name}"')
 
     def test_get_card_by_name_dne(self):
         name = 'Supercalifragilisticexpialidocious'
-        card = CallScryfall.get_card_by_name(name)
+        card = RequestScryfall.get_card_by_name(name)
         self.assertIsInstance(card, dict)
         self.assertEqual(card['err_msg'], f'Error: Cannot find card "{name}"')
 
@@ -60,7 +60,7 @@ class TestCallScryfall(unittest.TestCase):
 class TestCard(unittest.TestCase):
     @staticmethod
     def gen_card(card_name):
-        json = CallScryfall.get_card_by_name(card_name)
+        json = RequestScryfall.get_card_by_name(card_name)
         return Card(json)
 
     def test_card_normal(self):

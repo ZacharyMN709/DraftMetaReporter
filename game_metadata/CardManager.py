@@ -1,7 +1,7 @@
 from typing import Optional
 
 from Utilities.auto_logging import logging
-from Utilities.SiteRequests.CallScryfall import CallScryfall
+from Utilities.SiteRequests.RequestScryfall import RequestScryfall
 
 from game_metadata.Card import Card
 
@@ -57,7 +57,7 @@ class CardManager:
             return prev_card
         # Otherwise, get the card info from scryfall.
         else:
-            json = CallScryfall.get_card_by_name(name)
+            json = RequestScryfall.get_card_by_name(name)
             # If there's an error, log it, mark the alias as '' and return None.
             if 'err_msg' in json:
                 logging.info(f'Could not get card for {name}')
@@ -89,7 +89,7 @@ class CardManager:
         if set_code not in cls.SETS:
             # Create a new dictionary for it,
             cls.SETS[set_code] = dict()
-            for json in CallScryfall.get_set_cards(set_code):
+            for json in RequestScryfall.get_set_cards(set_code):
                 # And fill it with cards fetched from Scryfall.
                 card = Card(json)
                 cls._add_card(card)

@@ -1,8 +1,8 @@
 from functools import cmp_to_key
 from typing import Optional, Callable
 import re
+import logging
 
-from Utilities.auto_logging import logging
 from WUBRG.consts import WUBRG, FAILSAFE, ALL_COLOR_ALIAS_MAP, COLOR_COMBINATIONS, REVERSE_COLOR_MAP, MANA_SYMBOLS, \
     WUBRG_COLOR_INDEXES, GROUP_COLOR_INDEXES, ColorSortStyles
 

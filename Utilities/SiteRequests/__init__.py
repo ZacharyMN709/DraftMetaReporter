@@ -1,0 +1,2 @@
+from Utilities.SiteRequests.Request17Lands import Request17Lands
+from Utilities.SiteRequests.RequestScryfall import RequestScryfall

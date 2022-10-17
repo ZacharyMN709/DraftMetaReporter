@@ -72,9 +72,9 @@ def set_log_level(lvl: LogLvl, filename: Optional[str] = None, filemode: Optiona
     return lvl
 
 
-def auto_log() -> None:
+def auto_log(lvl: LogLvl = LogLvl.VERBOSE) -> None:
     add_custom_levels()
-    set_log_level(LogLvl.VERBOSE)
+    set_log_level(lvl)
 
 
 # When this module is loaded, automatically add in the custom levels of logging.
