@@ -3,7 +3,7 @@ from datetime import date, datetime
 import json
 import pandas as pd
 
-from Utilities.SiteRequests.Requester import Requester, Requester_2
+from Utilities.Requester import Requester_2
 from Utilities.utils import TRIES, FAIL_DELAY, SUCCESS_DELAY
 from Utilities.utils.settings import DEFAULT_FORMAT, DEFAULT_DATE
 

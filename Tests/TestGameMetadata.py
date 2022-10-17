@@ -3,7 +3,7 @@ from datetime import date
 
 import WUBRG
 from game_metadata import Card, CardManager, SetMetadata, FormatMetadata
-from Utilities.SiteRequests.RequestScryfall import RequestScryfall, trap_error
+from game_metadata.RequestScryfall import RequestScryfall, trap_error
 from game_metadata.utils.consts import CardLayouts
 
 

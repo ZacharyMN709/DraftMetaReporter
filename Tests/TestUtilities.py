@@ -4,7 +4,7 @@ import unittest
 
 from Utilities.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
 from Utilities.utils.funcs import load_json_file, save_json_file
-from Utilities.SiteRequests.Requester import Requester
+from Utilities.Requester import Requester
 from Utilities import auto_logging
 
 

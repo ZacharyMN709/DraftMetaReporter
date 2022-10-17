@@ -6,7 +6,7 @@ from datetime import date, datetime, time
 
 from WUBRG import COLOR_COMBINATIONS
 from Utilities.auto_logging import logging
-from Utilities.SiteRequests.Requester import Requester
+from Utilities.Requester import Requester
 from Utilities import save_json_file, load_json_file
 
 from data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME

@@ -4,7 +4,7 @@ from functools import cmp_to_key
 from datetime import date, time, datetime, timedelta
 
 from Utilities.auto_logging import logging
-from Utilities.SiteRequests.RequestScryfall import RequestScryfall
+from game_metadata.RequestScryfall import RequestScryfall
 from WUBRG.funcs import color_compare_wubrg
 
 from game_metadata.utils.settings import SET_CONFIG

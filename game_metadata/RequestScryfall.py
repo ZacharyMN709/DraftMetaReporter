@@ -1,7 +1,7 @@
 from typing import Union, Callable, Optional
 
 from Utilities.auto_logging import logging
-from Utilities.SiteRequests.Requester import Requester
+from Utilities.Requester import Requester
 
 
 # A decorator which automatically catches and logs error when querying scryfall.
