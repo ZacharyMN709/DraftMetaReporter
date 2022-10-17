@@ -171,6 +171,13 @@ class TestCardManager(unittest.TestCase):
         card = CardManager.from_name('Shock')
         self.assertIsInstance(card, Card)
 
+    def test_relay_call(self):
+        card_1 = CardManager.from_name('Shock')
+        card_2 = Card.from_name('Shock')
+        self.assertIsInstance(card_1, Card)
+        self.assertIsInstance(card_2, Card)
+        self.assertEqual(card_1, card_2)
+
     def test_from_name_invalid(self):
         card = CardManager.from_name('ucbubfsvudgiru  bvubvfyfj ')
         self.assertIsNone(card)
@@ -222,6 +229,22 @@ class TestCardManager(unittest.TestCase):
         card, found = CardManager._find_card(gibberish)
         self.assertIsNone(card)
         self.assertTrue(found)
+
+
+class TestDeck(unittest.TestCase):
+    pass
+
+
+class TestDeckManager(unittest.TestCase):
+    pass
+
+
+class TestDraft(unittest.TestCase):
+    pass
+
+
+class TestDraftManager(unittest.TestCase):
+    pass
 
 
 class TestSetMetadata(unittest.TestCase):

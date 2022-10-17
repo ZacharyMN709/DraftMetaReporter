@@ -6,6 +6,7 @@ import pandas as pd
 from Utilities.Requester import Requester_2
 from Utilities.utils import TRIES, FAIL_DELAY, SUCCESS_DELAY
 from Utilities.utils.settings import DEFAULT_FORMAT, DEFAULT_DATE
+from game_metadata import Card, Deck, Draft
 
 
 # Adapted from 'https://github.com/diogojapinto/mtg-data-mining/blob/main/utils/api_clients/seventeen_lands/client.py'
@@ -24,6 +25,18 @@ class Request17Lands(Requester_2):
     def __init__(self, tries: int = TRIES, fail_delay: int = FAIL_DELAY, success_delay: int = SUCCESS_DELAY) -> None:
         super().__init__(tries, fail_delay, success_delay)
 
+    @staticmethod
+    def _tidy_mtga_names(data: list[dict[str, str]]) -> None:
+        """
+        Corrects card data returned from a 17Lands request, since data coming back from MTGA can't be trusted.
+        :param data: A dictionary of card data.
+        """
+        for value in data:
+            if 'name' in value:
+                name = value['name']
+                card_obj = Card.from_name(name)
+                value['name'] = card_obj.NAME
+
     def get_colors(self) -> list[str]:
         return self.request(url=self.COLOR_URL).json()
 
@@ -38,9 +51,12 @@ class Request17Lands(Requester_2):
         play_draw_stats = pd.DataFrame(result)
         return play_draw_stats
 
-    def get_color_ratings(self, expansion: str, event_type: str = DEFAULT_FORMAT,
-                          start_date: Optional[date] = DEFAULT_DATE, end_date: Optional[date] = date.today(),
-                          combine_splash: bool = False, user_group: Optional[str] = None) -> pd.DataFrame:
+    def get_color_ratings(self, expansion: str,
+                          event_type: str = DEFAULT_FORMAT,
+                          start_date: Optional[date] = DEFAULT_DATE,
+                          end_date: Optional[date] = date.today(),
+                          combine_splash: bool = False,
+                          user_group: Optional[str] = None) -> pd.DataFrame:
         params = {
             'expansion': expansion,
             'event_type': event_type,
@@ -65,9 +81,12 @@ class Request17Lands(Requester_2):
 
         return color_ratings
 
-    def get_card_ratings(self, expansion: str, event_type: str = DEFAULT_FORMAT,
-                         start_date: Optional[date] = DEFAULT_DATE, end_date: Optional[date] = date.today(),
-                         user_group: Optional[str] = None, deck_colors: Optional[str] = None) -> pd.DataFrame:
+    def get_card_ratings(self, expansion: str,
+                         event_type: str = DEFAULT_FORMAT,
+                         start_date: Optional[date] = DEFAULT_DATE,
+                         end_date: Optional[date] = date.today(),
+                         user_group: Optional[str] = None,
+                         deck_colors: Optional[str] = None) -> pd.DataFrame:
         params = {
             'expansion': expansion,
             'format': event_type,
@@ -78,6 +97,7 @@ class Request17Lands(Requester_2):
         }
 
         result = self.request(url=self.CARD_RATING_URL, params=params).json()
+        self._tidy_mtga_names(result)
 
         # Apply a more intuitive columns ordering, and remove URLs and sideboard metrics
         unsorted_df = pd.DataFrame(result)
@@ -118,9 +138,12 @@ class Request17Lands(Requester_2):
 
         return card_ratings
 
-    def get_card_evaluations(self, expansion: str, event_type: str = DEFAULT_FORMAT,
-                             start_date: Optional[date] = DEFAULT_DATE, end_date: Optional[date] = date.today(),
-                             rarity: Optional[str] = None, color: Optional[str] = None) -> pd.DataFrame:
+    def get_card_evaluations(self, expansion: str,
+                             event_type: str = DEFAULT_FORMAT,
+                             start_date: Optional[date] = DEFAULT_DATE,
+                             end_date: Optional[date] = date.today(),
+                             rarity: Optional[str] = None,
+                             color: Optional[str] = None) -> pd.DataFrame:
         params = {
             'expansion': expansion,
             'format': event_type,
@@ -131,6 +154,7 @@ class Request17Lands(Requester_2):
         }
 
         result = self.request(url=self.CARD_EVAL_URL, params=params).json()
+        self._tidy_mtga_names(result)
 
         # Tidy up data into a dataframe of one row per date-card combination
         digested_result_accum = []
@@ -186,7 +210,18 @@ class Request17Lands(Requester_2):
 
         return trophy_decks
 
-    def get_draft(self, draft_id: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+    def get_deck(self, draft_id: str, deck_index: int) -> Deck:
+        # TODO: Revamp this into a Deck Object.
+        params = {
+            'draft_id': draft_id,
+            'deck_index': deck_index
+        }
+
+        result = self.request(url=self.DECK_URL, params=params).json()
+        return Deck(result)
+
+    def get_draft(self, draft_id: str) -> Draft:
+        # TODO: Revamp into a Draft object
         params = {
             'draft_id': draft_id
         }
@@ -194,92 +229,13 @@ class Request17Lands(Requester_2):
         result = self.request(url=self.DRAFT_LOG_URL, params=params)
 
         # Process built-in JSON
-        response_obj = json.loads(result.text[6:-2])
+        result = json.loads(result.text[6:-2])
 
         # Only return results if payload is complete
-        if response_obj['type'] != 'complete':
-            raise ValueError(f"Response is not complete. Response type: '{response_obj['type']}'")
+        if result['type'] != 'complete':
+            raise ValueError(f"Response is not complete. Response type: '{result['type']}'")
 
-        # Parse payload
-        payload = response_obj['payload']
-        expansion = payload['expansion']
-
-        # Parse picks
-        picks_accum = []
-        for pick in payload['picks']:
-            picks_accum.append({
-                'expansion': expansion,
-                'pack_number': pick['pack_number'],
-                'pick_number': pick['pick_number'],
-                'colors': pick['colors'],
-                'pick': pick['pick']['name'],
-                'available': [a['name'] for a in pick['available']],
-                'known_missing': [m['name'] for m in pick['known_missing']],
-                'pool': [p['name'] for p in pick['pool']],
-                'possible_maindeck': [
-                    m['name']
-                    for m in [
-                        i for l in pick['possible_maindeck']
-                        for i in l
-                    ]
-                ],
-                'probable_sideboard': [
-                    s['name']
-                    for s in [
-                        i for l in pick['probable_sideboard']
-                        for i in l
-                    ]
-                ]
-            })
-        picks = pd.DataFrame(picks_accum)
-
-        # Parse and transform card performance data
-        cards_performance = pd.DataFrame(payload['card_performance_data']) \
-            .transpose() \
-            .reset_index() \
-            .rename(columns={
-                'index': 'name',
-                'total_times_seen': 'seen_count',
-                'avg_seen_position': 'avg_last_seen_at',
-                'total_times_picked': 'pick_count',
-                'avg_pick_position': 'avg_taken_at'
-            })
-
-        return picks, cards_performance
-
-    def get_deck(self, draft_id: str, deck_index: int) -> tuple[pd.DataFrame, dict[str, str]]:
-        params = {
-            'draft_id': draft_id,
-            'deck_index': deck_index
-        }
-
-        result = self.request(url=self.DECK_URL, params=params).json()
-
-        # Compile a deck dataframe
-        deck_accum = []
-        for group in result['groups']:
-            for card in group['cards']:
-                deck_accum.append({
-                    'group': group['name'],
-                    'name': card['name']
-                })
-        deck = pd.DataFrame(deck_accum)
-
-        # Compile deck metadata
-        event_info = result['event_info']
-        deck_metadata = {
-            'expansion': event_info['expansion'],
-            'event_type': event_info['format'],
-            'wins': event_info['wins'],
-            'losses': event_info['losses'],
-            'pool_link': event_info['pool_link'],
-            'deck_links': event_info['deck_links'],
-            'details_link': event_info['details_link'],
-            'draft_link': event_info['draft_link'],
-            'sealed_deck_tech_link': result['builder_link']
-        }
-
-        return deck, deck_metadata
+        return Draft(result)
 
 
 if __name__ == "__main__":
