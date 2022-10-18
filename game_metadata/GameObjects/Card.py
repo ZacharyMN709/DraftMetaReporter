@@ -331,27 +331,27 @@ class CardManager:
         prev_card, found = cls._find_card(name)
         if found:
             return prev_card
+
         # Otherwise, get the card info from scryfall.
+        json = RequestScryfall.get_card_by_name(name)
+        # If there's an error, log it, mark the alias as '' and return None.
+        if 'err_msg' in json:
+            logging.info(f'Could not get card for {name}')
+            logging.info(f'Error: {json["err_msg"]}')
+            cls.REDIRECT[name] = ''
+            return None
+        # If the card is found, return it.
         else:
-            json = RequestScryfall.get_card_by_name(name)
-            # If there's an error, log it, mark the alias as '' and return None.
-            if 'err_msg' in json:
-                logging.info(f'Could not get card for {name}')
-                logging.info(f'Error: {json["err_msg"]}')
-                cls.REDIRECT[name] = ''
-                return None
-            # If the card is found, return it.
-            else:
-                card = Card(json)
+            card = Card(json)
 
-                # See if a copy of the card already exists, likely
-                # due to a misspelling. If so, use that instead.
-                prev_card, found = cls._find_card(card.NAME)
-                if prev_card is not None:
-                    card = prev_card
+            # See if a copy of the card already exists, likely
+            # due to a misspelling. If so, use that instead.
+            prev_card, found = cls._find_card(card.NAME)
+            if prev_card is not None:
+                card = prev_card
 
-                cls._add_card(card, name)
-                return card
+            cls._add_card(card, name)
+            return card
 
     @classmethod
     def from_set(cls, set_code: str) -> dict[str, Card]:
@@ -382,19 +382,21 @@ class CardManager:
         """
         Attempts to find a saved instance of a card.
         :param card_name: The card name to find
-        :return: A Card or None, and whether the name exists in REDIRECT
+        :return: A Card or None, and whether the name has been previously searched
         """
 
-        # If the card has been found before,
-        if card_name in cls.REDIRECT:
-            # Get the name it was found under, and return it.
+        previously_searched = card_name in cls.REDIRECT
+        card = None
+
+        # If the card has been searched before,
+        if previously_searched:
+            # Get the name's alias,
             card_name = cls.REDIRECT[card_name]
-            if card_name == '':
-                return None, True
-            else:
-                return cls.CARDS[card_name], True
-        else:
-            return None, False
+            # And if it exists, use it to get the card.
+            if card_name != '':
+                card = cls.CARDS[card_name]
+
+        return card, previously_searched
 
     @classmethod
     def reset_redirects(cls) -> None:
