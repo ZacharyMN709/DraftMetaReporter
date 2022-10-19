@@ -6,7 +6,7 @@ import pandas as pd
 from Utilities.Requester import Requester_2
 from Utilities.utils import TRIES, FAIL_DELAY, SUCCESS_DELAY
 from Utilities.utils.settings import DEFAULT_FORMAT, DEFAULT_DATE
-from game_metadata import Card, Deck, Draft
+from game_metadata import Card, LimitedDeck, Draft
 
 
 # Adapted from 'https://github.com/diogojapinto/mtg-data-mining/blob/main/utils/api_clients/seventeen_lands/client.py'
@@ -211,14 +211,15 @@ class Request17Lands(Requester_2):
 
         return result
 
-    def get_deck(self, draft_id: str, deck_index: int = 0) -> Deck:
+    def get_deck(self, draft_id: str, deck_index: int = 0) -> Optional[LimitedDeck]:
         params = {
             'draft_id': draft_id,
             'deck_index': deck_index
         }
 
         result = self.request(url=self.DECK_URL, params=params).json()
-        return Deck(result)
+
+        return LimitedDeck(result)
 
     def get_details(self, draft_id: str) -> None:
         params = {

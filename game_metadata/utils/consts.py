@@ -4,6 +4,8 @@ from enum import Flag, auto
 # Type information for the card json Scryfall returns.
 CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str]]]
 
+# Rank Consts
+RANKS = ['None', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Mythic']
 
 # Card Consts
 RARITIES: set[str] = {'C', 'U', 'R', 'M'}

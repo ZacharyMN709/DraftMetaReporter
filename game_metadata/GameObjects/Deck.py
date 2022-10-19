@@ -1,17 +1,34 @@
 from __future__ import annotations
 from typing import Optional
 from datetime import datetime
+import re
 
 from Utilities.auto_logging import logging
+from data_fetching.Request17Lands import Request17Lands
 from game_metadata.GameObjects import Card, Draft
+from game_metadata.utils import RANKS
+
+trim_numeric = re.compile("-[/d]*]")
 
 
 class TrophyStub:
 
     @classmethod
-    def parse_simple_rank(cls, rank_1, rank_2) -> str:
-        # TODO: Implement a better version of this.
-        return rank_2 if rank_2 else rank_1
+    def parse_simple_rank(cls, rank_1: Optional[str], rank_2: Optional[str]) -> str:
+        """
+        Merges the start and end rank of a draft into a simpler rank, taking the highest rank.
+        Eg. "Silver-1" and "Gold-2" would return "Gold".
+        """
+        r1 = trim_numeric.sub('', str(rank_1))
+        r2 = trim_numeric.sub('', str(rank_2))
+
+        idx1 = RANKS.index(r1)
+        idx2 = RANKS.index(r2)
+
+        if idx1 > idx2:
+            return r1
+        else:
+            return r2
 
     def __init__(self, results):
         self.DECK_ID: str = results['aggregate_id']
@@ -24,6 +41,7 @@ class TrophyStub:
 
     @property
     def DECK(self) -> LimitedDeck:
+        """ The deck associated with the draft. """
         if self._DECK is None:
             self._DECK = LimitedDeck.from_id(self.DECK_ID)
             self._DECK.trophy_stub = self
@@ -49,12 +67,17 @@ class Deck:
         return card_dict
 
     @property
-    def maindeck(self) -> list[Card]:
-        return self._maindeck
+    def colors(self) -> str:
+        """ Returns the colours of the deck, based on cards played and mana produced."""
+        # TODO: Come up with clever way to get the colors of the deck.
+        #  This should be based on Casting Cost, Color Identity, and the Manabase.
+        raise NotImplementedError()
+        return ""
 
     @property
-    def maindeck_dict(self) -> dict[str, int]:
-        return self._maindeck_dict
+    def maindeck(self) -> list[Card]:
+        """ The list of cards the deck plays in the maindeck """
+        return self._maindeck
 
     @maindeck.setter
     def maindeck(self, value):
@@ -63,11 +86,8 @@ class Deck:
 
     @property
     def sideboard(self) -> list[Card]:
+        """ The list of cards the deck plays in the sideboard """
         return self._sideboard
-
-    @property
-    def sideboard_dict(self) -> dict[str, int]:
-        return self._sideboard_dict
 
     @sideboard.setter
     def sideboard(self, value):
@@ -76,6 +96,7 @@ class Deck:
 
     @property
     def cardpool(self) -> list[Card]:
+        """ The complete list of cards the deck has access to """
         return self.maindeck + self.sideboard
 
     @property
@@ -86,11 +107,26 @@ class Deck:
         else:
             return self.wins / denominator
 
-    def compare_decks(self, deck):
-        # TODO: Compare the current deck with the other deck.
-        # TODO: Figure out out to format the differences to return.
-        raise NotImplementedError()
-        pass
+    def compare_decks(self, deck: LimitedDeck) -> tuple[dict[str, int], dict[str, int]]:
+        """
+        Compares the contents of this deck with a provided deck.
+        :param deck: The deck to compare with.
+        :return: A maindeck and sideboard dictionary of card number differences.
+        """
+        def subtract_dicts(d1, d2):
+            d = dict()
+            for k in d2:
+                if k in d1:
+                    v = d1[k] - d2[k]
+                    if v != 0:
+                        d[k] -= v
+                else:
+                    d[k] = -d2[k]
+            return d
+
+        maindeck_diff = subtract_dicts(self._maindeck_dict, deck._maindeck_dict)
+        sideboard_diff = subtract_dicts(self._sideboard_dict, deck._sideboard_dict)
+        return maindeck_diff, sideboard_diff
 
 
 class LimitedDeck(Deck):
@@ -98,8 +134,7 @@ class LimitedDeck(Deck):
 
     @classmethod
     def from_id(cls, deck_id: str) -> LimitedDeck:
-        result = None  # Get `result` with `deck_id`
-        return LimitedDeck(result)
+        return DeckManager.from_deck_id(deck_id)
 
     def __init__(self, result: dict):
         # Isolate the event metadata and track the key parts of it.
@@ -125,34 +160,40 @@ class LimitedDeck(Deck):
 
     @property
     def details_link(self) -> str:
+        """ A link to the details page of the deck on 17Lands"""
         return f"{self.URL_ROOT}/details/{self.DECK_ID}"
 
     @property
     def pool_link(self) -> str:
+        """ A link to the card pool on 17Lands """
         return f"{self.URL_ROOT}/pool/{self.DECK_ID}"
 
     @property
     def draft_link(self) -> str:
+        """ A link to the draft log on 17Lands """
         return f"{self.URL_ROOT}/draft/{self.DECK_ID}"
 
     @property
     def DRAFT(self) -> Draft:
+        """ The draft associated with the deck """
         if self._DRAFT is None:
-            # TODO: Return the draft on request.
-            raise NotImplementedError()
+            self._DRAFT = Draft.from_id(self.DECK_ID)
         return self._DRAFT
 
     # Properties that can have multiple links based on different deck builds.
     @property
     def builder_link(self) -> str:
+        """ A link to the deck in sealeddeck.tech """
         return f"https://sealeddeck.tech/17lands/deck/{self.DECK_ID}/{self.selected_build}"
 
     @property
     def deck_link(self) -> str:
+        """ A link to the 17Lands deck page """
         return f"{self.URL_ROOT}/deck/{self.DECK_ID}/{self.selected_build}"
 
     @property
     def text_link(self) -> str:
+        """ A link to a text version of the deck """
         return f"{self.URL_ROOT}/deck/{self.DECK_ID}/{self.selected_build}.txt"
 
 
@@ -161,6 +202,7 @@ class ConstructedDeck(Deck):
     def parse_decklist(cls, decklist: str) -> tuple[list[str], list[str]]:
         maindeck = list()
         sideboard = list()
+        # TODO: Parse the decklist.
         raise NotImplementedError()
 
         return maindeck, sideboard
@@ -172,17 +214,19 @@ class ConstructedDeck(Deck):
 
 class DeckManager:
     """
-
+    DeckManager acts as a global repository for decks. This is populated as more and more requests are made,
+    and is mainly here to ease the burden on 17Lands.
     """
     # Used to maintain a constant-time lookup cache of previously requested cards.
     SETS: dict[str, dict[str, LimitedDeck]] = dict()
     DECKS: dict[str, Optional[LimitedDeck]] = dict()
+    REQUESTER = Request17Lands()
 
     @classmethod
     def _add_deck(cls, deck: LimitedDeck, force_update=True) -> None:
         """
         An internal method to help more easily track decks as they're found/fetched.
-        :param deck: The decks object to track
+        :param deck: The deck object to track
         """
         # If the deck object isn't tracked in DECKS, add it to DECKS and SETS.
         if deck.DECK_ID not in cls.DECKS or force_update:
@@ -196,40 +240,32 @@ class DeckManager:
     @classmethod
     def from_deck_id(cls, deck_id: str) -> Optional[LimitedDeck]:
         """
-        Searches for a card by name. If not already known, will attempt to query Scryfall for
-        the card.
-        :param deck_id: The name of the card to look for. Can handle inexact names, to an extent.
-        :return: A Deck or None
+        Attempts to get a deck for the provided ID. Will check the cache first, and then
+        attempt to fetch the deck from 17Lands otherwise.
+        :param deck_id: The deck id to search for.
+        :return: A LimitedDeck or None.
         """
         # If the deck already exists, return it.
         prev_deck, found = cls._find_deck(deck_id)
         if found:
             return prev_deck
 
-        # Otherwise, get the card info from scryfall.
-        # TODO: Update this to get the deck from 17Lands.
-        json = dict()
-        raise NotImplementedError()
-        # If there's an error, log it, log the id as None, return None.
-        if 'err_msg' in json:
-            logging.info(f"Could not get deck with deck_id: '{deck_id}'")
-            logging.info(f"Error: {json['err_msg']}")
-            cls.DECKS[deck_id] = None
-            return None
-        # If the deck is found, return it.
-        else:
-            deck = LimitedDeck(json)
+        # Otherwise, try and get it from 17Lands.
+        try:
+            deck = cls.REQUESTER.get_deck(deck_id)
             cls._add_deck(deck)
             return deck
+        except:
+            # TODO: Better handle errors here.
+            logging.info(f"Could not get deck with deck_id: '{deck_id}'")
+            cls.DECKS[deck_id] = None
+            return None
 
     @classmethod
     def _find_deck(cls, deck_id: str) -> tuple[Optional[LimitedDeck], bool]:
         """
-        Attempts to find a saved instance of a card.
-        :param deck_id: The card name to find
-        :return: A Card or None, and whether the name exists in REDIRECT
+        Attempts to find a deck in the cache, and if it's been searched before.
         """
-
         if deck_id in cls.DECKS:
             return cls.DECKS[deck_id], True
         else:
@@ -237,6 +273,9 @@ class DeckManager:
 
     @classmethod
     def clear_blank_decks(cls) -> None:
+        """
+        Clears cls.DECKS of pairs where the value is None.
+        """
         for deck_id in cls.DECKS:
             if cls.DECKS[deck_id] is None:
                 del cls.DECKS[deck_id]
