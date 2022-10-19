@@ -1,7 +1,6 @@
 import pandas as pd
 
-from WUBRG import ALL_COLOR_ALIAS_MAP
-from WUBRG.consts import COLOR_COUNT_MAP
+from WUBRG import ALL_COLOR_ALIAS_MAP, COLOR_COUNT_MAP
 
 from data_fetching.utils.consts import STAT_NAME_DICT, META_COLS_ALIAS_DICT, \
     STAT_COL_NAMES, SHARED_COL_NAMES, CARD_INFO_COL_NAMES

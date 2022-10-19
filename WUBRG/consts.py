@@ -1,30 +1,30 @@
-from enum import Flag, auto
-from typing import Literal
-
-
-# TODO: Consider using this for stricter handling of color strings.
-COLOR_STRING = Literal[
-    '', 'W', 'U', 'B', 'R', 'G',
-    'WU', 'WB', 'WR', 'WG', 'UB', 'UR', 'UG', 'BR', 'BG', 'RG',
-    'WUB', 'WUR', 'WUG', 'WBR', 'WBG', 'WRG', 'UBR', 'UBG', 'URG', 'BRG',
-    'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'
-]
-
-
-# Color filtering enums.
-class ColorSortStyles(Flag):
-    exact = auto()
-    subset = auto()
-    contains = auto()
-    superset = contains
-    adjacent = auto()
-    shares = auto()
-
-
 # Colour Mapping
-COLORS: set = {'W', 'U', 'B', 'R', 'G'}
 WUBRG: str = 'WUBRG'
+COLORS: set = set(WUBRG)
 FAILSAFE: str = ''
+
+
+# List the colour combinations in WUBRG order.
+COLOR_COMBINATIONS: list[str] = ['', 'W', 'U', 'B', 'R', 'G',
+                                 'WU', 'WB', 'WR', 'WG', 'UB', 'UR', 'UG', 'BR', 'BG', 'RG',
+                                 'WUB', 'WUR', 'WUG', 'WBR', 'WBG', 'WRG', 'UBR', 'UBG', 'URG', 'BRG',
+                                 'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG']
+
+# List of colours, by number of colours.
+COLOR_SINGLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 1]
+COLOR_PAIRS: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 2]
+COLOR_TRIPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 3]
+COLOR_QUADRUPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 4]
+
+# List the colour combinations in "Pentad" order.
+GROUP_COLOR_COMBINATIONS: list[str] = ['',
+                                       'W', 'U', 'B', 'R', 'G',
+                                       'WU', 'UB', 'BR', 'RG', 'WG',
+                                       'WB', 'BG', 'UG', 'UR', 'WR',
+                                       'WUR', 'UBG', 'WBR', 'URG', 'WBG',
+                                       'WUB', 'UBR', 'BRG', 'WRG', 'WUG',
+                                       'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG',
+                                       'WUBRG']
 
 
 # region Colour Count Dicts
@@ -204,29 +204,6 @@ ANY_COLOURS_ALIASES: dict[str, str] = {
 # endregion Any Colour Groups
 
 
-# region Colour Lists and Ordering
-# Lists of colour combinations of given length, in WUBRG order.
-COLOR_COMBINATIONS: list[str] = ['', 'W', 'U', 'B', 'R', 'G',
-                                 'WU', 'WB', 'WR', 'WG', 'UB', 'UR', 'UG', 'BR', 'BG', 'RG',
-                                 'WUB', 'WUR', 'WUG', 'WBR', 'WBG', 'WRG', 'UBR', 'UBG', 'URG', 'BRG',
-                                 'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG']
-COLOR_SINGLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 1]
-COLOR_PAIRS: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 2]
-COLOR_TRIPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 3]
-COLOR_QUADRUPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 4]
-GROUP_COLOR_COMBINATIONS: list[str] = ['', 'W', 'U', 'B', 'R', 'G',
-                                       'WU', 'UB', 'BR', 'RG', 'WG',
-                                       'WB', 'BG', 'UG', 'UR', 'WR',
-                                       'WUR', 'UBG', 'WBR', 'URG', 'WBG',
-                                       'WUB', 'UBR', 'BRG', 'WRG', 'WUG',
-                                       'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG']
-
-# Maps colour groups to integers, so they can easily be used for sorting.
-WUBRG_COLOR_INDEXES: dict[str, int] = {COLOR_COMBINATIONS[x]: x for x in range(0, len(COLOR_COMBINATIONS))}
-GROUP_COLOR_INDEXES: dict[str, int] = {GROUP_COLOR_COMBINATIONS[x]: x for x in range(0, len(GROUP_COLOR_COMBINATIONS))}
-# endregion Colour Lists and Ordering
-
-
 # region Master Alias Mappings
 # Groupings of colour-combinations supported.
 ALL_COLOR_ALIAS_GROUP_MAP: dict[str, dict[str, str]] = {
@@ -293,38 +270,3 @@ COLOR_COUNT_REVERSE_MAP: dict[int, str] = {
     None: "All Decks"
 }
 # endregion Colour Count Mappings
-
-# region Mana Symbol Lists
-# Mana Symbols  -   # https://api.scryfall.com/symbology
-RAW_BASE_MANA_SYMBOLS: list[str] = ["{W}", "{U}", "{B}", "{R}", "{G}", "{C}"]
-RAW_NUMERIC_MANA_SYMBOLS: list[str] = ["{0}", "{1}", "{2}", "{3}", "{4}", "{5}", "{6}", "{7}", "{8}", "{9}", "{10}",
-                                       "{11}", "{12}", "{13}", "{14}", "{15}", "{16}", "{17}", "{18}", "{19}", "{20}"]
-RAW_HYBRID_MANA_SYMBOLS: list[str] = ["{W/U}", "{W/B}", "{B/R}", "{B/G}", "{U/B}",
-                                      "{U/R}", "{R/G}", "{R/W}", "{G/W}", "{G/U}"]
-RAW_PHYREXIAN_MANA_SYMBOLS: list[str] = ["{W/P}", "{U/P}", "{B/P}", "{R/P}", "{G/P}"]
-RAW_HYBRID_PHYREXIAN_MANA_SYMBOLS: list[str] = ["{B/G/P}", "{B/R/P}", "{G/U/P}", "{G/W/P}", "{R/G/P}",
-                                                "{R/W/P}", "{U/B/P}", "{U/R/P}", "{W/B/P}", "{W/U/P}"]
-RAW_COLORLESS_HYBRID_MANA_SYMBOLS: list[str] = ["{2/W}", "{2/U}", "{2/B}", "{2/R}", "{2/G}"]
-RAW_SPECIAL_MANA_SYMBOLS: list[str] = ["{A}", "{X}", "{Y}", "{Z}", "{S}"]
-RAW_COST_SYMBOLS: list[str] = ["{T}", "{Q}", "{E}"]
-
-RAW_MANA_SYMBOLS: list[str] = RAW_BASE_MANA_SYMBOLS + RAW_NUMERIC_MANA_SYMBOLS + RAW_HYBRID_MANA_SYMBOLS \
-                             + RAW_PHYREXIAN_MANA_SYMBOLS + RAW_HYBRID_PHYREXIAN_MANA_SYMBOLS \
-                             + RAW_COLORLESS_HYBRID_MANA_SYMBOLS + RAW_SPECIAL_MANA_SYMBOLS + RAW_COST_SYMBOLS
-
-
-BASE_MANA_SYMBOLS: list[str] = ["W", "U", "B", "R", "G", "C"]
-NUMERIC_MANA_SYMBOLS: list[str] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-                                   "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"]
-HYBRID_MANA_SYMBOLS: list[str] = ["W/U", "W/B", "B/R", "B/G", "U/B", "U/R", "R/G", "R/W", "G/W", "G/U"]
-PHYREXIAN_MANA_SYMBOLS: list[str] = ["W/P", "U/P", "B/P", "R/P", "G/P"]
-HYBRID_PHYREXIAN_MANA_SYMBOLS: list[str] = ["B/G/P", "B/R/P", "G/U/P", "G/W/P", "R/G/P",
-                                            "R/W/P", "U/B/P", "U/R/P", "W/B/P", "W/U/P"]
-COLORLESS_HYBRID_MANA_SYMBOLS: list[str] = ["2/W", "2/U", "2/B", "2/R", "2/G"]
-SPECIAL_MANA_SYMBOLS: list[str] = ["A", "X", "Y", "Z", "S"]
-COST_SYMBOLS: list[str] = ["T", "Q", "E"]
-
-MANA_SYMBOLS: list[str] = BASE_MANA_SYMBOLS + NUMERIC_MANA_SYMBOLS + HYBRID_MANA_SYMBOLS \
-                         + PHYREXIAN_MANA_SYMBOLS + HYBRID_PHYREXIAN_MANA_SYMBOLS \
-                         + COLORLESS_HYBRID_MANA_SYMBOLS + SPECIAL_MANA_SYMBOLS + COST_SYMBOLS
-# endregion Mana Symbol Lists
