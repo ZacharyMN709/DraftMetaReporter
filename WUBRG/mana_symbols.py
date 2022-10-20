@@ -1,4 +1,8 @@
-# Mana Symbols  -   # https://api.scryfall.com/symbology
+"""
+Lists of mana/cost symbols in their raw ("{X}") and regular ("X") forms.
+More info: https://api.scryfall.com/symbology
+"""
+
 RAW_BASE_MANA_SYMBOLS: list[str] = ["{W}", "{U}", "{B}", "{R}", "{G}", "{C}"]
 RAW_NUMERIC_MANA_SYMBOLS: list[str] = ["{0}", "{1}", "{2}", "{3}", "{4}", "{5}", "{6}", "{7}", "{8}", "{9}", "{10}",
                                        "{11}", "{12}", "{13}", "{14}", "{15}", "{16}", "{17}", "{18}", "{19}", "{20}"]

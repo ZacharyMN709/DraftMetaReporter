@@ -1,3 +1,11 @@
+"""
+Contains a (hopefully) comprehensive set of dictionaries which map common
+written/spoken names to an associated colour combination.
+
+As well, the key-value pairs in these dictionaries are all in 'Pentad' order,
+for iterating purposes.
+"""
+
 # region Single Color Groups
 SINGLE_COLOR_MAP: dict[str, str] = {
     'White': "W",

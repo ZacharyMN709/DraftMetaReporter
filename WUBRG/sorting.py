@@ -1,3 +1,7 @@
+"""
+Contains sorting and filtering enums and functions.
+"""
+
 from enum import Flag, auto
 from functools import cmp_to_key
 from typing import Callable
@@ -6,16 +10,7 @@ from WUBRG.consts import COLOR_COMBINATIONS, GROUP_COLOR_COMBINATIONS
 from WUBRG.funcs import get_color_identity, get_color_supersets, get_color_subsets
 
 
-# Color filtering enums.
-class ColorSortStyles(Flag):
-    exact = auto()
-    subset = auto()
-    contains = auto()
-    superset = contains
-    adjacent = auto()
-    shares = auto()
-
-
+# region Color Sorting
 # Creating a custom sorting algorithm to order in WUBRG order
 # Maps colour groups to integers, so they can easily be used for sorting.
 WUBRG_COLOR_INDEXES: dict[str, int] = {COLOR_COMBINATIONS[x]: x for x in range(0, len(COLOR_COMBINATIONS))}
@@ -47,9 +42,20 @@ def color_compare_group(col1: str, col2: str) -> int:
 
 wubrg_compare_key: Callable = cmp_to_key(color_compare_wubrg)
 group_compare_key: Callable = cmp_to_key(color_compare_group)
+# endregion Color Sorting
 
 
 # region Color Set Filtering and Sorting
+# Color filtering enums.
+class ColorSortStyles(Flag):
+    exact = auto()
+    subset = auto()
+    contains = auto()
+    superset = contains
+    adjacent = auto()
+    shares = auto()
+
+
 def order_by_wubrg(color_list: list[str]) -> list[str]:
     return sorted(color_list, key=wubrg_compare_key)
 

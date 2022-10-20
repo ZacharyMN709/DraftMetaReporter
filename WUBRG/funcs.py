@@ -1,65 +1,58 @@
+"""
+Contains functions which handle colour string and colour combination manipulation.
+"""
+
 from typing import Optional
 import re
+import logging
 
-from Utilities.auto_logging import logging
-from WUBRG import WUBRG, FAILSAFE, ALIAS_MAP, COLOR_COMBINATIONS
-from WUBRG.consts import REVERSE_COLOR_MAP
+from WUBRG.consts import WUBRG, COLOR_TO_NAME, COLOR_COMBINATIONS
+from WUBRG.alias_mappings import ALIAS_MAP
 from WUBRG.mana_symbols import MANA_SYMBOLS
 
 mana_cost_re = re.compile(r'{(.*?)}')
 
 
-def get_color_string(s: Optional[str]) -> str:
+def get_color_string(text: Optional[str]) -> str:
     """
     Takes in a string, and attempts to convert it to a color string.
     If the string is invalid, returns ''.
     This function will attempt to convert common names into their colours.
-    Eg. 'Bant' -> 'WUG'
-    :param s: The string to convert.
+    Eg. 'Bant' -> 'WUG', 'bant' -> 'WUG'
+    :param text: The string to convert.
     :return: A color string, which contains only characters found in 'WUBRG'.
     """
-    if s is None:
-        logging.warning(f"Invalid color string provided: `None`. Converting to '{FAILSAFE}'")
-        return FAILSAFE
 
-    s = s.strip()
-    s = re.sub('[0-9{}]', '', s)
+    # If the string is None, log a warning.
+    if text is None:
+        logging.warning(f"Invalid color string provided: `None`. Converting to ''.")
+        return ''
 
-    # If the colour name exists in the color alias dictionary,
-    if s.title() in ALIAS_MAP:
-        # Return the string provided by the alias dictionary.
-        return ALIAS_MAP[s.title()]
+    # Tidy the string to make matching to a color alias more forgiving.
+    s = text.strip().title()
+    if s in ALIAS_MAP:
+        return ALIAS_MAP[s]
 
-    # For each character in the upper-case input,
-    ret = ''
-    for c in s.upper():
-        # If it's one of the colours,
-        if c in WUBRG:
-            # Add it to the string.
-            ret += c
+    # Get all the characters that are in WUBRG
+    ret = ''.join(c for c in s.upper() if c in WUBRG)
 
     # If the return string is empty, log a warning message.
     if not ret:
-        logging.warning(f"Invalid color string provided: {s}. Converting to '{FAILSAFE}'")
-        return FAILSAFE
-    # Otherwise, return the generated string.
-    else:
-        return ret
+        logging.warning(f"Invalid color string provided: {text}. No color values could be found in string.")
+
+    return ret
 
 
-def get_color_identity(color_string: str) -> str:
+def get_color_identity(text: str) -> str:
     """
     Takes in a color string, and attempts to convert it to a
     color identity string.
-    :param color_string: The color string to convert.
+    :param text: The color string to convert.
     :return: A color identity string, a subset of 'WUBRG'.
     """
-    char_set = set(get_color_string(color_string))
-    s = ''
-    for c in WUBRG:
-        if c in char_set:
-            s += c
-    return s
+    color_string = get_color_string(text)
+    char_set = set(color_string)
+    return ''.join(c for c in WUBRG if c in char_set)
 
 
 def get_color_alias(color_string: str) -> Optional[str]:
@@ -73,7 +66,7 @@ def get_color_alias(color_string: str) -> Optional[str]:
     if color_identity == '':
         return None
     else:
-        return REVERSE_COLOR_MAP[color_identity]
+        return COLOR_TO_NAME[color_identity]
 
 
 def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -> list[str]:
@@ -147,7 +140,3 @@ def parse_cost(mana_cost: str) -> list[str]:
 
     # If all checks passed, return the found values.
     return costs
-
-
-def list_color_dict(d: dict[str, str]) -> list[str]:
-    return [d[s] for s in d]

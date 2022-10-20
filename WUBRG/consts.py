@@ -1,20 +1,23 @@
+"""
+Contains a set of string, lists and dictionaries to handle colors.
+The dictionaries map the most common written/spoken names to an
+associated colour combination, and a map which handles the reverse.
+
+As well, the key-value pairs in these dictionaries are all in 'WUBRG' order,
+for iterating purposes.
+"""
+
 # Colour Mapping
 WUBRG: str = 'WUBRG'
 COLORS: set = set(WUBRG)
 FAILSAFE: str = ''
 
 
-# List the colour combinations in WUBRG order.
+# List the colour combinations in "WUBRG" order.
 COLOR_COMBINATIONS: list[str] = ['', 'W', 'U', 'B', 'R', 'G',
                                  'WU', 'WB', 'WR', 'WG', 'UB', 'UR', 'UG', 'BR', 'BG', 'RG',
                                  'WUB', 'WUR', 'WUG', 'WBR', 'WBG', 'WRG', 'UBR', 'UBG', 'URG', 'BRG',
                                  'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG']
-
-# List of colours, by number of colours.
-COLOR_SINGLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 1]
-COLOR_PAIRS: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 2]
-COLOR_TRIPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 3]
-COLOR_QUADRUPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 4]
 
 # List the colour combinations in "Pentad" order.
 GROUP_COLOR_COMBINATIONS: list[str] = ['',
@@ -26,19 +29,24 @@ GROUP_COLOR_COMBINATIONS: list[str] = ['',
                                        'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG',
                                        'WUBRG']
 
+# List of colours, by number of colours.
+COLOR_SINGLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 1]
+COLOR_PAIRS: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 2]
+COLOR_TRIPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 3]
+COLOR_QUADRUPLES: list[str] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 4]
 
 # region Colour Count Dicts
 # Dictionaries of the most common aliases for colour combinations, grouped by number of colours, in WUBRG order.
-SINGLE_COLOR_MAP: dict[str, str] = {
+ONE_NAME_TO_COLOR: dict[str, str] = {
     'White': "W",
     'Blue': "U",
     'Black': "B",
     'Red': "R",
     'Green': "G"
 }
-REVERSE_SINGLE_COLOR_MAP: dict[str, str] = {v: k for k, v in SINGLE_COLOR_MAP.items()}
+ONE_COLOR_TO_NAME: dict[str, str] = {v: k for k, v in ONE_NAME_TO_COLOR.items()}
 
-TWO_COLOR_MAP: dict[str, str] = {
+TWO_NAME_TO_COLOR: dict[str, str] = {
     'Azorius': "WU",
     'Orzhov': "WB",
     'Boros': "WR",
@@ -50,9 +58,9 @@ TWO_COLOR_MAP: dict[str, str] = {
     'Golgari': "BG",
     'Gruul': "RG"
 }
-REVERSE_TWO_COLOR_MAP: dict[str, str] = {v: k for k, v in TWO_COLOR_MAP.items()}
+TWO_COLOR_TO_NAME: dict[str, str] = {v: k for k, v in TWO_NAME_TO_COLOR.items()}
 
-THREE_COLOR_MAP: dict[str, str] = {
+THREE_NAME_TO_COLOR: dict[str, str] = {
     'Esper': "WUB",
     'Jeskai': "WUR",
     'Bant': "WUG",
@@ -64,35 +72,35 @@ THREE_COLOR_MAP: dict[str, str] = {
     'Temur': "URG",
     'Jund': "BRG"
 }
-REVERSE_THREE_COLOR_MAP: dict[str, str] = {v: k for k, v in THREE_COLOR_MAP.items()}
+THREE_COLOR_TO_NAME: dict[str, str] = {v: k for k, v in THREE_NAME_TO_COLOR.items()}
 
-FOUR_COLOR_MAP: dict[str, str] = {
+FOUR_NAME_TO_COLOR: dict[str, str] = {
     'Non-G': "WUBR",
     'Non-R': "WUBG",
     'Non-B': "WURG",
     'Non-U': "WBRG",
     'Non-W': "UBRG"
 }
-REVERSE_FOUR_COLOR_MAP: dict[str, str] = {v: k for k, v in FOUR_COLOR_MAP.items()}
+FOUR_COLOR_TO_NAME: dict[str, str] = {v: k for k, v in FOUR_NAME_TO_COLOR.items()}
 
-COLOR_MAP: dict[str, str] = {
+NAME_TO_COLOR: dict[str, str] = {
     '': '',
-    **SINGLE_COLOR_MAP,
-    **TWO_COLOR_MAP,
-    **THREE_COLOR_MAP,
-    **FOUR_COLOR_MAP,
+    **ONE_NAME_TO_COLOR,
+    **TWO_NAME_TO_COLOR,
+    **THREE_NAME_TO_COLOR,
+    **FOUR_NAME_TO_COLOR,
     'Five-Color': 'WUBRG'
 }
-REVERSE_COLOR_MAP: dict[str, str] = {v: k for k, v in COLOR_MAP.items()}
+COLOR_TO_NAME: dict[str, str] = {v: k for k, v in NAME_TO_COLOR.items()}
 
 # Groups of aliases based on the number of colours.
 COLOUR_GROUPINGS: dict[str, dict[str, str]] = {
     'Any': {'': ''},
-    'Mono-Color': SINGLE_COLOR_MAP,
-    'Two-Color': TWO_COLOR_MAP,
-    'Three-Color': THREE_COLOR_MAP,
-    'Four-Color': FOUR_COLOR_MAP,
+    'Mono-Color': ONE_NAME_TO_COLOR,
+    'Two-Color': TWO_NAME_TO_COLOR,
+    'Three-Color': THREE_NAME_TO_COLOR,
+    'Four-Color': FOUR_NAME_TO_COLOR,
     'Five-Color': {'Five-Color': 'WUBRG'},
-    'All Decks': COLOR_MAP
+    'All Decks': NAME_TO_COLOR
 }
 # endregion Colour Count Dicts
