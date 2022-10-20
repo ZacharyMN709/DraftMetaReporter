@@ -2,7 +2,8 @@ from typing import Optional
 import re
 
 from Utilities.auto_logging import logging
-from WUBRG.consts import WUBRG, FAILSAFE, ALL_COLOR_ALIAS_MAP, COLOR_COMBINATIONS, REVERSE_COLOR_MAP
+from WUBRG import WUBRG, FAILSAFE, ALIAS_MAP, COLOR_COMBINATIONS
+from WUBRG.consts import REVERSE_COLOR_MAP
 from WUBRG.mana_symbols import MANA_SYMBOLS
 
 mana_cost_re = re.compile(r'{(.*?)}')
@@ -25,9 +26,9 @@ def get_color_string(s: Optional[str]) -> str:
     s = re.sub('[0-9{}]', '', s)
 
     # If the colour name exists in the color alias dictionary,
-    if s.title() in ALL_COLOR_ALIAS_MAP:
+    if s.title() in ALIAS_MAP:
         # Return the string provided by the alias dictionary.
-        return ALL_COLOR_ALIAS_MAP[s.title()]
+        return ALIAS_MAP[s.title()]
 
     # For each character in the upper-case input,
     ret = ''

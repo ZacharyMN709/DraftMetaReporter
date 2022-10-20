@@ -1,6 +1,7 @@
 import unittest
 
-from WUBRG import FAILSAFE, COLOR_COMBINATIONS, GROUP_COLOR_COMBINATIONS, COLOR_PAIRS, ALLIED, ENEMY, GUILDS
+from WUBRG import FAILSAFE, COLOR_COMBINATIONS, GROUP_COLOR_COMBINATIONS, COLOR_PAIRS, \
+    ALLIED_GUILDS, ENEMY_GUILDS, GUILDS
 from WUBRG import get_color_alias, parse_cost
 from WUBRG import get_color_string, get_color_identity, list_color_dict, get_color_supersets, get_color_subsets
 from WUBRG import ColorSortStyles, color_compare_wubrg, color_compare_group
@@ -116,10 +117,10 @@ class TestWUBRGListFuncs(unittest.TestCase):
         self.assertListEqual(ret, ['A'])
 
     def test_list_color_dict(self):
-        ret = list_color_dict(ALLIED)
+        ret = list_color_dict(ALLIED_GUILDS)
         self.assertListEqual(ret, ["WU", "UB", "BR", "RG", "WG"])
 
-        ret = list_color_dict(ENEMY)
+        ret = list_color_dict(ENEMY_GUILDS)
         self.assertListEqual(ret, ["WB", "BG", "UG", "UR", "WR"])
 
         ret = list_color_dict(GUILDS)
