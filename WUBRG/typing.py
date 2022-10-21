@@ -2,7 +2,9 @@
 Provides typing when dealing with colours as parameters and return values.
 """
 
-from typing import Literal, Union
+from typing import Literal, Union, Annotated
+
+COLOR = Literal['W', 'U', 'B', 'R', 'G']
 
 # TODO: Consider using this for stricter handling of color strings.
 COLOR_IDENTITY = Literal[
@@ -12,8 +14,9 @@ COLOR_IDENTITY = Literal[
     'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'
 ]
 
-# TODO: See if there's a way to define a color string as a type.
-COLOR_STRING = Literal['']
+# TODO: See if there's a way to define a color string as a combination of WUBRG.
+# COLOR_STRING = Literal['']
+COLOR_STRING = Annotated[str, "A string made up of only characters in WUBRG"]
 
 COLOR_ALIAS = Literal[
     'Any', '',
@@ -39,3 +42,7 @@ COLOR_ALIAS_EXTENDED = Literal[
 COLOR_ALIAS_ALL = Union[COLOR_ALIAS, COLOR_ALIAS_EXTENDED]
 
 VALID_COLOR_VALUE = Union[COLOR_ALIAS_ALL, COLOR_STRING]
+
+FORMATTED_MANA_SYMBOL = Annotated[str, "Mana symbols wrapped with {}"]
+
+MANA_SYMBOL = Annotated[str, "Mana symbols without any embellishments"]

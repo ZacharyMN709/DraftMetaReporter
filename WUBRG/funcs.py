@@ -6,14 +6,16 @@ from typing import Optional
 import re
 import logging
 
+from WUBRG.typing import COLOR_STRING, COLOR_IDENTITY, COLOR_ALIAS, MANA_SYMBOL
 from WUBRG.consts import WUBRG, COLOR_TO_NAME, COLOR_COMBINATIONS
 from WUBRG.alias_mappings import ALIAS_MAP
 from WUBRG.mana_symbols import MANA_SYMBOLS
 
 mana_cost_re = re.compile(r'{(.*?)}')
+mana_symbol_scrub = re.compile('[0-9{}]')
 
 
-def get_color_string(text: Optional[str]) -> str:
+def get_color_string(text: Optional[str]) -> COLOR_STRING:
     """
     Takes in a string, and attempts to convert it to a color string.
     If the string is invalid, returns ''.
@@ -31,10 +33,19 @@ def get_color_string(text: Optional[str]) -> str:
     # Tidy the string to make matching to a color alias more forgiving.
     s = text.strip().title()
     if s in ALIAS_MAP:
+        # If the string is in the dictionary, it has to be a COLOR_ALIAS.
+        # noinspection PyTypeChecker
         return ALIAS_MAP[s]
 
+    # Replace '{', '}' or any numeric.
+    ret = mana_symbol_scrub.sub('', s)
+
+    # If the incoming string was a colorless mana-cost, it will be empty.
+    if ret == '':
+        return ''
+
     # Get all the characters that are in WUBRG
-    ret = ''.join(c for c in s.upper() if c in WUBRG)
+    ret = ''.join(c for c in ret.upper() if c in WUBRG)
 
     # If the return string is empty, log a warning message.
     if not ret:
@@ -43,7 +54,7 @@ def get_color_string(text: Optional[str]) -> str:
     return ret
 
 
-def get_color_identity(text: str) -> str:
+def get_color_identity(text: str) -> COLOR_IDENTITY:
     """
     Takes in a color string, and attempts to convert it to a
     color identity string.
@@ -52,10 +63,14 @@ def get_color_identity(text: str) -> str:
     """
     color_string = get_color_string(text)
     char_set = set(color_string)
-    return ''.join(c for c in WUBRG if c in char_set)
+
+    # Removes any non-COLOR symbols from the set, converting it to a COLOR_IDENTITY
+    # noinspection PyTypeChecker
+    color_identity: COLOR_IDENTITY = ''.join(c for c in WUBRG if c in char_set)
+    return color_identity
 
 
-def get_color_alias(color_string: str) -> Optional[str]:
+def get_color_alias(color_string: str) -> Optional[COLOR_ALIAS]:
     """
     Takes in a colour string and attempts to return a more
     common name for the colors. e.g. 'WUR' -> 'Jeskai'
@@ -69,7 +84,7 @@ def get_color_alias(color_string: str) -> Optional[str]:
         return COLOR_TO_NAME[color_identity]
 
 
-def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -> list[str]:
+def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -> list[COLOR_IDENTITY]:
     """
     Gets all possible permutations of WUBRG which contain the color_id.
     Can limit the length of the permutations returned with max_len.
@@ -91,7 +106,7 @@ def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -
     return color_ids
 
 
-def get_color_subsets(color_id: str, min_len: int = 0, strict: bool = False) -> list[str]:
+def get_color_subsets(color_id: str, min_len: int = 0, strict: bool = False) -> list[COLOR_IDENTITY]:
     """
     Gets all possible permutations of WUBRG which are contained in color_id.
     Can limit the length of the permutations returned with min_len.
@@ -113,7 +128,7 @@ def get_color_subsets(color_id: str, min_len: int = 0, strict: bool = False) -> 
     return color_ids
 
 
-def parse_cost(mana_cost: str) -> list[str]:
+def parse_cost(mana_cost: str) -> list[MANA_SYMBOL]:
     """
     Converts the typically used mana cost to a list of strings to more easily iterate over.
     Eg. {10}{G}{G} would return ['10', 'G', 'G']
@@ -126,6 +141,7 @@ def parse_cost(mana_cost: str) -> list[str]:
 
     # If the parenthesis don't match, return a dummy value.
     if mana_cost.count(sym_left) != mana_cost.count(sym_right):
+        logging.warning(f"Invalid mana cost provided: {mana_cost}. Converting to '{default}'")
         return default
 
     # Find anything like {.} in the string,

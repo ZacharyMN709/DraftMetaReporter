@@ -6,8 +6,10 @@ As well, the key-value pairs in these dictionaries are all in 'Pentad' order,
 for iterating purposes.
 """
 
+from WUBRG.typing import COLOR_IDENTITY, COLOR_ALIAS_ALL
+
 # region Single Color Groups
-SINGLE_COLOR_MAP: dict[str, str] = {
+SINGLE_COLOR_MAP: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'White': "W",
     'Blue': "U",
     'Black': "B",
@@ -15,7 +17,7 @@ SINGLE_COLOR_MAP: dict[str, str] = {
     'Green': "G"
 }
 
-MONO_COLOR_MAP: dict[str, str] = {
+MONO_COLOR_MAP: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Mono-White': "W",
     'Mono-Blue': "U",
     'Mono-Black': "B",
@@ -25,7 +27,7 @@ MONO_COLOR_MAP: dict[str, str] = {
 # endregion Single Color Groups
 
 # region Two Colour Groups
-GUILDS: dict[str, str] = {
+GUILDS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Azorius': "WU",
     'Dimir': "UB",
     'Rakdos': "BR",
@@ -38,7 +40,7 @@ GUILDS: dict[str, str] = {
     'Boros': "WR"
 }
 
-ALLIED_GUILDS: dict[str, str] = {
+ALLIED_GUILDS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Azorius': "WU",
     'Dimir': "UB",
     'Rakdos': "BR",
@@ -46,7 +48,7 @@ ALLIED_GUILDS: dict[str, str] = {
     'Selesnya': "WG"
 }
 
-ENEMY_GUILDS: dict[str, str] = {
+ENEMY_GUILDS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Orzhov': "WB",
     'Golgari': "BG",
     'Simic': "UG",
@@ -54,7 +56,7 @@ ENEMY_GUILDS: dict[str, str] = {
     'Boros': "WR"
 }
 
-COLLEGES: dict[str, str] = {
+COLLEGES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Silverquill': "WB",
     'Witherbloom': "BG",
     'Quandrix': "UG",
@@ -64,7 +66,7 @@ COLLEGES: dict[str, str] = {
 # endregion Two Colour Groups
 
 # region Three Colour Groups
-WEDGES: dict[str, str] = {
+WEDGES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Jeskai': "WUR",
     'Sultai': "UBG",
     'Mardu': "WBR",
@@ -72,7 +74,7 @@ WEDGES: dict[str, str] = {
     'Abzan': "WBG"
 }
 
-TRIOMES: dict[str, str] = {
+TRIOMES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Raugrin': "WUR",
     'Zagoth': "UBG",
     'Savai': "WBR",
@@ -80,7 +82,7 @@ TRIOMES: dict[str, str] = {
     'Indatha': "WBG"
 }
 
-SHARDS: dict[str, str] = {
+SHARDS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Esper': "WUB",
     'Grixis': "UBR",
     'Jund': "BRG",
@@ -88,7 +90,7 @@ SHARDS: dict[str, str] = {
     'Bant': "WUG"
 }
 
-FAMILIES: dict[str, str] = {
+FAMILIES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Obscura': "WUB",
     'Maestros': "UBR",
     'Riveteers': "BRG",
@@ -98,7 +100,7 @@ FAMILIES: dict[str, str] = {
 # endregion Three Colour Groups
 
 # region Four Colour Groups
-NEPHILLIM: dict[str, str] = {
+NEPHILLIM: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Yore': "WUBR",
     'Witch': "WUBG",
     'Ink': "WURG",
@@ -106,7 +108,7 @@ NEPHILLIM: dict[str, str] = {
     'Glint': "UBRG"
 }
 
-NON_COLOR: dict[str, str] = {
+NON_COLOR: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Non-G': "WUBR",
     'Non-R': "WUBG",
     'Non-B': "WURG",
@@ -116,7 +118,7 @@ NON_COLOR: dict[str, str] = {
 # endregion Four Colour Groups
 
 # region Five Colour Groups
-ALL_COLOURS_ALIASES: dict[str, str] = {
+ALL_COLOURS_ALIASES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
         'WUBRG': 'WUBRG',
         '5-Color': 'WUBRG',
         'Five-Color': 'WUBRG',
@@ -125,7 +127,7 @@ ALL_COLOURS_ALIASES: dict[str, str] = {
 # endregion Five Colour Groups
 
 # region Any Colour Groups
-ANY_COLOURS_ALIASES: dict[str, str] = {
+ANY_COLOURS_ALIASES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
         None: '',
         'None': '',
         'Any': '',
@@ -136,7 +138,7 @@ ANY_COLOURS_ALIASES: dict[str, str] = {
 
 # region Master Alias Mappings
 # Aliases for the colour combinations.
-ALIAS_MAP: dict[str, str] = {
+ALIAS_MAP: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     **ANY_COLOURS_ALIASES,
     **SINGLE_COLOR_MAP,
     **GUILDS,
@@ -150,7 +152,7 @@ ALIAS_MAP: dict[str, str] = {
 }
 
 # Groupings of colour-combinations supported.
-GROUPED_ALIAS_MAP: dict[str, dict[str, str]] = {
+GROUPED_ALIAS_MAP: dict[str, dict[COLOR_ALIAS_ALL, COLOR_IDENTITY]] = {
     'Any': ANY_COLOURS_ALIASES,
     'Single-Color': SINGLE_COLOR_MAP,
     'Mono-Color': MONO_COLOR_MAP,

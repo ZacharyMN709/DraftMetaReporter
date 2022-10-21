@@ -6,6 +6,7 @@ from enum import Flag, auto
 from functools import cmp_to_key
 from typing import Callable
 
+from WUBRG.typing import COLOR_IDENTITY
 from WUBRG.consts import COLOR_COMBINATIONS, GROUP_COLOR_COMBINATIONS
 from WUBRG.funcs import get_color_identity, get_color_supersets, get_color_subsets
 
@@ -13,11 +14,13 @@ from WUBRG.funcs import get_color_identity, get_color_supersets, get_color_subse
 # region Color Sorting
 # Creating a custom sorting algorithm to order in WUBRG order
 # Maps colour groups to integers, so they can easily be used for sorting.
-WUBRG_COLOR_INDEXES: dict[str, int] = {COLOR_COMBINATIONS[x]: x for x in range(0, len(COLOR_COMBINATIONS))}
-GROUP_COLOR_INDEXES: dict[str, int] = {GROUP_COLOR_COMBINATIONS[x]: x for x in range(0, len(GROUP_COLOR_COMBINATIONS))}
+WUBRG_COLOR_INDEXES: dict[COLOR_IDENTITY, int] = \
+    {COLOR_COMBINATIONS[x]: x for x in range(0, len(COLOR_COMBINATIONS))}
+GROUP_COLOR_INDEXES: dict[COLOR_IDENTITY, int] = \
+    {GROUP_COLOR_COMBINATIONS[x]: x for x in range(0, len(GROUP_COLOR_COMBINATIONS))}
 
 
-def color_compare_wubrg(col1: str, col2: str) -> int:
+def color_compare_wubrg(col1: COLOR_IDENTITY, col2: COLOR_IDENTITY) -> int:
     # Convert the colors into numeric indexes
     col_idx1 = WUBRG_COLOR_INDEXES[col1]
     col_idx2 = WUBRG_COLOR_INDEXES[col2]
@@ -29,7 +32,7 @@ def color_compare_wubrg(col1: str, col2: str) -> int:
 
 
 # Creating a custom sorting algorithm to order in group order
-def color_compare_group(col1: str, col2: str) -> int:
+def color_compare_group(col1: COLOR_IDENTITY, col2: COLOR_IDENTITY) -> int:
     # Convert the colors into numeric indexes
     col_idx1 = GROUP_COLOR_INDEXES[col1]
     col_idx2 = GROUP_COLOR_INDEXES[col2]
@@ -56,15 +59,15 @@ class ColorSortStyles(Flag):
     shares = auto()
 
 
-def order_by_wubrg(color_list: list[str]) -> list[str]:
+def order_by_wubrg(color_list: list[COLOR_IDENTITY]) -> list[COLOR_IDENTITY]:
     return sorted(color_list, key=wubrg_compare_key)
 
 
-def order_by_groups(color_list: list[str]) -> list[str]:
+def order_by_groups(color_list: list[COLOR_IDENTITY]) -> list[COLOR_IDENTITY]:
     return sorted(color_list, key=group_compare_key)
 
 
-def exact(colors: str) -> list[str]:
+def exact(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
     """
     Returns a list of colours that match the provided string. (Wraps the provided string in a list.)
     'exact': 'U' --> 'U'
@@ -74,7 +77,7 @@ def exact(colors: str) -> list[str]:
     return [get_color_identity(colors)]
 
 
-def subset(colors: str) -> list[str]:
+def subset(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
     """
     Returns a list of the subsets of the provided colour string.
     'subset': 'UW' --> 'U', 'W', 'WU'
@@ -84,7 +87,7 @@ def subset(colors: str) -> list[str]:
     return get_color_subsets(colors)
 
 
-def superset(colors: str) -> list[str]:
+def superset(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
     """
     Returns a list of the supersets of the provided colour string.
     'superset': 'UW' --> 'UW', 'UBW', 'URW', 'UGW'...
@@ -94,7 +97,7 @@ def superset(colors: str) -> list[str]:
     return get_color_supersets(colors)
 
 
-def adjacent(colors: str) -> list[str]:
+def adjacent(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
     """
     Returns a list of color strings with no more than one colour different than the provided colour string.
     'adjacent': 'UW' --> 'U', 'W', 'UW', 'UG', 'WG', 'UWG'...
@@ -106,8 +109,8 @@ def adjacent(colors: str) -> list[str]:
     return _subset + _superset
 
 
-# noinspection SpellCheckingInspection
-def shares(colors: str) -> list[str]:
+def shares(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
+    # noinspection SpellCheckingInspection
     """
     Returns a list of color strings which share any colour with the provided colour string.
     'adjacent': 'UW' --> 'U', 'W', 'UW', 'UG', 'UWG', 'UWRG', 'WUBRG'...
@@ -124,7 +127,7 @@ def shares(colors: str) -> list[str]:
     return order_by_wubrg(shared)
 
 
-def color_filter(colors: str, style: ColorSortStyles) -> list[str]:
+def color_filter(colors: COLOR_IDENTITY, style: ColorSortStyles) -> list[COLOR_IDENTITY]:
     """
     Returns a list of color strings based on the provided colour string and filter.
     :param colors: A color string.
