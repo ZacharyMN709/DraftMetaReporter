@@ -5,6 +5,7 @@ More info: https://api.scryfall.com/symbology
 
 from WUBRG.typing import FORMATTED_MANA_SYMBOL, MANA_SYMBOL
 
+
 # region Formatted Mana Symbols
 FORMATTED_BASE_MANA_SYMBOLS: list[FORMATTED_MANA_SYMBOL] = [
     "{W}", "{U}", "{B}", "{R}", "{G}", "{C}"

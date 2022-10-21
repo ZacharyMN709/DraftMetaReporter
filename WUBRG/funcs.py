@@ -2,7 +2,7 @@
 Contains functions which handle colour string and colour combination manipulation.
 """
 
-from typing import Optional
+from typing import Optional, Callable
 import re
 import logging
 
@@ -11,16 +11,23 @@ from WUBRG.consts import WUBRG, COLOR_TO_NAME, COLOR_COMBINATIONS
 from WUBRG.alias_mappings import ALIAS_MAP
 from WUBRG.mana_symbols import MANA_SYMBOLS
 
+
 mana_cost_re = re.compile(r'{(.*?)}')
 mana_symbol_scrub = re.compile('[0-9{}]')
 
 
+# region Color String Conversions
+def is_color_string(text: str) -> bool:
+    """ Checks if the provided string is a valid COLOR_STRING """
+    return set(text.upper()) <= set(WUBRG)
+
+
 def get_color_string(text: Optional[str]) -> COLOR_STRING:
     """
-    Takes in a string, and attempts to convert it to a color string.
-    If the string is invalid, returns ''.
-    This function will attempt to convert common names into their colours.
-    Eg. 'Bant' -> 'WUG', 'bant' -> 'WUG'
+    Takes in a string, and attempts to convert it to a color string, with some amount
+    of forgiveness for mis-spelling and casing. If the string is invalid, returns ''.
+    This function will attempt to convert common names and costs into their colours.
+    Egs. 'Bant' -> 'WUG', 'bant' -> 'WUG', '{2}{G}{G}' -> 'GG', '{2}{G{G}' -> 'GG', 'A' -> ''
     :param text: The string to convert.
     :return: A color string, which contains only characters found in 'WUBRG'.
     """
@@ -59,8 +66,10 @@ def get_color_identity(text: str) -> COLOR_IDENTITY:
     Takes in a color string, and attempts to convert it to a
     color identity string.
     :param text: The color string to convert.
-    :return: A color identity string, a subset of 'WUBRG'.
+    :return: A color identity string, a subset of 'WUBRG', in 'WUBRG' order.
     """
+
+    # Get the colour string, and put it into a set to remove duplicate characters.
     color_string = get_color_string(text)
     char_set = set(color_string)
 
@@ -74,58 +83,20 @@ def get_color_alias(color_string: str) -> Optional[COLOR_ALIAS]:
     """
     Takes in a colour string and attempts to return a more
     common name for the colors. e.g. 'WUR' -> 'Jeskai'
+    An invalid string or the colorless colour identity returns None.
     :param color_string: The color string to convert.
     :return: A common name which represents the colours in color_string, or None.
     """
+
+    # Get the colour identity of the string, to use to map.
     color_identity = get_color_identity(color_string)
+
+    # If the incoming string was invalid or colorless, return None.
     if color_identity == '':
         return None
-    else:
-        return COLOR_TO_NAME[color_identity]
 
-
-def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -> list[COLOR_IDENTITY]:
-    """
-    Gets all possible permutations of WUBRG which contain the color_id.
-    Can limit the length of the permutations returned with max_len.
-    :param color_id: The colours to look for in the permutations.
-    :param max_len: The max length of the permutations. Default: 5
-    :param strict: Whether the subset should be strict. Default: False
-    :return: A list of color ids.
-    """
-    color_ids = list()
-    color_id = get_color_identity(color_id)
-    cis = set(color_id)
-    for c in COLOR_COMBINATIONS:
-        if len(c) <= max_len and cis <= set(c):
-            color_ids.append(c)
-
-    if strict:
-        color_ids.remove(color_id)
-
-    return color_ids
-
-
-def get_color_subsets(color_id: str, min_len: int = 0, strict: bool = False) -> list[COLOR_IDENTITY]:
-    """
-    Gets all possible permutations of WUBRG which are contained in color_id.
-    Can limit the length of the permutations returned with min_len.
-    :param color_id: The colours to look for in the permutations.
-    :param min_len: The min length of the permutations. Default: 0
-    :param strict: Whether the subset should be strict. Default: False
-    :return: A list of color ids.
-    """
-    color_ids = list()
-    color_id = get_color_identity(color_id)
-    cis = set(color_id)
-    for c in COLOR_COMBINATIONS:
-        if len(c) >= min_len and cis >= set(c):
-            color_ids.append(c)
-
-    if strict:
-        color_ids.remove(color_id)
-
-    return color_ids
+    # Otherwise, we have something to map. Return its alias.
+    return COLOR_TO_NAME[color_identity]
 
 
 def parse_cost(mana_cost: str) -> list[MANA_SYMBOL]:
@@ -156,3 +127,67 @@ def parse_cost(mana_cost: str) -> list[MANA_SYMBOL]:
 
     # If all checks passed, return the found values.
     return costs
+# endregion Color String Conversions
+
+
+# region Color Set Generation
+def _get_color_sets(eval_func: Callable[[COLOR_IDENTITY, COLOR_IDENTITY], bool],
+                    color_id: str, strict: bool = False) -> list[COLOR_IDENTITY]:
+    """
+    Gets all possible permutations of WUBRG which contain the color_id, based on a
+    provided evaluation function.
+    :param eval_func: The function to determine if an element belongs to the results set.
+    :param color_id: The colours to look for in the permutations.
+    :param strict: Whether the subset should be strict. Default: False
+    :return: A list of colour identities.
+    """
+
+    # Get the colour identity of the incoming string, to standardize the string.
+    color_id = get_color_identity(color_id)
+
+    # Initialize a return list, and for each colour combination add it to the list if it meets the requirements.
+    color_ids = list()
+    for to_add in COLOR_COMBINATIONS:
+        if eval_func(to_add, color_id):
+            color_ids.append(to_add)
+
+    # If the strict flag is set, remove the original colour id.
+    if strict:
+        color_ids.remove(color_id)
+
+    return color_ids
+
+
+def get_color_supersets(color_id: str, max_len: int = 5, strict: bool = False) -> list[COLOR_IDENTITY]:
+    """
+    Gets all possible permutations of WUBRG which contain the color_id.
+    Can limit the length of the permutations returned with max_len.
+    :param color_id: The colours to look for in the permutations.
+    :param max_len: The max length of the permutations. Default: 5
+    :param strict: Whether the subset should be strict. Default: False
+    :return: A list of colour identities.
+    """
+
+    # A function which determines if the color to_add belongs to the desired set.
+    def eval_func(to_add: COLOR_IDENTITY, base_id: COLOR_IDENTITY):
+        return len(to_add) <= max_len and set(base_id) <= set(to_add)
+
+    return _get_color_sets(eval_func, color_id, strict)
+
+
+def get_color_subsets(color_id: str, min_len: int = 0, strict: bool = False) -> list[COLOR_IDENTITY]:
+    """
+    Gets all possible permutations of WUBRG which are contained in color_id.
+    Can limit the length of the permutations returned with min_len.
+    :param color_id: The colours to look for in the permutations.
+    :param min_len: The min length of the permutations. Default: 0
+    :param strict: Whether the subset should be strict. Default: False
+    :return: A list of colour identities.
+    """
+
+    # A function which determines if the color to_add belongs to the desired set.
+    def eval_func(to_add: COLOR_IDENTITY, base_id: COLOR_IDENTITY):
+        return len(to_add) >= min_len and set(base_id) >= set(to_add)
+
+    return _get_color_sets(eval_func, color_id, strict)
+# endregion Color Set Generation

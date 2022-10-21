@@ -8,6 +8,13 @@ from WUBRG import *
 
 
 class TestWUBRGStringFuncs(unittest.TestCase):
+    def test_is_color_string(self):
+        self.assertEqual(is_color_string('RU'), True)
+        self.assertEqual(is_color_string('RRRUUU'), True)
+        self.assertEqual(is_color_string('rrruuu'), True)
+        self.assertEqual(is_color_string('Fish'), False)
+        self.assertEqual(is_color_string('Ox'), False)
+
     def test_get_color_string(self):
         s = 'RU'
         ret = get_color_string(s)
@@ -119,35 +126,36 @@ class TestWUBRGListFuncs(unittest.TestCase):
 
 class TestWUBRGSortFuncs(unittest.TestCase):
     def test_compare_wubrg(self):
-        self.assertEqual(color_compare_wubrg('', 'W'), -1)
-        self.assertEqual(color_compare_wubrg('W', 'U'), -1)
-        self.assertEqual(color_compare_wubrg('U', 'W'), 1)
-        self.assertEqual(color_compare_wubrg('U', ''), 1)
-        self.assertEqual(color_compare_wubrg('G', 'UB'), -1)
-        self.assertEqual(color_compare_wubrg('UB', 'WUB'), -1)
-        self.assertEqual(color_compare_wubrg('WUB', 'UBRG'), -1)
-        self.assertEqual(color_compare_wubrg('UBRG', 'WUBRG'), -1)
-        self.assertEqual(color_compare_wubrg('WUBRG', 'WUBRG'), 1)
-        self.assertRaises(KeyError, color_compare_wubrg, 'UW', 'BU')
+        self.assertEqual(index_dist_wubrg('', 'W'), -1)
+        self.assertEqual(index_dist_wubrg('W', 'U'), -1)
+        self.assertEqual(index_dist_wubrg('U', 'W'), 1)
+        self.assertEqual(index_dist_wubrg('U', ''), 2)
+        self.assertEqual(index_dist_wubrg('G', 'UB'), -5)
+        self.assertEqual(index_dist_wubrg('UB', 'WUB'), -6)
+        self.assertEqual(index_dist_wubrg('WUB', 'UBRG'), -14)
+        self.assertEqual(index_dist_wubrg('UBRG', 'WUBRG'), -1)
+        self.assertEqual(index_dist_wubrg('WUBRG', 'WUBRG'), 0)
+        self.assertRaises(KeyError, index_dist_wubrg, 'UW', 'BU')
 
     def test_get_color_group(self):
-        self.assertEqual(color_compare_group('W', 'UB'), -1)
-        self.assertEqual(color_compare_group('WU', 'UB'), -1)
-        self.assertEqual(color_compare_group('UB', 'WU'), 1)
-        self.assertEqual(color_compare_group('WB', 'UB'), 1)
-        self.assertEqual(color_compare_group('WB', 'WR'), -1)
-        self.assertEqual(color_compare_group('WUR', 'WBG'), -1)
-        self.assertEqual(color_compare_group('WUB', 'WUG'), -1)
-        self.assertEqual(color_compare_group('WUB', 'WUR'), 1)
-        self.assertEqual(color_compare_group('WUBR', 'UBRG'), -1)
-        self.assertEqual(color_compare_group('WUBRG', 'WUBRG'), 1)
-        self.assertRaises(KeyError, color_compare_group, 'UW', 'BU')
+        self.assertEqual(index_dist_pentad('', 'W'), -1)
+        self.assertEqual(index_dist_pentad('W', 'UB'), -6)
+        self.assertEqual(index_dist_pentad('WU', 'UB'), -1)
+        self.assertEqual(index_dist_pentad('UB', 'WU'), 1)
+        self.assertEqual(index_dist_pentad('WB', 'UB'), 4)
+        self.assertEqual(index_dist_pentad('WB', 'WR'), -4)
+        self.assertEqual(index_dist_pentad('WUR', 'WBG'), -4)
+        self.assertEqual(index_dist_pentad('WUB', 'WUG'), -4)
+        self.assertEqual(index_dist_pentad('WUB', 'WUR'), 5)
+        self.assertEqual(index_dist_pentad('WUBR', 'UBRG'), -4)
+        self.assertEqual(index_dist_pentad('WUBRG', 'WUBRG'), 0)
+        self.assertRaises(KeyError, index_dist_pentad, 'UW', 'BU')
 
 
 class TestWUBRGColorFilterFuncs(unittest.TestCase):
     def test_sorting(self):
         self.assertListEqual(order_by_wubrg(['U', 'W', 'G', 'B', 'R']), ['W', 'U', 'B', 'R', 'G'])
-        self.assertListEqual(order_by_groups(COLOR_PAIRS),
+        self.assertListEqual(order_by_pentad(COLOR_PAIRS),
                              GROUP_COLOR_COMBINATIONS[6:16])
 
     def test_exact(self):

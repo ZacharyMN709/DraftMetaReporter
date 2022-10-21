@@ -12,45 +12,45 @@ from WUBRG.funcs import get_color_identity, get_color_supersets, get_color_subse
 
 
 # region Color Sorting
-# Creating a custom sorting algorithm to order in WUBRG order
 # Maps colour groups to integers, so they can easily be used for sorting.
 WUBRG_COLOR_INDEXES: dict[COLOR_IDENTITY, int] = \
     {COLOR_COMBINATIONS[x]: x for x in range(0, len(COLOR_COMBINATIONS))}
-GROUP_COLOR_INDEXES: dict[COLOR_IDENTITY, int] = \
+PENTAD_COLOR_INDEXES: dict[COLOR_IDENTITY, int] = \
     {GROUP_COLOR_COMBINATIONS[x]: x for x in range(0, len(GROUP_COLOR_COMBINATIONS))}
 
 
-def color_compare_wubrg(col1: COLOR_IDENTITY, col2: COLOR_IDENTITY) -> int:
+def index_dist_wubrg(col1: COLOR_IDENTITY, col2: COLOR_IDENTITY) -> int:
+    """
+    Compares two color identities and determines which comes first in "WUBRG" order.
+    """
     # Convert the colors into numeric indexes
     col_idx1 = WUBRG_COLOR_INDEXES[col1]
     col_idx2 = WUBRG_COLOR_INDEXES[col2]
 
-    if col_idx1 < col_idx2:
-        return -1
-    else:
-        return 1
+    return col_idx1 - col_idx2
 
 
-# Creating a custom sorting algorithm to order in group order
-def color_compare_group(col1: COLOR_IDENTITY, col2: COLOR_IDENTITY) -> int:
+def index_dist_pentad(col1: COLOR_IDENTITY, col2: COLOR_IDENTITY) -> int:
+    """
+    Compares two color identities and determines which comes first in "Pentad" order.
+    """
     # Convert the colors into numeric indexes
-    col_idx1 = GROUP_COLOR_INDEXES[col1]
-    col_idx2 = GROUP_COLOR_INDEXES[col2]
+    col_idx1 = PENTAD_COLOR_INDEXES[col1]
+    col_idx2 = PENTAD_COLOR_INDEXES[col2]
 
-    if col_idx1 < col_idx2:
-        return -1
-    else:
-        return 1
+    return col_idx1 - col_idx2
 
 
-wubrg_compare_key: Callable = cmp_to_key(color_compare_wubrg)
-group_compare_key: Callable = cmp_to_key(color_compare_group)
+wubrg_compare_key: Callable = cmp_to_key(index_dist_wubrg)
+pentad_compare_key: Callable = cmp_to_key(index_dist_pentad)
 # endregion Color Sorting
 
 
-# region Color Set Filtering and Sorting
-# Color filtering enums.
+# region Colour Filtering
 class ColorSortStyles(Flag):
+    """
+    Different relations applicable to two colour identities.
+    """
     exact = auto()
     subset = auto()
     contains = auto()
@@ -60,11 +60,21 @@ class ColorSortStyles(Flag):
 
 
 def order_by_wubrg(color_list: list[COLOR_IDENTITY]) -> list[COLOR_IDENTITY]:
+    """
+    Take a list and orders it in WUBRG order.
+    :param color_list: The list to sort.
+    :return: The sorted list.
+    """
     return sorted(color_list, key=wubrg_compare_key)
 
 
-def order_by_groups(color_list: list[COLOR_IDENTITY]) -> list[COLOR_IDENTITY]:
-    return sorted(color_list, key=group_compare_key)
+def order_by_pentad(color_list: list[COLOR_IDENTITY]) -> list[COLOR_IDENTITY]:
+    """
+    Take a list and orders it in Pentad order.
+    :param color_list: The list to sort.
+    :return: The sorted list.
+    """
+    return sorted(color_list, key=pentad_compare_key)
 
 
 def exact(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
@@ -150,3 +160,4 @@ def color_filter(colors: COLOR_IDENTITY, style: ColorSortStyles) -> list[COLOR_I
 
     # Return a function, based on the provided filter value.
     return funcs[style](get_color_identity(colors))
+# endregion Colour Filtering

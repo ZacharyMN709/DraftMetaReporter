@@ -14,6 +14,7 @@ WUBRG: COLOR_IDENTITY = 'WUBRG'
 FAILSAFE: COLOR_IDENTITY = ''
 COLORS: set[COLOR] = set(WUBRG)
 
+# region Colour Lists
 # List the colour combinations in "WUBRG" order.
 COLOR_COMBINATIONS: list[COLOR_IDENTITY] = [
     '', 'W', 'U', 'B', 'R', 'G',
@@ -39,8 +40,9 @@ COLOR_SINGLES: list[COLOR_IDENTITY] = [colors for colors in COLOR_COMBINATIONS i
 COLOR_PAIRS: list[COLOR_IDENTITY] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 2]
 COLOR_TRIPLES: list[COLOR_IDENTITY] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 3]
 COLOR_QUADRUPLES: list[COLOR_IDENTITY] = [colors for colors in COLOR_COMBINATIONS if len(colors) == 4]
+# endregion Colour Lists
 
-# region Colour Count Dicts
+# region Base Alias Dicts
 # Dictionaries of the most common aliases for colour combinations, grouped by number of colours, in WUBRG order.
 ONE_NAME_TO_COLOR: dict[COLOR_ALIAS, COLOR_IDENTITY] = {
     'White': "W",
@@ -88,6 +90,7 @@ FOUR_NAME_TO_COLOR: dict[COLOR_ALIAS, COLOR_IDENTITY] = {
 }
 FOUR_COLOR_TO_NAME: dict[COLOR_IDENTITY, COLOR_ALIAS] = {v: k for k, v in FOUR_NAME_TO_COLOR.items()}
 
+# All previous dictionaries of aliases combined into one, with pairs for colourless and WUBRG added.
 NAME_TO_COLOR: dict[COLOR_ALIAS, COLOR_IDENTITY] = {
     '': '',
     **ONE_NAME_TO_COLOR,
@@ -108,4 +111,4 @@ COLOUR_GROUPINGS: dict[str, dict[COLOR_ALIAS, COLOR_IDENTITY]] = {
     'Five-Color': {'Five-Color': 'WUBRG'},
     'All Decks': NAME_TO_COLOR
 }
-# endregion Colour Count Dicts
+# endregion Base Alias Dicts
