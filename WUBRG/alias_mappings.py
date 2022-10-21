@@ -14,7 +14,7 @@ SINGLE_COLOR_MAP: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Blue': "U",
     'Black': "B",
     'Red': "R",
-    'Green': "G"
+    'Green': "G",
 }
 
 MONO_COLOR_MAP: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
@@ -23,6 +23,22 @@ MONO_COLOR_MAP: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Mono-Black': "B",
     'Mono-Red': "R",
     'Mono-Green': "G"
+}
+
+KINGDOM_COLOR_MAP: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
+    'Ardenvale': "W",
+    'Vantress': "U",
+    'Locthwain': "B",
+    'Embereth': "R",
+    'Garenbrig': "G",
+}
+
+MIRRODIN_COLOR_MAP: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
+    'Auriok': "W",
+    'Neurok': "U",
+    'Moriok': "B",
+    'Vulshok': "R",
+    'Sylvok': "G",
 }
 # endregion Single Color Groups
 
@@ -37,7 +53,7 @@ GUILDS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Golgari': "BG",
     'Simic': "UG",
     'Izzet': "UR",
-    'Boros': "WR"
+    'Boros': "WR",
 }
 
 ALLIED_GUILDS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
@@ -45,7 +61,15 @@ ALLIED_GUILDS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Dimir': "UB",
     'Rakdos': "BR",
     'Gruul': "RG",
-    'Selesnya': "WG"
+    'Selesnya': "WG",
+}
+
+DRAGONLORDS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
+    'Ojutai': "WU",
+    'Silumgar': "UB",
+    'Kolaghan': "BR",
+    'Atarka': "RG",
+    'Dromoka': "WG",
 }
 
 ENEMY_GUILDS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
@@ -53,7 +77,7 @@ ENEMY_GUILDS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Golgari': "BG",
     'Simic': "UG",
     'Izzet': "UR",
-    'Boros': "WR"
+    'Boros': "WR",
 }
 
 COLLEGES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
@@ -61,7 +85,7 @@ COLLEGES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Witherbloom': "BG",
     'Quandrix': "UG",
     'Prismari': "UR",
-    'Lorehold': "WR"
+    'Lorehold': "WR",
 }
 # endregion Two Colour Groups
 
@@ -71,7 +95,7 @@ WEDGES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Sultai': "UBG",
     'Mardu': "WBR",
     'Temur': "URG",
-    'Abzan': "WBG"
+    'Abzan': "WBG",
 }
 
 TRIOMES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
@@ -79,7 +103,23 @@ TRIOMES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Zagoth': "UBG",
     'Savai': "WBR",
     'Ketria': "URG",
-    'Indatha': "WBG"
+    'Indatha': "WBG",
+}
+
+CHAOS_DRAGONS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
+    'Numot': "WUR",
+    'Vorosh': "UBG",
+    'Oros': "WBR",
+    'Intet': "URG",
+    'Teneb': "WBG",
+}
+
+VOLVERS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
+    'Raka': "WUR",
+    'Ana': "UBG",
+    'Dega': "WBR",
+    'Ceta': "URG",
+    'Necra': "WBG",
 }
 
 SHARDS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
@@ -87,7 +127,7 @@ SHARDS: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Grixis': "UBR",
     'Jund': "BRG",
     'Naya': "WRG",
-    'Bant': "WUG"
+    'Bant': "WUG",
 }
 
 FAMILIES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
@@ -105,7 +145,15 @@ NEPHILLIM: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Witch': "WUBG",
     'Ink': "WURG",
     'Dune': "WBRG",
-    'Glint': "UBRG"
+    'Glint': "UBRG",
+}
+
+OFFICIAL_FOUR_COLOUR: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
+    'Artifice': "WUBR",
+    'Growth': "WUBG",
+    'Altruism': "WURG",
+    'Aggression': "WBRG",
+    'Chaos': "UBRG",
 }
 
 NON_COLOR: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
@@ -113,7 +161,7 @@ NON_COLOR: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     'Non-R': "WUBG",
     'Non-B': "WURG",
     'Non-U': "WBRG",
-    'Non-W': "UBRG"
+    'Non-W': "UBRG",
 }
 # endregion Four Colour Groups
 
@@ -122,7 +170,7 @@ ALL_COLOURS_ALIASES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
         'WUBRG': 'WUBRG',
         '5-Color': 'WUBRG',
         'Five-Color': 'WUBRG',
-        'All': 'WUBRG'
+        'All': 'WUBRG',
     }
 # endregion Five Colour Groups
 
@@ -131,7 +179,7 @@ ANY_COLOURS_ALIASES: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
         None: '',
         'None': '',
         'Any': '',
-        '': ''
+        '': '',
     }
 # endregion Any Colour Groups
 
@@ -148,7 +196,7 @@ ALIAS_MAP: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {
     **SHARDS,
     **FAMILIES,
     **NEPHILLIM,
-    **ALL_COLOURS_ALIASES
+    **ALL_COLOURS_ALIASES,
 }
 
 # Groupings of colour-combinations supported.
@@ -166,6 +214,6 @@ GROUPED_ALIAS_MAP: dict[str, dict[COLOR_ALIAS_ALL, COLOR_IDENTITY]] = {
     'Families': FAMILIES,
     'Nephillim': NEPHILLIM,
     'Non-': NON_COLOR,
-    'All': ALL_COLOURS_ALIASES
+    'All': ALL_COLOURS_ALIASES,
 }
 # endregion Master Alias Mappings

@@ -34,6 +34,7 @@ class TestWUBRGStringFuncs(unittest.TestCase):
         self.assertEqual(ret, 'UR')
 
     def test_get_color_identity_doubled(self):
+        # noinspection SpellCheckingInspection
         s = 'RUURURU'
         ret = get_color_identity(s)
         self.assertEqual(ret, 'UR')
@@ -150,10 +151,13 @@ class TestWUBRGColorFilterFuncs(unittest.TestCase):
                              GROUP_COLOR_COMBINATIONS[6:16])
 
     def test_exact(self):
-        self.assertListEqual(exact('WUBRG'), ['WUBRG'])
         self.assertListEqual(exact(''), [''])
         self.assertListEqual(exact('W'), ['W'])
         self.assertListEqual(exact('WRG'), ['WRG'])
+        self.assertListEqual(exact('WUBRG'), ['WUBRG'])
+        # Testing mis-ordered string.
+        # noinspection PyTypeChecker
+        # noinspection SpellCheckingInspection
         self.assertListEqual(exact('WUGRB'), ['WUBRG'])
 
     def test_subset(self):
@@ -161,6 +165,9 @@ class TestWUBRGColorFilterFuncs(unittest.TestCase):
         self.assertListEqual(subset('W'), ['', 'W'])
         self.assertListEqual(subset('WG'), ['', 'W', 'G', 'WG'])
         self.assertListEqual(subset('WUBRG'), COLOR_COMBINATIONS)
+        # Testing mis-ordered string.
+        # noinspection PyTypeChecker
+        # noinspection SpellCheckingInspection
         self.assertListEqual(subset('WUGRB'), COLOR_COMBINATIONS)
 
     def test_superset(self):
@@ -169,6 +176,9 @@ class TestWUBRGColorFilterFuncs(unittest.TestCase):
         self.assertListEqual(superset('WRG'), ['WRG', 'WURG', 'WBRG', 'WUBRG'])
         self.assertListEqual(superset(''), COLOR_COMBINATIONS)
         self.assertListEqual(superset('WUBRG'), ['WUBRG'])
+        # Testing mis-ordered string.
+        # noinspection PyTypeChecker
+        # noinspection SpellCheckingInspection
         self.assertListEqual(superset('WUGRB'), ['WUBRG'])
 
     def test_adjacent(self):
@@ -176,6 +186,9 @@ class TestWUBRGColorFilterFuncs(unittest.TestCase):
         self.assertListEqual(adjacent('W'), ['', 'W', 'WU', 'WB', 'WR', 'WG'])
         self.assertListEqual(adjacent('WRG'), ['WR', 'WG', 'RG', 'WRG', 'WURG', 'WBRG'])
         self.assertListEqual(adjacent('WUBRG'), ['WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'])
+        # Testing mis-ordered string.
+        # noinspection PyTypeChecker
+        # noinspection SpellCheckingInspection
         self.assertListEqual(adjacent('WUGRB'), ['WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'])
 
     def test_shares(self):
@@ -189,6 +202,9 @@ class TestWUBRGColorFilterFuncs(unittest.TestCase):
                                              'WRG', 'UBR', 'UBG', 'URG', 'BRG',
                                              'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'])
         self.assertListEqual(shares('WUBRG'), COLOR_COMBINATIONS[1:])
+        # Testing mis-ordered string.
+        # noinspection PyTypeChecker
+        # noinspection SpellCheckingInspection
         self.assertListEqual(shares('WUGRB'), COLOR_COMBINATIONS[1:])
 
     def test_color_filter(self):

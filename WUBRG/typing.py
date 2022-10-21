@@ -6,7 +6,6 @@ from typing import Literal, Union, Annotated
 
 COLOR = Literal['W', 'U', 'B', 'R', 'G']
 
-# TODO: Consider using this for stricter handling of color strings.
 COLOR_IDENTITY = Literal[
     '', 'W', 'U', 'B', 'R', 'G',
     'WU', 'WB', 'WR', 'WG', 'UB', 'UR', 'UG', 'BR', 'BG', 'RG',
@@ -32,10 +31,16 @@ COLOR_ALIAS = Literal[
 COLOR_ALIAS_EXTENDED = Literal[
     None, 'None',
     'Mono-White', 'Mono-Blue', 'Mono-Black', 'Mono-Red', 'Mono-Green',
+    'Ardenvale', 'Vantress', 'Locthwain', 'Embereth', 'Garenbrig',
+    'Auriok', 'Neurok', 'Moriok', 'Vulshok', 'Sylvok',
+    'Ojutai', 'Silumgar', 'Kolaghan', 'Atarka', 'Dromoka',
     'Silverquill', 'Witherbloom', 'Quandrix', 'Prismari', 'Lorehold',
     'Raugrin', 'Zagoth', 'Savai', 'Ketria', 'Indatha',
+    'Numot', 'Vorosh', 'Oros', 'Intet', 'Teneb',
+    'Raka', 'Ana', 'Dega', 'Ceta', 'Necra',
     'Obscura', 'Maestros', 'Riveteers', 'Cabaretti', 'Brokers',
     'Yore', 'Witch', 'Ink', 'Dune', 'Glint',
+    'Artifice', 'Growth', 'Altruism', 'Aggression', 'Chaos',
     '5-Color', 'Five-Color',
 ]
 
