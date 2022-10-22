@@ -99,4 +99,3 @@ class CentralManager:  # pragma: no cover
     @property
     def NEO(self) -> SetManager:
         return self.DATA['NEO']
-

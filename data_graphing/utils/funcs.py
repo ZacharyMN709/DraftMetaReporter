@@ -18,6 +18,7 @@ def _prettify_frame(frame: DataFrame) -> Styler:  # pragma: no cover
     return _prettify_style(s)
 
 
+# noinspection SpellCheckingInspection
 @prettify_frame.register(Styler)
 def _prettify_style(styler: Styler) -> Styler:  # pragma: no cover
     styler = styler.format(precision=2)

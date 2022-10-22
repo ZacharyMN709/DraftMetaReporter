@@ -1,9 +1,11 @@
+import logging
 import os
 import unittest
 
 from Utilities import TRIES, FAIL_DELAY, SUCCESS_DELAY
 from Utilities import load_json_file, save_json_file
 from Utilities import Fetcher
+from Utilities import auto_logging
 
 
 class TestFetcher(unittest.TestCase):
@@ -30,10 +32,14 @@ class TestFetcher(unittest.TestCase):
         self.assertIsNone(ret)
 
 
-# TODO: Revamp logger, then implement tests.
-class TestLogger(unittest.TestCase):
+class TestLogging(unittest.TestCase):
     def test_logger(self):
-        pass
+        auto_logging.addLoggingLevel('TEST', 100, 'test')
+        self.assertEqual(logging.TEST, 100)
+
+        auto_logging.auto_log()
+        self.assertEqual(logging.VERBOSE, 15)
+        self.assertEqual(logging.SPARSE, 25)
 
 
 class TestFuncs(unittest.TestCase):

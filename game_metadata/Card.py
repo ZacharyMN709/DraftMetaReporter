@@ -53,7 +53,7 @@ class CardFace:
 
     def handle_types(self, type_line: str) -> Optional[NoReturn]:
         """
-        Takes in the typeline as a string, and parses it into its supertypes, types and subtypes.
+        Takes in the type-line as a string, and parses it into its supertypes, types and subtypes.
         The values are assigned to the properties of the object rather than returned.
         :param type_line:
         """

@@ -65,7 +65,7 @@ def cmc_filter(cmc: int, op: OPERANDS = "==") \
 
 # region Color Filtering
 @functools.singledispatch
-def _color_filter(colors: Union[str, list[str], set[str]], col_name: str) -> Callable[[pd.DataFrame], pd.Series]:
+def _color_filter(colors: Union[str, list[str], set[str]], _: str) -> Callable[[pd.DataFrame], pd.Series]:
     # By default, if we don't have a specific way of handling a parameter, raise an error.
     raise TypeError(f"Cannot use type '{type(colors)}' for a color filter. \n"
                     f"Please use one of 'str', 'list[str]' or 'set[str]'.")

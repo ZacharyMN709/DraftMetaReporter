@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
+import matplotlib.dates as plot_dates
 import dataframe_image as dfi
 
 from data_fetching import FramedData
@@ -56,15 +56,15 @@ class PlotterHelper:  # pragma: no cover
         plt.figtext(x, y, settings.ACCREDIT_STR, **settings.ACCREDIT_KWARGS)
 
     def desc_note(self, colors=None, roll=1, *, y=0.95, x=0.5):
-        col_filt = f"Color Filter: {colors}"
-        rol_filt = f"Rolling Average: {roll} Days"
+        color_filter = f"Color Filter: {colors}"
+        roll_filter = f"Rolling Average: {roll} Days"
 
         if colors and roll > 1:
-            txt = f"{rol_filt}\n{col_filt}"
+            txt = f"{roll_filter}\n{color_filter}"
         elif colors:
-            txt = f"\n{col_filt}"
+            txt = f"\n{color_filter}"
         elif roll > 1:
-            txt = f"\n{rol_filt}"
+            txt = f"\n{roll_filter}"
         else:
             txt = ""
 
@@ -83,24 +83,27 @@ class PlotterHelper:  # pragma: no cover
             self.set_x_axis_daily(ax)
         for col in col_list:
             ax.plot(data.index, data[[col]], label=col, color=self.COLORS.get_color(col))
-        if inv_y: ax.invert_yaxis()
-        if inv_x: ax.invert_xaxis()
+        if inv_y:
+            ax.invert_yaxis()
+        if inv_x:
+            ax.invert_xaxis()
         ax.legend()
 
     def set_x_axis_weekly(self, ax):
-        weeks = mdates.DayLocator(interval=7)
+        weeks = plot_dates.DayLocator(interval=7)
         ax.xaxis.set_major_locator(weeks)
-        days = mdates.DayLocator(interval=1)
+        days = plot_dates.DayLocator(interval=1)
         ax.xaxis.set_minor_locator(days)
 
     def set_x_axis_daily(self, ax):
-        two_days = mdates.DayLocator(interval=2)
+        two_days = plot_dates.DayLocator(interval=2)
         ax.xaxis.set_major_locator(two_days)
-        days = mdates.DayLocator(interval=1)
+        days = plot_dates.DayLocator(interval=1)
         ax.xaxis.set_minor_locator(days)
 
     def save_fig(self, filename, sub_dir=None, dpi=None):
-        if dpi is None: dpi = settings.DPI
+        if dpi is None:
+            dpi = settings.DPI
         self.FIG.savefig(self.get_file_path(filename.replace(' ', '_'), sub_dir), dpi=dpi)
 
     def frame_to_png(self, frame, file_name):
