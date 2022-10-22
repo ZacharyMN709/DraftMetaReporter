@@ -28,10 +28,10 @@ class CallScryfall:
     @classmethod
     @trap_error
     def get_set_cards(cls, set_code: str) -> Optional[list[dict[str, Union[str, dict[str, str], list[str]]]]]:
-        cards = []
+        cards = list()
         next_page = True
         url = f'{cls._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
-              f'&order=set&page=1&q=e%3A{set_code}&unique=cards'
+              f'&order=set&page=1&q=e%3A{set_code}+is%3Abooster&unique=cards'
         logging.info(f"Fetching card data for set: {set_code}")
 
         while next_page:
@@ -45,6 +45,30 @@ class CallScryfall:
                 next_page = False
 
         return cards
+
+    @classmethod
+    @trap_error
+    def get_set_review_order(cls, set_code: str) -> Optional[list[str]]:
+        card_names = list()
+        next_page = True
+        url = f'{cls._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
+              f'&order=review&page=1&q=e%3A{set_code}+is%3Abooster&unique=cards'
+        logging.info(f"Fetching card data for set: {set_code}")
+
+        while next_page:
+            response: dict[str, object] = cls.FETCHER.fetch(url)
+            for card_obj in response['data']:
+                if card_obj['object'] == 'card':
+                    card_names.append(card_obj['name'])
+
+            if response['has_more']:
+                url = response['next_page']
+                logging.debug(f"Fetching next page for set: {set_code}")
+                logging.debug(f"URL: {url}")
+            else:
+                next_page = False
+
+        return card_names
 
     @classmethod
     @trap_error
