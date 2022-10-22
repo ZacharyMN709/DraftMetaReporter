@@ -1,16 +1,19 @@
 """
-Tests code from the WUBRG module.
+Tests code from the wubrg module.
 """
 
 import unittest
 
-from WUBRG import *
+from wubrg import *
+from wubrg import FAILSAFE, index_dist_wubrg, index_dist_pentad
 
 
 class TestWUBRGStringFuncs(unittest.TestCase):
     def test_is_color_string(self):
         self.assertEqual(is_color_string('RU'), True)
+        # noinspection SpellCheckingInspection
         self.assertEqual(is_color_string('RRRUUU'), True)
+        # noinspection SpellCheckingInspection
         self.assertEqual(is_color_string('rrruuu'), True)
         self.assertEqual(is_color_string('Fish'), False)
         self.assertEqual(is_color_string('Ox'), False)

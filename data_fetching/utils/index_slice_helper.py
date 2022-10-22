@@ -2,7 +2,7 @@ import functools
 from typing import Union, NoReturn
 from datetime import date, datetime
 
-from WUBRG import get_color_identity
+from wubrg import get_color_identity
 
 
 # region Name Slice

@@ -6,9 +6,9 @@ from enum import Flag, auto
 from functools import cmp_to_key
 from typing import Callable
 
-from WUBRG.typing import COLOR_IDENTITY
-from WUBRG.consts import COLOR_COMBINATIONS, GROUP_COLOR_COMBINATIONS
-from WUBRG.funcs import get_color_identity, get_color_supersets, get_color_subsets
+from wubrg.typing import COLOR_IDENTITY
+from wubrg.consts import COLOR_COMBINATIONS, GROUP_COLOR_COMBINATIONS
+from wubrg.funcs import get_color_identity, get_color_supersets, get_color_subsets
 
 
 # region Color Sorting

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import NoReturn, Optional
 
-from WUBRG import get_color_identity
+from wubrg import get_color_identity
 
 from game_metadata.utils.consts import RARITY_ALIASES, LAYOUT_DICT, CardLayouts, CARD_INFO
 from game_metadata.utils import SUPERTYPES, TYPES, SUBTYPE_DICT

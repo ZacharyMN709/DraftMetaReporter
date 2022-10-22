@@ -1,6 +1,6 @@
 import pandas as pd
 
-from WUBRG import ALIAS_MAP
+from wubrg import ALIAS_MAP
 
 from data_fetching.utils.consts import STAT_NAME_DICT, META_COLS_ALIAS_DICT, \
     STAT_COL_NAMES, SHARED_COL_NAMES, CARD_INFO_COL_NAMES, COLOR_COUNT_MAP

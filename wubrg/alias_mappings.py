@@ -6,7 +6,8 @@ As well, the key-value pairs in these dictionaries are all in 'Pentad' order,
 for iterating purposes.
 """
 
-from WUBRG.typing import COLOR_IDENTITY, COLOR_ALIAS_ALL
+from wubrg.typing import COLOR_IDENTITY, COLOR_ALIAS_ALL
+
 
 # region Single Color Groups
 SINGLE_COLOR_MAP: dict[COLOR_ALIAS_ALL, COLOR_IDENTITY] = {

@@ -4,7 +4,7 @@ from os import path
 
 from pandas import DataFrame
 
-from WUBRG import subset
+from wubrg import subset
 from game_metadata import FormatMetadata
 from data_fetching.utils.date_helper import utc_today, get_prev_17lands_update_time, get_next_17lands_update_time
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame

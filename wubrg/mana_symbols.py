@@ -3,7 +3,7 @@ Lists of mana/cost symbols in their formatted ("{X}") and regular ("X") forms.
 More info: https://api.scryfall.com/symbology
 """
 
-from WUBRG.typing import FORMATTED_MANA_SYMBOL, MANA_SYMBOL
+from wubrg.typing import FORMATTED_MANA_SYMBOL, MANA_SYMBOL
 
 
 # region Formatted Mana Symbols

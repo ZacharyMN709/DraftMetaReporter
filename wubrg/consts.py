@@ -7,7 +7,8 @@ As well, the key-value pairs in these dictionaries are all in 'WUBRG' order,
 for iterating purposes.
 """
 
-from WUBRG.typing import COLOR, COLOR_IDENTITY, COLOR_ALIAS
+from wubrg.typing import COLOR, COLOR_IDENTITY, COLOR_ALIAS
+
 
 # Colour Mapping
 WUBRG: COLOR_IDENTITY = 'WUBRG'

@@ -6,14 +6,14 @@ from typing import Optional, Callable
 import re
 import logging
 
-from WUBRG.typing import COLOR_STRING, COLOR_IDENTITY, COLOR_ALIAS, MANA_SYMBOL
-from WUBRG.consts import WUBRG, COLOR_TO_NAME, COLOR_COMBINATIONS
-from WUBRG.alias_mappings import ALIAS_MAP
-from WUBRG.mana_symbols import MANA_SYMBOLS
+from wubrg.typing import COLOR_STRING, COLOR_IDENTITY, COLOR_ALIAS, MANA_SYMBOL
+from wubrg.consts import WUBRG, COLOR_TO_NAME, COLOR_COMBINATIONS
+from wubrg.alias_mappings import ALIAS_MAP
+from wubrg.mana_symbols import MANA_SYMBOLS
 
 
-mana_cost_re = re.compile(r'{(.*?)}')
-mana_symbol_scrub = re.compile('[0-9{}]')
+_mana_cost_re = re.compile(r'{(.*?)}')
+_mana_symbol_scrub = re.compile('[0-9{}]')
 
 
 # region Color String Conversions
@@ -45,7 +45,7 @@ def get_color_string(text: Optional[str]) -> COLOR_STRING:
         return ALIAS_MAP[s]
 
     # Replace '{', '}' or any numeric.
-    ret = mana_symbol_scrub.sub('', s)
+    ret = _mana_symbol_scrub.sub('', s)
 
     # If the incoming string was a colorless mana-cost, it will be empty.
     if ret == '':
@@ -116,7 +116,7 @@ def parse_cost(mana_cost: str) -> list[MANA_SYMBOL]:
         return default
 
     # Find anything like {.} in the string,
-    costs = mana_cost_re.findall(mana_cost)
+    costs = _mana_cost_re.findall(mana_cost)
     # And for the contents of each element,
     for cost in costs:
         # Make sure it is a valid mana symbol.
