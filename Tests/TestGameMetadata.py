@@ -1,7 +1,7 @@
 import unittest
 from datetime import date
 
-import WUBRG
+from wubrg import COLOR_COMBINATIONS
 from game_metadata import CallScryfall, Card, CardManager, SetMetadata, FormatMetadata
 from game_metadata.CallScryfall import trap_error
 from game_metadata.utils.consts import CardLayouts
@@ -274,16 +274,16 @@ class TestSetMetadata(unittest.TestCase):
     def test_sort_compare(self):
         meta = SetMetadata.get_metadata('NEO')
 
-        tup_1 = (WUBRG.COLOR_COMBINATIONS[0], meta.CARD_LIST[0].NAME)
-        tup_2 = (WUBRG.COLOR_COMBINATIONS[-1], meta.CARD_LIST[-1].NAME)
-        tup_3 = (WUBRG.COLOR_COMBINATIONS[0], meta.CARD_LIST[2].NAME)
+        tup_1 = (COLOR_COMBINATIONS[0], meta.CARD_LIST[0].NAME)
+        tup_2 = (COLOR_COMBINATIONS[-1], meta.CARD_LIST[-1].NAME)
+        tup_3 = (COLOR_COMBINATIONS[0], meta.CARD_LIST[2].NAME)
 
-        self.assertEqual(meta._frame_compare(tup_1, tup_2), -1)
-        self.assertEqual(meta._frame_compare(tup_2, tup_1), 1)
+        self.assertEqual(meta._frame_compare(tup_1, tup_2), -31)
+        self.assertEqual(meta._frame_compare(tup_2, tup_1), 31)
         self.assertEqual(meta._frame_compare(tup_1, tup_3), -1)
         self.assertEqual(meta._frame_compare(tup_3, tup_1), 1)
-        self.assertEqual(meta._frame_compare(tup_3, tup_2), -1)
-        self.assertEqual(meta._frame_compare(tup_2, tup_3), 1)
+        self.assertEqual(meta._frame_compare(tup_3, tup_2), -31)
+        self.assertEqual(meta._frame_compare(tup_2, tup_3), 31)
 
 
 class TestFormatMetadata(unittest.TestCase):

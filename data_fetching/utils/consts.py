@@ -1,5 +1,40 @@
 from typing import Union
 
+
+# region Colour Count Mappings
+# TODO: Tidy this up a little.
+# Used for graphing
+COLOR_COUNT_MAP: dict[str, int] = {
+    "Mono-Color": 1,
+    "Two-Color": 2,
+    "Three-Color": 3,
+    "Four-Color": 4,
+    "Five-Color": 5,
+    "All Decks": None
+}
+
+COLOR_COUNT_SHORTHAND_MAP: dict[str, str] = {
+    "All Decks": "ALL",
+    "Mono-Color": "1C",
+    "Two-Color": "2C",
+    "Three-Color": "3C",
+    "Four-Color": "4C",
+    "Five-Color": "5C"
+}
+
+COLOR_COUNT_SHORTHAND: list[str] = [COLOR_COUNT_SHORTHAND_MAP[key] for key in COLOR_COUNT_SHORTHAND_MAP]
+
+COLOR_COUNT_REVERSE_MAP: dict[int, str] = {
+    0: "All Decks",
+    1: "Mono-Color",
+    2: "Two-Color",
+    3: "Three-Color",
+    4: "Four-Color",
+    5: "Five-Color",
+    None: "All Decks"
+}
+# endregion Colour Count Mappings
+
 # Typing Consts
 CARD_DATA = list[dict[str, Union[str, int, float]]]
 META_DATA = list[dict[str, Union[str, int, bool]]]

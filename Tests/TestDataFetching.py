@@ -2,10 +2,9 @@ import unittest
 from datetime import date, datetime
 from os import path
 
-import pandas as pd
 from pandas import DataFrame
 
-import WUBRG.funcs
+from wubrg import subset
 from game_metadata import FormatMetadata
 from data_fetching.utils.date_helper import utc_today, get_prev_17lands_update_time, get_next_17lands_update_time
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame
@@ -282,7 +281,7 @@ class TestUtils(unittest.TestCase):
         filter_1 = card_color_filter('WR')
         filter_2 = card_color_filter(['', 'W', 'R', 'WR'])
         filter_3 = card_color_filter({'', 'W', 'R', 'WR'})
-        filter_4 = card_color_filter(WUBRG.funcs.subset('WR'))
+        filter_4 = card_color_filter(subset('WR'))
         num = 110
         self.assertRaises(TypeError, card_color_filter, None)
         self.assertEqual(filter_1(frame).sum(), 2)
@@ -294,7 +293,7 @@ class TestUtils(unittest.TestCase):
         filter_1 = cast_color_filter('WR')
         filter_2 = cast_color_filter(['', 'W', 'R', 'WR'])
         filter_3 = cast_color_filter({'', 'W', 'R', 'WR'})
-        filter_4 = cast_color_filter(WUBRG.funcs.subset('WR'))
+        filter_4 = cast_color_filter(subset('WR'))
         num = 119
         self.assertRaises(TypeError, cast_color_filter, None)
         self.assertEqual(filter_1(frame).sum(), 1)
