@@ -1,7 +1,7 @@
 import functools
 from typing import Callable, Literal, Union, NoReturn
 import pandas as pd
-from WUBRG import get_color_identity
+from wubrg import get_color_identity
 
 
 # region Rarity Filtering

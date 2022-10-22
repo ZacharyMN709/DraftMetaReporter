@@ -1,13 +1,24 @@
+"""
+Tests code from the wubrg module.
+"""
+
 import unittest
 
-import WUBRG.funcs
-from WUBRG.funcs import get_color_string, get_color_identity, get_color_alias, list_color_dict, \
-    get_color_supersets, get_color_subsets, parse_cost, color_compare_wubrg, color_compare_group
-from WUBRG.consts import FAILSAFE, COLOR_COMBINATIONS, ALLIED, ENEMY, GUILDS
-from WUBRG.consts import ColorSortStyles as Css
+from wubrg import *
+from wubrg import FAILSAFE, GROUP_COLOR_COMBINATIONS, index_dist_wubrg, index_dist_pentad, \
+    order_by_wubrg, order_by_pentad, exact, superset, subset, adjacent, shares
 
 
 class TestWUBRGStringFuncs(unittest.TestCase):
+    def test_is_color_string(self):
+        self.assertEqual(is_color_string('RU'), True)
+        # noinspection SpellCheckingInspection
+        self.assertEqual(is_color_string('RRRUUU'), True)
+        # noinspection SpellCheckingInspection
+        self.assertEqual(is_color_string('rrruuu'), True)
+        self.assertEqual(is_color_string('Fish'), False)
+        self.assertEqual(is_color_string('Ox'), False)
+
     def test_get_color_string(self):
         s = 'RU'
         ret = get_color_string(s)
@@ -34,6 +45,7 @@ class TestWUBRGStringFuncs(unittest.TestCase):
         self.assertEqual(ret, 'UR')
 
     def test_get_color_identity_doubled(self):
+        # noinspection SpellCheckingInspection
         s = 'RUURURU'
         ret = get_color_identity(s)
         self.assertEqual(ret, 'UR')
@@ -115,99 +127,102 @@ class TestWUBRGListFuncs(unittest.TestCase):
         ret = parse_cost(s)
         self.assertListEqual(ret, ['A'])
 
-    def test_list_color_dict(self):
-        ret = list_color_dict(ALLIED)
-        self.assertListEqual(ret, ["WU", "UB", "BR", "RG", "WG"])
-
-        ret = list_color_dict(ENEMY)
-        self.assertListEqual(ret, ["WB", "BG", "UG", "UR", "WR"])
-
-        ret = list_color_dict(GUILDS)
-        self.assertListEqual(ret, ["WU", "UB", "BR", "RG", "WG", "WB", "BG", "UG",  "UR", "WR"])
-
 
 class TestWUBRGSortFuncs(unittest.TestCase):
     def test_compare_wubrg(self):
-        self.assertGreaterEqual(color_compare_wubrg('', 'W'), -1)
-        self.assertEqual(color_compare_wubrg('W', 'W'), 0)
-        self.assertLessEqual(color_compare_wubrg('W', 'U'), -1)
-        self.assertGreaterEqual(color_compare_wubrg('U', 'W'), 1)
-        self.assertGreaterEqual(color_compare_wubrg('U', ''), 1)
-        self.assertLessEqual(color_compare_wubrg('G', 'UB'), -1)
-        self.assertLessEqual(color_compare_wubrg('UB', 'WUB'), -1)
-        self.assertLessEqual(color_compare_wubrg('WUB', 'UBRG'), -1)
-        self.assertLessEqual(color_compare_wubrg('UBRG', 'WUBRG'), -1)
-        self.assertEqual(color_compare_wubrg('WUBRG', 'WUBRG'), 0)
-        self.assertRaises(KeyError, color_compare_wubrg, 'UW', 'BU')
+        self.assertEqual(index_dist_wubrg('', 'W'), -1)
+        self.assertEqual(index_dist_wubrg('W', 'U'), -1)
+        self.assertEqual(index_dist_wubrg('U', 'W'), 1)
+        self.assertEqual(index_dist_wubrg('U', ''), 2)
+        self.assertEqual(index_dist_wubrg('G', 'UB'), -5)
+        self.assertEqual(index_dist_wubrg('UB', 'WUB'), -6)
+        self.assertEqual(index_dist_wubrg('WUB', 'UBRG'), -14)
+        self.assertEqual(index_dist_wubrg('UBRG', 'WUBRG'), -1)
+        self.assertEqual(index_dist_wubrg('WUBRG', 'WUBRG'), 0)
+        self.assertRaises(KeyError, index_dist_wubrg, 'UW', 'BU')
 
     def test_get_color_group(self):
-        self.assertLessEqual(color_compare_group('W', 'UB'), -1)
-        self.assertEqual(color_compare_group('W', 'W'), 0)
-        self.assertLessEqual(color_compare_group('WU', 'UB'), -1)
-        self.assertGreaterEqual(color_compare_group('UB', 'WU'), 1)
-        self.assertGreaterEqual(color_compare_group('WB', 'UB'), 1)
-        self.assertLessEqual(color_compare_group('WB', 'WR'), -1)
-        self.assertLessEqual(color_compare_group('WUR', 'WBG'), -1)
-        self.assertLessEqual(color_compare_group('WUB', 'WUG'), -1)
-        self.assertGreaterEqual(color_compare_group('WUB', 'WUR'), 1)
-        self.assertLessEqual(color_compare_group('WUBR', 'UBRG'), -1)
-        self.assertEqual(color_compare_group('WUBRG', 'WUBRG'), 0)
-        self.assertRaises(KeyError, color_compare_group, 'UW', 'BU')
+        self.assertEqual(index_dist_pentad('', 'W'), -1)
+        self.assertEqual(index_dist_pentad('W', 'UB'), -6)
+        self.assertEqual(index_dist_pentad('WU', 'UB'), -1)
+        self.assertEqual(index_dist_pentad('UB', 'WU'), 1)
+        self.assertEqual(index_dist_pentad('WB', 'UB'), 4)
+        self.assertEqual(index_dist_pentad('WB', 'WR'), -4)
+        self.assertEqual(index_dist_pentad('WUR', 'WBG'), -4)
+        self.assertEqual(index_dist_pentad('WUB', 'WUG'), -4)
+        self.assertEqual(index_dist_pentad('WUB', 'WUR'), 5)
+        self.assertEqual(index_dist_pentad('WUBR', 'UBRG'), -4)
+        self.assertEqual(index_dist_pentad('WUBRG', 'WUBRG'), 0)
+        self.assertRaises(KeyError, index_dist_pentad, 'UW', 'BU')
 
 
 class TestWUBRGColorFilterFuncs(unittest.TestCase):
     def test_sorting(self):
-        self.assertListEqual(WUBRG.funcs.order_by_wubrg(['U', 'W', 'G', 'B', 'R']), ['W', 'U', 'B', 'R', 'G'])
-        self.assertListEqual(WUBRG.funcs.order_by_groups(WUBRG.consts.COLOR_PAIRS),
-                             WUBRG.consts.GROUP_COLOR_COMBINATIONS[6:16])
+        self.assertListEqual(order_by_wubrg(['U', 'W', 'G', 'B', 'R']), ['W', 'U', 'B', 'R', 'G'])
+        self.assertListEqual(order_by_pentad(COLOR_PAIRS), GROUP_COLOR_COMBINATIONS[6:16])
 
     def test_exact(self):
-        self.assertListEqual(WUBRG.funcs.exact('WUBRG'), ['WUBRG'])
-        self.assertListEqual(WUBRG.funcs.exact(''), [''])
-        self.assertListEqual(WUBRG.funcs.exact('W'), ['W'])
-        self.assertListEqual(WUBRG.funcs.exact('WRG'), ['WRG'])
-        self.assertListEqual(WUBRG.funcs.exact('WUGRB'), ['WUBRG'])
+        self.assertListEqual(exact(''), [''])
+        self.assertListEqual(exact('W'), ['W'])
+        self.assertListEqual(exact('WRG'), ['WRG'])
+        self.assertListEqual(exact('WUBRG'), ['WUBRG'])
+        # Testing mis-ordered string.
+        # noinspection PyTypeChecker
+        # noinspection SpellCheckingInspection
+        self.assertListEqual(exact('WUGRB'), ['WUBRG'])
 
     def test_subset(self):
-        self.assertListEqual(WUBRG.funcs.subset(''), [''])
-        self.assertListEqual(WUBRG.funcs.subset('W'), ['', 'W'])
-        self.assertListEqual(WUBRG.funcs.subset('WG'), ['', 'W', 'G', 'WG'])
-        self.assertListEqual(WUBRG.funcs.subset('WUBRG'), WUBRG.consts.COLOR_COMBINATIONS)
-        self.assertListEqual(WUBRG.funcs.subset('WUGRB'), WUBRG.consts.COLOR_COMBINATIONS)
+        self.assertListEqual(subset(''), [''])
+        self.assertListEqual(subset('W'), ['', 'W'])
+        self.assertListEqual(subset('WG'), ['', 'W', 'G', 'WG'])
+        self.assertListEqual(subset('WUBRG'), COLOR_COMBINATIONS)
+        # Testing mis-ordered string.
+        # noinspection PyTypeChecker
+        # noinspection SpellCheckingInspection
+        self.assertListEqual(subset('WUGRB'), COLOR_COMBINATIONS)
 
     def test_superset(self):
-        self.assertListEqual(WUBRG.funcs.superset('W'), ['W', 'WU', 'WB', 'WR', 'WG', 'WUB', 'WUR', 'WUG', 'WBR', 'WBG',
-                                                         'WRG', 'WUBR', 'WUBG', 'WURG', 'WBRG', 'WUBRG'])
-        self.assertListEqual(WUBRG.funcs.superset('WRG'), ['WRG', 'WURG', 'WBRG', 'WUBRG'])
-        self.assertListEqual(WUBRG.funcs.superset(''), WUBRG.consts.COLOR_COMBINATIONS)
-        self.assertListEqual(WUBRG.funcs.superset('WUBRG'), ['WUBRG'])
-        self.assertListEqual(WUBRG.funcs.superset('WUGRB'), ['WUBRG'])
+        self.assertListEqual(superset('W'), ['W', 'WU', 'WB', 'WR', 'WG', 'WUB', 'WUR', 'WUG', 'WBR', 'WBG',
+                                             'WRG', 'WUBR', 'WUBG', 'WURG', 'WBRG', 'WUBRG'])
+        self.assertListEqual(superset('WRG'), ['WRG', 'WURG', 'WBRG', 'WUBRG'])
+        self.assertListEqual(superset(''), COLOR_COMBINATIONS)
+        self.assertListEqual(superset('WUBRG'), ['WUBRG'])
+        # Testing mis-ordered string.
+        # noinspection PyTypeChecker
+        # noinspection SpellCheckingInspection
+        self.assertListEqual(superset('WUGRB'), ['WUBRG'])
 
     def test_adjacent(self):
-        self.assertListEqual(WUBRG.funcs.adjacent(''), ['', 'W', 'U', 'B', 'R', 'G'])
-        self.assertListEqual(WUBRG.funcs.adjacent('W'), ['', 'W', 'WU', 'WB', 'WR', 'WG'])
-        self.assertListEqual(WUBRG.funcs.adjacent('WRG'), ['WR', 'WG', 'RG', 'WRG', 'WURG', 'WBRG'])
-        self.assertListEqual(WUBRG.funcs.adjacent('WUBRG'), ['WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'])
-        self.assertListEqual(WUBRG.funcs.adjacent('WUGRB'), ['WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'])
+        self.assertListEqual(adjacent(''), ['', 'W', 'U', 'B', 'R', 'G'])
+        self.assertListEqual(adjacent('W'), ['', 'W', 'WU', 'WB', 'WR', 'WG'])
+        self.assertListEqual(adjacent('WRG'), ['WR', 'WG', 'RG', 'WRG', 'WURG', 'WBRG'])
+        self.assertListEqual(adjacent('WUBRG'), ['WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'])
+        # Testing mis-ordered string.
+        # noinspection PyTypeChecker
+        # noinspection SpellCheckingInspection
+        self.assertListEqual(adjacent('WUGRB'), ['WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'])
 
     def test_shares(self):
-        self.assertListEqual(WUBRG.funcs.shares(''), [''])
-        self.assertListEqual(WUBRG.funcs.shares('W'), ['W', 'WU', 'WB', 'WR', 'WG',
-                                                       'WUB', 'WUR', 'WUG', 'WBR', 'WBG', 'WRG',
-                                                       'WUBR', 'WUBG', 'WURG', 'WBRG', 'WUBRG'])
-        self.assertListEqual(WUBRG.funcs.shares('WRG'), ['W', 'R', 'G',
-                                                         'WU', 'WB', 'WR', 'WG', 'UR', 'UG', 'BR', 'BG', 'RG',
-                                                         'WUB', 'WUR', 'WUG', 'WBR', 'WBG',
-                                                         'WRG', 'UBR', 'UBG', 'URG', 'BRG',
-                                                         'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'])
-        self.assertListEqual(WUBRG.funcs.shares('WUBRG'), WUBRG.consts.COLOR_COMBINATIONS[1:])
-        self.assertListEqual(WUBRG.funcs.shares('WUGRB'), WUBRG.consts.COLOR_COMBINATIONS[1:])
+        self.assertListEqual(shares(''), [''])
+        self.assertListEqual(shares('W'), ['W', 'WU', 'WB', 'WR', 'WG',
+                                           'WUB', 'WUR', 'WUG', 'WBR', 'WBG', 'WRG',
+                                           'WUBR', 'WUBG', 'WURG', 'WBRG', 'WUBRG'])
+        self.assertListEqual(shares('WRG'), ['W', 'R', 'G',
+                                             'WU', 'WB', 'WR', 'WG', 'UR', 'UG', 'BR', 'BG', 'RG',
+                                             'WUB', 'WUR', 'WUG', 'WBR', 'WBG',
+                                             'WRG', 'UBR', 'UBG', 'URG', 'BRG',
+                                             'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'])
+        self.assertListEqual(shares('WUBRG'), COLOR_COMBINATIONS[1:])
+        # Testing mis-ordered string.
+        # noinspection PyTypeChecker
+        # noinspection SpellCheckingInspection
+        self.assertListEqual(shares('WUGRB'), COLOR_COMBINATIONS[1:])
 
     def test_color_filter(self):
-        self.assertRaises(ValueError, WUBRG.funcs.color_filter, 'WUBRG', None,)
-        self.assertListEqual(WUBRG.funcs.color_filter('WUBRG', Css.exact), ['WUBRG'])
-        self.assertListEqual(WUBRG.funcs.color_filter('WUBRG', Css.subset), WUBRG.consts.COLOR_COMBINATIONS)
-        self.assertListEqual(WUBRG.funcs.color_filter('WUBRG', Css.superset), ['WUBRG'])
-        self.assertListEqual(WUBRG.funcs.color_filter('WUBRG', Css.adjacent),
+        self.assertRaises(ValueError, color_filter, 'WUBRG', None, )
+        self.assertListEqual(color_filter('WUBRG', ColorSortStyles.exact), ['WUBRG'])
+        self.assertListEqual(color_filter('WUBRG', ColorSortStyles.subset), COLOR_COMBINATIONS)
+        self.assertListEqual(color_filter('WUBRG', ColorSortStyles.superset), ['WUBRG'])
+        self.assertListEqual(color_filter('WUBRG', ColorSortStyles.adjacent),
                              ['WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'])
-        self.assertListEqual(WUBRG.funcs.color_filter('WUBRG', Css.shares), WUBRG.consts.COLOR_COMBINATIONS[1:])
+        self.assertListEqual(color_filter('WUBRG', ColorSortStyles.shares), COLOR_COMBINATIONS[1:])

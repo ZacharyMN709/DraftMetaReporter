@@ -4,7 +4,7 @@ from data_fetching.utils import CARD_DATA, META_DATA, WUBRG_CARD_DATA
 import os
 from datetime import date, datetime, time
 
-from WUBRG import COLOR_COMBINATIONS
+from wubrg import COLOR_COMBINATIONS
 from Utilities.auto_logging import logging
 from Utilities.Requester import Requester
 from Utilities import save_json_file, load_json_file

@@ -3,11 +3,11 @@ from typing import Optional, Union, Callable
 from functools import cmp_to_key
 from datetime import date, time, datetime, timedelta
 
+from wubrg import index_dist_wubrg
 from Utilities.auto_logging import logging
-from game_metadata.RequestScryfall import RequestScryfall
-from WUBRG.funcs import color_compare_wubrg
 
 from game_metadata.utils.settings import SET_CONFIG
+from game_metadata.RequestScryfall import RequestScryfall
 from game_metadata.GameObjects import Card, CardManager
 
 
@@ -79,7 +79,7 @@ class SetMetadata:
     # Creating a custom sorting algorithm to order frames
     def _frame_order_compare(self, pair1: tuple[str, str], pair2: tuple[str, str]) -> int:
         # Compares the colour strings.
-        color_compare_result = color_compare_wubrg(pair1[0], pair2[0])
+        color_compare_result = index_dist_wubrg(pair1[0], pair2[0])
 
         # If the colours are the same, use the card to sort instead.
         if color_compare_result == 0:
