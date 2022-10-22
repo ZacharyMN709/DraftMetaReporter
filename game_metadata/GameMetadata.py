@@ -4,7 +4,7 @@ from functools import cmp_to_key
 from datetime import date, time, datetime, timedelta
 
 from Utilities.auto_logging import logging
-from wubrg import index_dist_wubrg
+from wubrg import index_dist_wubrg, COLOR_IDENTITY
 
 from game_metadata.utils.settings import SET_CONFIG
 from game_metadata.CallScryfall import CallScryfall
@@ -44,9 +44,14 @@ class SetMetadata:
         self.FULL_NAME: str = _full_name
         self.ICON_URL: str = _icon_url
         self.RELEASE_DATE: date = SET_CONFIG[self.SET]["PremierDraft"][0][0]
-        # Set up a dictionary for quicker sorting.
-        self.CARD_INDEXES: dict[str, int] = {card.NAME: card.NUMBER for card in self.CARD_LIST}
-        self.FRAME_COMPARE_KEY: Callable = cmp_to_key(self._frame_compare)
+        # Set up dictionaries for quicker sorting.
+        self.CARD_PRINT_ORDER_INDEXES: dict[str, int] = \
+            {k: v for v, k in enumerate(self.CARD_LIST)}
+        self.CARD_REVIEW_ORDER_INDEXES: dict[str: int] = \
+            {k: v for v, k in enumerate(CallScryfall.get_set_review_order(self.SET))}
+        self.CARD_PRINT_ORDER_KEY: Callable = cmp_to_key(self._print_order_compare)
+        self.CARD_REVIEW_ORDER_KEY: Callable = cmp_to_key(self._review_order_compare)
+        self.FRAME_ORDER_KEY: Callable = cmp_to_key(self._frame_order_compare)
         logging.info(f"Done!\n")
 
     @property
@@ -57,24 +62,30 @@ class SetMetadata:
     def CARD_LIST(self) -> list[Card]:
         return [self.CARD_DICT[name] for name in self.CARD_DICT]
 
-    # Creating a custom sorting algorithm to order frames
-    def _frame_compare(self, pair1: tuple[str, str], pair2: tuple[str, str]) -> int:
-        # Convert the  names into numeric indexes
-        name_idx1 = self.CARD_INDEXES[pair1[1]]
-        name_idx2 = self.CARD_INDEXES[pair2[1]]
+    def _print_order_compare(self, card_name1: str, card_name2: str):
+        # Convert the names into numeric indexes
+        name_idx1 = self.CARD_PRINT_ORDER_INDEXES[card_name1]
+        name_idx2 = self.CARD_PRINT_ORDER_INDEXES[card_name2]
+        return name_idx1 - name_idx2
 
-        # Gets the colour strings.
-        col_1 = pair1[0]
-        col_2 = pair2[0]
+    def _review_order_compare(self, card_name1: str, card_name2: str):
+        # Convert the names into numeric indexes
+        name_idx1 = self.CARD_REVIEW_ORDER_INDEXES[card_name1]
+        name_idx2 = self.CARD_REVIEW_ORDER_INDEXES[card_name2]
+        return name_idx1 - name_idx2
 
-        # Sort by deck colour, then card number.
-        if col_1 == col_2:
-            if name_idx1 < name_idx2:
-                return -1
-            else:
-                return 1
+        # Creating a custom sorting algorithm to order frames
+
+    def _frame_order_compare(self, pair1: tuple[COLOR_IDENTITY, str], pair2: tuple[COLOR_IDENTITY, str]) -> int:
+        # Compares the colour strings.
+        color_compare_result = index_dist_wubrg(pair1[0], pair2[0])
+
+        # If the colours are the same, use the card to sort instead.
+        if color_compare_result == 0:
+            # Convert the names into numeric indexes
+            return self._print_order_compare(pair1[1], pair2[1])
         else:
-            return index_dist_wubrg(col_1, col_2)
+            return color_compare_result
 
     def find_card(self, card_name) -> Optional[Card]:
         """
