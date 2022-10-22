@@ -41,6 +41,7 @@ META_DATA = list[dict[str, Union[str, int, bool]]]
 WUBRG_CARD_DATA = dict[str, CARD_DATA]
 
 # Set Consts
+# noinspection SpellCheckingInspection
 FORMAT_NICKNAME_DICT: dict[str, str] = {
     'PremierDraft': 'Bo1',
     'TradDraft': 'Bo3',

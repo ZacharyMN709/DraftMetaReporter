@@ -30,6 +30,7 @@ class CallScryfall:
     def get_set_cards(cls, set_code: str) -> Optional[list[dict[str, Union[str, dict[str, str], list[str]]]]]:
         cards = list()
         next_page = True
+        # noinspection SpellCheckingInspection
         url = f'{cls._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
               f'&order=set&page=1&q=e%3A{set_code}+is%3Abooster&unique=cards'
         logging.info(f"Fetching card data for set: {set_code}")
@@ -51,12 +52,13 @@ class CallScryfall:
     def get_set_review_order(cls, set_code: str) -> Optional[list[str]]:
         card_names = list()
         next_page = True
+        # noinspection SpellCheckingInspection
         url = f'{cls._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
               f'&order=review&page=1&q=e%3A{set_code}+is%3Abooster&unique=cards'
         logging.info(f"Fetching card data for set: {set_code}")
 
         while next_page:
-            response: dict[str, object] = cls.FETCHER.fetch(url)
+            response: dict[str, dict] = cls.FETCHER.fetch(url)
             for card_obj in response['data']:
                 if card_obj['object'] == 'card':
                     card_names.append(card_obj['name'])

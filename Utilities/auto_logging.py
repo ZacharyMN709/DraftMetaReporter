@@ -66,15 +66,16 @@ def add_custom_levels() -> None:
 
 
 def set_log_level(lvl: LogLvl, filename: Optional[str] = None, filemode: Optional[str] = 'a') -> LogLvl:
+    # noinspection SpellCheckingInspection
     fmt = '[%(asctime)s] %(levelname)-8s: %(message)s'
-    datefmt = '%Y/%m/%d %H:%M:%S'
-    logging.basicConfig(level=lvl, filename=filename, filemode=filemode, format=fmt, datefmt=datefmt, force=True)
+    date_format = '%Y/%m/%d %H:%M:%S'
+    logging.basicConfig(level=lvl, filename=filename, filemode=filemode, format=fmt, datefmt=date_format, force=True)
     return lvl
 
 
-def auto_log() -> None:
+def auto_log(lvl: LogLvl = LogLvl.VERBOSE) -> None:
     add_custom_levels()
-    set_log_level(LogLvl.VERBOSE)
+    set_log_level(lvl)
 
 
 # When this module is loaded, automatically add in the custom levels of logging.

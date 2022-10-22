@@ -42,7 +42,6 @@ class TestLogging(unittest.TestCase):
         self.assertEqual(logging.SPARSE, 25)
 
 
-
 class TestFuncs(unittest.TestCase):
     def test_get_invalid_save(self):
         ret = save_json_file('./+%', 'test+test.txt', {'test': 'results'})

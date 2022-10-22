@@ -118,6 +118,7 @@ class TestCard(unittest.TestCase):
         self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
 
     def test_card_error(self):
+        # noinspection SpellCheckingInspection
         name = 'ujbn uiblubiihno;cinoef r'
         self.assertRaises(Exception, self.gen_card, name)
 
@@ -172,6 +173,7 @@ class TestCardManager(unittest.TestCase):
         self.assertIsInstance(card, Card)
 
     def test_from_name_invalid(self):
+        # noinspection SpellCheckingInspection
         card = CardManager.from_name('ucbubfsvudgiru  bvubvfyfj ')
         self.assertIsNone(card)
 
@@ -183,6 +185,7 @@ class TestCardManager(unittest.TestCase):
     def test_redirects(self):
         proper_name = 'Virus Beetle'
         misspell_name = 'Vires Beetle'
+        # noinspection SpellCheckingInspection
         gibberish = 'ucbubfsvudgiru  bvubvfyfj '
         # Clear any data in CardManager
         CardManager.flush_cache()
@@ -278,12 +281,12 @@ class TestSetMetadata(unittest.TestCase):
         tup_2 = (COLOR_COMBINATIONS[-1], meta.CARD_LIST[-1].NAME)
         tup_3 = (COLOR_COMBINATIONS[0], meta.CARD_LIST[2].NAME)
 
-        self.assertEqual(meta._frame_compare(tup_1, tup_2), -31)
-        self.assertEqual(meta._frame_compare(tup_2, tup_1), 31)
-        self.assertEqual(meta._frame_compare(tup_1, tup_3), -1)
-        self.assertEqual(meta._frame_compare(tup_3, tup_1), 1)
-        self.assertEqual(meta._frame_compare(tup_3, tup_2), -31)
-        self.assertEqual(meta._frame_compare(tup_2, tup_3), 31)
+        self.assertEqual(meta._frame_order_compare(tup_1, tup_2), -31)
+        self.assertEqual(meta._frame_order_compare(tup_2, tup_1), 31)
+        self.assertEqual(meta._frame_order_compare(tup_1, tup_3), -1)
+        self.assertEqual(meta._frame_order_compare(tup_3, tup_1), 1)
+        self.assertEqual(meta._frame_order_compare(tup_3, tup_2), -31)
+        self.assertEqual(meta._frame_order_compare(tup_2, tup_3), 31)
 
 
 class TestFormatMetadata(unittest.TestCase):
