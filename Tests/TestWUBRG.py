@@ -5,7 +5,8 @@ Tests code from the wubrg module.
 import unittest
 
 from wubrg import *
-from wubrg import FAILSAFE, index_dist_wubrg, index_dist_pentad
+from wubrg import FAILSAFE, GROUP_COLOR_COMBINATIONS, index_dist_wubrg, index_dist_pentad, \
+    order_by_wubrg, order_by_pentad, exact, superset, subset, adjacent, shares
 
 
 class TestWUBRGStringFuncs(unittest.TestCase):
@@ -158,8 +159,7 @@ class TestWUBRGSortFuncs(unittest.TestCase):
 class TestWUBRGColorFilterFuncs(unittest.TestCase):
     def test_sorting(self):
         self.assertListEqual(order_by_wubrg(['U', 'W', 'G', 'B', 'R']), ['W', 'U', 'B', 'R', 'G'])
-        self.assertListEqual(order_by_pentad(COLOR_PAIRS),
-                             GROUP_COLOR_COMBINATIONS[6:16])
+        self.assertListEqual(order_by_pentad(COLOR_PAIRS), GROUP_COLOR_COMBINATIONS[6:16])
 
     def test_exact(self):
         self.assertListEqual(exact(''), [''])
