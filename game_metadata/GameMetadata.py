@@ -46,8 +46,8 @@ class SetMetadata:
         self.RELEASE_DATE: date = SET_CONFIG[self.SET]["PremierDraft"][0][0]
         # Set up dictionaries for quicker sorting.
         self.CARD_PRINT_ORDER_INDEXES: dict[str, int] = \
-            {k: v for v, k in enumerate(self.CARD_LIST)}
-        self.CARD_REVIEW_ORDER_INDEXES: dict[str: int] = \
+            {k.NAME: v for v, k in enumerate(self.CARD_LIST)}
+        self.CARD_REVIEW_ORDER_INDEXES: dict[str, int] = \
             {k: v for v, k in enumerate(CallScryfall.get_set_review_order(self.SET))}
         self.CARD_PRINT_ORDER_KEY: Callable = cmp_to_key(self._print_order_compare)
         self.CARD_REVIEW_ORDER_KEY: Callable = cmp_to_key(self._review_order_compare)

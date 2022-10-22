@@ -283,8 +283,8 @@ class TestSetMetadata(unittest.TestCase):
 
         self.assertEqual(meta._frame_order_compare(tup_1, tup_2), -31)
         self.assertEqual(meta._frame_order_compare(tup_2, tup_1), 31)
-        self.assertEqual(meta._frame_order_compare(tup_1, tup_3), -1)
-        self.assertEqual(meta._frame_order_compare(tup_3, tup_1), 1)
+        self.assertEqual(meta._frame_order_compare(tup_1, tup_3), -2)
+        self.assertEqual(meta._frame_order_compare(tup_3, tup_1), 2)
         self.assertEqual(meta._frame_order_compare(tup_3, tup_2), -31)
         self.assertEqual(meta._frame_order_compare(tup_2, tup_3), 31)
 
