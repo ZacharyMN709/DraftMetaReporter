@@ -8,8 +8,7 @@ from wubrg import index_dist_wubrg, COLOR_IDENTITY
 
 from game_metadata.utils.settings import SET_CONFIG
 from game_metadata.RequestScryfall import RequestScryfall
-from game_metadata.CardManager import CardManager
-from game_metadata.Card import Card
+from game_metadata.GameObjects.Card import Card, CardManager
 
 
 class SetMetadata:
