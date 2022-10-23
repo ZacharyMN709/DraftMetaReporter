@@ -1,7 +1,7 @@
 from typing import Union, Callable, Optional
 
 from Utilities.auto_logging import logging
-from Utilities import Requester
+from Utilities.Requester import Requester
 
 
 # A decorator which automatically catches and logs error when querying scryfall.
@@ -20,23 +20,22 @@ def trap_error(func: Callable) -> Callable:
 
 
 # TODO: Figure out proper contingencies for connection errors.
-class CallScryfall:
+class RequestScryfall:
     """ A small class which helps get specific data from scryfall, handling the minutia of json checking. """
     _BASE_URL = 'https://api.scryfall.com/'
-    FETCHER = Requester()
+    REQUESTER = Requester()
 
     @classmethod
     @trap_error
     def get_set_cards(cls, set_code: str) -> Optional[list[dict[str, Union[str, dict[str, str], list[str]]]]]:
         cards = list()
         next_page = True
-        # noinspection SpellCheckingInspection
         url = f'{cls._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
               f'&order=set&page=1&q=e%3A{set_code}+is%3Abooster&unique=cards'
         logging.info(f"Fetching card data for set: {set_code}")
 
         while next_page:
-            response: dict[str, object] = cls.FETCHER.fetch(url)
+            response: dict[str, object] = cls.REQUESTER.request(url)
             cards += response['data']
             if response['has_more']:
                 url = response['next_page']
@@ -52,13 +51,12 @@ class CallScryfall:
     def get_set_review_order(cls, set_code: str) -> Optional[list[str]]:
         card_names = list()
         next_page = True
-        # noinspection SpellCheckingInspection
         url = f'{cls._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
               f'&order=review&page=1&q=e%3A{set_code}+is%3Abooster&unique=cards'
         logging.info(f"Fetching card data for set: {set_code}")
 
         while next_page:
-            response: dict[str, dict] = cls.FETCHER.fetch(url)
+            response: dict[str, object] = cls.REQUESTER.request(url)
             for card_obj in response['data']:
                 if card_obj['object'] == 'card':
                     card_names.append(card_obj['name'])
@@ -77,7 +75,7 @@ class CallScryfall:
     def get_set_info(cls, set_code: str) -> Optional[tuple[str, str]]:
         url = f'{cls._BASE_URL}sets/{set_code}'
         logging.info(f"Fetching data for set: {set_code}")
-        response: dict[str, str] = cls.FETCHER.fetch(url)
+        response: dict[str, str] = cls.REQUESTER.request(url)
         return response['name'], response['icon_svg_uri']
 
     @classmethod
@@ -95,7 +93,7 @@ class CallScryfall:
 
         # Attempt to get information on the card.
         logging.info(f"Fetching data for card: {name}")
-        response = cls.FETCHER.fetch(f'{cls._BASE_URL}cards/named?fuzzy={name}')
+        response = cls.REQUESTER.request(f'{cls._BASE_URL}cards/named?fuzzy={name}')
 
         # If is not a card, do some processing and return the struct with some information.
         if response['object'] != 'card':

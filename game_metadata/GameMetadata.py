@@ -7,7 +7,7 @@ from Utilities.auto_logging import logging
 from wubrg import index_dist_wubrg, COLOR_IDENTITY
 
 from game_metadata.utils.settings import SET_CONFIG
-from game_metadata.CallScryfall import CallScryfall
+from game_metadata.RequestScryfall import RequestScryfall
 from game_metadata.CardManager import CardManager
 from game_metadata.Card import Card
 
@@ -40,7 +40,7 @@ class SetMetadata:
 
         self.SET: str = set_code
         logging.info(f"Loading set metadata for: {set_code}")
-        _full_name, _icon_url = CallScryfall.get_set_info(set_code)
+        _full_name, _icon_url = RequestScryfall.get_set_info(set_code)
         self.FULL_NAME: str = _full_name
         self.ICON_URL: str = _icon_url
         self.RELEASE_DATE: date = SET_CONFIG[self.SET]["PremierDraft"][0][0]
@@ -48,7 +48,7 @@ class SetMetadata:
         self.CARD_PRINT_ORDER_INDEXES: dict[str, int] = \
             {k.NAME: v for v, k in enumerate(self.CARD_LIST)}
         self.CARD_REVIEW_ORDER_INDEXES: dict[str, int] = \
-            {k: v for v, k in enumerate(CallScryfall.get_set_review_order(self.SET))}
+            {k: v for v, k in enumerate(RequestScryfall.get_set_review_order(self.SET))}
         self.CARD_PRINT_ORDER_KEY: Callable = cmp_to_key(self._print_order_compare)
         self.CARD_REVIEW_ORDER_KEY: Callable = cmp_to_key(self._review_order_compare)
         self.FRAME_ORDER_KEY: Callable = cmp_to_key(self._frame_order_compare)
