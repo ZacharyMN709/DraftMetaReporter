@@ -6,6 +6,7 @@ import re
 from Utilities.auto_logging import logging
 from game_metadata.Request17Lands import Request17Lands
 from game_metadata.GameObjects.Card import CardManager, Card
+from game_metadata.GameObjects.Draft import Draft
 from game_metadata.utils.consts import RANKS
 
 trim_numeric = re.compile("-[/d]*]")
@@ -173,12 +174,12 @@ class LimitedDeck(Deck):
         """ A link to the draft log on 17Lands """
         return f"{self.URL_ROOT}/draft/{self.DECK_ID}"
 
-    # @property
-    # def DRAFT(self) -> Draft:
-    #     """ The draft associated with the deck """
-    #     if self._DRAFT is None:
-    #         self._DRAFT = Draft.from_id(self.DECK_ID)
-    #     return self._DRAFT
+    @property
+    def DRAFT(self) -> Draft:
+        """ The draft associated with the deck """
+        if self._DRAFT is None:
+            self._DRAFT = Draft.from_id(self.DECK_ID)
+        return self._DRAFT
 
     # Properties that can have multiple links based on different deck builds.
     @property
