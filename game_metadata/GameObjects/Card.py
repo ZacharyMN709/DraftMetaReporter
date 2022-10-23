@@ -16,7 +16,7 @@ class CardFace:
     """
     IMG_URL = 'https://c1.scryfall.com/file/scryfall-cards/'
 
-    # sides = ['default', 'left', 'right', 'main', 'adventure']
+    # sides = ['default', 'left', 'right', 'main', 'adventure', 'flipped']
     @classmethod
     def single_face(cls, json: CARD_INFO, side: CARD_SIDE = 'default') -> CardFace:
         """
@@ -94,7 +94,6 @@ class CardFace:
         return type_line
 
     def _get_all_types(self) -> set[str]:
-        # TODO: Test 'Archangel Avacyn'
         # Replace the (possible) dash, and separate on spaces to get a list of types.
         type_list = self.TYPE_LINE.replace(' —', '')
         # type_list = type_list.replace(' //', '')
@@ -119,6 +118,8 @@ class CardFace:
 
     def __init__(self, json: CARD_INFO, side: CARD_SIDE):
         self.ID: str = json['id']
+        self.CARD_SIDE: str = side
+        self.IMG_SIDE: str = 'back' if side == 'back' else 'front'
         face_dict = self._extract_face_dict(side, json)
 
         self.NAME: str = face_dict.get('name')
@@ -135,15 +136,12 @@ class CardFace:
         self._validate_types()
 
         self.ORACLE: str = face_dict.get('oracle_text')
-        self.KEYWORDS: str = face_dict.get('keywords', list())
-        self.MANA_PRODUCED: str = face_dict.get('produced_mana', list())
+        self.KEYWORDS: set = set(face_dict.get('keywords', list()))
+        self.MANA_PRODUCED: set = set(face_dict.get('produced_mana', list()))
         self.FLAVOR_TEXT: str = face_dict.get('flavor_text')
 
         self.POW: Optional[str] = face_dict.get('power')
         self.TOU: Optional[str] = face_dict.get('toughness')
-
-        self.CARD_SIDE: str = side
-        self.IMG_SIDE: str = 'back' if side == 'back' else 'front'
 
     # sizes = ['small', 'normal', 'large', 'png', 'art_crop', 'border_crop']
     def image_url(self, size: str = 'normal') -> str:

@@ -1,4 +1,5 @@
 import unittest
+from typing import Union
 
 from game_metadata.utils.consts import CardLayouts, CARD_SIDE
 from game_metadata.RequestScryfall import RequestScryfall
@@ -8,6 +9,10 @@ target_cards = {
     # Tests Mana Production
     'Deathbloom Gardener':
         "https://api.scryfall.com/cards/88dee3d1-0496-40ea-b208-7362a932f531?format=json&pretty=true",
+
+    # Tests Mana Production
+    'Crystal Grotto':
+        "https://api.scryfall.com/cards/bd250c9d-c65f-4293-a6b0-007fac634d3d?format=json&pretty=true",
 
     # Tests Color Identities
     'Brutal Cathar // Moonrage Brute':
@@ -34,6 +39,31 @@ target_cards = {
         "https://api.scryfall.com/cards/3906b61a-3865-4dfd-ae06-a7d2a608851a?format=json&pretty=true",
 }
 
+base_eval_dict = {
+    "ID": "e66120a5-95a3-4d15-873c-cfba221a2299",
+    "CARD_SIDE": "default",
+    "IMG_SIDE": "front",
+    "NAME": "Jukai Preserver",
+    "MANA_COST": "{3}{G}",
+    "CMC": 0,
+    "COLORS": "G",
+    "COLOR_IDENTITY": "G",
+    "TYPE_LINE": "Enchantment Creature — Human Druid",
+    "ALL_TYPES": {"", },
+    "SUPERTYPES": {"", },
+    "TYPES": {"", },
+    "SUBTYPES": {"", },
+    "ORACLE": "When Jukai Preserver enters the battlefield, "
+              "put a +1/+1 counter on target creature you control."
+              "\nChannel — {2}{G}, Discard Jukai Preserver: "
+              "Put a +1/+1 counter on each of up to two target creatures you control.",
+    "KEYWORDS": {"", },
+    "MANA_PRODUCED": {"", },
+    "FLAVOR_TEXT": "\"The kami grant you this boon, not I.\"",
+    "POW": "3",
+    "TOU": "3"
+}
+
 
 class TestCardFace(unittest.TestCase):
     @staticmethod
@@ -41,98 +71,184 @@ class TestCardFace(unittest.TestCase):
         json = RequestScryfall.get_card_by_name(card_name)
         return CardFace.single_face(json, face)
 
+    def eval_card_face(self, face: CardFace, eval_dict: [str, Union[set, str]]):
+        """
+        Handles the evaluation of a card face, based on the dictionary handed in.
+        If the dictionary does not have an expected key, the class' default will be used.
+        """
+        self.assertEqual(face.ID, eval_dict.get("ID"))
+        self.assertEqual(face.CARD_SIDE, eval_dict.get("CARD_SIDE"))
+        self.assertEqual(face.IMG_SIDE, eval_dict.get("IMG_SIDE"))
+
+        self.assertEqual(face.NAME, eval_dict.get("NAME"))
+        self.assertEqual(face.MANA_COST, eval_dict.get("MANA_COST", ""))
+        self.assertEqual(face.CMC, eval_dict.get("CMC"))
+        self.assertEqual(face.COLORS, eval_dict.get("COLORS", ""))
+        self.assertEqual(face.COLOR_IDENTITY, eval_dict.get("COLOR_IDENTITY", ""))
+
+        self.assertEqual(face.TYPE_LINE, eval_dict.get("TYPE_LINE", ""))
+        self.assertSetEqual(face.ALL_TYPES, eval_dict.get("ALL_TYPES", set()))
+        self.assertSetEqual(face.SUPERTYPES, eval_dict.get("SUPERTYPES", set()))
+        self.assertSetEqual(face.TYPES, eval_dict.get("TYPES", set()))
+        self.assertSetEqual(face.SUBTYPES, eval_dict.get("SUBTYPES", set()))
+
+        self.assertEqual(face.ORACLE, eval_dict.get("ORACLE"))
+        self.assertSetEqual(face.KEYWORDS, eval_dict.get("KEYWORDS", set()))
+        self.assertSetEqual(face.MANA_PRODUCED, eval_dict.get("MANA_PRODUCED", set()))
+        self.assertEqual(face.FLAVOR_TEXT, eval_dict.get("FLAVOR_TEXT"))
+
+        self.assertEqual(face.POW, eval_dict.get("POW"))
+        self.assertEqual(face.TOU, eval_dict.get("TOU"))
+
     def test_card_face_normal(self):
         # https://api.scryfall.com/cards/e66120a5-95a3-4d15-873c-cfba221a2299?format=json&pretty=true
         name = 'Jukai Preserver'
         face = self.get_card_face(name, 'default')
+        eval_dict = {
+            "ID": "e66120a5-95a3-4d15-873c-cfba221a2299",
+            "CARD_SIDE": "default",
+            "IMG_SIDE": "front",
+            "NAME": "Jukai Preserver",
+            "MANA_COST": "{3}{G}",
+            "CMC": 4,
+            "COLORS": "G",
+            "COLOR_IDENTITY": "G",
+            "TYPE_LINE": "Enchantment Creature — Human Druid",
+            "ALL_TYPES": {"Enchantment", "Creature", "Human", "Druid"},
+            "TYPES": {"Enchantment", "Creature"},
+            "SUBTYPES": {"Human", "Druid"},
+            "ORACLE": "When Jukai Preserver enters the battlefield, "
+                      "put a +1/+1 counter on target creature you control."
+                      "\nChannel — {2}{G}, Discard Jukai Preserver: "
+                      "Put a +1/+1 counter on each of up to two target creatures you control.",
+            "KEYWORDS": {"Channel"},
+            "FLAVOR_TEXT": "\"The kami grant you this boon, not I.\"",
+            "POW": "3",
+            "TOU": "3"
+        }
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_saga(self):
         # https://api.scryfall.com/cards/3a613a01-6145-4e34-987c-c9bdcb068370?format=json&pretty=true
         name = 'Fall of the Thran'
         face = self.get_card_face(name, 'default')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_class(self):
         # https://api.scryfall.com/cards/37d6343a-c514-4ca6-a415-62d1a473ae20?format=json&pretty=true
         name = 'Bard Class'
         face = self.get_card_face(name, 'default')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_adventure_main(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
         face = self.get_card_face(name, 'main')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_adventure_adventure(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
         face = self.get_card_face(name, 'adventure')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_adventure_default(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
         face = self.get_card_face(name, 'default')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_split_left(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
         name = 'Invert // Invent'
         face = self.get_card_face(name, 'left')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_split_right(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
         name = 'Invert // Invent'
         face = self.get_card_face(name, 'right')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_split_default(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
         name = 'Invert // Invent'
         face = self.get_card_face(name, 'default')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_transform_front(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
         name = 'Boseiju Reaches Skyward'
         face = self.get_card_face(name, 'front')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_transform_back(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
         name = 'Boseiju Reaches Skyward'
         face = self.get_card_face(name, 'back')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_transform_default(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
         name = 'Boseiju Reaches Skyward'
         face = self.get_card_face(name, 'default')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_modal_dfc_front(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
         name = 'Shatterskull Smashing'
         face = self.get_card_face(name, 'front')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_modal_dfc_back(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
         name = 'Shatterskull Smashing'
         face = self.get_card_face(name, 'back')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_modal_dfc_default(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
         name = 'Shatterskull Smashing'
         face = self.get_card_face(name, 'default')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_flip_main(self):
         # TODO: Implement logic for flip cards.
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
         name = 'Bushi Tenderfoot'
         face = self.get_card_face(name, 'main')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_flip_flipped(self):
         # TODO: Implement logic for flip cards.
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
         name = 'Bushi Tenderfoot'
         face = self.get_card_face(name, 'flipped')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
     def test_card_face_flip_default(self):
         # TODO: Implement logic for flip cards.
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
         name = 'Bushi Tenderfoot'
         face = self.get_card_face(name, 'default')
+        eval_dict = {}
+        self.eval_card_face(face, eval_dict)
 
 
 class TestCard(unittest.TestCase):
