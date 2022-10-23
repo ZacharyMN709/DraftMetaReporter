@@ -1,7 +1,7 @@
 from typing import Union, Callable, Optional
 
 from Utilities.auto_logging import logging
-from Utilities import Fetcher
+from Utilities import Requester
 
 
 # A decorator which automatically catches and logs error when querying scryfall.
@@ -23,7 +23,7 @@ def trap_error(func: Callable) -> Callable:
 class CallScryfall:
     """ A small class which helps get specific data from scryfall, handling the minutia of json checking. """
     _BASE_URL = 'https://api.scryfall.com/'
-    FETCHER = Fetcher()
+    FETCHER = Requester()
 
     @classmethod
     @trap_error

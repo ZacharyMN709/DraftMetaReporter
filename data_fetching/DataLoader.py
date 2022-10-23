@@ -6,7 +6,7 @@ from datetime import date, datetime, time
 
 from wubrg import COLOR_COMBINATIONS
 from Utilities.auto_logging import logging
-from Utilities import Fetcher
+from Utilities import Requester
 from Utilities import save_json_file, load_json_file
 
 from data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
@@ -30,7 +30,7 @@ class DataLoader:
         self.FORMAT: str = format_name
         self.DATE: Optional[date] = target_date
         os.makedirs(self.get_folder_path(), exist_ok=True)
-        self._fetcher: Fetcher = Fetcher()
+        self._fetcher: Requester = Requester()
 
     def _get_date_filter(self) -> str:
         """Generates a piece of the url to isolate data to a certain date range."""
