@@ -4,7 +4,7 @@ from typing import Optional
 from Utilities.auto_logging import logging
 from game_metadata.Request17Lands import Request17Lands
 from game_metadata.GameObjects.Card import Card, CardManager
-from game_metadata.GameObjects.Deck import LimitedDeck
+import game_metadata.GameObjects.Deck as Deck
 
 
 class Pack:
@@ -32,7 +32,7 @@ class Draft:
         self.DRAFT_ID: str = ''
         self.SET: str = ''
         self.FORMAT: str = ''
-        self._DECK: Optional[LimitedDeck] = None
+        self._DECK: Optional[Deck.LimitedDeck] = None
 
         self.PICKS: list[Pack] = list()
 
@@ -71,7 +71,7 @@ class Draft:
     @property
     def DECK(self):
         if self._DECK is None:
-            self._DECK = LimitedDeck.from_id(self.DRAFT_ID)
+            self._DECK = Deck.LimitedDeck.from_id(self.DRAFT_ID)
         return self._DECK
 
 
