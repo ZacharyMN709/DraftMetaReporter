@@ -1,6 +1,20 @@
 from typing import Union
 from enum import Flag, auto
 
+from wubrg import COLOR
+
+
+def new_color_count_dict() -> dict[COLOR, int]:
+    d: dict[COLOR, int] = {
+        "W": 0,
+        "U": 0,
+        "B": 0,
+        "R": 0,
+        "G": 0,
+    }
+    return d
+
+
 # Type information for the card json Scryfall returns.
 CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str]]]
 

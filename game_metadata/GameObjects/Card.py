@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import NoReturn, Optional, Union
+from typing import NoReturn, Optional
 
 from Utilities.auto_logging import logging
 from wubrg import get_color_identity
@@ -75,8 +75,8 @@ class CardFace:
             logging.warning(f"'cmc' is empty for card '{self.NAME}'")
         return ret
 
-    def _parse_colors(self, face_dict) -> str:
-        _colors = face_dict.get('colors')
+    def _parse_colors(self, face_dict, key) -> str:
+        _colors = face_dict.get(key)
         ret = ""
         if _colors is not None:
             ret = get_color_identity("".join(_colors))
@@ -92,11 +92,14 @@ class CardFace:
         return type_line
 
     def _get_all_types(self) -> set[str]:
+        # TODO: Test 'Archangel Avacyn'
         # Replace the (possible) dash, and separate on spaces to get a list of types.
-        type_list = self.TYPE_LINE.replace(' —', '').split(' ')
+        type_list = self.TYPE_LINE.replace(' —', '')
+        # type_list = type_list.replace(' //', '')
+        type_list = type_list.split(' ')
         return set(type_list)
 
-    def _validate_types(self) -> Optional[NoReturn]:
+    def _validate_types(self) -> None:
         length_all_types = len(self.ALL_TYPES)
         length_sum_types = len(self.SUBTYPES) + len(self.TYPES) + len(self.SUPERTYPES)
 
@@ -119,7 +122,8 @@ class CardFace:
         self.NAME: str = face_dict.get('name')
         self.MANA_COST: str = face_dict.get('mana_cost')
         self.CMC: Optional[int] = self._parse_cmc(face_dict)
-        self.COLORS: str = self._parse_colors(face_dict)
+        self.COLORS: str = self._parse_colors(face_dict, 'colors')
+        self.COLOR_IDENTITY: str = self._parse_colors(face_dict, 'color_identity')
 
         self.TYPE_LINE: str = self._get_type_line(face_dict)
         self.ALL_TYPES: set[str] = self._get_all_types()
@@ -129,6 +133,8 @@ class CardFace:
         self._validate_types()
 
         self.ORACLE: str = face_dict.get('oracle_text')
+        self.KEYWORDS: str = face_dict.get('keywords', list())
+        self.MANA_PRODUCED: str = face_dict.get('produced_mana', list())
         self.FLAVOR_TEXT: str = face_dict.get('flavor_text')
 
         self.POW: Optional[str] = face_dict.get('power')

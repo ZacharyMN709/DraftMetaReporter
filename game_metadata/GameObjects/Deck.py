@@ -3,8 +3,10 @@ from typing import Optional
 from datetime import datetime
 import re
 
+from wubrg import COLOR
+
 from Utilities.auto_logging import logging
-from game_metadata.utils.consts import RANKS
+from game_metadata.utils.consts import RANKS, new_color_count_dict
 from game_metadata.Request17Lands import Request17Lands
 from game_metadata.GameObjects.Card import CardManager, Card
 import game_metadata.GameObjects.Draft as Draft
@@ -54,6 +56,9 @@ class Deck:
     name: str
     wins: int
     losses: int
+    _produced_mana: Optional[dict[COLOR, int]]
+    _casting_pips: Optional[dict[COLOR, int]]
+    _all_pips: Optional[dict[COLOR, int]]
     _maindeck: list[Card] = list()
     _sideboard: list[Card] = list()
     _maindeck_dict: dict[str, int] = dict()
@@ -67,6 +72,45 @@ class Deck:
                 card_dict[card.NAME] = 0
             card_dict[card.NAME] += 1
         return card_dict
+
+    def _get_produced_mana(self) -> dict[COLOR, int]:
+        d = new_color_count_dict()
+        for card in self.cardpool:
+            for mana in card.DEFAULT_FACE.MANA_PRODUCED:
+                d[mana] += 1
+        return d
+
+    @property
+    def produced_mana(self) -> Optional[dict[COLOR, int]]:
+        if self._produced_mana is None:
+            self._produced_mana = self._get_produced_mana()
+        return self._produced_mana
+
+    def _get_casting_pips(self) -> dict[COLOR, int]:
+        d = new_color_count_dict()
+        for card in self.cardpool:
+            for mana in card.DEFAULT_FACE.MANA_COST:
+                d[mana] += 1
+        return d
+
+    @property
+    def casting_pips(self) -> Optional[dict[COLOR, int]]:
+        if self._casting_pips is None:
+            self._casting_pips = self._get_casting_pips()
+        return self._casting_pips
+
+    def _get_all_pips(self) -> dict[COLOR, int]:
+        d = new_color_count_dict()
+        for card in self.cardpool:
+            for mana in card.DEFAULT_FACE.MANA_PRODUCED:
+                d[mana] += 1
+        return d
+
+    @property
+    def all_pips(self) -> Optional[dict[COLOR, int]]:
+        if self._all_pips is None:
+            self._all_pips = self._get_all_pips()
+        return self._all_pips
 
     @property
     def colors(self) -> str:
