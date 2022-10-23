@@ -1,11 +1,11 @@
 from __future__ import annotations
-from typing import NoReturn, Optional
+from typing import NoReturn, Optional, Union
 
-from wubrg import get_color_identity
 from Utilities.auto_logging import logging
+from wubrg import get_color_identity
 
-from game_metadata.utils.consts import RARITY_ALIASES, LAYOUT_DICT, CardLayouts, CARD_INFO
-from game_metadata.utils import SUPERTYPES, TYPES, SUBTYPE_DICT
+from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, SUBTYPE_DICT, ALL_SUBTYPES, \
+    LAYOUT_DICT, CardLayouts
 from game_metadata.RequestScryfall import RequestScryfall
 
 
@@ -53,53 +53,8 @@ class CardFace:
 
         return face
 
-    def handle_types(self, type_line: str) -> Optional[NoReturn]:
-        """
-        Takes in the type-line as a string, and parses it into its supertypes, types and subtypes.
-        The values are assigned to the properties of the object rather than returned.
-        :param type_line:
-        """
-        # Check that a type line was found.
-        if type_line is None:
-            raise ValueError(f"'type_line' is empty for card '{self.NAME}'")
-        self.TYPE_LINE = type_line
-
-        # TODO: Replace handling of type groupings with set intersections.
-        # Split the type line on the dash to separate any subtypes
-        lst = type_line.split('—')
-
-        # Handle the first half of the type line
-        half_one = lst[0].strip()
-
-        # Remove the super types from the first half, and save them
-        for t in SUPERTYPES:
-            if t in half_one:
-                half_one = half_one.replace(t, '')
-                self.SUPERTYPES.append(t)
-
-        # The remaining text is all of the types, separated by spaces.
-        self.TYPES = half_one.strip().split(' ')
-        valid_subtypes = set()
-        for t in self.TYPES:
-            if t not in TYPES:
-                raise ValueError(f"Invalid type '{t}' for card '{self.NAME}'")
-
-            valid_subtypes = valid_subtypes | SUBTYPE_DICT[t]
-
-        # If the second half of the type line exists, handle it.
-        if len(lst) == 2:
-            subtypes = lst[1].strip().split(' ')
-
-            # For each subtype found,
-            for subtype in subtypes:
-                # Check that it's a valid subtype among the cards types.
-                if subtype in valid_subtypes:
-                    self.SUBTYPES.append(subtype)
-                # And raise an exception if not.
-                else:
-                    raise ValueError(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
-
-    def __init__(self, json: CARD_INFO, side: str):
+    @staticmethod
+    def _extract_face_dict(side, json) -> CARD_INFO:
         if side in ['back', 'adventure', 'right']:
             sub_json = json['card_faces'][1]
         else:
@@ -108,30 +63,76 @@ class CardFace:
             else:
                 sub_json = json
 
-        self.ID: str = json['id']
-        self.NAME: str = sub_json.get('name')
-        self.MANA_COST: str = sub_json.get('mana_cost')
-        _cmc = sub_json.get('cmc')
-        self.CMC: Optional[int] = None  # TODO: Handle this base on mana_cost later.
+        return sub_json
+
+    def _parse_cmc(self, face_dict) -> Optional[int]:
+        # TODO: Handle this base on mana_cost later.
+        _cmc = face_dict.get('cmc')
+        ret = None
         if _cmc is not None:
-            self.CMC = int(_cmc)
+            ret = int(_cmc)
+        else:
+            logging.warning(f"'cmc' is empty for card '{self.NAME}'")
+        return ret
 
-        _colors = sub_json.get('colors')
-        self.COLORS: str = ""
+    def _parse_colors(self, face_dict) -> str:
+        _colors = face_dict.get('colors')
+        ret = ""
         if _colors is not None:
-            self.COLORS = get_color_identity("".join(_colors))
+            ret = get_color_identity("".join(_colors))
+        else:
+            logging.warning(f"'colors' is empty for card '{self.NAME}'")
+        return ret
 
-        self.TYPE_LINE: str = ""
-        self.SUPERTYPES: list[str] = list()
-        self.TYPES: list[str] = list()
-        self.SUBTYPES: list[str] = list()
-        self.handle_types(sub_json.get('type_line'))
+    def _get_type_line(self, face_dict) -> str:
+        type_line = face_dict.get('type_line')
+        if type_line is None:
+            logging.warning(f"'type_line' is empty for card '{self.NAME}'")
+            type_line = ''
+        return type_line
 
-        self.ORACLE: str = sub_json.get('oracle_text')
-        self.FLAVOR_TEXT: str = sub_json.get('flavor_text')
+    def _get_all_types(self) -> set[str]:
+        # Replace the (possible) dash, and separate on spaces to get a list of types.
+        type_list = self.TYPE_LINE.replace(' —', '').split(' ')
+        return set(type_list)
 
-        self.POW: str = sub_json.get('power')
-        self.TOU: str = sub_json.get('toughness')
+    def _validate_types(self) -> Optional[NoReturn]:
+        length_all_types = len(self.ALL_TYPES)
+        length_sum_types = len(self.SUBTYPES) + len(self.TYPES) + len(self.SUPERTYPES)
+
+        if length_all_types != length_sum_types:
+            logging.warning(f"Card '{self.NAME}' contains invalid types!\n  TYPE_LINE: '{self.TYPE_LINE}'")
+
+        valid_subtypes = set()
+        for t in self.TYPES:
+            valid_subtypes = valid_subtypes | SUBTYPE_DICT[t]
+
+        for subtype in self.SUBTYPES:
+            # Check that it's a valid subtype among the cards types.
+            if subtype not in valid_subtypes:
+                logging.warning(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
+
+    def __init__(self, json: CARD_INFO, side: str):
+        self.ID: str = json['id']
+        face_dict = self._extract_face_dict(side, json)
+
+        self.NAME: str = face_dict.get('name')
+        self.MANA_COST: str = face_dict.get('mana_cost')
+        self.CMC: Optional[int] = self._parse_cmc(face_dict)
+        self.COLORS: str = self._parse_colors(face_dict)
+
+        self.TYPE_LINE: str = self._get_type_line(face_dict)
+        self.ALL_TYPES: set[str] = self._get_all_types()
+        self.SUPERTYPES: set[str] = self.ALL_TYPES & SUPERTYPES
+        self.TYPES: set[str] = self.ALL_TYPES & TYPES
+        self.SUBTYPES: set[str] = self.ALL_TYPES & ALL_SUBTYPES
+        self._validate_types()
+
+        self.ORACLE: str = face_dict.get('oracle_text')
+        self.FLAVOR_TEXT: str = face_dict.get('flavor_text')
+
+        self.POW: Optional[str] = face_dict.get('power')
+        self.TOU: Optional[str] = face_dict.get('toughness')
 
         self.CARD_SIDE: str = side
         self.IMG_SIDE: str = 'back' if side == 'back' else 'front'
@@ -151,8 +152,12 @@ class Card:
     API_URL = 'https://api.scryfall.com/cards/'
 
     @classmethod
-    def from_name(cls, name):
+    def from_name(cls, name) -> Card:
         return CardManager.from_name(name)
+
+    @classmethod
+    def from_set(cls, set_code) -> dict[str, Card]:
+        return CardManager.from_set(set_code)
 
     def _handle_card_faces(self, json: CARD_INFO) -> Optional[NoReturn]:
         """
