@@ -5,7 +5,7 @@ from Utilities.auto_logging import logging
 from wubrg import get_color_identity
 
 from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, SUBTYPE_DICT, ALL_SUBTYPES, \
-    LAYOUT_DICT, CardLayouts
+    LAYOUT_DICT, CardLayouts, CARD_SIDE
 from game_metadata.RequestScryfall import RequestScryfall
 
 
@@ -16,9 +16,9 @@ class CardFace:
     """
     IMG_URL = 'https://c1.scryfall.com/file/scryfall-cards/'
 
-    # sides = ['default', 'left', 'right', 'creature', 'adventure']
+    # sides = ['default', 'left', 'right', 'main', 'adventure']
     @classmethod
-    def single_face(cls, json: CARD_INFO, side: str = 'default') -> CardFace:
+    def single_face(cls, json: CARD_INFO, side: CARD_SIDE = 'default') -> CardFace:
         """
         Returns the appropriately configured card face for the side given.
         :param json: The data for the card.
@@ -27,6 +27,7 @@ class CardFace:
         """
         face = cls(json, side)
 
+        # TODO: See if this can be moved into __init__
         # Modify 'default' as needed for easy access to data.
         if side == 'default':
             face.NAME = json.get('name')
@@ -37,7 +38,7 @@ class CardFace:
 
     # sides = ['default', 'front', 'back']
     @classmethod
-    def double_faced(cls, json: CARD_INFO, side: str = 'default') -> CardFace:
+    def double_faced(cls, json: CARD_INFO, side: CARD_SIDE = 'default') -> CardFace:
         """
         Returns the appropriately configured card face for the side given.
         :param json: The data for the card.
@@ -46,6 +47,7 @@ class CardFace:
         """
         face = cls(json, side)
 
+        # TODO: See if this can be moved into __init__
         # Modify 'default' as needed for easy access to data.
         if side == 'default':
             face.NAME = json.get('name')
@@ -115,7 +117,7 @@ class CardFace:
             if subtype not in valid_subtypes:
                 logging.warning(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
 
-    def __init__(self, json: CARD_INFO, side: str):
+    def __init__(self, json: CARD_INFO, side: CARD_SIDE):
         self.ID: str = json['id']
         face_dict = self._extract_face_dict(side, json)
 
@@ -184,7 +186,7 @@ class Card:
             self.FACE_2 = None
         elif self.LAYOUT == CardLayouts.ADVENTURE:
             self.DEFAULT_FACE = CardFace.single_face(json)
-            self.FACE_1 = CardFace.single_face(json, 'creature')
+            self.FACE_1 = CardFace.single_face(json, 'main')
             self.FACE_2 = CardFace.single_face(json, 'adventure')
         elif self.LAYOUT == CardLayouts.SPLIT:
             self.DEFAULT_FACE = CardFace.single_face(json)
@@ -205,10 +207,12 @@ class Card:
         if json['object'] != 'card':
             raise Exception("Invalid JSON provided! Object type is not 'card'")
 
+        # Handle simple layout information to reference later.
         self.LAYOUT: CardLayouts = LAYOUT_DICT[json['layout']]
         self.TWO_SIDED: bool = self.LAYOUT is CardLayouts.TWO_SIDED
         self.SPLIT: bool = self.LAYOUT is CardLayouts.FUSED
 
+        # Initialize empty card faces, and fill them based on layout.
         self.DEFAULT_FACE: CardFace
         self.FACE_1: CardFace
         self.FACE_2: Optional[CardFace]
@@ -248,17 +252,17 @@ class Card:
         return self.DEFAULT_FACE.TYPE_LINE
 
     @property
-    def SUPERTYPES(self) -> list[str]:
+    def SUPERTYPES(self) -> set[str]:
         """Gets the supertypes of the card"""
         return self.DEFAULT_FACE.SUPERTYPES
 
     @property
-    def TYPES(self) -> list[str]:
+    def TYPES(self) -> set[str]:
         """Gets the types of the card"""
         return self.DEFAULT_FACE.TYPES
 
     @property
-    def SUBTYPES(self) -> list[str]:
+    def SUBTYPES(self) -> set[str]:
         """Gets the subtypes of the card"""
         return self.DEFAULT_FACE.SUBTYPES
 

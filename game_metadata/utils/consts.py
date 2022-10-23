@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Literal
 from enum import Flag, auto
 
 from wubrg import COLOR
@@ -17,6 +17,7 @@ def new_color_count_dict() -> dict[COLOR, int]:
 
 # Type information for the card json Scryfall returns.
 CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str]]]
+CARD_SIDE = Literal['default', 'main', 'adventure', 'left', 'right', 'front', 'back', 'flipped']
 
 # Rank Consts
 RANKS = ['None', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Mythic']
