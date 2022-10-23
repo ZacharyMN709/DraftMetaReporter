@@ -64,6 +64,7 @@ class CardFace:
             raise ValueError(f"'type_line' is empty for card '{self.NAME}'")
         self.TYPE_LINE = type_line
 
+        # TODO: Replace handling of type groupings with set intersections.
         # Split the type line on the dash to separate any subtypes
         lst = type_line.split('—')
 

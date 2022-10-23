@@ -22,13 +22,13 @@ class TestFetcher(unittest.TestCase):
         self.assertEqual(fetcher._SUCCESS_DELAY, 10)
 
     def test_valid_url(self):
-        fetcher = Requester(2, 10, 2)
-        ret = fetcher.fetch('https://api.scryfall.com/')
+        requester = Requester(2, 10, 2)
+        ret = requester.request('https://api.scryfall.com/')
         self.assertIsInstance(ret, dict)
 
     def test_invalid_url(self):
-        fetcher = Requester(2, 2, 2)
-        ret = fetcher.fetch('Hello World')
+        requester = Requester(2, 2, 2)
+        ret = requester.request('Hello World')
         self.assertIsNone(ret)
 
 

@@ -9,6 +9,7 @@ from game_metadata.GameObjects.Card import CardManager, Card
 from game_metadata.GameObjects.Draft import Draft
 from game_metadata.utils.consts import RANKS
 
+
 trim_numeric = re.compile("-[/d]*]")
 
 
@@ -143,7 +144,7 @@ class LimitedDeck(Deck):
         self.DECK_ID: str = event_info['id']
         self.SET: str = event_info['expansion']
         self.FORMAT: str = event_info['format']
-        # self._DRAFT: Optional[Draft] = None
+        self._DRAFT: Optional[Draft] = None
         self.trophy_stub: Optional[TrophyStub] = None
 
         # Store the more cursory information.
