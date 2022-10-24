@@ -40,7 +40,7 @@ target_cards = {
 }
 
 base_eval_dict = {
-    "ID": "e66120a5-95a3-4d15-873c-cfba221a2299",
+    "ORACLE_ID": "e66120a5-95a3-4d15-873c-cfba221a2299",
     "CARD_SIDE": "default",
     "IMG_SIDE": "front",
     "NAME": "Jukai Preserver",
@@ -74,38 +74,47 @@ class TestCardFace(unittest.TestCase):
     def eval_card_face(self, face: CardFace, eval_dict: [str, Union[set, str]]):
         """
         Handles the evaluation of a card face, based on the dictionary handed in.
-        If the dictionary does not have an expected key, the class' default will be used.
+        If the dictionary does not have an expected key, the class' default will be used,
+        except for SCRYFALL_ID, as that may change as sets release. If not provided that
+        test will be skipped.
         """
-        self.assertEqual(face.ID, eval_dict.get("ID"))
-        self.assertEqual(face.CARD_SIDE, eval_dict.get("CARD_SIDE"))
-        self.assertEqual(face.IMG_SIDE, eval_dict.get("IMG_SIDE"))
 
-        self.assertEqual(face.NAME, eval_dict.get("NAME"))
-        self.assertEqual(face.MANA_COST, eval_dict.get("MANA_COST", ""))
-        self.assertEqual(face.CMC, eval_dict.get("CMC"))
-        self.assertEqual(face.COLORS, eval_dict.get("COLORS", ""))
-        self.assertEqual(face.COLOR_IDENTITY, eval_dict.get("COLOR_IDENTITY", ""))
+        if "SCRYFALL_ID" in eval_dict:
+            self.assertEqual(face.SCRYFALL_ID, eval_dict.get("SCRYFALL_ID"))
 
-        self.assertEqual(face.TYPE_LINE, eval_dict.get("TYPE_LINE", ""))
-        self.assertSetEqual(face.ALL_TYPES, eval_dict.get("ALL_TYPES", set()))
-        self.assertSetEqual(face.SUPERTYPES, eval_dict.get("SUPERTYPES", set()))
-        self.assertSetEqual(face.TYPES, eval_dict.get("TYPES", set()))
-        self.assertSetEqual(face.SUBTYPES, eval_dict.get("SUBTYPES", set()))
+        self.assertEqual(eval_dict.get("ORACLE_ID"), face.ORACLE_ID, msg="Error in ORACLE_ID")
+        self.assertEqual(eval_dict.get("CARD_SIDE"), face.CARD_SIDE, msg="Error in CARD_SIDE")
+        self.assertEqual(eval_dict.get("IMG_SIDE"), face.IMG_SIDE, msg="Error in IMG_SIDE")
 
-        self.assertEqual(face.ORACLE, eval_dict.get("ORACLE"))
-        self.assertSetEqual(face.KEYWORDS, eval_dict.get("KEYWORDS", set()))
-        self.assertSetEqual(face.MANA_PRODUCED, eval_dict.get("MANA_PRODUCED", set()))
-        self.assertEqual(face.FLAVOR_TEXT, eval_dict.get("FLAVOR_TEXT"))
+        self.assertEqual(eval_dict.get("NAME"), face.NAME, msg="Error in NAME")
+        self.assertEqual(eval_dict.get("MANA_COST", ""), face.MANA_COST, msg="Error in MANA_COST")
+        self.assertEqual(eval_dict.get("CMC"), face.CMC, msg="Error in CMC")
+        self.assertEqual(eval_dict.get("COLORS", ""), face.COLORS, msg="Error in COLORS")
+        self.assertEqual(eval_dict.get("COLOR_IDENTITY", ""), face.COLOR_IDENTITY, msg="Error in COLOR_IDENTITY")
 
-        self.assertEqual(face.POW, eval_dict.get("POW"))
-        self.assertEqual(face.TOU, eval_dict.get("TOU"))
+        self.assertEqual(eval_dict.get("TYPE_LINE", ""), face.TYPE_LINE, msg="Error in TYPE_LINE")
+        self.assertSetEqual(eval_dict.get("ALL_TYPES", set()), face.ALL_TYPES, msg="Error in ALL_TYPES")
+        self.assertSetEqual(eval_dict.get("SUPERTYPES", set()), face.SUPERTYPES, msg="Error in SUPERTYPES")
+        self.assertSetEqual(eval_dict.get("TYPES", set()), face.TYPES, msg="Error in TYPES")
+        self.assertSetEqual(eval_dict.get("SUBTYPES", set()), face.SUBTYPES, msg="Error in SUBTYPES")
 
+        self.assertEqual(eval_dict.get("ORACLE"), face.ORACLE, msg="Error in ORACLE")
+        self.assertSetEqual(eval_dict.get("KEYWORDS", set()), face.KEYWORDS, msg="Error in KEYWORDS")
+        self.assertSetEqual(eval_dict.get("MANA_PRODUCED", set()), face.MANA_PRODUCED, msg="Error in MANA_PRODUCED")
+        self.assertEqual(eval_dict.get("FLAVOR_TEXT"), face.FLAVOR_TEXT, msg="Error in FLAVOR_TEXT")
+
+        self.assertEqual(eval_dict.get("POW"), face.POW, msg="Error in POW")
+        self.assertEqual(eval_dict.get("TOU"), face.TOU, msg="Error in TOU")
+
+    # region Basic Face Tests
+    """ These tests cover the main faces use, in their simplest forms. """
     def test_card_face_normal(self):
         # https://api.scryfall.com/cards/e66120a5-95a3-4d15-873c-cfba221a2299?format=json&pretty=true
         name = 'Jukai Preserver'
         face = self.get_card_face(name, 'default')
         eval_dict = {
-            "ID": "e66120a5-95a3-4d15-873c-cfba221a2299",
+            "SCRYFALL_ID": "e66120a5-95a3-4d15-873c-cfba221a2299",
+            "ORACLE_ID": "a8ce90be-f0ab-4f8d-896a-cde8aaf24579",
             "CARD_SIDE": "default",
             "IMG_SIDE": "front",
             "NAME": "Jukai Preserver",
@@ -132,35 +141,125 @@ class TestCardFace(unittest.TestCase):
         # https://api.scryfall.com/cards/3a613a01-6145-4e34-987c-c9bdcb068370?format=json&pretty=true
         name = 'Fall of the Thran'
         face = self.get_card_face(name, 'default')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "341803d9-fd29-4721-81bf-ae9b7f1c01d2",
+            "CARD_SIDE": "default",
+            "IMG_SIDE": "front",
+            "NAME": "Fall of the Thran",
+            "MANA_COST": "{5}{W}",
+            "CMC": 6,
+            "COLORS": "W",
+            "COLOR_IDENTITY": "W",
+            "TYPE_LINE": "Enchantment — Saga",
+            "ALL_TYPES": {"Enchantment", "Saga"},
+            "TYPES": {"Enchantment"},
+            "SUBTYPES": {"Saga"},
+            "ORACLE": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)"
+                      "\nI — Destroy all lands."
+                      "\nII, III — Each player returns two land cards from their graveyard to the battlefield.",
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_class(self):
         # https://api.scryfall.com/cards/37d6343a-c514-4ca6-a415-62d1a473ae20?format=json&pretty=true
         name = 'Bard Class'
         face = self.get_card_face(name, 'default')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "5bbc3ad0-4865-43f0-8baf-e7f4af5db656",
+            "CARD_SIDE": "default",
+            "IMG_SIDE": "front",
+            "NAME": "Bard Class",
+            "MANA_COST": "{R}{G}",
+            "CMC": 2,
+            "COLORS": "RG",
+            "COLOR_IDENTITY": "RG",
+            "TYPE_LINE": "Enchantment — Class",
+            "ALL_TYPES": {"Enchantment", "Class"},
+            "TYPES": {"Enchantment"},
+            "SUBTYPES": {"Class"},
+            "ORACLE": "(Gain the next level as a sorcery to add its ability.)"
+                      "\nLegendary creatures you control enter the "
+                      "battlefield with an additional +1/+1 counter on them."
+                      "\n{R}{G}: Level 2"
+                      "\nLegendary spells you cast cost {R}{G} less to cast. "
+                      "This effect reduces only the amount of colored mana you pay."
+                      "\n{3}{R}{G}: Level 3"
+                      "\nWhenever you cast a legendary spell, exile the top two cards of your library. "
+                      "You may play them this turn.",
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_adventure_main(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
         face = self.get_card_face(name, 'main')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "d6d72f5f-8f5d-4180-b514-f22ff5482902",
+            "CARD_SIDE": "main",
+            "IMG_SIDE": "front",
+            "NAME": "Bonecrusher Giant",
+            "MANA_COST": "{2}{R}",
+            "CMC": 3,
+            "COLORS": "R",
+            "COLOR_IDENTITY": "R",
+            "TYPE_LINE": "Creature — Giant",
+            "ALL_TYPES": {"Creature", "Instant"},
+            "TYPES": {"Creature"},
+            "SUBTYPES": {"Giant"},
+            "ORACLE": "Whenever Bonecrusher Giant becomes the target of a spell, "
+                      "Bonecrusher Giant deals 2 damage to that spell's controller.",
+            "FLAVOR_TEXT": "Not every tale ends in glory.",
+            "POW": "4",
+            "TOU": "3"
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_adventure_adventure(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
         face = self.get_card_face(name, 'adventure')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "d6d72f5f-8f5d-4180-b514-f22ff5482902",
+            "CARD_SIDE": "adventure",
+            "IMG_SIDE": "front",
+            "NAME": "Bonecrusher Giant // Stomp",
+            "MANA_COST": "{2}{R}",
+            "CMC": 3,
+            "COLORS": "R",
+            "COLOR_IDENTITY": "R",
+            "TYPE_LINE": "Creature — Giant // Instant — Adventure",
+            "ALL_TYPES": {"Creature", "Instant", "Giant", "Adventure"},
+            "TYPES": {"Creature", "Instant", "Giant", "Adventure"},
+            "SUBTYPES": {"Creature", "Instant", "Giant", "Adventure"},
+            "ORACLE": "",
+            "FLAVOR_TEXT": "Not every tale ends in glory.",
+            "POW": "4",
+            "TOU": "3"
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_adventure_default(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
         face = self.get_card_face(name, 'default')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "d6d72f5f-8f5d-4180-b514-f22ff5482902",
+            "CARD_SIDE": "default",
+            "IMG_SIDE": "front",
+            "NAME": "Bonecrusher Giant // Stomp",
+            "MANA_COST": "{2}{R}",
+            "CMC": 3,
+            "COLORS": "R",
+            "COLOR_IDENTITY": "R",
+            "TYPE_LINE": "Creature — Giant // Instant — Adventure",
+            "ALL_TYPES": {"Creature", "Instant", "Giant", "Adventure"},
+            "TYPES": {"Creature", "Instant", "Giant", "Adventure"},
+            "SUBTYPES": {"Creature", "Instant", "Giant", "Adventure"},
+            "ORACLE": "",
+            "FLAVOR_TEXT": "Not every tale ends in glory.",
+            "POW": "4",
+            "TOU": "3"
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_split_left(self):
@@ -225,7 +324,9 @@ class TestCardFace(unittest.TestCase):
         face = self.get_card_face(name, 'default')
         eval_dict = {}
         self.eval_card_face(face, eval_dict)
+    # endregion Basic Face Tests
 
+    # region Additional Face Tests
     def test_card_face_flip_main(self):
         # TODO: Implement logic for flip cards.
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
@@ -249,6 +350,8 @@ class TestCardFace(unittest.TestCase):
         face = self.get_card_face(name, 'default')
         eval_dict = {}
         self.eval_card_face(face, eval_dict)
+    # region Additional Face Tests
+
 
 
 class TestCard(unittest.TestCase):

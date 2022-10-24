@@ -117,7 +117,8 @@ class CardFace:
                 logging.warning(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
 
     def __init__(self, json: CARD_INFO, side: CARD_SIDE):
-        self.ID: str = json['id']
+        self.SCRYFALL_ID: str = json['id']
+        self.ORACLE_ID: str = json['oracle_id']
         self.CARD_SIDE: str = side
         self.IMG_SIDE: str = 'back' if side == 'back' else 'front'
         face_dict = self._extract_face_dict(side, json)
@@ -146,7 +147,8 @@ class CardFace:
     # sizes = ['small', 'normal', 'large', 'png', 'art_crop', 'border_crop']
     def image_url(self, size: str = 'normal') -> str:
         """Returns a link to the card, of the appropriate size."""
-        return f"{self.IMG_URL}{size}/{self.IMG_SIDE}/{self.ID[0]}/{self.ID[1]}/{self.ID}.jpg"
+        return f"{self.IMG_URL}{size}/{self.IMG_SIDE}/" \
+               f"{self.SCRYFALL_ID[0]}/{self.SCRYFALL_ID[1]}/{self.SCRYFALL_ID}.jpg"
 
 
 class Card:
