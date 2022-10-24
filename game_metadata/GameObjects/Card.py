@@ -65,7 +65,6 @@ class CardFace:
             return json['card_faces'][1]
         if 'card_faces' in json:
             return json['card_faces'][0]
-        return json
 
     def _parse_from_json(self, json, key, default=None):
         """
@@ -132,13 +131,12 @@ class CardFace:
         self.ORACLE_ID: str = json['oracle_id']
         self.CARD_SIDE: str = side
         self.IMG_SIDE: str = 'back' if side == 'back' else 'front'
-        face_dict = self._extract_face_dict(json)
 
         self.NAME: str = self._parse_from_json(json, 'name')
         self.MANA_COST: str = self._parse_from_json(json, 'mana_cost')
         self.CMC: int = self._calculate_cmc(json)
-        self.COLORS: str = ''.join(sorted(self._parse_from_json(json, 'colors'), key=wubrg_compare_key))
-        self.COLOR_IDENTITY: str = ''.join(sorted(self._parse_from_json(json, 'color_identity'), key=wubrg_compare_key))
+        self.COLORS: str = ''.join(sorted(self._parse_from_json(json, 'colors', ''), key=wubrg_compare_key))
+        self.COLOR_IDENTITY: str = ''.join(sorted(self._parse_from_json(json, 'color_identity', ''), key=wubrg_compare_key))
 
         self.TYPE_LINE: str = self._parse_from_json(json, 'type_line', '')
         self.ALL_TYPES: set[str] = set(self.TYPE_LINE.split(' ')) - {'—', '//'}
@@ -147,6 +145,7 @@ class CardFace:
         self.SUBTYPES: set[str] = self.ALL_TYPES & ALL_SUBTYPES
         self._validate_types()
 
+        face_dict = self._extract_face_dict(json)
         self.ORACLE: str = face_dict.get('oracle_text')
         self.KEYWORDS: set = set(face_dict.get('keywords', list()))
         self.MANA_PRODUCED: set = set(face_dict.get('produced_mana', list()))
@@ -394,9 +393,15 @@ class CardManager:
             cls.SETS[set_code] = dict()
             for json in RequestScryfall.get_set_cards(set_code):
                 # And fill it with cards fetched from Scryfall.
-                card = Card(json)
-                cls._add_card(card)
-                cls.SETS[set_code][card.NAME] = card
+                new_card = Card(json)
+
+                # While keeping references to previously fetched cards.
+                card, _ = cls._find_card(new_card.NAME)
+                if card is not None:
+                    new_card = card
+
+                cls._add_card(new_card)
+                cls.SETS[set_code][new_card.NAME] = new_card
 
             for card_name in ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest']:
                 if card_name in cls.SETS[set_code]:

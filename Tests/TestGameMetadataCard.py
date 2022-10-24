@@ -68,7 +68,7 @@ base_eval_dict = {
 
 class TestCardFace(unittest.TestCase):
     def setUp(self) -> None:
-        # auto_log(LogLvl.DEBUG)
+        auto_log(LogLvl.DEBUG)
         # auto_log(LogLvl.WARNING)
         # auto_log(LogLvl.VERBOSE)
         pass
@@ -271,14 +271,41 @@ class TestCardFace(unittest.TestCase):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
         name = 'Invert // Invent'
         face = self.get_card_face(name, 'left')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "9a378964-2c04-4d60-a905-c819d37ed4c3",
+            "CARD_SIDE": "left",
+            "IMG_SIDE": "front",
+            "NAME": "Invert",
+            "MANA_COST": "{U/R}",
+            "CMC": 1,
+            "COLORS": "UR",
+            "COLOR_IDENTITY": "UR",
+            "TYPE_LINE": "Instant",
+            "ALL_TYPES": {"Instant"},
+            "TYPES": {"Instant"},
+            "ORACLE": "Switch the power and toughness of each of up to two target creatures until end of turn."
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_split_right(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
         name = 'Invert // Invent'
         face = self.get_card_face(name, 'right')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "9a378964-2c04-4d60-a905-c819d37ed4c3",
+            "CARD_SIDE": "right",
+            "IMG_SIDE": "front",
+            "NAME": "Invent",
+            "MANA_COST": "{4}{U}{R}",
+            "CMC": 6,
+            "COLORS": "UR",
+            "COLOR_IDENTITY": "UR",
+            "TYPE_LINE": "Instant",
+            "ALL_TYPES": {"Instant"},
+            "TYPES": {"Instant"},
+            "ORACLE": "Search your library for an instant card and/or a sorcery card, "
+                      "reveal them, put them into your hand, then shuffle."
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_split_default(self):
@@ -296,7 +323,7 @@ class TestCardFace(unittest.TestCase):
             "COLOR_IDENTITY": "UR",
             "TYPE_LINE": "Instant // Instant",
             "ALL_TYPES": {"Instant"},
-            "TYPES": {"Instant", },
+            "TYPES": {"Instant"},
         }
         self.eval_card_face(face, eval_dict)
 
@@ -368,7 +395,6 @@ class TestCardFace(unittest.TestCase):
         eval_dict = {}
         self.eval_card_face(face, eval_dict)
     # region Additional Face Tests
-
 
 
 class TestCard(unittest.TestCase):
@@ -478,9 +504,10 @@ class TestCard(unittest.TestCase):
     def test_card_type_parsing(self):
         card = self.gen_card('Enthusiastic Mechanaut')
 
-        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, None)
-        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Gobbledygook')
-        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Creature — Gobbledygook')
+        # self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, None)
+        # self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Gobbledygook')
+        # self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Creature — Gobbledygook')
+        self.assertEqual(True, False)
 
 
 class TestCardManager(unittest.TestCase):
@@ -494,11 +521,17 @@ class TestCardManager(unittest.TestCase):
         self.assertIsInstance(card, Card)
 
     def test_relay_call(self):
-        card_1 = CardManager.from_name('Shock')
-        card_2 = Card.from_name('Shock')
+        card_name = 'The Kami War'
+        card_1 = CardManager.from_name(card_name)
+        card_2 = Card.from_name(card_name)
         self.assertIsInstance(card_1, Card)
         self.assertIsInstance(card_2, Card)
         self.assertEqual(card_1, card_2)
+
+        card_dict = Card.from_set('NEO')
+        card_3 = card_dict[card_name]
+        self.assertIsInstance(card_3, Card)
+        self.assertEqual(card_3, card_2)
 
     def test_from_name_invalid(self):
         # noinspection SpellCheckingInspection
