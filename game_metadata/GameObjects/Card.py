@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import NoReturn, Optional
 
 from Utilities.auto_logging import logging
-from wubrg import get_color_identity
+from wubrg import get_color_identity, parse_cost, wubrg_compare_key
 
 from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, SUBTYPE_DICT, ALL_SUBTYPES, \
     LAYOUT_DICT, CardLayouts, CARD_SIDE
@@ -55,64 +55,75 @@ class CardFace:
 
         return face
 
-    @staticmethod
-    def _extract_face_dict(side, json) -> CARD_INFO:
-        if side in ['back', 'adventure', 'right']:
-            sub_json = json['card_faces'][1]
-        else:
-            if 'card_faces' in json:
-                sub_json = json['card_faces'][0]
+    def _extract_face_dict(self, json) -> CARD_INFO:
+        """
+        Get the relevant card face dictionary based on the side of the card.
+        """
+        if self.CARD_SIDE == 'default':
+            return json
+        if self.CARD_SIDE in ['back', 'adventure', 'right']:
+            return json['card_faces'][1]
+        if 'card_faces' in json:
+            return json['card_faces'][0]
+        return json
+
+    def _parse_from_json(self, json, key, default=None):
+        """
+        Searches for the key in the json dictionary from most specific to least specific.
+        This allows for "inner" faces to fall-back to general information about a card.
+        """
+        # Attempt to get the value from a specific face
+        face_dict = self._extract_face_dict(json)
+        val = face_dict.get(key)
+        if val is not None:
+            return val
+
+        # Attempt to get the value from general card information
+        val = json.get(key)
+        if val is not None:
+            return val
+
+        # Fall-back to the default
+        logging.debug(f"'{key}' is empty for card '{self.NAME}'")
+        return default
+
+    def _calculate_cmc(self, json) -> int:
+        """
+        Gets the CMC of the card, falling back ona manual calculation if needed.
+        """
+        # Attempt to get the CMC from the relevant section of the card.
+        face_dict = self._extract_face_dict(json)
+        cmc = face_dict.get('cmc')
+        if cmc is not None:
+            return int(cmc)
+
+        # Get each mana symbol in the mana cost, add its cost to the total cmc.
+        cmc_str = parse_cost(self.MANA_COST)
+        cmc = 0
+        for symbol in cmc_str:
+            if symbol.isnumeric():
+                cmc += int(symbol)
             else:
-                sub_json = json
-
-        return sub_json
-
-    def _parse_cmc(self, face_dict) -> Optional[int]:
-        # TODO: Handle this base on mana_cost later.
-        _cmc = face_dict.get('cmc')
-        ret = None
-        if _cmc is not None:
-            ret = int(_cmc)
-        else:
-            logging.warning(f"'cmc' is empty for card '{self.NAME}'")
-        return ret
-
-    def _parse_colors(self, face_dict, key) -> str:
-        _colors = face_dict.get(key)
-        ret = ""
-        if _colors is not None:
-            ret = get_color_identity("".join(_colors))
-        else:
-            logging.warning(f"'colors' is empty for card '{self.NAME}'")
-        return ret
-
-    def _get_type_line(self, face_dict) -> str:
-        type_line = face_dict.get('type_line')
-        if type_line is None:
-            logging.warning(f"'type_line' is empty for card '{self.NAME}'")
-            type_line = ''
-        return type_line
-
-    def _get_all_types(self) -> set[str]:
-        # Replace the (possible) dash, and separate on spaces to get a list of types.
-        type_list = self.TYPE_LINE.replace(' —', '')
-        # type_list = type_list.replace(' //', '')
-        type_list = type_list.split(' ')
-        return set(type_list)
+                cmc += 1
+        return cmc
 
     def _validate_types(self) -> None:
+        """
+        Checks the sts of types found to make sure the information is valid.
+        """
+        # Check if there's mismatches between the separated types and all types found.
         length_all_types = len(self.ALL_TYPES)
         length_sum_types = len(self.SUBTYPES) + len(self.TYPES) + len(self.SUPERTYPES)
-
         if length_all_types != length_sum_types:
             logging.warning(f"Card '{self.NAME}' contains invalid types!\n  TYPE_LINE: '{self.TYPE_LINE}'")
 
+        # Generate a set of valid subtypes.
         valid_subtypes = set()
         for t in self.TYPES:
             valid_subtypes = valid_subtypes | SUBTYPE_DICT[t]
 
+        # Check that only valid subtypes exist among the card's subtypes.
         for subtype in self.SUBTYPES:
-            # Check that it's a valid subtype among the cards types.
             if subtype not in valid_subtypes:
                 logging.warning(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
 
@@ -121,16 +132,16 @@ class CardFace:
         self.ORACLE_ID: str = json['oracle_id']
         self.CARD_SIDE: str = side
         self.IMG_SIDE: str = 'back' if side == 'back' else 'front'
-        face_dict = self._extract_face_dict(side, json)
+        face_dict = self._extract_face_dict(json)
 
-        self.NAME: str = face_dict.get('name')
-        self.MANA_COST: str = face_dict.get('mana_cost')
-        self.CMC: Optional[int] = self._parse_cmc(face_dict)
-        self.COLORS: str = self._parse_colors(face_dict, 'colors')
-        self.COLOR_IDENTITY: str = self._parse_colors(face_dict, 'color_identity')
+        self.NAME: str = self._parse_from_json(json, 'name')
+        self.MANA_COST: str = self._parse_from_json(json, 'mana_cost')
+        self.CMC: int = self._calculate_cmc(json)
+        self.COLORS: str = ''.join(sorted(self._parse_from_json(json, 'colors'), key=wubrg_compare_key))
+        self.COLOR_IDENTITY: str = ''.join(sorted(self._parse_from_json(json, 'color_identity'), key=wubrg_compare_key))
 
-        self.TYPE_LINE: str = self._get_type_line(face_dict)
-        self.ALL_TYPES: set[str] = self._get_all_types()
+        self.TYPE_LINE: str = self._parse_from_json(json, 'type_line', '')
+        self.ALL_TYPES: set[str] = set(self.TYPE_LINE.split(' ')) - {'—', '//'}
         self.SUPERTYPES: set[str] = self.ALL_TYPES & SUPERTYPES
         self.TYPES: set[str] = self.ALL_TYPES & TYPES
         self.SUBTYPES: set[str] = self.ALL_TYPES & ALL_SUBTYPES

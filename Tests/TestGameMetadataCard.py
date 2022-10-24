@@ -1,5 +1,6 @@
 import unittest
 from typing import Union
+from Utilities.auto_logging import auto_log, LogLvl
 
 from game_metadata.utils.consts import CardLayouts, CARD_SIDE
 from game_metadata.RequestScryfall import RequestScryfall
@@ -66,6 +67,12 @@ base_eval_dict = {
 
 
 class TestCardFace(unittest.TestCase):
+    def setUp(self) -> None:
+        # auto_log(LogLvl.DEBUG)
+        # auto_log(LogLvl.WARNING)
+        # auto_log(LogLvl.VERBOSE)
+        pass
+
     @staticmethod
     def get_card_face(card_name: str, face: CARD_SIDE):
         json = RequestScryfall.get_card_by_name(card_name)
@@ -203,7 +210,7 @@ class TestCardFace(unittest.TestCase):
             "COLORS": "R",
             "COLOR_IDENTITY": "R",
             "TYPE_LINE": "Creature — Giant",
-            "ALL_TYPES": {"Creature", "Instant"},
+            "ALL_TYPES": {"Creature", "Giant"},
             "TYPES": {"Creature"},
             "SUBTYPES": {"Giant"},
             "ORACLE": "Whenever Bonecrusher Giant becomes the target of a spell, "
@@ -222,19 +229,16 @@ class TestCardFace(unittest.TestCase):
             "ORACLE_ID": "d6d72f5f-8f5d-4180-b514-f22ff5482902",
             "CARD_SIDE": "adventure",
             "IMG_SIDE": "front",
-            "NAME": "Bonecrusher Giant // Stomp",
-            "MANA_COST": "{2}{R}",
-            "CMC": 3,
+            "NAME": "Stomp",
+            "MANA_COST": "{1}{R}",
+            "CMC": 2,
             "COLORS": "R",
             "COLOR_IDENTITY": "R",
-            "TYPE_LINE": "Creature — Giant // Instant — Adventure",
-            "ALL_TYPES": {"Creature", "Instant", "Giant", "Adventure"},
-            "TYPES": {"Creature", "Instant", "Giant", "Adventure"},
-            "SUBTYPES": {"Creature", "Instant", "Giant", "Adventure"},
-            "ORACLE": "",
-            "FLAVOR_TEXT": "Not every tale ends in glory.",
-            "POW": "4",
-            "TOU": "3"
+            "TYPE_LINE": "Instant — Adventure",
+            "ALL_TYPES": {"Instant", "Adventure"},
+            "TYPES": {"Instant"},
+            "SUBTYPES": {"Adventure"},
+            "ORACLE": "Damage can't be prevented this turn. Stomp deals 2 damage to any target.",
         }
         self.eval_card_face(face, eval_dict)
 
@@ -242,20 +246,21 @@ class TestCardFace(unittest.TestCase):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
         face = self.get_card_face(name, 'default')
+        print(face.TYPE_LINE)
+        print(face.ALL_TYPES)
         eval_dict = {
             "ORACLE_ID": "d6d72f5f-8f5d-4180-b514-f22ff5482902",
             "CARD_SIDE": "default",
             "IMG_SIDE": "front",
             "NAME": "Bonecrusher Giant // Stomp",
-            "MANA_COST": "{2}{R}",
+            "MANA_COST": "{2}{R} // {1}{R}",
             "CMC": 3,
             "COLORS": "R",
             "COLOR_IDENTITY": "R",
             "TYPE_LINE": "Creature — Giant // Instant — Adventure",
             "ALL_TYPES": {"Creature", "Instant", "Giant", "Adventure"},
-            "TYPES": {"Creature", "Instant", "Giant", "Adventure"},
-            "SUBTYPES": {"Creature", "Instant", "Giant", "Adventure"},
-            "ORACLE": "",
+            "TYPES": {"Creature", "Instant"},
+            "SUBTYPES": {"Giant", "Adventure"},
             "FLAVOR_TEXT": "Not every tale ends in glory.",
             "POW": "4",
             "TOU": "3"
@@ -280,7 +285,19 @@ class TestCardFace(unittest.TestCase):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
         name = 'Invert // Invent'
         face = self.get_card_face(name, 'default')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "9a378964-2c04-4d60-a905-c819d37ed4c3",
+            "CARD_SIDE": "default",
+            "IMG_SIDE": "front",
+            "NAME": "Invert // Invent",
+            "MANA_COST": "{U/R} // {4}{U}{R}",
+            "CMC": 7,
+            "COLORS": "UR",
+            "COLOR_IDENTITY": "UR",
+            "TYPE_LINE": "Instant // Instant",
+            "ALL_TYPES": {"Instant"},
+            "TYPES": {"Instant", },
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_transform_front(self):
