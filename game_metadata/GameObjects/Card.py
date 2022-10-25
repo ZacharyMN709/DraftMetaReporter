@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import NoReturn, Optional
 
 from Utilities.auto_logging import logging
-from wubrg import get_color_identity, parse_cost, wubrg_compare_key, COLOR_STRING
+from wubrg import get_color_identity, parse_cost, parse_color_list, COLOR_STRING
 
 from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, SUBTYPE_DICT, ALL_SUBTYPES, \
     LAYOUT_DICT, CardLayouts, CARD_SIDE
@@ -18,14 +18,15 @@ class CardFace:
 
     # sides = ['default', 'left', 'right', 'main', 'adventure', 'flipped']
     @classmethod
-    def single_face(cls, json: CARD_INFO, side: CARD_SIDE = 'default') -> CardFace:
+    def single_face(cls, json: CARD_INFO, layout: CardLayouts, side: CARD_SIDE = 'default') -> CardFace:
         """
         Returns the appropriately configured card face for the side given.
         :param json: The data for the card.
+        :param layout: The layout enum of the card.
         :param side: The face of the card to generate the data for.
         :return: A CardFace object with nicely formatted data.
         """
-        face = cls(json, side)
+        face = cls(json, layout, side)
 
         # TODO: See if this can be moved into __init__
         # Modify 'default' as needed for easy access to data.
@@ -38,14 +39,15 @@ class CardFace:
 
     # sides = ['default', 'front', 'back']
     @classmethod
-    def double_faced(cls, json: CARD_INFO, side: CARD_SIDE = 'default') -> CardFace:
+    def double_faced(cls, json: CARD_INFO, layout: CardLayouts, side: CARD_SIDE = 'default') -> CardFace:
         """
         Returns the appropriately configured card face for the side given.
         :param json: The data for the card.
+        :param layout: The layout enum of the card.
         :param side: The face of the card to generate the data for.
         :return: A CardFace object with nicely formatted data.
         """
-        face = cls(json, side)
+        face = cls(json, layout, side)
 
         # TODO: See if this can be moved into __init__
         # Modify 'default' as needed for easy access to data.
@@ -108,14 +110,6 @@ class CardFace:
                 cmc += 1
         return cmc
 
-    def _parse_color_list(self, json, key) -> COLOR_STRING:
-        """
-        Takes a lists of colours and combines it into a COLOR_STRING.
-        """
-        color_list = self._parse_from_json(json, key, '')
-        color_list = sorted(color_list, key=wubrg_compare_key)
-        return ''.join(color_list)
-
     def _validate_types(self) -> None:
         """
         Checks the sts of types found to make sure the information is valid.
@@ -136,9 +130,37 @@ class CardFace:
             if subtype not in valid_subtypes:
                 logging.warning(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
 
-    def __init__(self, json: CARD_INFO, side: CARD_SIDE):
+    def _apply_overrides(self, json):
+        # TODO: These are something akin to hacks, and it would (likely) be better to handle this
+        #  as part of the base logic which populates each field of the CardFace.
+
+        if self.LAYOUT == CardLayouts.FLIP and self.CARD_SIDE == 'flipped':
+            self.MANA_COST = json['mana_cost']
+            self.CMC: int = self._calculate_cmc(json)
+
+        if self.LAYOUT == CardLayouts.TRANSFORM and self.CARD_SIDE == 'default':
+            front_face = json["card_faces"][0]
+            self.COLORS = parse_color_list(json['color_identity'])
+            self.MANA_COST = front_face["mana_cost"]
+            self.ORACLE = front_face["oracle_text"]
+
+        if self.LAYOUT == CardLayouts.TRANSFORM and self.CARD_SIDE == 'back':
+            self.MANA_COST = ''
+            self.CMC = json["cmc"]
+
+        if self.LAYOUT == CardLayouts.MODAL_DFC and self.CARD_SIDE == 'default':
+            front_face = json["card_faces"][0]
+            self.MANA_COST = front_face["mana_cost"]
+            self.COLORS = self.COLOR_IDENTITY
+            self.ORACLE = front_face["oracle_text"]
+
+        if self.LAYOUT == CardLayouts.MODAL_DFC and self.CARD_SIDE == 'back':
+            self.MANA_PRODUCED = set(json.get("produced_mana", list()))
+
+    def __init__(self, json: CARD_INFO, layout: CardLayouts, side: CARD_SIDE):
         self.SCRYFALL_ID: str = json['id']
         self.ORACLE_ID: str = json['oracle_id']
+        self.LAYOUT: CardLayouts = layout
         self.CARD_SIDE: str = side
         self.IMG_SIDE: str = 'back' if side == 'back' else 'front'
         self.NAME: str = self._parse_from_json(json, 'name')
@@ -146,8 +168,8 @@ class CardFace:
         # NOTE: Colours and costs might be mor complicated than previously thought.
         self.MANA_COST: str = self._parse_from_json(json, 'mana_cost', '')
         self.CMC: int = self._calculate_cmc(json)
-        self.COLORS: COLOR_STRING = self._parse_color_list(json, 'colors')
-        self.COLOR_IDENTITY: COLOR_STRING = self._parse_color_list(json, 'color_identity')
+        self.COLORS: COLOR_STRING = parse_color_list(self._parse_from_json(json, 'colors', ''))
+        self.COLOR_IDENTITY: COLOR_STRING = parse_color_list(self._parse_from_json(json, 'color_identity', ''))
 
         self.TYPE_LINE: str = self._parse_from_json(json, 'type_line', '')
         self.ALL_TYPES: set[str] = set(self.TYPE_LINE.split(' ')) - {'—', '//'}
@@ -164,6 +186,8 @@ class CardFace:
 
         self.POW: Optional[str] = face_dict.get('power')
         self.TOU: Optional[str] = face_dict.get('toughness')
+
+        self._apply_overrides(json)
 
     # sizes = ['small', 'normal', 'large', 'png', 'art_crop', 'border_crop']
     def image_url(self, size: str = 'normal') -> str:
@@ -194,33 +218,33 @@ class Card:
         :param json: The card data.
         """
         if self.LAYOUT == CardLayouts.NORMAL:
-            self.DEFAULT_FACE = CardFace.single_face(json)
+            self.DEFAULT_FACE = CardFace.single_face(json, self.LAYOUT)
             self.FACE_1 = self.DEFAULT_FACE
             self.FACE_2 = None
         elif self.LAYOUT == CardLayouts.SAGA:
-            self.DEFAULT_FACE = CardFace.single_face(json)
+            self.DEFAULT_FACE = CardFace.single_face(json, self.LAYOUT)
             self.FACE_1 = self.DEFAULT_FACE
             self.FACE_2 = None
         elif self.LAYOUT == CardLayouts.CLASS:
-            self.DEFAULT_FACE = CardFace.single_face(json)
+            self.DEFAULT_FACE = CardFace.single_face(json, self.LAYOUT)
             self.FACE_1 = self.DEFAULT_FACE
             self.FACE_2 = None
         elif self.LAYOUT == CardLayouts.ADVENTURE:
-            self.DEFAULT_FACE = CardFace.single_face(json)
-            self.FACE_1 = CardFace.single_face(json, 'main')
-            self.FACE_2 = CardFace.single_face(json, 'adventure')
+            self.DEFAULT_FACE = CardFace.single_face(json, self.LAYOUT)
+            self.FACE_1 = CardFace.single_face(json, self.LAYOUT, 'main')
+            self.FACE_2 = CardFace.single_face(json, self.LAYOUT, 'adventure')
         elif self.LAYOUT == CardLayouts.SPLIT:
-            self.DEFAULT_FACE = CardFace.single_face(json)
-            self.FACE_1 = CardFace.single_face(json, 'left')
-            self.FACE_2 = CardFace.single_face(json, 'right')
+            self.DEFAULT_FACE = CardFace.single_face(json, self.LAYOUT)
+            self.FACE_1 = CardFace.single_face(json, self.LAYOUT, 'left')
+            self.FACE_2 = CardFace.single_face(json, self.LAYOUT, 'right')
         elif self.LAYOUT == CardLayouts.TRANSFORM:
-            self.DEFAULT_FACE = CardFace.double_faced(json)
-            self.FACE_1 = CardFace.double_faced(json, 'front')
-            self.FACE_2 = CardFace.double_faced(json, 'back')
+            self.DEFAULT_FACE = CardFace.double_faced(json, self.LAYOUT)
+            self.FACE_1 = CardFace.double_faced(json, self.LAYOUT, 'front')
+            self.FACE_2 = CardFace.double_faced(json, self.LAYOUT, 'back')
         elif self.LAYOUT == CardLayouts.MODAL_DFC:
-            self.DEFAULT_FACE = CardFace.double_faced(json)
-            self.FACE_1 = CardFace.double_faced(json, 'front')
-            self.FACE_2 = CardFace.double_faced(json, 'back')
+            self.DEFAULT_FACE = CardFace.double_faced(json, self.LAYOUT)
+            self.FACE_1 = CardFace.double_faced(json, self.LAYOUT, 'front')
+            self.FACE_2 = CardFace.double_faced(json, self.LAYOUT, 'back')
         else:
             raise Exception(f"Unknown layout '{self.LAYOUT}'")
 

@@ -6,7 +6,7 @@ from typing import Optional, Callable
 import re
 import logging
 
-from wubrg.typing import COLOR_STRING, COLOR_IDENTITY, COLOR_ALIAS, MANA_SYMBOL
+from wubrg.typing import COLOR, COLOR_STRING, COLOR_IDENTITY, COLOR_ALIAS, MANA_SYMBOL
 from wubrg.consts import WUBRG, COLOR_TO_NAME, COLOR_COMBINATIONS
 from wubrg.alias_mappings import ALIAS_MAP
 from wubrg.mana_symbols import MANA_SYMBOLS
@@ -77,6 +77,14 @@ def get_color_identity(text: str) -> COLOR_IDENTITY:
     # noinspection PyTypeChecker
     color_identity: COLOR_IDENTITY = ''.join(c for c in WUBRG if c in char_set)
     return color_identity
+
+
+def parse_color_list(color_list: list[COLOR]) -> COLOR_IDENTITY:
+    """
+    Takes a lists of colours and combines it into a COLOR_STRING.
+    """
+    color_str = ''.join(color_list)
+    return get_color_identity(color_str)
 
 
 def get_color_alias(color_string: str) -> Optional[COLOR_ALIAS]:

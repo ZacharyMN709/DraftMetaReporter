@@ -74,9 +74,9 @@ class TestCardFace(unittest.TestCase):
         pass
 
     @staticmethod
-    def get_card_face(card_name: str, face: CARD_SIDE):
+    def get_card_face(card_name: str, layout: CardLayouts, face: CARD_SIDE):
         json = RequestScryfall.get_card_by_name(card_name)
-        return CardFace.single_face(json, face)
+        return CardFace(json, layout, face)
 
     def eval_card_face(self, face: CardFace, eval_dict: [str, Union[set, str]]):
         """
@@ -118,7 +118,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_normal(self):
         # https://api.scryfall.com/cards/e66120a5-95a3-4d15-873c-cfba221a2299?format=json&pretty=true
         name = 'Jukai Preserver'
-        face = self.get_card_face(name, 'default')
+        face = self.get_card_face(name, CardLayouts.NORMAL, 'default')
         eval_dict = {
             "SCRYFALL_ID": "e66120a5-95a3-4d15-873c-cfba221a2299",
             "ORACLE_ID": "a8ce90be-f0ab-4f8d-896a-cde8aaf24579",
@@ -147,7 +147,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_saga(self):
         # https://api.scryfall.com/cards/3a613a01-6145-4e34-987c-c9bdcb068370?format=json&pretty=true
         name = 'Fall of the Thran'
-        face = self.get_card_face(name, 'default')
+        face = self.get_card_face(name, CardLayouts.SAGA, 'default')
         eval_dict = {
             "ORACLE_ID": "341803d9-fd29-4721-81bf-ae9b7f1c01d2",
             "CARD_SIDE": "default",
@@ -170,7 +170,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_class(self):
         # https://api.scryfall.com/cards/37d6343a-c514-4ca6-a415-62d1a473ae20?format=json&pretty=true
         name = 'Bard Class'
-        face = self.get_card_face(name, 'default')
+        face = self.get_card_face(name, CardLayouts.CLASS, 'default')
         eval_dict = {
             "ORACLE_ID": "5bbc3ad0-4865-43f0-8baf-e7f4af5db656",
             "CARD_SIDE": "default",
@@ -199,7 +199,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_adventure_main(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
-        face = self.get_card_face(name, 'main')
+        face = self.get_card_face(name, CardLayouts.ADVENTURE, 'main')
         eval_dict = {
             "ORACLE_ID": "d6d72f5f-8f5d-4180-b514-f22ff5482902",
             "CARD_SIDE": "main",
@@ -224,7 +224,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_adventure_adventure(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
-        face = self.get_card_face(name, 'adventure')
+        face = self.get_card_face(name, CardLayouts.ADVENTURE, 'adventure')
         eval_dict = {
             "ORACLE_ID": "d6d72f5f-8f5d-4180-b514-f22ff5482902",
             "CARD_SIDE": "adventure",
@@ -245,7 +245,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_adventure_default(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
-        face = self.get_card_face(name, 'default')
+        face = self.get_card_face(name, CardLayouts.ADVENTURE, 'default')
         eval_dict = {
             "ORACLE_ID": "d6d72f5f-8f5d-4180-b514-f22ff5482902",
             "CARD_SIDE": "default",
@@ -268,7 +268,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_split_left(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
         name = 'Invert // Invent'
-        face = self.get_card_face(name, 'left')
+        face = self.get_card_face(name, CardLayouts.SPLIT, 'left')
         eval_dict = {
             "ORACLE_ID": "9a378964-2c04-4d60-a905-c819d37ed4c3",
             "CARD_SIDE": "left",
@@ -288,7 +288,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_split_right(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
         name = 'Invert // Invent'
-        face = self.get_card_face(name, 'right')
+        face = self.get_card_face(name, CardLayouts.SPLIT, 'right')
         eval_dict = {
             "ORACLE_ID": "9a378964-2c04-4d60-a905-c819d37ed4c3",
             "CARD_SIDE": "right",
@@ -309,7 +309,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_split_default(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
         name = 'Invert // Invent'
-        face = self.get_card_face(name, 'default')
+        face = self.get_card_face(name, CardLayouts.SPLIT, 'default')
         eval_dict = {
             "ORACLE_ID": "9a378964-2c04-4d60-a905-c819d37ed4c3",
             "CARD_SIDE": "default",
@@ -328,7 +328,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_transform_front(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
         name = 'Boseiju Reaches Skyward'
-        face = self.get_card_face(name, 'front')
+        face = self.get_card_face(name, CardLayouts.TRANSFORM, 'front')
         eval_dict = {
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
             "CARD_SIDE": "front",
@@ -354,7 +354,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_transform_back(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
         name = 'Boseiju Reaches Skyward'
-        face = self.get_card_face(name, 'back')
+        face = self.get_card_face(name, CardLayouts.TRANSFORM, 'back')
         eval_dict = {
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
             "CARD_SIDE": "back",
@@ -380,9 +380,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_transform_default(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
         name = 'Boseiju Reaches Skyward'
-        face = self.get_card_face(name, 'default')
-
-        # TODO: Sort out exceptions with CMC and Keywords.
+        face = self.get_card_face(name, CardLayouts.TRANSFORM, 'default')
         eval_dict = {
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
             "CARD_SIDE": "default",
@@ -408,7 +406,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_modal_dfc_front(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
         name = 'Shatterskull Smashing'
-        face = self.get_card_face(name, 'front')
+        face = self.get_card_face(name, CardLayouts.MODAL_DFC, 'front')
         eval_dict = {
             "ORACLE_ID": "78301998-fd9b-4cd5-afad-dbcb43cac2a7",
             "CARD_SIDE": "front",
@@ -430,7 +428,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_modal_dfc_back(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
         name = 'Shatterskull Smashing'
-        face = self.get_card_face(name, 'back')
+        face = self.get_card_face(name, CardLayouts.MODAL_DFC, 'back')
         eval_dict = {
             "ORACLE_ID": "78301998-fd9b-4cd5-afad-dbcb43cac2a7",
             "CARD_SIDE": "back",
@@ -438,7 +436,7 @@ class TestCardFace(unittest.TestCase):
             "NAME": "Shatterskull, the Hammer Pass",
             "MANA_COST": "",
             "CMC": 0,
-            "COLORS": "R",
+            "COLORS": "",
             "COLOR_IDENTITY": "R",
             "TYPE_LINE": "Land",
             "ALL_TYPES": {"Land"},
@@ -456,7 +454,7 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_modal_dfc_default(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
         name = 'Shatterskull Smashing'
-        face = self.get_card_face(name, 'default')
+        face = self.get_card_face(name, CardLayouts.MODAL_DFC, 'default')
         eval_dict = {
             "ORACLE_ID": "78301998-fd9b-4cd5-afad-dbcb43cac2a7",
             "CARD_SIDE": "default",
@@ -485,7 +483,7 @@ class TestCardFace(unittest.TestCase):
         # TODO: Implement logic for flip cards.
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
         name = 'Bushi Tenderfoot'
-        face = self.get_card_face(name, 'main')
+        face = self.get_card_face(name, CardLayouts.FLIP, 'main')
         eval_dict = {
             "ORACLE_ID": "82959ca2-cd96-4cca-9ce0-afb8db209860",
             "CARD_SIDE": "main",
@@ -509,7 +507,7 @@ class TestCardFace(unittest.TestCase):
         # TODO: Implement logic for flip cards.
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
         name = 'Bushi Tenderfoot'
-        face = self.get_card_face(name, 'flipped')
+        face = self.get_card_face(name, CardLayouts.FLIP, 'flipped')
         eval_dict = {
             "ORACLE_ID": "82959ca2-cd96-4cca-9ce0-afb8db209860",
             "CARD_SIDE": "flipped",
@@ -536,7 +534,7 @@ class TestCardFace(unittest.TestCase):
         # TODO: Implement logic for flip cards.
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
         name = 'Bushi Tenderfoot'
-        face = self.get_card_face(name, 'default')
+        face = self.get_card_face(name, CardLayouts.FLIP, 'default')
         eval_dict = {
             "ORACLE_ID": "82959ca2-cd96-4cca-9ce0-afb8db209860",
             "CARD_SIDE": "default",

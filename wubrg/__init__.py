@@ -21,7 +21,7 @@ from_alias_mappings = ['ALIAS_MAP', 'GROUPED_ALIAS_MAP']
 
 from_mana_symbols = ['FORMATTED_MANA_SYMBOLS', 'MANA_SYMBOLS']
 
-from_funcs = ['is_color_string', 'get_color_string', 'get_color_identity', 'get_color_alias',
+from_funcs = ['is_color_string', 'get_color_string', 'get_color_identity', 'parse_color_list', 'get_color_alias',
               'parse_cost', 'get_color_supersets', 'get_color_subsets']
 
 from_sorting = ['wubrg_compare_key', 'pentad_compare_key', 'ColorSortStyles', 'color_filter']
