@@ -16,47 +16,6 @@ class CardFace:
     """
     IMG_URL = 'https://c1.scryfall.com/file/scryfall-cards/'
 
-    # sides = ['default', 'left', 'right', 'main', 'adventure', 'flipped']
-    @classmethod
-    def single_face(cls, json: CARD_INFO, layout: CardLayouts, side: CARD_SIDE = 'default') -> CardFace:
-        """
-        Returns the appropriately configured card face for the side given.
-        :param json: The data for the card.
-        :param layout: The layout enum of the card.
-        :param side: The face of the card to generate the data for.
-        :return: A CardFace object with nicely formatted data.
-        """
-        face = cls(json, layout, side)
-
-        # TODO: See if this can be moved into __init__
-        # Modify 'default' as needed for easy access to data.
-        if side == 'default':
-            face.NAME = json.get('name')
-            face.MANA_COST = json.get('mana_cost')
-            face.TYPE_LINE = json.get('type_line')
-
-        return face
-
-    # sides = ['default', 'front', 'back']
-    @classmethod
-    def double_faced(cls, json: CARD_INFO, layout: CardLayouts, side: CARD_SIDE = 'default') -> CardFace:
-        """
-        Returns the appropriately configured card face for the side given.
-        :param json: The data for the card.
-        :param layout: The layout enum of the card.
-        :param side: The face of the card to generate the data for.
-        :return: A CardFace object with nicely formatted data.
-        """
-        face = cls(json, layout, side)
-
-        # TODO: See if this can be moved into __init__
-        # Modify 'default' as needed for easy access to data.
-        if side == 'default':
-            face.NAME = json.get('name')
-            face.TYPE_LINE = json.get('type_line')
-
-        return face
-
     def _extract_face_dict(self, json) -> CARD_INFO:
         """
         Get the relevant card face dictionary based on the side of the card.
@@ -157,7 +116,7 @@ class CardFace:
         if self.LAYOUT == CardLayouts.MODAL_DFC and self.CARD_SIDE == 'back':
             self.MANA_PRODUCED = set(json.get("produced_mana", list()))
 
-    def __init__(self, json: CARD_INFO, layout: CardLayouts, side: CARD_SIDE):
+    def __init__(self, json: CARD_INFO, layout: CardLayouts, side: CARD_SIDE = 'default'):
         self.SCRYFALL_ID: str = json['id']
         self.ORACLE_ID: str = json['oracle_id']
         self.LAYOUT: CardLayouts = layout
@@ -217,34 +176,27 @@ class Card:
         Automatically generates and sets the CardFaces for the Card object.
         :param json: The card data.
         """
-        if self.LAYOUT == CardLayouts.NORMAL:
-            self.DEFAULT_FACE = CardFace.single_face(json, self.LAYOUT)
+        self.DEFAULT_FACE = CardFace(json, self.LAYOUT, 'default')
+
+        if self.LAYOUT in {CardLayouts.NORMAL, CardLayouts.SAGA, CardLayouts.CLASS}:
             self.FACE_1 = self.DEFAULT_FACE
             self.FACE_2 = None
-        elif self.LAYOUT == CardLayouts.SAGA:
-            self.DEFAULT_FACE = CardFace.single_face(json, self.LAYOUT)
+        if self.LAYOUT == CardLayouts.MELD:
             self.FACE_1 = self.DEFAULT_FACE
-            self.FACE_2 = None
-        elif self.LAYOUT == CardLayouts.CLASS:
-            self.DEFAULT_FACE = CardFace.single_face(json, self.LAYOUT)
-            self.FACE_1 = self.DEFAULT_FACE
-            self.FACE_2 = None
+            meld_json = None  # TODO: Get meld json based on link found in json.
+            self.FACE_2 = CardFace(meld_json, self.LAYOUT, 'melded')
         elif self.LAYOUT == CardLayouts.ADVENTURE:
-            self.DEFAULT_FACE = CardFace.single_face(json, self.LAYOUT)
-            self.FACE_1 = CardFace.single_face(json, self.LAYOUT, 'main')
-            self.FACE_2 = CardFace.single_face(json, self.LAYOUT, 'adventure')
+            self.FACE_1 = CardFace(json, self.LAYOUT, 'main')
+            self.FACE_2 = CardFace(json, self.LAYOUT, 'adventure')
         elif self.LAYOUT == CardLayouts.SPLIT:
-            self.DEFAULT_FACE = CardFace.single_face(json, self.LAYOUT)
-            self.FACE_1 = CardFace.single_face(json, self.LAYOUT, 'left')
-            self.FACE_2 = CardFace.single_face(json, self.LAYOUT, 'right')
-        elif self.LAYOUT == CardLayouts.TRANSFORM:
-            self.DEFAULT_FACE = CardFace.double_faced(json, self.LAYOUT)
-            self.FACE_1 = CardFace.double_faced(json, self.LAYOUT, 'front')
-            self.FACE_2 = CardFace.double_faced(json, self.LAYOUT, 'back')
-        elif self.LAYOUT == CardLayouts.MODAL_DFC:
-            self.DEFAULT_FACE = CardFace.double_faced(json, self.LAYOUT)
-            self.FACE_1 = CardFace.double_faced(json, self.LAYOUT, 'front')
-            self.FACE_2 = CardFace.double_faced(json, self.LAYOUT, 'back')
+            self.FACE_1 = CardFace(json, self.LAYOUT, 'left')
+            self.FACE_2 = CardFace(json, self.LAYOUT, 'right')
+        elif self.LAYOUT == CardLayouts.FLIP:
+            self.FACE_1 = CardFace(json, self.LAYOUT, 'main')
+            self.FACE_2 = CardFace(json, self.LAYOUT, 'flipped')
+        elif self.LAYOUT in {CardLayouts.TRANSFORM, CardLayouts.MODAL_DFC}:
+            self.FACE_1 = CardFace(json, self.LAYOUT, 'front')
+            self.FACE_2 = CardFace(json, self.LAYOUT, 'back')
         else:
             raise Exception(f"Unknown layout '{self.LAYOUT}'")
 

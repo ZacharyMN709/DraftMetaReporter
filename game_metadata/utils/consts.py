@@ -17,7 +17,7 @@ def new_color_count_dict() -> dict[COLOR, int]:
 
 # Type information for the card json Scryfall returns.
 CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str]]]
-CARD_SIDE = Literal['default', 'main', 'adventure', 'left', 'right', 'front', 'back', 'flipped']
+CARD_SIDE = Literal['default', 'main', 'adventure', 'left', 'right', 'front', 'back', 'flipped', 'melded']
 
 # Rank Consts
 RANKS = ['None', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Mythic']
@@ -126,7 +126,7 @@ class CardLayouts(Flag):
     SAGA = auto()
     ADVENTURE = auto()
 
-    TWO_SIDED = TRANSFORM | MODAL_DFC
+    TWO_SIDED = TRANSFORM | MODAL_DFC | MELD
     FUSED = ADVENTURE | SPLIT | FLIP
 
 
