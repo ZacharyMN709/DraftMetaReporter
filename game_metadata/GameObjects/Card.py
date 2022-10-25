@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import NoReturn, Optional
 
 from Utilities.auto_logging import logging
-from wubrg import get_color_identity, parse_cost, wubrg_compare_key
+from wubrg import get_color_identity, parse_cost, wubrg_compare_key, COLOR_STRING
 
 from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, SUBTYPE_DICT, ALL_SUBTYPES, \
     LAYOUT_DICT, CardLayouts, CARD_SIDE
@@ -61,7 +61,7 @@ class CardFace:
         """
         if self.CARD_SIDE == 'default':
             return json
-        if self.CARD_SIDE in ['back', 'adventure', 'right']:
+        if self.CARD_SIDE in ['back', 'adventure', 'right', 'flipped']:
             return json['card_faces'][1]
         if 'card_faces' in json:
             return json['card_faces'][0]
@@ -103,8 +103,18 @@ class CardFace:
             if symbol.isnumeric():
                 cmc += int(symbol)
             else:
+                if symbol == 'X':
+                    continue
                 cmc += 1
         return cmc
+
+    def _parse_color_list(self, json, key) -> COLOR_STRING:
+        """
+        Takes a lists of colours and combines it into a COLOR_STRING.
+        """
+        color_list = self._parse_from_json(json, key, '')
+        color_list = sorted(color_list, key=wubrg_compare_key)
+        return ''.join(color_list)
 
     def _validate_types(self) -> None:
         """
@@ -131,12 +141,13 @@ class CardFace:
         self.ORACLE_ID: str = json['oracle_id']
         self.CARD_SIDE: str = side
         self.IMG_SIDE: str = 'back' if side == 'back' else 'front'
-
         self.NAME: str = self._parse_from_json(json, 'name')
-        self.MANA_COST: str = self._parse_from_json(json, 'mana_cost')
+
+        # NOTE: Colours and costs might be mor complicated than previously thought.
+        self.MANA_COST: str = self._parse_from_json(json, 'mana_cost', '')
         self.CMC: int = self._calculate_cmc(json)
-        self.COLORS: str = ''.join(sorted(self._parse_from_json(json, 'colors', ''), key=wubrg_compare_key))
-        self.COLOR_IDENTITY: str = ''.join(sorted(self._parse_from_json(json, 'color_identity', ''), key=wubrg_compare_key))
+        self.COLORS: COLOR_STRING = self._parse_color_list(json, 'colors')
+        self.COLOR_IDENTITY: COLOR_STRING = self._parse_color_list(json, 'color_identity')
 
         self.TYPE_LINE: str = self._parse_from_json(json, 'type_line', '')
         self.ALL_TYPES: set[str] = set(self.TYPE_LINE.split(' ')) - {'—', '//'}

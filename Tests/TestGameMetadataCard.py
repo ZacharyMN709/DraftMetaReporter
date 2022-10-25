@@ -246,8 +246,6 @@ class TestCardFace(unittest.TestCase):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
         face = self.get_card_face(name, 'default')
-        print(face.TYPE_LINE)
-        print(face.ALL_TYPES)
         eval_dict = {
             "ORACLE_ID": "d6d72f5f-8f5d-4180-b514-f22ff5482902",
             "CARD_SIDE": "default",
@@ -331,42 +329,154 @@ class TestCardFace(unittest.TestCase):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
         name = 'Boseiju Reaches Skyward'
         face = self.get_card_face(name, 'front')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
+            "CARD_SIDE": "front",
+            "IMG_SIDE": "front",
+            "NAME": "Boseiju Reaches Skyward",
+            "MANA_COST": "{3}{G}",
+            "CMC": 4,
+            "COLORS": "G",
+            "COLOR_IDENTITY": "G",
+            "TYPE_LINE": "Enchantment — Saga",
+            "ALL_TYPES": {"Enchantment", "Saga"},
+            "TYPES": {"Enchantment"},
+            "SUBTYPES": {"Saga"},
+            "ORACLE": "(As this Saga enters and after your draw step, add a lore counter.)\n"
+                      "I — Search your library for up to two basic Forest cards, reveal them, "
+                      "put them into your hand, then shuffle.\n"
+                      "II — Put up to one target land card from your graveyard on top of your library.\n"
+                      "III — Exile this Saga, then return it to the battlefield transformed under your control.",
+            "KEYWORDS": {"Reach", "Transform"},
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_transform_back(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
         name = 'Boseiju Reaches Skyward'
         face = self.get_card_face(name, 'back')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
+            "CARD_SIDE": "back",
+            "IMG_SIDE": "back",
+            "NAME": "Branch of Boseiju",
+            "MANA_COST": '',
+            "CMC": 4,
+            "COLORS": "G",
+            "COLOR_IDENTITY": "G",
+            "TYPE_LINE": "Enchantment Creature — Plant",
+            "ALL_TYPES": {"Enchantment", "Creature", "Plant"},
+            "TYPES": {"Enchantment", "Creature"},
+            "SUBTYPES": {"Plant"},
+            "ORACLE": "Reach\nBranch of Boseiju gets +1/+1 for each land you control.",
+            "FLAVOR_TEXT": "Though they razed the surrounding forest, the builders of Towashi left Boseiju unscathed, "
+                           "shaping the city around the ancient tree.",
+            "KEYWORDS": {"Reach", "Transform"},
+            "POW": "0",
+            "TOU": "0"
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_transform_default(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
         name = 'Boseiju Reaches Skyward'
         face = self.get_card_face(name, 'default')
-        eval_dict = {}
+
+        # TODO: Sort out exceptions with CMC and Keywords.
+        eval_dict = {
+            "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
+            "CARD_SIDE": "default",
+            "IMG_SIDE": "front",
+            "NAME": "Boseiju Reaches Skyward // Branch of Boseiju",
+            "MANA_COST": "{3}{G}",
+            "CMC": 4,
+            "COLORS": "G",
+            "COLOR_IDENTITY": "G",
+            "TYPE_LINE": "Enchantment — Saga // Enchantment Creature — Plant",
+            "ALL_TYPES": {"Enchantment", "Saga", "Creature", "Plant"},
+            "TYPES": {"Enchantment", "Creature"},
+            "SUBTYPES": {"Saga", "Plant"},
+            "ORACLE": "(As this Saga enters and after your draw step, add a lore counter.)\n"
+                      "I — Search your library for up to two basic Forest cards, reveal them, "
+                      "put them into your hand, then shuffle.\n"
+                      "II — Put up to one target land card from your graveyard on top of your library.\n"
+                      "III — Exile this Saga, then return it to the battlefield transformed under your control.",
+            "KEYWORDS": {"Reach", "Transform"},
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_modal_dfc_front(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
         name = 'Shatterskull Smashing'
         face = self.get_card_face(name, 'front')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "78301998-fd9b-4cd5-afad-dbcb43cac2a7",
+            "CARD_SIDE": "front",
+            "IMG_SIDE": "front",
+            "NAME": "Shatterskull Smashing",
+            "MANA_COST": "{X}{R}{R}",
+            "CMC": 2,
+            "COLORS": "R",
+            "COLOR_IDENTITY": "R",
+            "TYPE_LINE": "Sorcery",
+            "ALL_TYPES": {"Sorcery"},
+            "TYPES": {"Sorcery"},
+            "ORACLE": "Shatterskull Smashing deals X damage divided as you choose among up to two "
+                      "target creatures and/or planeswalkers. If X is 6 or more, Shatterskull Smashing deals twice "
+                      "X damage divided as you choose among them instead.",
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_modal_dfc_back(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
         name = 'Shatterskull Smashing'
         face = self.get_card_face(name, 'back')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "78301998-fd9b-4cd5-afad-dbcb43cac2a7",
+            "CARD_SIDE": "back",
+            "IMG_SIDE": "back",
+            "NAME": "Shatterskull, the Hammer Pass",
+            "MANA_COST": "",
+            "CMC": 0,
+            "COLORS": "R",
+            "COLOR_IDENTITY": "R",
+            "TYPE_LINE": "Land",
+            "ALL_TYPES": {"Land"},
+            "TYPES": {"Land"},
+            "ORACLE": "As Shatterskull, the Hammer Pass enters the battlefield, you may pay 3 life. "
+                      "If you don't, it enters the battlefield tapped.\n"
+                      "{T}: Add {R}.",
+            "MANA_PRODUCED": {"R"},
+            "FLAVOR_TEXT": "\"The safest way across the Skyfangs is to fly. "
+                           "Shatterskull Pass is a pretty distant second.\""
+                           "\n—Samila, Murasa Expeditionary House",
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_modal_dfc_default(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
         name = 'Shatterskull Smashing'
         face = self.get_card_face(name, 'default')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "78301998-fd9b-4cd5-afad-dbcb43cac2a7",
+            "CARD_SIDE": "default",
+            "IMG_SIDE": "front",
+            "NAME": "Shatterskull Smashing // Shatterskull, the Hammer Pass",
+            "MANA_COST": "{X}{R}{R}",
+            "CMC": 2,
+            "COLORS": "R",
+            "COLOR_IDENTITY": "R",
+            "TYPE_LINE": "Sorcery // Land",
+            "ALL_TYPES": {"Sorcery", "Land"},
+            "TYPES": {"Sorcery", "Land"},
+            "ORACLE": "Shatterskull Smashing deals X damage divided as you choose among up to two "
+                      "target creatures and/or planeswalkers. If X is 6 or more, Shatterskull Smashing deals twice "
+                      "X damage divided as you choose among them instead.",
+            "MANA_PRODUCED": {"R"},
+            "FLAVOR_TEXT": "\"The safest way across the Skyfangs is to fly. "
+                           "Shatterskull Pass is a pretty distant second.\""
+                           "\n—Samila, Murasa Expeditionary House",
+        }
         self.eval_card_face(face, eval_dict)
     # endregion Basic Face Tests
 
@@ -376,7 +486,23 @@ class TestCardFace(unittest.TestCase):
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
         name = 'Bushi Tenderfoot'
         face = self.get_card_face(name, 'main')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "82959ca2-cd96-4cca-9ce0-afb8db209860",
+            "CARD_SIDE": "main",
+            "IMG_SIDE": "front",
+            "NAME": "Bushi Tenderfoot",
+            "MANA_COST": "{W}",
+            "CMC": 1,
+            "COLORS": "W",
+            "COLOR_IDENTITY": "W",
+            "TYPE_LINE": "Creature — Human Soldier",
+            "ALL_TYPES": {"Creature", "Human", "Soldier"},
+            "TYPES": {"Creature"},
+            "SUBTYPES": {"Human", "Soldier"},
+            "ORACLE": "When a creature dealt damage by Bushi Tenderfoot this turn dies, flip Bushi Tenderfoot.",
+            "POW": "1",
+            "TOU": "1"
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_flip_flipped(self):
@@ -384,7 +510,26 @@ class TestCardFace(unittest.TestCase):
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
         name = 'Bushi Tenderfoot'
         face = self.get_card_face(name, 'flipped')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "82959ca2-cd96-4cca-9ce0-afb8db209860",
+            "CARD_SIDE": "flipped",
+            "IMG_SIDE": "front",
+            "NAME": "Kenzo the Hardhearted",
+            "MANA_COST": "{W}",
+            "CMC": 1,
+            "COLORS": "W",
+            "COLOR_IDENTITY": "W",
+            "TYPE_LINE": "Legendary Creature — Human Samurai",
+            "ALL_TYPES": {"Legendary", "Creature", "Human", "Samurai"},
+            "SUPERTYPES": {"Legendary"},
+            "TYPES": {"Creature"},
+            "SUBTYPES": {"Human", "Samurai"},
+            "ORACLE": "Double strike; bushido 2 "
+                      "(Whenever this creature blocks or becomes blocked, it gets +2/+2 until end of turn.)",
+            "KEYWORDS": {"Bushido", "Double strike"},
+            "POW": "3",
+            "TOU": "4"
+        }
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_flip_default(self):
@@ -392,7 +537,24 @@ class TestCardFace(unittest.TestCase):
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
         name = 'Bushi Tenderfoot'
         face = self.get_card_face(name, 'default')
-        eval_dict = {}
+        eval_dict = {
+            "ORACLE_ID": "82959ca2-cd96-4cca-9ce0-afb8db209860",
+            "CARD_SIDE": "default",
+            "IMG_SIDE": "front",
+            "NAME": "Bushi Tenderfoot // Kenzo the Hardhearted",
+            "MANA_COST": "{W}",
+            "CMC": 1,
+            "COLORS": "W",
+            "COLOR_IDENTITY": "W",
+            "TYPE_LINE": "Creature — Human Soldier // Legendary Creature — Human Samurai",
+            "ALL_TYPES": {"Creature", "Human", "Soldier", "Legendary", "Samurai"},
+            "SUPERTYPES": {"Legendary"},
+            "TYPES": {"Creature", },
+            "SUBTYPES": {"Human", "Soldier", "Samurai"},
+            "KEYWORDS": {"Bushido", "Double strike"},
+            "POW": "1",
+            "TOU": "1"
+        }
         self.eval_card_face(face, eval_dict)
     # region Additional Face Tests
 
