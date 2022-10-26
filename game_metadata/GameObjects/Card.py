@@ -22,6 +22,8 @@ class CardFace:
         """
         if self.CARD_SIDE == 'default':
             return json
+        if self.LAYOUT == CardLayouts.MELD:
+            return json
         if self.CARD_SIDE in ['back', 'adventure', 'right', 'flipped']:
             return json['card_faces'][1]
         if 'card_faces' in json:
@@ -99,9 +101,11 @@ class CardFace:
 
         if self.LAYOUT == CardLayouts.TRANSFORM and self.CARD_SIDE == 'default':
             front_face = json["card_faces"][0]
-            self.COLORS = parse_color_list(json['color_identity'])
+            self.COLORS = parse_color_list(front_face['colors'])
             self.MANA_COST = front_face["mana_cost"]
             self.ORACLE = front_face["oracle_text"]
+            self.POW = front_face.get('power')
+            self.TOU = front_face.get('toughness')
 
         if self.LAYOUT == CardLayouts.TRANSFORM and self.CARD_SIDE == 'back':
             self.MANA_COST = ''
@@ -121,7 +125,7 @@ class CardFace:
         self.ORACLE_ID: str = json['oracle_id']
         self.LAYOUT: CardLayouts = layout
         self.CARD_SIDE: str = side
-        self.IMG_SIDE: str = 'back' if side == 'back' else 'front'
+        self.IMG_SIDE: str = 'back' if (side == 'back' or side == 'melded') else 'front'
         self.NAME: str = self._parse_from_json(json, 'name')
 
         # NOTE: Colours and costs might be mor complicated than previously thought.
@@ -176,14 +180,22 @@ class Card:
         Automatically generates and sets the CardFaces for the Card object.
         :param json: The card data.
         """
+        def get_meld_result_name():
+            dicts: list[dict] = json["all_parts"]
+            for d in dicts:
+                if d["component"] == "meld_result":
+                    return d["name"]
+            return None
+
         self.DEFAULT_FACE = CardFace(json, self.LAYOUT, 'default')
 
-        if self.LAYOUT in {CardLayouts.NORMAL, CardLayouts.SAGA, CardLayouts.CLASS}:
+        if self.LAYOUT and {CardLayouts.NORMAL, CardLayouts.SAGA, CardLayouts.CLASS}:
             self.FACE_1 = self.DEFAULT_FACE
             self.FACE_2 = None
-        if self.LAYOUT == CardLayouts.MELD:
+        elif self.LAYOUT == CardLayouts.MELD:
             self.FACE_1 = self.DEFAULT_FACE
-            meld_json = None  # TODO: Get meld json based on link found in json.
+            meld_name = get_meld_result_name()
+            meld_json = RequestScryfall.get_card_by_name(meld_name)
             self.FACE_2 = CardFace(meld_json, self.LAYOUT, 'melded')
         elif self.LAYOUT == CardLayouts.ADVENTURE:
             self.FACE_1 = CardFace(json, self.LAYOUT, 'main')

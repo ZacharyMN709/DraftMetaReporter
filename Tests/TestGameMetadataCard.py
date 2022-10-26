@@ -6,48 +6,8 @@ from game_metadata.utils.consts import CardLayouts, CARD_SIDE
 from game_metadata.RequestScryfall import RequestScryfall
 from game_metadata.GameObjects.Card import Card, CardFace, CardManager
 
-target_cards = {
-    # Tests Mana Production
-    'Deathbloom Gardener':
-        "https://api.scryfall.com/cards/88dee3d1-0496-40ea-b208-7362a932f531?format=json&pretty=true",
-
-    # Tests Mana Production
-    'Crystal Grotto':
-        "https://api.scryfall.com/cards/bd250c9d-c65f-4293-a6b0-007fac634d3d?format=json&pretty=true",
-
-    # Tests Color Identities
-    'Brutal Cathar // Moonrage Brute':
-        "https://api.scryfall.com/cards/0dbac7ce-a6fa-466e-b6ba-173cf2dec98e?format=json&pretty=true",
-
-    # Tests Alternate Costs
-    'Archangel of Wrath':
-        "https://api.scryfall.com/cards/2d00bab2-e95d-4296-a805-2a05e7640efb?format=json&pretty=true",
-
-    # Tests Activated Abilities Costs
-    'Nicol Bolas, the Ravager // Nicol Bolas, the Arisen':
-        "https://api.scryfall.com/cards/7b215968-93a6-4278-ac61-4e3e8c3c3943?format=json&pretty=true",
-
-    # Tests Activated Abilities Costs
-    'Tatsunari, Toad Rider':
-        "https://api.scryfall.com/cards/abf42833-43d0-4b05-b499-d13b2c577ee8?format=json&pretty=true",
-
-    # Tests Activated Abilities Costs
-    'Eldrazi Displacer':
-        "https://api.scryfall.com/cards/f0bb1a5c-0f59-4951-827f-fe9df968232d?format=json&pretty=true",
-
-    # Tests Colorless Handling
-    'Matter Reshaper':
-        "https://api.scryfall.com/cards/3906b61a-3865-4dfd-ae06-a7d2a608851a?format=json&pretty=true",
-}
-
 
 class TestCardFace(unittest.TestCase):
-    def setUp(self) -> None:
-        auto_log(LogLvl.DEBUG)
-        # auto_log(LogLvl.WARNING)
-        # auto_log(LogLvl.VERBOSE)
-        pass
-
     @staticmethod
     def get_card_face(card_name: str, layout: CardLayouts, face: CARD_SIDE):
         json = RequestScryfall.get_card_by_name(card_name)
@@ -65,6 +25,7 @@ class TestCardFace(unittest.TestCase):
             self.assertEqual(face.SCRYFALL_ID, eval_dict.get("SCRYFALL_ID"))
 
         self.assertEqual(eval_dict.get("ORACLE_ID"), face.ORACLE_ID, msg="Error in ORACLE_ID")
+        self.assertEqual(eval_dict.get("LAYOUT"), face.LAYOUT, msg="Error in LAYOUT")
         self.assertEqual(eval_dict.get("CARD_SIDE"), face.CARD_SIDE, msg="Error in CARD_SIDE")
         self.assertEqual(eval_dict.get("IMG_SIDE"), face.IMG_SIDE, msg="Error in IMG_SIDE")
 
@@ -73,6 +34,7 @@ class TestCardFace(unittest.TestCase):
         self.assertEqual(eval_dict.get("CMC"), face.CMC, msg="Error in CMC")
         self.assertEqual(eval_dict.get("COLORS", ""), face.COLORS, msg="Error in COLORS")
         self.assertEqual(eval_dict.get("COLOR_IDENTITY", ""), face.COLOR_IDENTITY, msg="Error in COLOR_IDENTITY")
+        # TODO: Add in more colour information, based on activated costs, kickers or similar.
 
         self.assertEqual(eval_dict.get("TYPE_LINE", ""), face.TYPE_LINE, msg="Error in TYPE_LINE")
         self.assertSetEqual(eval_dict.get("ALL_TYPES", set()), face.ALL_TYPES, msg="Error in ALL_TYPES")
@@ -81,6 +43,7 @@ class TestCardFace(unittest.TestCase):
         self.assertSetEqual(eval_dict.get("SUBTYPES", set()), face.SUBTYPES, msg="Error in SUBTYPES")
 
         self.assertEqual(eval_dict.get("ORACLE"), face.ORACLE, msg="Error in ORACLE")
+        # TODO: Re-enable KEYWORDS at a later date
         # self.assertSetEqual(eval_dict.get("KEYWORDS", set()), face.KEYWORDS, msg="Error in KEYWORDS")
         self.assertSetEqual(eval_dict.get("MANA_PRODUCED", set()), face.MANA_PRODUCED, msg="Error in MANA_PRODUCED")
         self.assertEqual(eval_dict.get("FLAVOR_TEXT"), face.FLAVOR_TEXT, msg="Error in FLAVOR_TEXT")
@@ -93,11 +56,14 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_normal(self):
         # https://api.scryfall.com/cards/e66120a5-95a3-4d15-873c-cfba221a2299?format=json&pretty=true
         name = 'Jukai Preserver'
-        face = self.get_card_face(name, CardLayouts.NORMAL, 'default')
+        layout: CardLayouts = CardLayouts.NORMAL
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "SCRYFALL_ID": "e66120a5-95a3-4d15-873c-cfba221a2299",
             "ORACLE_ID": "a8ce90be-f0ab-4f8d-896a-cde8aaf24579",
-            "CARD_SIDE": "default",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Jukai Preserver",
             "MANA_COST": "{3}{G}",
@@ -122,10 +88,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_saga(self):
         # https://api.scryfall.com/cards/3a613a01-6145-4e34-987c-c9bdcb068370?format=json&pretty=true
         name = 'Fall of the Thran'
-        face = self.get_card_face(name, CardLayouts.SAGA, 'default')
+        layout: CardLayouts = CardLayouts.SAGA
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "341803d9-fd29-4721-81bf-ae9b7f1c01d2",
-            "CARD_SIDE": "default",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Fall of the Thran",
             "MANA_COST": "{5}{W}",
@@ -145,10 +114,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_class(self):
         # https://api.scryfall.com/cards/37d6343a-c514-4ca6-a415-62d1a473ae20?format=json&pretty=true
         name = 'Bard Class'
-        face = self.get_card_face(name, CardLayouts.CLASS, 'default')
+        layout: CardLayouts = CardLayouts.CLASS
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "5bbc3ad0-4865-43f0-8baf-e7f4af5db656",
-            "CARD_SIDE": "default",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Bard Class",
             "MANA_COST": "{R}{G}",
@@ -174,10 +146,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_adventure_main(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
-        face = self.get_card_face(name, CardLayouts.ADVENTURE, 'main')
+        layout: CardLayouts = CardLayouts.ADVENTURE
+        side: CARD_SIDE = 'main'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "d6d72f5f-8f5d-4180-b514-f22ff5482902",
-            "CARD_SIDE": "main",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Bonecrusher Giant",
             "MANA_COST": "{2}{R}",
@@ -199,10 +174,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_adventure_adventure(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
-        face = self.get_card_face(name, CardLayouts.ADVENTURE, 'adventure')
+        layout: CardLayouts = CardLayouts.ADVENTURE
+        side: CARD_SIDE = 'adventure'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "d6d72f5f-8f5d-4180-b514-f22ff5482902",
-            "CARD_SIDE": "adventure",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Stomp",
             "MANA_COST": "{1}{R}",
@@ -220,10 +198,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_adventure_default(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
-        face = self.get_card_face(name, CardLayouts.ADVENTURE, 'default')
+        layout: CardLayouts = CardLayouts.ADVENTURE
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "d6d72f5f-8f5d-4180-b514-f22ff5482902",
-            "CARD_SIDE": "default",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Bonecrusher Giant // Stomp",
             "MANA_COST": "{2}{R} // {1}{R}",
@@ -243,10 +224,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_split_left(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
         name = 'Invert // Invent'
-        face = self.get_card_face(name, CardLayouts.SPLIT, 'left')
+        layout: CardLayouts = CardLayouts.SPLIT
+        side: CARD_SIDE = 'left'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "9a378964-2c04-4d60-a905-c819d37ed4c3",
-            "CARD_SIDE": "left",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Invert",
             "MANA_COST": "{U/R}",
@@ -263,10 +247,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_split_right(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
         name = 'Invert // Invent'
-        face = self.get_card_face(name, CardLayouts.SPLIT, 'right')
+        layout: CardLayouts = CardLayouts.SPLIT
+        side: CARD_SIDE = 'right'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "9a378964-2c04-4d60-a905-c819d37ed4c3",
-            "CARD_SIDE": "right",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Invent",
             "MANA_COST": "{4}{U}{R}",
@@ -284,10 +271,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_split_default(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
         name = 'Invert // Invent'
-        face = self.get_card_face(name, CardLayouts.SPLIT, 'default')
+        layout: CardLayouts = CardLayouts.SPLIT
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "9a378964-2c04-4d60-a905-c819d37ed4c3",
-            "CARD_SIDE": "default",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Invert // Invent",
             "MANA_COST": "{U/R} // {4}{U}{R}",
@@ -303,10 +293,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_transform_front(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
         name = 'Boseiju Reaches Skyward'
-        face = self.get_card_face(name, CardLayouts.TRANSFORM, 'front')
+        layout: CardLayouts = CardLayouts.TRANSFORM
+        side: CARD_SIDE = 'front'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
-            "CARD_SIDE": "front",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Boseiju Reaches Skyward",
             "MANA_COST": "{3}{G}",
@@ -329,10 +322,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_transform_back(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
         name = 'Boseiju Reaches Skyward'
-        face = self.get_card_face(name, CardLayouts.TRANSFORM, 'back')
+        layout: CardLayouts = CardLayouts.TRANSFORM
+        side: CARD_SIDE = 'back'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
-            "CARD_SIDE": "back",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "back",
             "NAME": "Branch of Boseiju",
             "MANA_COST": '',
@@ -355,10 +351,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_transform_default(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
         name = 'Boseiju Reaches Skyward'
-        face = self.get_card_face(name, CardLayouts.TRANSFORM, 'default')
+        layout: CardLayouts = CardLayouts.TRANSFORM
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
-            "CARD_SIDE": "default",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Boseiju Reaches Skyward // Branch of Boseiju",
             "MANA_COST": "{3}{G}",
@@ -381,10 +380,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_modal_dfc_front(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
         name = 'Shatterskull Smashing'
-        face = self.get_card_face(name, CardLayouts.MODAL_DFC, 'front')
+        layout: CardLayouts = CardLayouts.MODAL_DFC
+        side: CARD_SIDE = 'front'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "78301998-fd9b-4cd5-afad-dbcb43cac2a7",
-            "CARD_SIDE": "front",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Shatterskull Smashing",
             "MANA_COST": "{X}{R}{R}",
@@ -403,10 +405,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_modal_dfc_back(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
         name = 'Shatterskull Smashing'
-        face = self.get_card_face(name, CardLayouts.MODAL_DFC, 'back')
+        layout: CardLayouts = CardLayouts.MODAL_DFC
+        side: CARD_SIDE = 'back'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "78301998-fd9b-4cd5-afad-dbcb43cac2a7",
-            "CARD_SIDE": "back",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "back",
             "NAME": "Shatterskull, the Hammer Pass",
             "MANA_COST": "",
@@ -429,10 +434,13 @@ class TestCardFace(unittest.TestCase):
     def test_card_face_modal_dfc_default(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
         name = 'Shatterskull Smashing'
-        face = self.get_card_face(name, CardLayouts.MODAL_DFC, 'default')
+        layout: CardLayouts = CardLayouts.MODAL_DFC
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "78301998-fd9b-4cd5-afad-dbcb43cac2a7",
-            "CARD_SIDE": "default",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Shatterskull Smashing // Shatterskull, the Hammer Pass",
             "MANA_COST": "{X}{R}{R}",
@@ -448,17 +456,17 @@ class TestCardFace(unittest.TestCase):
             "MANA_PRODUCED": {"R"}
         }
         self.eval_card_face(face, eval_dict)
-    # endregion Basic Face Tests
 
-    # region Additional Face Tests
     def test_card_face_flip_main(self):
-        # TODO: Implement logic for flip cards.
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
         name = 'Bushi Tenderfoot'
-        face = self.get_card_face(name, CardLayouts.FLIP, 'main')
+        layout: CardLayouts = CardLayouts.FLIP
+        side: CARD_SIDE = 'main'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "82959ca2-cd96-4cca-9ce0-afb8db209860",
-            "CARD_SIDE": "main",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Bushi Tenderfoot",
             "MANA_COST": "{W}",
@@ -476,13 +484,15 @@ class TestCardFace(unittest.TestCase):
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_flip_flipped(self):
-        # TODO: Implement logic for flip cards.
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
         name = 'Bushi Tenderfoot'
-        face = self.get_card_face(name, CardLayouts.FLIP, 'flipped')
+        layout: CardLayouts = CardLayouts.FLIP
+        side: CARD_SIDE = 'flipped'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "82959ca2-cd96-4cca-9ce0-afb8db209860",
-            "CARD_SIDE": "flipped",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Kenzo the Hardhearted",
             "MANA_COST": "{W}",
@@ -503,13 +513,15 @@ class TestCardFace(unittest.TestCase):
         self.eval_card_face(face, eval_dict)
 
     def test_card_face_flip_default(self):
-        # TODO: Implement logic for flip cards.
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
         name = 'Bushi Tenderfoot'
-        face = self.get_card_face(name, CardLayouts.FLIP, 'default')
+        layout: CardLayouts = CardLayouts.FLIP
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
         eval_dict = {
             "ORACLE_ID": "82959ca2-cd96-4cca-9ce0-afb8db209860",
-            "CARD_SIDE": "default",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
             "IMG_SIDE": "front",
             "NAME": "Bushi Tenderfoot // Kenzo the Hardhearted",
             "MANA_COST": "{W}",
@@ -524,6 +536,385 @@ class TestCardFace(unittest.TestCase):
             "KEYWORDS": {"Bushido", "Double strike"},
             "POW": "1",
             "TOU": "1"
+        }
+        self.eval_card_face(face, eval_dict)
+
+    def test_card_face_meld_front(self):
+        # https://api.scryfall.com/cards/8aefe8bd-216a-4ec1-9362-3f9dbf7fd083?format=json&pretty=true
+        # https://api.scryfall.com/cards/40a01679-3224-427e-bd1d-b797b0ab68b7?format=json&pretty=true
+        name = 'Urza, Lord Protector'
+        layout: CardLayouts = CardLayouts.MELD
+        side: CARD_SIDE = 'front'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "df2af646-3e5b-43a3-8f3e-50565889f456",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Urza, Lord Protector",
+            "MANA_COST": "{1}{W}{U}",
+            "CMC": 3,
+            "COLORS": "WU",
+            "COLOR_IDENTITY": "WU",
+            "TYPE_LINE": "Legendary Creature — Human Artificer",
+            "ALL_TYPES": {"Legendary", "Creature", "Human", "Artificer"},
+            "SUPERTYPES": {"Legendary"},
+            "TYPES": {"Creature"},
+            "SUBTYPES": {"Human", "Artificer"},
+            "ORACLE": "Artifact, instant, and sorcery spells you cast cost {1} less to cast.\n"
+                      "{7}: If you both own and control Urza, Lord Protector and an artifact named "
+                      "The Mightstone and Weakstone, exile them, then meld them into Urza, Planeswalker. "
+                      "Activate only as a sorcery.",
+            "KEYWORDS": {"Meld"},
+            "POW": "2",
+            "TOU": "4"
+        }
+        self.eval_card_face(face, eval_dict)
+
+    def test_card_face_meld_melded(self):
+        # https://api.scryfall.com/cards/8aefe8bd-216a-4ec1-9362-3f9dbf7fd083?format=json&pretty=true
+        # https://api.scryfall.com/cards/40a01679-3224-427e-bd1d-b797b0ab68b7?format=json&pretty=true
+        card_name = 'Urza, Lord Protector'
+        json = RequestScryfall.get_card_by_name(card_name)
+        dicts = json["all_parts"]
+        name = None
+        for d in dicts:
+            if d["component"] == "meld_result":
+                name = d["name"]
+        layout: CardLayouts = CardLayouts.MELD
+        side: CARD_SIDE = 'melded'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "759406d7-44ae-4260-9ef5-3bb2c92f751a",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "back",
+            "NAME": "Urza, Planeswalker",
+            "MANA_COST": "",
+            "CMC": 8.0,
+            "COLORS": "WU",
+            "COLOR_IDENTITY": "WU",
+            "TYPE_LINE": "Legendary Planeswalker — Urza",
+            "ALL_TYPES": {"Legendary", "Planeswalker", "Urza"},
+            "SUPERTYPES": {"Legendary"},
+            "TYPES": {"Planeswalker"},
+            "SUBTYPES": {"Urza"},
+            "ORACLE":  "Once during each of your turns, you may activate an additional loyalty ability of "
+                       "Urza, Planeswalker. (You may activate the same ability twice.)\n"
+                       "+2: Artifact, instant, and sorcery spells you cast this turn cost {2} less to cast. "
+                       "You gain 2 life.\n"
+                       "+1: Draw two cards, then discard a card.\n"
+                       "0: Create two 1/1 colorless Soldier artifact creature tokens.\n"
+                       "−3: Exile target nonland permanent.\n"
+                       "−10: Artifacts and planeswalkers you control gain indestructible until end of turn. "
+                       "Destroy all nonland permanents.",
+        }
+        self.eval_card_face(face, eval_dict)
+
+    def test_card_face_meld_default(self):
+        # https://api.scryfall.com/cards/8aefe8bd-216a-4ec1-9362-3f9dbf7fd083?format=json&pretty=true
+        # https://api.scryfall.com/cards/40a01679-3224-427e-bd1d-b797b0ab68b7?format=json&pretty=true
+        name = 'Urza, Lord Protector'
+        layout: CardLayouts = CardLayouts.MELD
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "df2af646-3e5b-43a3-8f3e-50565889f456",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Urza, Lord Protector",
+            "MANA_COST": "{1}{W}{U}",
+            "CMC": 3,
+            "COLORS": "WU",
+            "COLOR_IDENTITY": "WU",
+            "TYPE_LINE": "Legendary Creature — Human Artificer",
+            "ALL_TYPES": {"Legendary", "Creature", "Human", "Artificer"},
+            "SUPERTYPES": {"Legendary"},
+            "TYPES": {"Creature"},
+            "SUBTYPES": {"Human", "Artificer"},
+            "ORACLE": "Artifact, instant, and sorcery spells you cast cost {1} less to cast.\n"
+                      "{7}: If you both own and control Urza, Lord Protector and an artifact named "
+                      "The Mightstone and Weakstone, exile them, then meld them into Urza, Planeswalker. "
+                      "Activate only as a sorcery.",
+            "KEYWORDS": {"Meld"},
+            "POW": "2",
+            "TOU": "4"
+        }
+        self.eval_card_face(face, eval_dict)
+
+    # endregion Basic Face Tests
+
+    # region Additional Face Tests
+    def test_card_face_mana_dork(self):
+        # https://api.scryfall.com/cards/88dee3d1-0496-40ea-b208-7362a932f531?format=json&pretty=true
+        name = 'Deathbloom Gardener'
+        layout: CardLayouts = CardLayouts.NORMAL
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "0c7f9701-c39e-4f14-844a-15f2e3c41ca9",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Deathbloom Gardener",
+            "MANA_COST": "{2}{G}",
+            "CMC": 3,
+            "COLORS": "G",
+            "COLOR_IDENTITY": "G",
+            "TYPE_LINE": "Creature — Elf Druid",
+            "ALL_TYPES": {"Creature", "Elf", "Druid"},
+            "TYPES": {"Creature"},
+            "SUBTYPES": {"Elf", "Druid"},
+            "ORACLE": "Deathtouch\n{T}: Add one mana of any color.",
+            "KEYWORDS": {"Deathtouch"},
+            "MANA_PRODUCED": {"W", "U", "B", "G", "R"},
+            "FLAVOR_TEXT": "\"I can provide the Coalition with poisons that will break down "
+                           "Phyrexian machinery as easily as they stop the heart.\"",
+            "POW": "1",
+            "TOU": "1"
+        }
+        self.eval_card_face(face, eval_dict)
+
+    def test_card_face_land(self):
+        # https://api.scryfall.com/cards/bd250c9d-c65f-4293-a6b0-007fac634d3d?format=json&pretty=true
+        name = 'Crystal Grotto'
+        layout: CardLayouts = CardLayouts.NORMAL
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "f15fb0cc-8e96-4f03-94d0-b51410415afd",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Crystal Grotto",
+            "MANA_COST": "",
+            "CMC": 0,
+            "COLORS": "",
+            "COLOR_IDENTITY": "",
+            "TYPE_LINE": "Land",
+            "ALL_TYPES": {"Land"},
+            "TYPES": {"Land"},
+            "ORACLE": "When Crystal Grotto enters the battlefield, scry 1. "
+                      "(Look at the top card of your library. You may put that card on the bottom of your library.)\n"
+                      "{T}: Add {C}."
+                      "\n{1}, {T}: Add one mana of any color.",
+            "KEYWORDS": {"Scry"},
+            "MANA_PRODUCED": {"B", "C", "G", "R", "U", "W"},
+        }
+        self.eval_card_face(face, eval_dict)
+
+    def test_card_face_color_identity(self):
+        # https://api.scryfall.com/cards/0dbac7ce-a6fa-466e-b6ba-173cf2dec98e?format=json&pretty=true
+        name = 'Brutal Cathar // Moonrage Brute'
+        layout: CardLayouts = CardLayouts.TRANSFORM
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "1ed2d8e0-462b-468e-8fd3-1f3c6d99fb8a",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Brutal Cathar // Moonrage Brute",
+            "MANA_COST": "{2}{W}",
+            "CMC": 3,
+            "COLORS": "W",
+            "COLOR_IDENTITY": "WR",
+            "TYPE_LINE": "Creature — Human Soldier Werewolf // Creature — Werewolf",
+            "ALL_TYPES": {"Creature", "Human", "Soldier", "Werewolf"},
+            "TYPES": {"Creature"},
+            "SUBTYPES": {"Human", "Soldier", "Werewolf"},
+            "ORACLE": "When this creature enters the battlefield or transforms into Brutal Cathar, "
+                      "exile target creature an opponent controls until this creature leaves the battlefield.\n"
+                      "Daybound (If a player casts no spells during their own turn, it becomes night next turn.)",
+            "KEYWORDS": {"Daybound", "First strike", "Ward", "Nightbound"},
+            "POW": "2",
+            "TOU": "2"
+        }
+        self.eval_card_face(face, eval_dict)
+
+    def test_card_face_kicker(self):
+        # https://api.scryfall.com/cards/2d00bab2-e95d-4296-a805-2a05e7640efb?format=json&pretty=true
+        name = 'Archangel of Wrath'
+        layout: CardLayouts = CardLayouts.NORMAL
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "022e97af-2a3a-4e13-9b6b-d34fcc8cf168",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Archangel of Wrath",
+            "MANA_COST": "{2}{W}{W}",
+            "CMC": 4,
+            "COLORS": "W",
+            "COLOR_IDENTITY": "WBR",
+            "TYPE_LINE": "Creature — Angel",
+            "ALL_TYPES": {"Creature", "Angel"},
+            "TYPES": {"Creature"},
+            "SUBTYPES": {"Angel"},
+            "ORACLE": "Kicker {B} and/or {R} (You may pay an additional {B} and/or {R} as you cast this spell.)\n"
+                      "Flying, lifelink\n"
+                      "When Archangel of Wrath enters the battlefield, if it was kicked, "
+                      "it deals 2 damage to any target.\n"
+                      "When Archangel of Wrath enters the battlefield, if it was kicked twice, "
+                      "it deals 2 damage to any target.",
+            "KEYWORDS": {"Kicker", "Flying", "Lifelink"},
+            "POW": "3",
+            "TOU": "4"
+        }
+        self.eval_card_face(face, eval_dict)
+
+    def test_card_face_activated_ability(self):
+        # https://api.scryfall.com/cards/7b215968-93a6-4278-ac61-4e3e8c3c3943?format=json&pretty=true
+        name = 'Nicol Bolas, the Ravager // Nicol Bolas, the Arisen'
+        layout: CardLayouts = CardLayouts.TRANSFORM
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "55e4b27e-5447-4fc2-8cae-a03e344600c6",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Nicol Bolas, the Ravager // Nicol Bolas, the Arisen",
+            "MANA_COST": "{1}{U}{B}{R}",
+            "CMC": 4,
+            "COLORS": "UBR",
+            "COLOR_IDENTITY": "UBR",
+            "TYPE_LINE": "Legendary Creature — Elder Dragon // Legendary Planeswalker — Bolas",
+            "ALL_TYPES": {"Legendary",  "Creature", "Elder", "Dragon", "Planeswalker", "Bolas"},
+            "SUPERTYPES": {"Legendary"},
+            "TYPES": {"Creature", "Planeswalker"},
+            "SUBTYPES": {"Elder", "Dragon", "Bolas"},
+            "ORACLE": "Flying\n"
+                      "When Nicol Bolas, the Ravager enters the battlefield, each opponent discards a card.\n"
+                      "{4}{U}{B}{R}: Exile Nicol Bolas, the Ravager, then return him to the battlefield "
+                      "transformed under his owner's control. Activate only as a sorcery.",
+            "KEYWORDS": {"Flying", "Transform"},
+            "POW": "4",
+            "TOU": "4"
+        }
+        self.eval_card_face(face, eval_dict)
+
+    def test_card_face_activated_ability_hybrid(self):
+        # https://api.scryfall.com/cards/abf42833-43d0-4b05-b499-d13b2c577ee8?format=json&pretty=true
+        name = 'Tatsunari, Toad Rider'
+        layout: CardLayouts = CardLayouts.NORMAL
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "e87be082-eafd-480e-b150-d27fd937e1b1",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Tatsunari, Toad Rider",
+            "MANA_COST": "{2}{B}",
+            "CMC": 3,
+            "COLORS": "B",
+            "COLOR_IDENTITY": "UBG",
+            "TYPE_LINE": "Legendary Creature — Human Ninja",
+            "ALL_TYPES": {"Legendary", "Creature", "Human", "Ninja"},
+            "SUPERTYPES": {"Legendary"},
+            "TYPES": {"Creature"},
+            "SUBTYPES": {"Human", "Ninja"},
+            "ORACLE": "Whenever you cast an enchantment spell, if you don't control a creature named Keimi, "
+                      "create Keimi, a legendary 3/3 black and green Frog creature token with "
+                      "\"Whenever you cast an enchantment spell, each opponent loses 1 life and you gain 1 life.\"\n"
+                      "{1}{G/U}: Tatsunari, Toad Rider and target Frog you control can't be blocked this turn "
+                      "except by creatures with flying or reach.",
+            "POW": "3",
+            "TOU": "3"
+        }
+        self.eval_card_face(face, eval_dict)
+
+    def test_card_face_colorless(self):
+        # https://api.scryfall.com/cards/3906b61a-3865-4dfd-ae06-a7d2a608851a?format=json&pretty=true
+        name = 'Matter Reshaper'
+        layout: CardLayouts = CardLayouts.NORMAL
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "38538aff-b6f9-4c30-992e-7fd78da3c44a",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Matter Reshaper",
+            "MANA_COST": "{2}{C}",
+            "CMC": 3,
+            "COLORS": "",
+            "COLOR_IDENTITY": "",
+            "TYPE_LINE": "Creature — Eldrazi",
+            "ALL_TYPES": {"Creature", "Eldrazi"},
+            "TYPES": {"Creature"},
+            "SUBTYPES": {"Eldrazi"},
+            "ORACLE": "({C} represents colorless mana.)\n"
+                      "When Matter Reshaper dies, reveal the top card of your library. You may put that card "
+                      "onto the battlefield if it's a permanent card with mana value 3 or less. "
+                      "Otherwise, put that card into your hand.",
+            "POW": "3",
+            "TOU": "2"
+        }
+        self.eval_card_face(face, eval_dict)
+
+    def test_card_face_devoid(self):
+        # https://api.scryfall.com/cards/f0bb1a5c-0f59-4951-827f-fe9df968232d?format=json&pretty=true
+        name = 'Eldrazi Displacer'
+        layout: CardLayouts = CardLayouts.NORMAL
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "9b1f552a-bddc-4fcb-ac67-b4a65b2f48ba",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Eldrazi Displacer",
+            "MANA_COST": "{2}{W}",
+            "CMC": 3,
+            "COLORS": "",
+            "COLOR_IDENTITY": "W",
+            "TYPE_LINE": "Creature — Eldrazi",
+            "ALL_TYPES": {"Creature", "Eldrazi"},
+            "TYPES": {"Creature"},
+            "SUBTYPES": {"Eldrazi"},
+            "ORACLE": "Devoid (This card has no color.)\n"
+                      "{2}{C}: Exile another target creature, then return it to the battlefield tapped "
+                      "under its owner's control. ({C} represents colorless mana.)",
+            "KEYWORDS": {"Devoid"},
+            "POW": "3",
+            "TOU": "3"
+        }
+        self.eval_card_face(face, eval_dict)
+
+    def test_card_face_out_of_scope(self):
+        # https://api.scryfall.com/cards/456149a1-0f15-466a-8d07-803efb5721d5?format=json&pretty=true
+        name = 'Treacherous Trapezist'
+        layout: CardLayouts = CardLayouts.NORMAL
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "8db4b43d-aabd-45fd-a5f8-6f2a49eec7cf",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Treacherous Trapezist",
+            "MANA_COST": "{1}{U}{U}",
+            "CMC": 3,
+            "COLORS": "U",
+            "COLOR_IDENTITY": "U",
+            "TYPE_LINE": "Creature — Porcupine Performer",
+            "ALL_TYPES": {"Creature", "Porcupine", "Performer"},
+            "TYPES": {"Creature"},
+            # "Porcupine" and "Performer" are not in scope. THey will trigger a warning and be filtered out.
+            # "SUBTYPES": {"Porcupine", "Performer"},
+            "SUBTYPES": set(),
+            "ORACLE": "Flying\n"
+                      "Whenever you cast an alliterative spell, scry 2. "
+                      "(Anything with two or more capitalized words in its name that begin with the same "
+                      "letter is alliterative.)\n"
+                      "Other alliterative creatures you control have flying.",
+            "KEYWORDS": {"Scry", "Flying"},
+            "POW": "2",
+            "TOU": "3"
         }
         self.eval_card_face(face, eval_dict)
     # region Additional Face Tests

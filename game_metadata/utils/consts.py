@@ -16,7 +16,7 @@ def new_color_count_dict() -> dict[COLOR, int]:
 
 
 # Type information for the card json Scryfall returns.
-CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str]]]
+CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str], list[dict]]]
 CARD_SIDE = Literal['default', 'main', 'adventure', 'left', 'right', 'front', 'back', 'flipped', 'melded']
 
 # Rank Consts
@@ -91,7 +91,7 @@ PLANESWALKER_SUBTYPES: set[str] = {
     "Jeska", "Kaito", "Karn", "Kasmina", "Kaya", "Kiora", "Koth", "Liliana", "Lolth", "Lukka",
     "Minsc", "Mordenkainen", "Nahiri", "Narset", "Niko", "Nissa", "Nixilis", "Oko", "Ral", "Rowan",
     "Saheeli", "Samut", "Sarkhan", "Serra", "Sorin", "Szat", "Tamiyo", "Tasha", "Teferi", "Teyo",
-    "Tezzeret", "Tibalt", "Tyvar", "Ugin", "Venser", "Vivien", "Vraska", "Will", "Windgrace",
+    "Tezzeret", "Tibalt", "Tyvar", "Ugin", "Urza", "Venser", "Vivien", "Vraska", "Will", "Windgrace",
     "Wrenn", "Xenagos", "Yanggu", "Yanling", "Zariel"
 }
 
@@ -126,8 +126,9 @@ class CardLayouts(Flag):
     SAGA = auto()
     ADVENTURE = auto()
 
-    TWO_SIDED = TRANSFORM | MODAL_DFC | MELD
+    BASIC = NORMAL | LEVELER | CLASS | SAGA
     FUSED = ADVENTURE | SPLIT | FLIP
+    TWO_SIDED = TRANSFORM | MODAL_DFC | MELD
 
 
 LAYOUT_DICT: dict[str, CardLayouts] = {
