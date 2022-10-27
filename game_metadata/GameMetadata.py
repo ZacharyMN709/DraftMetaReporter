@@ -96,9 +96,11 @@ class SetMetadata:
             old_name = card_name
             card_name = CardManager.REDIRECT[card_name]
             logging.verbose(f"Changing '{old_name}' to '{card_name}'")
+
         if card_name in self.CARD_DICT:
             return self.CARD_DICT[card_name]
         else:
+            logging.warning(f"Could not find {card_name} in CARD_DICT")
             return None
 
     def get_cards_by_colors(self, colors: list[str]) -> list[Card]:
@@ -170,7 +172,7 @@ class FormatMetadata:
     def find_card(self, card_name: str) -> Optional[Card]:
         """
         Looks for a card name in the list of cards for the set.
-        :param card_name: The card name, simple or full. Must be an exact match. If 'NONE', today's date is used.
+        :param card_name: The card name, simple or full. Must be an exact match.
         :return: A Card object or None
         """
         return self._set_metadata.find_card(card_name)

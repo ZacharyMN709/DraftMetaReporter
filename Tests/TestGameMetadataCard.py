@@ -1,10 +1,48 @@
 import unittest
 from typing import Union
-from Utilities.auto_logging import auto_log, LogLvl
 
 from game_metadata.utils.consts import CardLayouts, CARD_SIDE
 from game_metadata.RequestScryfall import RequestScryfall
 from game_metadata.GameObjects.Card import Card, CardFace, CardManager
+
+
+def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
+    """
+    Handles the evaluation of a card face, based on the dictionary handed in.
+    If the dictionary does not have an expected key, the class' default will be used,
+    except for SCRYFALL_ID, as that may change as sets release. If not provided that
+    test will be skipped.
+    """
+
+    if "SCRYFALL_ID" in eval_dict:
+        self.assertEqual(face.SCRYFALL_ID, eval_dict.get("SCRYFALL_ID"))
+
+    self.assertEqual(eval_dict.get("ORACLE_ID"), face.ORACLE_ID, msg="Error in ORACLE_ID")
+    self.assertEqual(eval_dict.get("LAYOUT"), face.LAYOUT, msg="Error in LAYOUT")
+    self.assertEqual(eval_dict.get("CARD_SIDE"), face.CARD_SIDE, msg="Error in CARD_SIDE")
+    self.assertEqual(eval_dict.get("IMG_SIDE"), face.IMG_SIDE, msg="Error in IMG_SIDE")
+
+    self.assertEqual(eval_dict.get("NAME"), face.NAME, msg="Error in NAME")
+    self.assertEqual(eval_dict.get("MANA_COST", ""), face.MANA_COST, msg="Error in MANA_COST")
+    self.assertEqual(eval_dict.get("CMC"), face.CMC, msg="Error in CMC")
+    self.assertEqual(eval_dict.get("COLORS", ""), face.COLORS, msg="Error in COLORS")
+    self.assertEqual(eval_dict.get("COLOR_IDENTITY", ""), face.COLOR_IDENTITY, msg="Error in COLOR_IDENTITY")
+    # TODO: Add in more colour information, based on activated costs, kickers or similar.
+
+    self.assertEqual(eval_dict.get("TYPE_LINE", ""), face.TYPE_LINE, msg="Error in TYPE_LINE")
+    self.assertSetEqual(eval_dict.get("ALL_TYPES", set()), face.ALL_TYPES, msg="Error in ALL_TYPES")
+    self.assertSetEqual(eval_dict.get("SUPERTYPES", set()), face.SUPERTYPES, msg="Error in SUPERTYPES")
+    self.assertSetEqual(eval_dict.get("TYPES", set()), face.TYPES, msg="Error in TYPES")
+    self.assertSetEqual(eval_dict.get("SUBTYPES", set()), face.SUBTYPES, msg="Error in SUBTYPES")
+
+    self.assertEqual(eval_dict.get("ORACLE"), face.ORACLE, msg="Error in ORACLE")
+    # TODO: Re-enable KEYWORDS at a later date
+    # self.assertSetEqual(eval_dict.get("KEYWORDS", set()), face.KEYWORDS, msg="Error in KEYWORDS")
+    self.assertSetEqual(eval_dict.get("MANA_PRODUCED", set()), face.MANA_PRODUCED, msg="Error in MANA_PRODUCED")
+    self.assertEqual(eval_dict.get("FLAVOR_TEXT"), face.FLAVOR_TEXT, msg="Error in FLAVOR_TEXT")
+
+    self.assertEqual(eval_dict.get("POW"), face.POW, msg="Error in POW")
+    self.assertEqual(eval_dict.get("TOU"), face.TOU, msg="Error in TOU")
 
 
 class TestCardFace(unittest.TestCase):
@@ -13,43 +51,8 @@ class TestCardFace(unittest.TestCase):
         json = RequestScryfall.get_card_by_name(card_name)
         return CardFace(json, layout, face)
 
-    def eval_card_face(self, face: CardFace, eval_dict: [str, Union[set, str]]):
-        """
-        Handles the evaluation of a card face, based on the dictionary handed in.
-        If the dictionary does not have an expected key, the class' default will be used,
-        except for SCRYFALL_ID, as that may change as sets release. If not provided that
-        test will be skipped.
-        """
-
-        if "SCRYFALL_ID" in eval_dict:
-            self.assertEqual(face.SCRYFALL_ID, eval_dict.get("SCRYFALL_ID"))
-
-        self.assertEqual(eval_dict.get("ORACLE_ID"), face.ORACLE_ID, msg="Error in ORACLE_ID")
-        self.assertEqual(eval_dict.get("LAYOUT"), face.LAYOUT, msg="Error in LAYOUT")
-        self.assertEqual(eval_dict.get("CARD_SIDE"), face.CARD_SIDE, msg="Error in CARD_SIDE")
-        self.assertEqual(eval_dict.get("IMG_SIDE"), face.IMG_SIDE, msg="Error in IMG_SIDE")
-
-        self.assertEqual(eval_dict.get("NAME"), face.NAME, msg="Error in NAME")
-        self.assertEqual(eval_dict.get("MANA_COST", ""), face.MANA_COST, msg="Error in MANA_COST")
-        self.assertEqual(eval_dict.get("CMC"), face.CMC, msg="Error in CMC")
-        self.assertEqual(eval_dict.get("COLORS", ""), face.COLORS, msg="Error in COLORS")
-        self.assertEqual(eval_dict.get("COLOR_IDENTITY", ""), face.COLOR_IDENTITY, msg="Error in COLOR_IDENTITY")
-        # TODO: Add in more colour information, based on activated costs, kickers or similar.
-
-        self.assertEqual(eval_dict.get("TYPE_LINE", ""), face.TYPE_LINE, msg="Error in TYPE_LINE")
-        self.assertSetEqual(eval_dict.get("ALL_TYPES", set()), face.ALL_TYPES, msg="Error in ALL_TYPES")
-        self.assertSetEqual(eval_dict.get("SUPERTYPES", set()), face.SUPERTYPES, msg="Error in SUPERTYPES")
-        self.assertSetEqual(eval_dict.get("TYPES", set()), face.TYPES, msg="Error in TYPES")
-        self.assertSetEqual(eval_dict.get("SUBTYPES", set()), face.SUBTYPES, msg="Error in SUBTYPES")
-
-        self.assertEqual(eval_dict.get("ORACLE"), face.ORACLE, msg="Error in ORACLE")
-        # TODO: Re-enable KEYWORDS at a later date
-        # self.assertSetEqual(eval_dict.get("KEYWORDS", set()), face.KEYWORDS, msg="Error in KEYWORDS")
-        self.assertSetEqual(eval_dict.get("MANA_PRODUCED", set()), face.MANA_PRODUCED, msg="Error in MANA_PRODUCED")
-        self.assertEqual(eval_dict.get("FLAVOR_TEXT"), face.FLAVOR_TEXT, msg="Error in FLAVOR_TEXT")
-
-        self.assertEqual(eval_dict.get("POW"), face.POW, msg="Error in POW")
-        self.assertEqual(eval_dict.get("TOU"), face.TOU, msg="Error in TOU")
+    def eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
+        _eval_card_face(self, eval_dict, face)
 
     # region Basic Face Tests
     """ These tests cover the main faces use, in their simplest forms. """
@@ -83,7 +86,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "3",
             "TOU": "3"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_saga(self):
         # https://api.scryfall.com/cards/3a613a01-6145-4e34-987c-c9bdcb068370?format=json&pretty=true
@@ -109,7 +112,7 @@ class TestCardFace(unittest.TestCase):
                       "\nI — Destroy all lands."
                       "\nII, III — Each player returns two land cards from their graveyard to the battlefield.",
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_class(self):
         # https://api.scryfall.com/cards/37d6343a-c514-4ca6-a415-62d1a473ae20?format=json&pretty=true
@@ -141,7 +144,7 @@ class TestCardFace(unittest.TestCase):
                       "\nWhenever you cast a legendary spell, exile the top two cards of your library. "
                       "You may play them this turn.",
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_adventure_main(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
@@ -169,7 +172,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "4",
             "TOU": "3"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_adventure_adventure(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
@@ -193,7 +196,7 @@ class TestCardFace(unittest.TestCase):
             "SUBTYPES": {"Adventure"},
             "ORACLE": "Damage can't be prevented this turn. Stomp deals 2 damage to any target.",
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_adventure_default(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
@@ -219,7 +222,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "4",
             "TOU": "3"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_split_left(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
@@ -242,7 +245,7 @@ class TestCardFace(unittest.TestCase):
             "TYPES": {"Instant"},
             "ORACLE": "Switch the power and toughness of each of up to two target creatures until end of turn."
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_split_right(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
@@ -266,7 +269,7 @@ class TestCardFace(unittest.TestCase):
             "ORACLE": "Search your library for an instant card and/or a sorcery card, "
                       "reveal them, put them into your hand, then shuffle."
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_split_default(self):
         # https://api.scryfall.com/cards/054a4e4f-8baa-41cf-b24c-d068e8b9a070?format=json&pretty=true
@@ -288,7 +291,7 @@ class TestCardFace(unittest.TestCase):
             "ALL_TYPES": {"Instant"},
             "TYPES": {"Instant"},
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_transform_front(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
@@ -317,7 +320,7 @@ class TestCardFace(unittest.TestCase):
                       "III — Exile this Saga, then return it to the battlefield transformed under your control.",
             "KEYWORDS": {"Reach", "Transform"},
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_transform_back(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
@@ -346,7 +349,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "0",
             "TOU": "0"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_transform_default(self):
         # https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c?format=json&pretty=true
@@ -375,7 +378,7 @@ class TestCardFace(unittest.TestCase):
                       "III — Exile this Saga, then return it to the battlefield transformed under your control.",
             "KEYWORDS": {"Reach", "Transform"},
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_modal_dfc_front(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
@@ -400,7 +403,7 @@ class TestCardFace(unittest.TestCase):
                       "target creatures and/or planeswalkers. If X is 6 or more, Shatterskull Smashing deals twice "
                       "X damage divided as you choose among them instead.",
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_modal_dfc_back(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
@@ -429,7 +432,7 @@ class TestCardFace(unittest.TestCase):
                            "Shatterskull Pass is a pretty distant second.\""
                            "\n—Samila, Murasa Expeditionary House",
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_modal_dfc_default(self):
         # https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673?format=json&pretty=true
@@ -455,7 +458,7 @@ class TestCardFace(unittest.TestCase):
                       "X damage divided as you choose among them instead.",
             "MANA_PRODUCED": {"R"}
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_flip_main(self):
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
@@ -481,7 +484,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "1",
             "TOU": "1"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_flip_flipped(self):
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
@@ -510,7 +513,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "3",
             "TOU": "4"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_flip_default(self):
         # https://api.scryfall.com/cards/864ad989-19a6-4930-8efc-bbc077a18c32?format=json&pretty=true
@@ -537,7 +540,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "1",
             "TOU": "1"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_meld_front(self):
         # https://api.scryfall.com/cards/8aefe8bd-216a-4ec1-9362-3f9dbf7fd083?format=json&pretty=true
@@ -569,7 +572,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "2",
             "TOU": "4"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_meld_melded(self):
         # https://api.scryfall.com/cards/8aefe8bd-216a-4ec1-9362-3f9dbf7fd083?format=json&pretty=true
@@ -609,7 +612,7 @@ class TestCardFace(unittest.TestCase):
                        "−10: Artifacts and planeswalkers you control gain indestructible until end of turn. "
                        "Destroy all nonland permanents.",
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_meld_default(self):
         # https://api.scryfall.com/cards/8aefe8bd-216a-4ec1-9362-3f9dbf7fd083?format=json&pretty=true
@@ -641,7 +644,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "2",
             "TOU": "4"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     # endregion Basic Face Tests
 
@@ -674,7 +677,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "1",
             "TOU": "1"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_land(self):
         # https://api.scryfall.com/cards/bd250c9d-c65f-4293-a6b0-007fac634d3d?format=json&pretty=true
@@ -702,7 +705,7 @@ class TestCardFace(unittest.TestCase):
             "KEYWORDS": {"Scry"},
             "MANA_PRODUCED": {"B", "C", "G", "R", "U", "W"},
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_color_identity(self):
         # https://api.scryfall.com/cards/0dbac7ce-a6fa-466e-b6ba-173cf2dec98e?format=json&pretty=true
@@ -731,7 +734,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "2",
             "TOU": "2"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_kicker(self):
         # https://api.scryfall.com/cards/2d00bab2-e95d-4296-a805-2a05e7640efb?format=json&pretty=true
@@ -763,7 +766,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "3",
             "TOU": "4"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_activated_ability(self):
         # https://api.scryfall.com/cards/7b215968-93a6-4278-ac61-4e3e8c3c3943?format=json&pretty=true
@@ -794,7 +797,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "4",
             "TOU": "4"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_activated_ability_hybrid(self):
         # https://api.scryfall.com/cards/abf42833-43d0-4b05-b499-d13b2c577ee8?format=json&pretty=true
@@ -825,7 +828,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "3",
             "TOU": "3"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_colorless(self):
         # https://api.scryfall.com/cards/3906b61a-3865-4dfd-ae06-a7d2a608851a?format=json&pretty=true
@@ -854,7 +857,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "3",
             "TOU": "2"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_devoid(self):
         # https://api.scryfall.com/cards/f0bb1a5c-0f59-4951-827f-fe9df968232d?format=json&pretty=true
@@ -883,7 +886,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "3",
             "TOU": "3"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
 
     def test_card_face_out_of_scope(self):
         # https://api.scryfall.com/cards/456149a1-0f15-466a-8d07-803efb5721d5?format=json&pretty=true
@@ -916,7 +919,7 @@ class TestCardFace(unittest.TestCase):
             "POW": "2",
             "TOU": "3"
         }
-        self.eval_card_face(face, eval_dict)
+        self.eval_card_face(eval_dict, face)
     # region Additional Face Tests
 
 
@@ -926,10 +929,89 @@ class TestCard(unittest.TestCase):
         json = RequestScryfall.get_card_by_name(card_name)
         return Card(json)
 
+    def eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
+        _eval_card_face(self, eval_dict, face)
+
+    def test_card_face_generation(self):
+        name = 'Boseiju Reaches Skyward'
+        layout: CardLayouts = CardLayouts.TRANSFORM
+        card = self.gen_card(name)
+        default_dict = {
+            "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
+            "LAYOUT": layout,
+            "CARD_SIDE": 'default',
+            "IMG_SIDE": "front",
+            "NAME": "Boseiju Reaches Skyward // Branch of Boseiju",
+            "MANA_COST": "{3}{G}",
+            "CMC": 4,
+            "COLORS": "G",
+            "COLOR_IDENTITY": "G",
+            "TYPE_LINE": "Enchantment — Saga // Enchantment Creature — Plant",
+            "ALL_TYPES": {"Enchantment", "Saga", "Creature", "Plant"},
+            "TYPES": {"Enchantment", "Creature"},
+            "SUBTYPES": {"Saga", "Plant"},
+            "ORACLE": "(As this Saga enters and after your draw step, add a lore counter.)\n"
+                      "I — Search your library for up to two basic Forest cards, reveal them, "
+                      "put them into your hand, then shuffle.\n"
+                      "II — Put up to one target land card from your graveyard on top of your library.\n"
+                      "III — Exile this Saga, then return it to the battlefield transformed under your control.",
+            "KEYWORDS": {"Reach", "Transform"},
+        }
+        front_dict = {
+            "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
+            "LAYOUT": layout,
+            "CARD_SIDE": 'front',
+            "IMG_SIDE": "front",
+            "NAME": "Boseiju Reaches Skyward",
+            "MANA_COST": "{3}{G}",
+            "CMC": 4,
+            "COLORS": "G",
+            "COLOR_IDENTITY": "G",
+            "TYPE_LINE": "Enchantment — Saga",
+            "ALL_TYPES": {"Enchantment", "Saga"},
+            "TYPES": {"Enchantment"},
+            "SUBTYPES": {"Saga"},
+            "ORACLE": "(As this Saga enters and after your draw step, add a lore counter.)\n"
+                      "I — Search your library for up to two basic Forest cards, reveal them, "
+                      "put them into your hand, then shuffle.\n"
+                      "II — Put up to one target land card from your graveyard on top of your library.\n"
+                      "III — Exile this Saga, then return it to the battlefield transformed under your control.",
+            "KEYWORDS": {"Reach", "Transform"},
+        }
+        back_dict = {
+            "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
+            "LAYOUT": layout,
+            "CARD_SIDE": 'back',
+            "IMG_SIDE": "back",
+            "NAME": "Branch of Boseiju",
+            "MANA_COST": '',
+            "CMC": 4,
+            "COLORS": "G",
+            "COLOR_IDENTITY": "G",
+            "TYPE_LINE": "Enchantment Creature — Plant",
+            "ALL_TYPES": {"Enchantment", "Creature", "Plant"},
+            "TYPES": {"Enchantment", "Creature"},
+            "SUBTYPES": {"Plant"},
+            "ORACLE": "Reach\nBranch of Boseiju gets +1/+1 for each land you control.",
+            "FLAVOR_TEXT": "Though they razed the surrounding forest, the builders of Towashi left Boseiju unscathed, "
+                           "shaping the city around the ancient tree.",
+            "KEYWORDS": {"Reach", "Transform"},
+            "POW": "0",
+            "TOU": "0"
+        }
+
+        self.assertEqual(layout, card.LAYOUT)
+        self.eval_card_face(default_dict, card.DEFAULT_FACE)
+        self.eval_card_face(front_dict, card.FACE_1)
+        self.eval_card_face(back_dict, card.FACE_2)
+
     def test_card_normal(self):
         name = 'Jukai Preserver'
         card = self.gen_card(name)
         self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
+        self.assertEqual(card.DEFAULT_FACE.CARD_SIDE, 'default')
+        self.assertEqual(card.FACE_1.CARD_SIDE, 'default')
+        self.assertEqual(card.DEFAULT_FACE.CARD_SIDE, card.FACE_1.CARD_SIDE)
 
     def test_card_adventure(self):
         name = 'Bonecrusher Giant'
@@ -963,7 +1045,8 @@ class TestCard(unittest.TestCase):
 
     def test_card_flip(self):
         name = 'Bushi Tenderfoot'
-        self.assertRaises(Exception, self.gen_card, name)
+        card = self.gen_card(name)
+        self.assertEqual(card.LAYOUT, CardLayouts.FLIP)
 
     def test_card_legendary(self):
         name = 'Cormella, Glamor Thief'
@@ -1052,7 +1135,7 @@ class TestCardManager(unittest.TestCase):
         self.assertEqual(card_1, card_2)
 
         card_dict = Card.from_set('NEO')
-        card_3 = card_dict[card_name]
+        card_3 = card_dict[card_2.FULL_NAME]
         self.assertIsInstance(card_3, Card)
         self.assertEqual(card_3, card_2)
 

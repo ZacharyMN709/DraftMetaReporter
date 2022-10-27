@@ -158,9 +158,11 @@ class TestFormatMetadata(unittest.TestCase):
 
     def test_find_card(self):
         form = FormatMetadata.get_metadata('NEO', 'PremierDraft')
-        card_1 = form.find_card('Boseiju Reaches Skyward')
-        card_2 = form.find_card('Boseiju Reaches Skyward // Branch of Boseiju')
+        card_1 = form.find_card('Boseiju Reaches Skyward // Branch of Boseiju')
+        card_2 = form.find_card('Boseiju Reaches Skyward')
+        self.assertNotEqual(card_1.NAME, card_1.FULL_NAME)
         self.assertIsInstance(card_1, Card)
+        self.assertIsInstance(card_2, Card)
         self.assertEqual(card_1, card_2)
 
         card_3 = form.find_card('Shock')

@@ -76,20 +76,10 @@ class CardFace:
         Checks the sts of types found to make sure the information is valid.
         """
         # Check if there's mismatches between the separated types and all types found.
-        length_all_types = len(self.ALL_TYPES)
-        length_sum_types = len(self.SUBTYPES) + len(self.TYPES) + len(self.SUPERTYPES)
-        if length_all_types != length_sum_types:
-            logging.warning(f"Card '{self.NAME}' contains invalid types!\n  TYPE_LINE: '{self.TYPE_LINE}'")
-
-        # Generate a set of valid subtypes.
-        valid_subtypes = set()
-        for t in self.TYPES:
-            valid_subtypes = valid_subtypes | SUBTYPE_DICT[t]
-
-        # Check that only valid subtypes exist among the card's subtypes.
-        for subtype in self.SUBTYPES:
-            if subtype not in valid_subtypes:
-                logging.warning(f"Invalid subtype '{subtype}' for card '{self.NAME}'")
+        invalid_types = self.ALL_TYPES - (self.SUBTYPES | self.TYPES | self.SUPERTYPES)
+        if len(invalid_types) > 0:
+            logging.warning(f"Card '{self.NAME}' contains invalid types!\n  "
+                            f"TYPE_LINE: '{self.TYPE_LINE}'\n INVALID_TYPES: {invalid_types}")
 
     def _apply_overrides(self, json):
         # TODO: These are something akin to hacks, and it would (likely) be better to handle this
@@ -189,7 +179,7 @@ class Card:
 
         self.DEFAULT_FACE = CardFace(json, self.LAYOUT, 'default')
 
-        if self.LAYOUT and {CardLayouts.NORMAL, CardLayouts.SAGA, CardLayouts.CLASS}:
+        if self.LAYOUT in {CardLayouts.NORMAL, CardLayouts.SAGA, CardLayouts.CLASS}:
             self.FACE_1 = self.DEFAULT_FACE
             self.FACE_2 = None
         elif self.LAYOUT == CardLayouts.MELD:
