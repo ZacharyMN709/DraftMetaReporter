@@ -125,9 +125,10 @@ class CardLayouts(Flag):
     CLASS = auto()
     SAGA = auto()
     ADVENTURE = auto()
+    PROTOTYPE = auto()
 
     BASIC = NORMAL | LEVELER | CLASS | SAGA
-    FUSED = ADVENTURE | SPLIT | FLIP
+    FUSED = ADVENTURE | SPLIT | FLIP | PROTOTYPE
     TWO_SIDED = TRANSFORM | MODAL_DFC | MELD
 
 
@@ -141,5 +142,6 @@ LAYOUT_DICT: dict[str, CardLayouts] = {
     "leveler": CardLayouts.LEVELER,
     "class": CardLayouts.CLASS,
     "saga": CardLayouts.SAGA,
-    "adventure": CardLayouts.ADVENTURE
+    "adventure": CardLayouts.ADVENTURE,
+    "prototype": CardLayouts.PROTOTYPE,
 }

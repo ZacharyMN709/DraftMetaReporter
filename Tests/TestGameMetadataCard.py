@@ -920,7 +920,7 @@ class TestCardFace(unittest.TestCase):
             "TOU": "3"
         }
         self.eval_card_face(eval_dict, face)
-    # region Additional Face Tests
+    # endregion Additional Face Tests
 
 
 class TestCard(unittest.TestCase):
@@ -931,6 +931,113 @@ class TestCard(unittest.TestCase):
 
     def eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
         _eval_card_face(self, eval_dict, face)
+
+    # region Basic CardLayouts Tests
+    def test_card_normal(self):
+        name = 'Jukai Preserver'
+        layout: CardLayouts = CardLayouts.NORMAL
+        card = self.gen_card(name)
+        self.assertEqual(layout, card.LAYOUT)
+        self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
+        self.assertEqual('default', card.FACE_1.CARD_SIDE)
+        self.assertEqual(card.DEFAULT_FACE, card.FACE_1)
+
+    def test_card_saga(self):
+        name = 'Fall of the Thran'
+        layout: CardLayouts = CardLayouts.SAGA
+        card = self.gen_card(name)
+        self.assertEqual(layout, card.LAYOUT)
+        self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
+        self.assertEqual('default', card.FACE_1.CARD_SIDE)
+        self.assertEqual(card.DEFAULT_FACE, card.FACE_1)
+
+    def test_card_class(self):
+        name = 'Bard Class'
+        layout: CardLayouts = CardLayouts.CLASS
+        card = self.gen_card(name)
+        self.assertEqual(layout, card.LAYOUT)
+        self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
+        self.assertEqual('default', card.FACE_1.CARD_SIDE)
+        self.assertEqual(card.DEFAULT_FACE, card.FACE_1)
+
+    def test_card_adventure(self):
+        name = 'Bonecrusher Giant'
+        layout: CardLayouts = CardLayouts.ADVENTURE
+        card = self.gen_card(name)
+        self.assertEqual(layout, card.LAYOUT)
+        self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
+        self.assertEqual('main', card.FACE_1.CARD_SIDE)
+        self.assertEqual('adventure', card.FACE_2.CARD_SIDE)
+
+        self.assertNotEqual(card.DEFAULT_FACE.NAME, card.FACE_1.NAME)
+        self.assertNotEqual(card.FACE_1.NAME, card.FACE_2.NAME)
+        self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
+
+    def test_card_split(self):
+        name = 'Invert // Invent'
+        layout: CardLayouts = CardLayouts.SPLIT
+        card = self.gen_card(name)
+        self.assertEqual(layout, card.LAYOUT)
+        self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
+        self.assertEqual('left', card.FACE_1.CARD_SIDE)
+        self.assertEqual('right', card.FACE_2.CARD_SIDE)
+
+        self.assertNotEqual(card.DEFAULT_FACE.NAME, card.FACE_1.NAME)
+        self.assertNotEqual(card.FACE_1.NAME, card.FACE_2.NAME)
+        self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
+
+    def test_card_transform(self):
+        name = 'Boseiju Reaches Skyward'
+        layout: CardLayouts = CardLayouts.TRANSFORM
+        card = self.gen_card(name)
+        self.assertEqual(layout, card.LAYOUT)
+        self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
+        self.assertEqual('front', card.FACE_1.CARD_SIDE)
+        self.assertEqual('back', card.FACE_2.CARD_SIDE)
+
+        self.assertNotEqual(card.DEFAULT_FACE.NAME, card.FACE_1.NAME)
+        self.assertNotEqual(card.FACE_1.NAME, card.FACE_2.NAME)
+        self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
+
+    def test_card_modal_dfc(self):
+        name = 'Shatterskull Smashing'
+        layout: CardLayouts = CardLayouts.MODAL_DFC
+        card = self.gen_card(name)
+        self.assertEqual(layout, card.LAYOUT)
+        self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
+        self.assertEqual('front', card.FACE_1.CARD_SIDE)
+        self.assertEqual('back', card.FACE_2.CARD_SIDE)
+
+        self.assertNotEqual(card.DEFAULT_FACE.NAME, card.FACE_1.NAME)
+        self.assertNotEqual(card.FACE_1.NAME, card.FACE_2.NAME)
+        self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
+
+    def test_card_flip(self):
+        name = 'Bushi Tenderfoot'
+        layout: CardLayouts = CardLayouts.FLIP
+        card = self.gen_card(name)
+        self.assertEqual(layout, card.LAYOUT)
+        self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
+        self.assertEqual('main', card.FACE_1.CARD_SIDE)
+        self.assertEqual('flipped', card.FACE_2.CARD_SIDE)
+
+        self.assertNotEqual(card.DEFAULT_FACE.NAME, card.FACE_1.NAME)
+        self.assertNotEqual(card.FACE_1.NAME, card.FACE_2.NAME)
+        self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
+
+    def test_card_meld(self):
+        name = 'Urza, Lord Protector'
+        layout: CardLayouts = CardLayouts.MELD
+        card = self.gen_card(name)
+        self.assertEqual(layout, card.LAYOUT)
+        self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
+        self.assertEqual('default', card.FACE_1.CARD_SIDE)
+        self.assertEqual('melded', card.FACE_2.CARD_SIDE)
+
+        self.assertEqual(card.DEFAULT_FACE, card.FACE_1)
+
+        self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
+        self.assertNotEqual(card.FACE_2.NAME, card.FACE_1.NAME)
 
     def test_card_face_generation(self):
         name = 'Boseiju Reaches Skyward'
@@ -1004,64 +1111,7 @@ class TestCard(unittest.TestCase):
         self.eval_card_face(default_dict, card.DEFAULT_FACE)
         self.eval_card_face(front_dict, card.FACE_1)
         self.eval_card_face(back_dict, card.FACE_2)
-
-    def test_card_normal(self):
-        name = 'Jukai Preserver'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
-        self.assertEqual(card.DEFAULT_FACE.CARD_SIDE, 'default')
-        self.assertEqual(card.FACE_1.CARD_SIDE, 'default')
-        self.assertEqual(card.DEFAULT_FACE.CARD_SIDE, card.FACE_1.CARD_SIDE)
-
-    def test_card_adventure(self):
-        name = 'Bonecrusher Giant'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.ADVENTURE)
-
-    def test_card_split(self):
-        name = 'Invert // Invent'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.SPLIT)
-
-    def test_card_transform(self):
-        name = 'Boseiju Reaches Skyward'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.TRANSFORM)
-
-    def test_card_modal_dfc(self):
-        name = 'Shatterskull Smashing'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.MODAL_DFC)
-
-    def test_card_saga(self):
-        name = 'Fall of the Thran'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.SAGA)
-
-    def test_card_class(self):
-        name = 'Ranger Class'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.CLASS)
-
-    def test_card_flip(self):
-        name = 'Bushi Tenderfoot'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.FLIP)
-
-    def test_card_legendary(self):
-        name = 'Cormella, Glamor Thief'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
-
-    def test_card_snow(self):
-        name = 'Berg Strider'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
-
-    def test_card_planeswalker(self):
-        name = 'The Wandering Emperor'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
+    # endregion Basic CardLayouts Tests
 
     def test_card_error(self):
         # noinspection SpellCheckingInspection
@@ -1135,7 +1185,7 @@ class TestCardManager(unittest.TestCase):
         self.assertEqual(card_1, card_2)
 
         card_dict = Card.from_set('NEO')
-        card_3 = card_dict[card_2.FULL_NAME]
+        card_3 = card_dict[card_name]
         self.assertIsInstance(card_3, Card)
         self.assertEqual(card_3, card_2)
 
@@ -1145,9 +1195,13 @@ class TestCardManager(unittest.TestCase):
         self.assertIsNone(card)
 
     def test_reset_redirects(self):
+        CardManager.flush_cache()
+        CardManager.from_set('NEO')
         CardManager.reset_redirects()
+
+        self.assertEqual(310, len(CardManager.REDIRECT))
         for name in CardManager.REDIRECT.keys():
-            self.assertEqual(CardManager.REDIRECT[name], name)
+            self.assertTrue(name.startswith(CardManager.REDIRECT[name]))
 
     def test_redirects(self):
         proper_name = 'Virus Beetle'

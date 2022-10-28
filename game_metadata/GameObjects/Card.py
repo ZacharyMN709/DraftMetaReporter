@@ -4,7 +4,7 @@ from typing import NoReturn, Optional
 from Utilities.auto_logging import logging
 from wubrg import get_color_identity, parse_cost, parse_color_list, COLOR_STRING
 
-from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, SUBTYPE_DICT, ALL_SUBTYPES, \
+from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, ALL_SUBTYPES, \
     LAYOUT_DICT, CardLayouts, CARD_SIDE
 from game_metadata.RequestScryfall import RequestScryfall
 
@@ -175,7 +175,6 @@ class Card:
             for d in dicts:
                 if d["component"] == "meld_result":
                     return d["name"]
-            return None
 
         self.DEFAULT_FACE = CardFace(json, self.LAYOUT, 'default')
 
@@ -199,7 +198,7 @@ class Card:
         elif self.LAYOUT in {CardLayouts.TRANSFORM, CardLayouts.MODAL_DFC}:
             self.FACE_1 = CardFace(json, self.LAYOUT, 'front')
             self.FACE_2 = CardFace(json, self.LAYOUT, 'back')
-        else:
+        else:  # pragma nocover
             raise Exception(f"Unknown layout '{self.LAYOUT}'")
 
     def __init__(self, json: CARD_INFO):
