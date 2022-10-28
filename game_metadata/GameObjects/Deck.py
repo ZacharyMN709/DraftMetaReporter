@@ -113,14 +113,6 @@ class Deck:
         return self._all_pips
 
     @property
-    def colors(self) -> str:
-        """ Returns the colours of the deck, based on cards played and mana produced."""
-        # TODO: Come up with clever way to get the colors of the deck.
-        #  This should be based on Casting Cost, Color Identity, and the Manabase.
-        raise NotImplementedError()
-        return ""
-
-    @property
     def maindeck(self) -> list[Card]:
         """ The list of cards the deck plays in the maindeck """
         return self._maindeck
@@ -205,6 +197,41 @@ class LimitedDeck(Deck):
         self.sideboard: list[Card] = [CardManager.from_name(card_dict['name']) for card_dict in pre_sideboard]
 
     @property
+    def DRAFT(self) -> Draft.Draft:
+        """ The draft associated with the deck """
+        if self._DRAFT is None:
+            self._DRAFT = Draft.Draft.from_id(self.DECK_ID)
+        return self._DRAFT
+
+    @property
+    def colors(self) -> str:
+        """ Returns the colours of the deck, based on cards played and mana produced."""
+        # TODO: Come up with clever way to get the colors of the maindeck.
+        #  This should be based on Casting Cost, Color Identity, and the Manabase.
+
+        """
+        Some rules should be followed for this:
+        Firstly, main casting costs trumps all. If a deck is all W, but has WB card it's casting the Deck is Wb.
+        Secondly, mana produced should only count if there's a way to use it.
+          eg. 'Crystal Grotto' shouldn't make a R deck wubRg, if there are no WUBG cards to play with it.
+        Thirdly, optional costs should only count if there's the capacity to use them.
+          eg. 'Benalish Sleeper' should be W if there's no way to produce black mana. 
+          If black mana is available, it should be WB 
+        Fourthly, hybrid mana costs should not count towards a colour that doesn't otherwise exist in the deck.
+          eg. 'Pest Summonning' should be B if no green exists elsewhere in the deck.
+        Fifthly, phyrexian mana costs should not count towards a colour that doesn't otherwise exist in the deck.
+          eg. 'Phyrexian Metamorph' should be U only if blue exists elsewhere in the deck.
+        """
+
+        raise NotImplementedError()
+
+        return ""
+
+    @property
+    def is_valid(self) -> bool:
+        return len(self.maindeck) >= 40
+
+    @property
     def details_link(self) -> str:
         """ A link to the details page of the deck on 17Lands"""
         return f"{self.URL_ROOT}/details/{self.DECK_ID}"
@@ -218,13 +245,6 @@ class LimitedDeck(Deck):
     def draft_link(self) -> str:
         """ A link to the draft log on 17Lands """
         return f"{self.URL_ROOT}/draft/{self.DECK_ID}"
-
-    @property
-    def DRAFT(self) -> Draft.Draft:
-        """ The draft associated with the deck """
-        if self._DRAFT is None:
-            self._DRAFT = Draft.Draft.from_id(self.DECK_ID)
-        return self._DRAFT
 
     # Properties that can have multiple links based on different deck builds.
     @property
@@ -250,12 +270,24 @@ class ConstructedDeck(Deck):
         sideboard = list()
         # TODO: Parse the decklist.
         raise NotImplementedError()
-
         return maindeck, sideboard
 
     def __init__(self, name: str, decklist: str):
         self.name = name
         self.maindeck, self.sideboard = self.parse_decklist(decklist)
+
+    @property
+    def colors(self) -> str:
+        """ Returns the colours of the deck, based on cards played and mana produced."""
+        # TODO: Come up with clever way to get the colors of the card_pool.
+        #  This should be based on Casting Cost, Color Identity, and the Manabase.
+        raise NotImplementedError()
+
+        return ""
+
+    @property
+    def is_valid(self) -> bool:
+        return len(self.maindeck) >= 60 and len(self.sideboard) <= 15
 
 
 class DeckManager:

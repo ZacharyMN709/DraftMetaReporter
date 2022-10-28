@@ -15,7 +15,12 @@ COLOR_IDENTITY = Literal[
     'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG'
 ]
 
-COLOR_STRING = Annotated[str, "A string made up of only characters in WUBRG"]
+COLOR_STRING = Annotated[str, "A string made up of only characters in 'WUBRG'"]
+
+_SPLASH_ADD_ON = Annotated[str, "A string made up of 'wubrg' to denote splashes."]
+
+SPLASH_STRING = Annotated[Union[COLOR_STRING, _SPLASH_ADD_ON],
+                          "A string made up of only characters in 'WUBRG', and 'wubrg' to denote splashes."]
 # endregion Colours
 
 # region Aliases

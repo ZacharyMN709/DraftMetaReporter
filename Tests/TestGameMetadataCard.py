@@ -1157,14 +1157,6 @@ class TestCard(unittest.TestCase):
         self.assertEqual(card.IMAGE_URL, 'https://c1.scryfall.com/file/scryfall-cards/normal/'
                                          'front/b/c/bc7239ea-f8aa-4a6f-87bd-c35359635673.jpg')
 
-    def test_card_type_parsing(self):
-        card = self.gen_card('Enthusiastic Mechanaut')
-
-        # self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, None)
-        # self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Gobbledygook')
-        # self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Creature — Gobbledygook')
-        self.assertEqual(True, False)
-
 
 class TestCardManager(unittest.TestCase):
     def test_from_set(self):
