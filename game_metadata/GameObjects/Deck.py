@@ -2,20 +2,25 @@ from __future__ import annotations
 from typing import Optional
 from datetime import datetime
 import re
+from os import path
 
 from wubrg import COLOR
 
 from Utilities.auto_logging import logging
-from game_metadata.utils.consts import RANKS, new_color_count_dict
+from game_metadata.utils.consts import RANKS
+from game_metadata.utils.funcs import new_color_count_dict
 from game_metadata.Request17Lands import Request17Lands
 from game_metadata.GameObjects.Card import CardManager, Card
 import game_metadata.GameObjects.Draft as Draft
 
 
-trim_numeric = re.compile("-[/d]*]")
+# Alternate regex for ranks: r"(\w*)-([\d])"
+trim_numeric = re.compile(r"-[\d]*]")
+card_line = re.compile(r"^([0-9]{0,3}) ?([^(\n]*)(?: |$)(\(\w{3}\))? ?(\d{1,3})?")
 
 
 class TrophyStub:
+    # TODO: See if this can be folded into LimitedDeck with any ease.
 
     @classmethod
     def parse_simple_rank(cls, rank_1: Optional[str], rank_2: Optional[str]) -> str:
@@ -23,12 +28,15 @@ class TrophyStub:
         Merges the start and end rank of a draft into a simpler rank, taking the highest rank.
         Eg. "Silver-1" and "Gold-2" would return "Gold".
         """
+        # Take the rank and convert it to a string, turning None into 'None', and replace the numerics.
         r1 = trim_numeric.sub('', str(rank_1))
         r2 = trim_numeric.sub('', str(rank_2))
 
+        # Get the indexes for the ranks
         idx1 = RANKS.index(r1)
         idx2 = RANKS.index(r2)
 
+        # Use the indexes to return the higher rank.
         if idx1 > idx2:
             return r1
         else:
@@ -44,7 +52,7 @@ class TrophyStub:
         self.time: datetime = datetime.strptime(results['time'], "%m-%d-%y %H:%M")
 
     @property
-    def DECK(self) -> LimitedDeck:
+    def deck(self) -> LimitedDeck:
         """ The deck associated with the draft. """
         if self._DECK is None:
             self._DECK = LimitedDeck.from_id(self.DECK_ID)
@@ -56,6 +64,7 @@ class Deck:
     name: str
     wins: int
     losses: int
+    colors: str
     _produced_mana: Optional[dict[COLOR, int]]
     _casting_pips: Optional[dict[COLOR, int]]
     _all_pips: Optional[dict[COLOR, int]]
@@ -64,6 +73,80 @@ class Deck:
     _maindeck_dict: dict[str, int] = dict()
     _sideboard_dict: dict[str, int] = dict()
 
+    def __init__(self, maindeck: list[Card], sideboard: list[Card], name: str, wins: int = 0, losses: int = 0):
+        self._maindeck = maindeck
+        self._sideboard = sideboard
+        self.wins = wins
+        self.losses = losses
+        self.name = name
+
+        self._maindeck_dict = self._gen_card_dict(self.maindeck)
+        self._sideboard_dict = self._gen_card_dict(self.sideboard)
+
+
+    # region Decklist Parsing
+    @classmethod
+    def parse_decklist(cls, decklist: list[str]) -> tuple[list[str], list[str]]:
+        def parse_line(line: str) -> list[str]:
+            # If the line is empty or the deck header, return
+            if not line or line == "Deck":
+                return list()
+
+            # Split the card line into bits, based on a typical Arena decklist export.
+            _match = card_line.match(line)
+            _cnt, _card, _set, _num = _match.groups()
+
+            # If a card name couldn't be matched, return.
+            if not _card:
+                return list()
+
+            # Get the number of cards in the deck, defaulting to 1 if there's no value.
+            _cnt = int(_cnt) if _cnt else 1
+
+            # Return the card name the number of times it appears in the deck.
+            return [_card] * int(_cnt)
+
+        def flatten(lst: list[list[str]]) -> list[str]:
+            return [item for sublist in lst for item in sublist]
+
+        # Find the line to split for sideboard cards
+        try:
+            idx = decklist.index('Sideboard')
+        except ValueError:
+            idx = len(decklist) - 1
+
+        # Generate a list of card name lists.
+        maindeck = [parse_line(c) for c in decklist[:idx]]
+        sideboard = [parse_line(c) for c in decklist[idx + 1:]]
+
+        # Flatten the lists and return them.
+        return flatten(maindeck), flatten(sideboard)
+
+    @classmethod
+    def parse_decklist_from_file(cls, file_path: str) -> tuple[list[str], list[str]]:
+        # Check that the file exists.
+        load = path.exists(file_path) and path.isfile(file_path)
+        if not load:
+            raise ValueError(f"Provided value ({file_path}) is not a file path!")
+
+        # If it does, load its lines,
+        with open(file_path, 'r') as f:
+            decklist = f.readlines()
+
+        # And parse the decklist.
+        return cls.parse_decklist(decklist)
+
+    # noinspection PyUnreachableCode
+    @classmethod
+    def parse_decklist_from_url(cls, url: str) -> tuple[list[str], list[str]]:
+        # TODO: Get the decklist from url.
+        raise NotImplementedError()
+
+        decklist = []
+        return cls.parse_decklist(decklist)
+    # endregion Decklist Parsing
+
+    # region Pip Calculations
     @classmethod
     def _gen_card_dict(cls, card_list: list[Card]) -> dict[str, int]:
         card_dict = dict()
@@ -111,26 +194,17 @@ class Deck:
         if self._all_pips is None:
             self._all_pips = self._get_all_pips()
         return self._all_pips
+    # endregion Pip Calculations
 
     @property
     def maindeck(self) -> list[Card]:
         """ The list of cards the deck plays in the maindeck """
         return self._maindeck
 
-    @maindeck.setter
-    def maindeck(self, value):
-        self._maindeck = value
-        self._maindeck_dict = self._gen_card_dict(value)
-
     @property
     def sideboard(self) -> list[Card]:
         """ The list of cards the deck plays in the sideboard """
         return self._sideboard
-
-    @sideboard.setter
-    def sideboard(self, value):
-        self._sideboard = value
-        self._sideboard_dict = self._gen_card_dict(value)
 
     @property
     def cardpool(self) -> list[Card]:
@@ -175,39 +249,43 @@ class LimitedDeck(Deck):
         return DeckManager.from_deck_id(deck_id)
 
     def __init__(self, result: dict):
-        # Isolate the event metadata and track the key parts of it.
+        # Get the event info from the result.
         event_info = result['event_info']
-        self.DECK_ID: str = event_info['id']
-        self.SET: str = event_info['expansion']
-        self.FORMAT: str = event_info['format']
-        self._DRAFT: Optional[Draft.Draft] = None
-        self.trophy_stub: Optional[TrophyStub] = None
 
-        # Store the more cursory information.
-        self.name = f"{self.SET} - {self.FORMAT} ({self.DECK_ID})"
-        self.wins: int = event_info['wins']
-        self.losses: int = event_info['losses']
+        # Get the data needed to initialize the super-class.
+        _deck_id: str = event_info['id']
+        _set: str = event_info['expansion']
+        _format: str = event_info['format']
+        name = f"{_set} - {_format} ({_deck_id})"
+        wins: int = event_info['wins']
+        losses: int = event_info['losses']
+        maindeck = [CardManager.from_name(card_dict['name']) for card_dict in result['groups'][0]["cards"]]
+        sideboard = [CardManager.from_name(card_dict['name']) for card_dict in result['groups'][1]["cards"]]
+        super().__init__(maindeck, sideboard, name, wins, losses)
+
+        # Add the key parts of event metadata.
+        self.DECK_ID: str = _deck_id
+        self.SET: str = _set
+        self.FORMAT: str = _format
         self.deck_builds: int = len(event_info['deck_links'])
         self.selected_build: int = self.deck_builds - 1
-
-        # Isolate the lists of cards from the data.
-        pre_maindeck = result['groups'][0]["cards"]
-        pre_sideboard = result['groups'][1]["cards"]
-        self.maindeck: list[Card] = [CardManager.from_name(card_dict['name']) for card_dict in pre_maindeck]
-        self.sideboard: list[Card] = [CardManager.from_name(card_dict['name']) for card_dict in pre_sideboard]
+        self._draft: Optional[Draft.Draft] = None
+        self.trophy_stub: Optional[TrophyStub] = None
 
     @property
-    def DRAFT(self) -> Draft.Draft:
+    def draft(self) -> Draft.Draft:
         """ The draft associated with the deck """
-        if self._DRAFT is None:
-            self._DRAFT = Draft.Draft.from_id(self.DECK_ID)
-        return self._DRAFT
+        if self._draft is None:
+            self._draft = Draft.Draft.from_id(self.DECK_ID)
+        return self._draft
 
-    @property
-    def colors(self) -> str:
+    # noinspection PyUnreachableCode
+    def _calc_colors(self):
         """ Returns the colours of the deck, based on cards played and mana produced."""
         # TODO: Come up with clever way to get the colors of the maindeck.
         #  This should be based on Casting Cost, Color Identity, and the Manabase.
+        #  Development of this may need to go back to Card/CardFace to extend the
+        #  information those cards contain to support determining deck colours.
 
         """
         Some rules should be followed for this:
@@ -218,7 +296,7 @@ class LimitedDeck(Deck):
           eg. 'Benalish Sleeper' should be W if there's no way to produce black mana. 
           If black mana is available, it should be WB 
         Fourthly, hybrid mana costs should not count towards a colour that doesn't otherwise exist in the deck.
-          eg. 'Pest Summonning' should be B if no green exists elsewhere in the deck.
+          eg. 'Pest Summoning' should be B if no green exists elsewhere in the deck.
         Fifthly, phyrexian mana costs should not count towards a colour that doesn't otherwise exist in the deck.
           eg. 'Phyrexian Metamorph' should be U only if blue exists elsewhere in the deck.
         """
@@ -230,6 +308,10 @@ class LimitedDeck(Deck):
     @property
     def is_valid(self) -> bool:
         return len(self.maindeck) >= 40
+
+    @property
+    def has_trophy_stub(self) -> bool:
+        return self.trophy_stub is not None
 
     @property
     def details_link(self) -> str:
@@ -264,20 +346,15 @@ class LimitedDeck(Deck):
 
 
 class ConstructedDeck(Deck):
-    @classmethod
-    def parse_decklist(cls, decklist: str) -> tuple[list[str], list[str]]:
-        maindeck = list()
-        sideboard = list()
-        # TODO: Parse the decklist.
-        raise NotImplementedError()
-        return maindeck, sideboard
+    def __init__(self, decklist: list[str], name: str, wins: int = 0, losses: int = 0):
+        # Get the data needed to initialize the super-class.
+        pre_maindeck, pre_sideboard = self.parse_decklist(decklist)
+        maindeck = [CardManager.from_name(name) for name in pre_maindeck]
+        sideboard = [CardManager.from_name(name) for name in pre_sideboard]
+        super().__init__(maindeck, sideboard, name, wins, losses)
 
-    def __init__(self, name: str, decklist: str):
-        self.name = name
-        self.maindeck, self.sideboard = self.parse_decklist(decklist)
-
-    @property
-    def colors(self) -> str:
+    # noinspection PyUnreachableCode
+    def _calc_colors(self):
         """ Returns the colours of the deck, based on cards played and mana produced."""
         # TODO: Come up with clever way to get the colors of the card_pool.
         #  This should be based on Casting Cost, Color Identity, and the Manabase.
