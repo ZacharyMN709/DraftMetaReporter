@@ -9,6 +9,8 @@ from game_metadata.GameObjects.Card import Card, CardManager
 from game_metadata.GameObjects.Deck import Deck, LimitedDeck
 from game_metadata.GameObjects.Draft import Draft, Pack
 
+from Tests.settings import TEST_MASS_DATA_PULL
+
 
 class TestRequestScryfall(unittest.TestCase):
     def test_trap_error(self):
@@ -58,6 +60,11 @@ class TestRequestScryfall(unittest.TestCase):
         card = RequestScryfall.get_card_by_name(name)
         self.assertIsInstance(card, dict)
         self.assertEqual(card['err_msg'], f'Error: Cannot find card "{name}"')
+
+    @unittest.skipUnless(TEST_MASS_DATA_PULL, "Not testing mass data functions. 'TEST_MASS_DATA_PULL' set to False.")
+    def test_get_bulk_data(self):
+        data = RequestScryfall.get_bulk_data()
+        self.assertIsInstance(data, list)
 
 
 class TestSetMetadata(unittest.TestCase):

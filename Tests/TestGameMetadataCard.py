@@ -6,6 +6,9 @@ from game_metadata.RequestScryfall import RequestScryfall
 from game_metadata.GameObjects.Card import Card, CardFace, CardManager
 
 
+from Tests.settings import TEST_MASS_DATA_PULL
+
+
 def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
     """
     Handles the evaluation of a card face, based on the dictionary handed in.
@@ -1159,6 +1162,12 @@ class TestCard(unittest.TestCase):
 
 
 class TestCardManager(unittest.TestCase):
+    @unittest.skipUnless(TEST_MASS_DATA_PULL, "Not testing mass data functions. 'TEST_MASS_DATA_PULL' set to False.")
+    def test_generate_cache_file(self):
+        CardManager.generate_cache_file()
+        # TODO: Check if the file exists, and is less than 5 minutes old.
+        # TODO: MAybe check if file is of certain size or structure.
+
     def test_from_file(self):
         CardManager.flush_cache()
         CardManager.load_from_file()

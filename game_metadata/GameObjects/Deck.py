@@ -147,15 +147,13 @@ class Deck:
         # TODO: Get the decklist from url.
         raise NotImplementedError()
 
-        # pragma: nocover
-        decklist = []
-        return cls.parse_decklist(decklist)
+        decklist = []  # pragma: nocover
+        return cls.parse_decklist(decklist)  # pragma: nocover
     # endregion Decklist Parsing
 
     # region Pip Calculations
-    # pragma: nocover
     @classmethod
-    def _gen_card_dict(cls, card_list: list[Card]) -> dict[str, int]:
+    def _gen_card_dict(cls, card_list: list[Card]) -> dict[str, int]:  # pragma: nocover
         card_dict = dict()
         for card in card_list:
             if card.NAME not in card_dict:
@@ -163,47 +161,41 @@ class Deck:
             card_dict[card.NAME] += 1
         return card_dict
 
-    # pragma: nocover
-    def _get_produced_mana(self) -> dict[COLOR, int]:
+    def _get_produced_mana(self) -> dict[COLOR, int]:  # pragma: nocover
         d = new_color_count_dict()
         for card in self.cardpool:
             for mana in card.DEFAULT_FACE.MANA_PRODUCED:
                 d[mana] += 1
         return d
 
-    # pragma: nocover
     @property
-    def produced_mana(self) -> Optional[dict[COLOR, int]]:
+    def produced_mana(self) -> Optional[dict[COLOR, int]]:  # pragma: nocover
         if self._produced_mana is None:
             self._produced_mana = self._get_produced_mana()
         return self._produced_mana
 
-    # pragma: nocover
-    def _get_casting_pips(self) -> dict[COLOR, int]:
+    def _get_casting_pips(self) -> dict[COLOR, int]:  # pragma: nocover
         d = new_color_count_dict()
         for card in self.cardpool:
             for mana in card.DEFAULT_FACE.MANA_COST:
                 d[mana] += 1
         return d
 
-    # pragma: nocover
     @property
-    def casting_pips(self) -> Optional[dict[COLOR, int]]:
+    def casting_pips(self) -> Optional[dict[COLOR, int]]:  # pragma: nocover
         if self._casting_pips is None:
             self._casting_pips = self._get_casting_pips()
         return self._casting_pips
 
-    # pragma: nocover
-    def _get_all_pips(self) -> dict[COLOR, int]:
+    def _get_all_pips(self) -> dict[COLOR, int]:  # pragma: nocover
         d = new_color_count_dict()
         for card in self.cardpool:
             for mana in card.DEFAULT_FACE.MANA_PRODUCED:
                 d[mana] += 1
         return d
 
-    # pragma: nocover
     @property
-    def all_pips(self) -> Optional[dict[COLOR, int]]:
+    def all_pips(self) -> Optional[dict[COLOR, int]]:  # pragma: nocover
         if self._all_pips is None:
             self._all_pips = self._get_all_pips()
         return self._all_pips

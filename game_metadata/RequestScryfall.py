@@ -106,8 +106,11 @@ class RequestScryfall:
 
         return response
 
+    # NOTE: This function is masked from code coverage as its testing is expensive and slow.
+    #  Removing the comment 'pragma: nocover' below will re-add it to code coverage.
+    #  This should be done only as required, and then re-added.
     @classmethod
-    def get_bulk_data(cls) -> list[dict]:
+    def get_bulk_data(cls) -> list[dict]:  # pragma: nocover
         logging.info(f"Fetching bulk data.")
         response = cls.REQUESTER.request(f'{cls._BASE_URL}bulk-data/oracle-cards')
         data = cls.REQUESTER.request(response['download_uri'])

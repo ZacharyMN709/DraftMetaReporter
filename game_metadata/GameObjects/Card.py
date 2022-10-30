@@ -200,7 +200,8 @@ class Card:
         elif self.LAYOUT in {CardLayouts.TRANSFORM, CardLayouts.MODAL_DFC}:
             self.FACE_1 = CardFace(json, self.LAYOUT, 'front')
             self.FACE_2 = CardFace(json, self.LAYOUT, 'back')
-        else:  # pragma nocover
+        else:  # pragma: nocover
+            # TODO: Create a test with a token to promtpt this error as part of testing.
             raise ValueError(f"Unknown layout '{self.LAYOUT}'")
 
     def __init__(self, json: CARD_INFO):
@@ -322,7 +323,6 @@ class CardManager:
         :param card: The card object to track
         :param searched_name: The name provided by the user to find
         """
-
         # If the card objects isn't tracked in CARDS, add it.
         # This also means if cards from sets are pulled newest to oldest, the most recent version
         # of the card will be the one that is cached.
@@ -334,24 +334,6 @@ class CardManager:
         # Used to re-direct mis-spellings.
         if searched_name != '':
             cls.REDIRECT[searched_name] = card.NAME
-
-    @classmethod
-    def generate_cache_file(cls):
-        bulk_data = RequestScryfall.get_bulk_data()
-        arena_cards = list()
-        logging.info(f'Searching bulk data for Arena cards...')
-        for card_dict in bulk_data:
-            if "arena_id" in card_dict and card_dict["layout"] != "token":
-                arena_cards.append(card_dict)
-        logging.info(f'{len(arena_cards)} cards found!')
-        save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, arena_cards, indent=None)
-
-    @classmethod
-    def load_from_file(cls) -> None:
-        dictionary = load_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE)
-        for line in dictionary:
-            card = Card(line)
-            cls._add_card(card)
 
     @classmethod
     def from_name(cls, name: str) -> Optional[Card]:
@@ -394,7 +376,6 @@ class CardManager:
         :param set_code: The three-letter code of the set.
         :return: A dictionary of cards, with common names as keys.
         """
-
         # If the set code doesn't already exist,
         if set_code not in cls.SETS:
             # Create a new dictionary for it,
@@ -424,7 +405,6 @@ class CardManager:
         :param card_name: The card name to find
         :return: A Card or None, and whether the name has been previously searched
         """
-
         previously_searched = card_name in cls.REDIRECT
         card = None
 
@@ -440,9 +420,7 @@ class CardManager:
 
     @classmethod
     def reset_redirects(cls) -> None:
-        """
-        Resets the REDIRECT dictionary, clearing any aliases, but preserving the true card names.
-        """
+        """ Resets the REDIRECT dictionary, clearing any aliases, but preserving the true card names. """
         cls.REDIRECT = dict()
         for card_name in cls.CARDS:
             card = cls.CARDS[card_name]
@@ -450,9 +428,7 @@ class CardManager:
 
     @classmethod
     def flush_cache(cls) -> None:
-        """
-        Clears the caches of cards.
-        """
+        """ Clears the caches of cards. """
         del cls.REDIRECT
         del cls.SETS
         del cls.CARDS
@@ -460,3 +436,26 @@ class CardManager:
         cls.REDIRECT = dict()
         cls.SETS = dict()
         cls.CARDS = dict()
+
+    @classmethod
+    def load_from_file(cls) -> None:
+        """ Loads the cache of Arena cards from a configurable location disk. """
+        dictionary = load_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE)
+        for line in dictionary:
+            card = Card(line)
+            cls._add_card(card)
+
+    # NOTE: This function is masked from code coverage as its testing is expensive and slow.
+    #  Removing the comment 'pragma: nocover' below will re-add it to code coverage.
+    #  This should be done only as required, and then re-added.
+    @classmethod
+    def generate_cache_file(cls):  # pragma: nocover
+        """ Generate a cache of Arena cards on a configurable location on disk. """
+        bulk_data = RequestScryfall.get_bulk_data()
+        arena_cards = list()
+        logging.info(f'Searching bulk data for Arena cards...')
+        for card_dict in bulk_data:
+            if "arena_id" in card_dict and card_dict["layout"] != "token":
+                arena_cards.append(card_dict)
+        logging.info(f'{len(arena_cards)} cards found!')
+        save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, arena_cards, indent=None)
