@@ -105,3 +105,10 @@ class RequestScryfall:
                 response['err_msg'] = f'Error: Cannot find card "{name}"'
 
         return response
+
+    @classmethod
+    def get_bulk_data(cls) -> list[dict]:
+        logging.info(f"Fetching bulk data.")
+        response = cls.REQUESTER.request(f'{cls._BASE_URL}bulk-data/oracle-cards')
+        data = cls.REQUESTER.request(response['download_uri'])
+        return data

@@ -2,6 +2,8 @@ import unittest
 from datetime import date
 
 from wubrg import COLOR_COMBINATIONS
+from Utilities.auto_logging import auto_log, LogLvl
+
 from game_metadata.utils.consts import CardLayouts
 from game_metadata.GameMetadata import SetMetadata, FormatMetadata
 from game_metadata.RequestScryfall import RequestScryfall, trap_error
@@ -10,7 +12,14 @@ from game_metadata.GameObjects.Deck import Deck, LimitedDeck, ConstructedDeck, T
 from game_metadata.GameObjects.Draft import Draft, Pack
 
 
-class TestDeck(unittest.TestCase):
+class TestBaseDeck(unittest.TestCase):
+    def setUp(self) -> None:
+        auto_log(LogLvl.DEBUG)
+        # Load all arena cards to speed up tests and reduce load on Scryfall server.
+        CardManager.load_from_file()
+
+
+class TestDeck(TestBaseDeck):
     def test_parse_decklist_from_file_e3(self):
         loc = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\E3.txt"
         maindeck, sideboard = Deck.parse_decklist_from_file(loc)
@@ -23,7 +32,7 @@ class TestDeck(unittest.TestCase):
         maindeck, sideboard = Deck.parse_decklist_from_file(loc)
 
         self.assertEqual(60, len(maindeck))
-        self.assertEqual(15, len(sideboard))
+        self.assertEqual(0, len(sideboard))
 
     def test_parse_decklist_comparison(self):
         loc_bo3 = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\H3.txt"
@@ -113,7 +122,7 @@ Raffine's Informant
         self.assertEqual(21, len(deck.unique_cards))
 
 
-class TestConstructedDeck(unittest.TestCase):
+class TestConstructedDeck(TestBaseDeck):
     def test_deck_from_file(self):
         loc = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\E3.txt"
         maindeck, sideboard = Deck.parse_decklist_from_file(loc)
@@ -133,13 +142,13 @@ class TestConstructedDeck(unittest.TestCase):
         self.assertRaises(NotImplementedError, deck._calc_colors)
 
 
-class TestLimitedDeck(unittest.TestCase):
+class TestLimitedDeck(TestBaseDeck):
     pass
 
 
-class TestTrophyStub(unittest.TestCase):
+class TestTrophyStub(TestBaseDeck):
     pass
 
 
-class TestDeckManager(unittest.TestCase):
+class TestDeckManager(TestBaseDeck):
     pass

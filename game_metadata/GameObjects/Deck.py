@@ -147,13 +147,13 @@ class Deck:
         # TODO: Get the decklist from url.
         raise NotImplementedError()
 
-        # pragma nocover
+        # pragma: nocover
         decklist = []
         return cls.parse_decklist(decklist)
     # endregion Decklist Parsing
 
     # region Pip Calculations
-    # pragma nocover
+    # pragma: nocover
     @classmethod
     def _gen_card_dict(cls, card_list: list[Card]) -> dict[str, int]:
         card_dict = dict()
@@ -163,7 +163,7 @@ class Deck:
             card_dict[card.NAME] += 1
         return card_dict
 
-    # pragma nocover
+    # pragma: nocover
     def _get_produced_mana(self) -> dict[COLOR, int]:
         d = new_color_count_dict()
         for card in self.cardpool:
@@ -171,14 +171,14 @@ class Deck:
                 d[mana] += 1
         return d
 
-    # pragma nocover
+    # pragma: nocover
     @property
     def produced_mana(self) -> Optional[dict[COLOR, int]]:
         if self._produced_mana is None:
             self._produced_mana = self._get_produced_mana()
         return self._produced_mana
 
-    # pragma nocover
+    # pragma: nocover
     def _get_casting_pips(self) -> dict[COLOR, int]:
         d = new_color_count_dict()
         for card in self.cardpool:
@@ -186,14 +186,14 @@ class Deck:
                 d[mana] += 1
         return d
 
-    # pragma nocover
+    # pragma: nocover
     @property
     def casting_pips(self) -> Optional[dict[COLOR, int]]:
         if self._casting_pips is None:
             self._casting_pips = self._get_casting_pips()
         return self._casting_pips
 
-    # pragma nocover
+    # pragma: nocover
     def _get_all_pips(self) -> dict[COLOR, int]:
         d = new_color_count_dict()
         for card in self.cardpool:
@@ -201,7 +201,7 @@ class Deck:
                 d[mana] += 1
         return d
 
-    # pragma nocover
+    # pragma: nocover
     @property
     def all_pips(self) -> Optional[dict[COLOR, int]]:
         if self._all_pips is None:
@@ -333,7 +333,7 @@ class LimitedDeck(Deck):
 
         raise NotImplementedError()
 
-        # pragma nocover
+        # pragma: nocover
         return ""
 
     @property
@@ -394,7 +394,7 @@ class ConstructedDeck(Deck):
         #  This should be based on Casting Cost, Color Identity, and the Manabase.
         raise NotImplementedError()
 
-        # pragma nocover
+        # pragma: nocover
         return ""
 
     @property

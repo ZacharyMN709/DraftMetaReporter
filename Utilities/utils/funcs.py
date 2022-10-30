@@ -1,7 +1,8 @@
-from typing import Union
+from typing import Union, Optional
 from os import path
 import json
 
+from Utilities.utils.settings import ENCODING
 from Utilities.auto_logging import logging
 
 
@@ -15,7 +16,7 @@ def load_json_file(folder: str, filename: str) -> Union[dict, list[dict], None]:
     filepath = path.join(folder, filename)
 
     try:
-        with open(filepath, 'r') as f:
+        with open(filepath, 'r', encoding=ENCODING) as f:
             json_str = f.read()
             f.close()
             logging.verbose(f'File {filename} read successfully.')
@@ -26,19 +27,20 @@ def load_json_file(folder: str, filename: str) -> Union[dict, list[dict], None]:
         return None
 
 
-def save_json_file(folder: str, filename: str, data: [dict, list[dict]]) -> bool:
+def save_json_file(folder: str, filename: str, data: [dict, list[dict]], indent: Optional[int] = 4) -> bool:
     """
     Saves provided data into the specified json file.
     :param folder: The folder the json file is in.
     :param filename: The name of the json file (including filetype).
     :param data: The object to be saved as json.
+    :param indent: The indeting to use for the json.
     :return: Whether the save operation was successful.
     """
     filepath = path.join(folder, filename)
 
     try:
-        with open(filepath, 'w') as f:
-            f.write(json.dumps(data, indent=4))
+        with open(filepath, 'w', encoding=ENCODING) as f:
+            f.write(json.dumps(data, indent=indent))
             f.close()
         logging.verbose(f'File {filename} written to.')
         return True

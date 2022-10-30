@@ -2,10 +2,12 @@ from __future__ import annotations
 from typing import NoReturn, Optional
 
 from Utilities.auto_logging import logging
+from Utilities.utils.funcs import load_json_file, save_json_file
 from wubrg import get_color_identity, parse_cost, parse_color_list, COLOR_STRING
 
 from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, ALL_SUBTYPES, \
-    LAYOUT_DICT, CardLayouts, CARD_SIDE
+    LAYOUT_DICT, CardLayouts, CARD_SIDE, SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE
+
 from game_metadata.RequestScryfall import RequestScryfall
 
 
@@ -199,11 +201,11 @@ class Card:
             self.FACE_1 = CardFace(json, self.LAYOUT, 'front')
             self.FACE_2 = CardFace(json, self.LAYOUT, 'back')
         else:  # pragma nocover
-            raise Exception(f"Unknown layout '{self.LAYOUT}'")
+            raise ValueError(f"Unknown layout '{self.LAYOUT}'")
 
     def __init__(self, json: CARD_INFO):
         if json['object'] != 'card':
-            raise Exception("Invalid JSON provided! Object type is not 'card'")
+            raise ValueError("Invalid JSON provided! Object type is not 'card'")
 
         # Handle simple layout information to reference later.
         self.LAYOUT: CardLayouts = LAYOUT_DICT[json['layout']]
@@ -332,6 +334,24 @@ class CardManager:
         # Used to re-direct mis-spellings.
         if searched_name != '':
             cls.REDIRECT[searched_name] = card.NAME
+
+    @classmethod
+    def generate_cache_file(cls):
+        bulk_data = RequestScryfall.get_bulk_data()
+        arena_cards = list()
+        logging.info(f'Searching bulk data for Arena cards...')
+        for card_dict in bulk_data:
+            if "arena_id" in card_dict and card_dict["layout"] != "token":
+                arena_cards.append(card_dict)
+        logging.info(f'{len(arena_cards)} cards found!')
+        save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, arena_cards, indent=None)
+
+    @classmethod
+    def load_from_file(cls) -> None:
+        dictionary = load_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE)
+        for line in dictionary:
+            card = Card(line)
+            cls._add_card(card)
 
     @classmethod
     def from_name(cls, name: str) -> Optional[Card]:

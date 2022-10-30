@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 from time import sleep
 import requests
 from requests import Response
@@ -16,7 +16,7 @@ class Requester:
         self._FAIL_DELAY: float = fail_delay
         self._SUCCESS_DELAY: float = success_delay
 
-    def request(self, url: str) -> Optional[dict]:
+    def request(self, url: str) -> Optional[Union[list, dict]]:
         """
         Attempts to get json data from a url.
         :param url: The url to get data from

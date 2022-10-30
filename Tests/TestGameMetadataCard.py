@@ -1159,6 +1159,11 @@ class TestCard(unittest.TestCase):
 
 
 class TestCardManager(unittest.TestCase):
+    def test_from_file(self):
+        CardManager.flush_cache()
+        CardManager.load_from_file()
+        self.assertEqual(5641, len(CardManager.CARDS))
+
     def test_from_set(self):
         cards = CardManager.from_set('NEO')
         self.assertIsInstance(cards, dict)
