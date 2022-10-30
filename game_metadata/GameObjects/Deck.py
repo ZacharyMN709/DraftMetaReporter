@@ -25,7 +25,7 @@ class TrophyStub:
     @classmethod
     def parse_simple_rank(cls, rank_1: Optional[str], rank_2: Optional[str]) -> str:
         """
-        Merges the start and end rank of a draft into a simpler rank, taking the highest rank.
+        Merges the start and end rank of a draft, taking the highest "metal" rank.
         Eg. "Silver-1" and "Gold-2" would return "Gold".
         """
         # Take the rank and convert it to a string, turning None into 'None', and replace the numerics.
@@ -61,17 +61,18 @@ class TrophyStub:
 
 
 class Deck:
+    _maindeck: list[Card] = list()
+    _sideboard: list[Card] = list()
     name: str
     wins: int
     losses: int
-    colors: str
+    _maindeck_dict: dict[str, int] = dict()
+    _sideboard_dict: dict[str, int] = dict()
+
     _produced_mana: Optional[dict[COLOR, int]]
     _casting_pips: Optional[dict[COLOR, int]]
     _all_pips: Optional[dict[COLOR, int]]
-    _maindeck: list[Card] = list()
-    _sideboard: list[Card] = list()
-    _maindeck_dict: dict[str, int] = dict()
-    _sideboard_dict: dict[str, int] = dict()
+    colors: str
 
     def __init__(self, maindeck: list[Card], sideboard: list[Card], name: str, wins: int = 0, losses: int = 0):
         self._maindeck = maindeck
@@ -83,13 +84,12 @@ class Deck:
         self._maindeck_dict = self._gen_card_dict(self.maindeck)
         self._sideboard_dict = self._gen_card_dict(self.sideboard)
 
-
     # region Decklist Parsing
     @classmethod
-    def parse_decklist(cls, decklist: list[str]) -> tuple[list[str], list[str]]:
+    def parse_decklist(cls, decklist: list[str]) -> tuple[list[Card], list[Card]]:
         def parse_line(line: str) -> list[str]:
             # If the line is empty or the deck header, return
-            if not line or line == "Deck":
+            if not line or line == "Deck" or line == "Sideboard":
                 return list()
 
             # Split the card line into bits, based on a typical Arena decklist export.
@@ -109,44 +109,51 @@ class Deck:
         def flatten(lst: list[list[str]]) -> list[str]:
             return [item for sublist in lst for item in sublist]
 
-        # Find the line to split for sideboard cards
+        # Find the line to split for sideboard cards,
         try:
+            # If the list contains 'Sideboard', split the list on that index.
             idx = decklist.index('Sideboard')
+            pre_maindeck = [parse_line(c) for c in decklist[:idx]]
+            pre_sideboard = [parse_line(c) for c in decklist[idx:]]
         except ValueError:
-            idx = len(decklist) - 1
+            # Otherwise, an error is thrown, and assume no sideboard.
+            pre_maindeck = [parse_line(c) for c in decklist]
+            pre_sideboard = list()
 
-        # Generate a list of card name lists.
-        maindeck = [parse_line(c) for c in decklist[:idx]]
-        sideboard = [parse_line(c) for c in decklist[idx + 1:]]
-
-        # Flatten the lists and return them.
-        return flatten(maindeck), flatten(sideboard)
+        # Flatten the lists and return them as Cards.
+        maindeck = [CardManager.from_name(name) for name in flatten(pre_maindeck)]
+        sideboard = [CardManager.from_name(name) for name in flatten(pre_sideboard)]
+        return maindeck, sideboard
 
     @classmethod
-    def parse_decklist_from_file(cls, file_path: str) -> tuple[list[str], list[str]]:
+    def parse_decklist_from_file(cls, file_path: str) -> tuple[list[Card], list[Card]]:
         # Check that the file exists.
         load = path.exists(file_path) and path.isfile(file_path)
         if not load:
             raise ValueError(f"Provided value ({file_path}) is not a file path!")
 
-        # If it does, load its lines,
+        # If it does, load its lines, trimming each.
+        decklist = list()
         with open(file_path, 'r') as f:
-            decklist = f.readlines()
+            for line in f.readlines():
+                decklist.append(line.strip())
 
         # And parse the decklist.
         return cls.parse_decklist(decklist)
 
     # noinspection PyUnreachableCode
     @classmethod
-    def parse_decklist_from_url(cls, url: str) -> tuple[list[str], list[str]]:
+    def parse_decklist_from_url(cls, url: str) -> tuple[list[Card], list[Card]]:
         # TODO: Get the decklist from url.
         raise NotImplementedError()
 
+        # pragma nocover
         decklist = []
         return cls.parse_decklist(decklist)
     # endregion Decklist Parsing
 
     # region Pip Calculations
+    # pragma nocover
     @classmethod
     def _gen_card_dict(cls, card_list: list[Card]) -> dict[str, int]:
         card_dict = dict()
@@ -156,6 +163,7 @@ class Deck:
             card_dict[card.NAME] += 1
         return card_dict
 
+    # pragma nocover
     def _get_produced_mana(self) -> dict[COLOR, int]:
         d = new_color_count_dict()
         for card in self.cardpool:
@@ -163,12 +171,14 @@ class Deck:
                 d[mana] += 1
         return d
 
+    # pragma nocover
     @property
     def produced_mana(self) -> Optional[dict[COLOR, int]]:
         if self._produced_mana is None:
             self._produced_mana = self._get_produced_mana()
         return self._produced_mana
 
+    # pragma nocover
     def _get_casting_pips(self) -> dict[COLOR, int]:
         d = new_color_count_dict()
         for card in self.cardpool:
@@ -176,12 +186,14 @@ class Deck:
                 d[mana] += 1
         return d
 
+    # pragma nocover
     @property
     def casting_pips(self) -> Optional[dict[COLOR, int]]:
         if self._casting_pips is None:
             self._casting_pips = self._get_casting_pips()
         return self._casting_pips
 
+    # pragma nocover
     def _get_all_pips(self) -> dict[COLOR, int]:
         d = new_color_count_dict()
         for card in self.cardpool:
@@ -189,6 +201,7 @@ class Deck:
                 d[mana] += 1
         return d
 
+    # pragma nocover
     @property
     def all_pips(self) -> Optional[dict[COLOR, int]]:
         if self._all_pips is None:
@@ -196,6 +209,7 @@ class Deck:
         return self._all_pips
     # endregion Pip Calculations
 
+    # region Basic Deck Properties
     @property
     def maindeck(self) -> list[Card]:
         """ The list of cards the deck plays in the maindeck """
@@ -209,36 +223,52 @@ class Deck:
     @property
     def cardpool(self) -> list[Card]:
         """ The complete list of cards the deck has access to """
-        return self.maindeck + self.sideboard
+        return self._maindeck + self._sideboard
+
+    @property
+    def unique_cards(self) -> set[Card]:
+        return set(self.maindeck) | set(self.sideboard)
 
     @property
     def win_rate(self) -> float:
+        """ Returns the winrate as a percent. No games played results in a 0% win rate. """
         denominator = self.wins + self.losses
         if denominator == 0:
             return 0
         else:
-            return self.wins / denominator
+            return (self.wins / denominator) * 100
+    # endregion Basic Deck Properties
 
-    def compare_decks(self, deck: LimitedDeck) -> tuple[dict[str, int], dict[str, int]]:
+    def compare_decks(self, deck: Deck) -> tuple[dict[str, int], dict[str, int]]:
         """
-        Compares the contents of this deck with a provided deck.
+        Compares the contents of this deck with a provided deck. Differences of 0 are omitted.
         :param deck: The deck to compare with.
         :return: A maindeck and sideboard dictionary of card number differences.
         """
-        def subtract_dicts(d1, d2):
+        def subtract_dicts(d1: dict[str, int], d2: dict[str, int]) -> dict[str, int]:
+            """
+            Generates a dictionary which contains the card differences between the two card dictionaries.
+            Differences of 0 are omitted from the output dictionary for clarity.
+            """
+            # Create an empty dictionary and split the keys.
             d = dict()
-            for k in d2:
-                if k in d1:
-                    v = d1[k] - d2[k]
-                    if v != 0:
-                        d[k] -= v
-                else:
-                    d[k] = -d2[k]
+            all_keys = d1.keys() | d2.keys()
+
+            # For each key get it's value, defaulting to 0 if not in the dictionary.
+            for k in all_keys:
+                v = d1.get(k, 0) - d2.get(k, 0)
+                # If the difference is 0, skip the entry.
+                if v != 0:
+                    d[k] = v
+
             return d
 
         maindeck_diff = subtract_dicts(self._maindeck_dict, deck._maindeck_dict)
         sideboard_diff = subtract_dicts(self._sideboard_dict, deck._sideboard_dict)
         return maindeck_diff, sideboard_diff
+
+    def __sub__(self, other: Deck):
+        return self.compare_decks(other)
 
 
 class LimitedDeck(Deck):
@@ -303,16 +333,21 @@ class LimitedDeck(Deck):
 
         raise NotImplementedError()
 
+        # pragma nocover
         return ""
 
     @property
     def is_valid(self) -> bool:
+        """ If the deck is valid for organized play. """
         return len(self.maindeck) >= 40
 
     @property
     def has_trophy_stub(self) -> bool:
+        """ If the deck has an associate Trophy Stub. """
         return self.trophy_stub is not None
 
+    # region Link Properties
+    # Properties that have a single link regardless of different deck builds.
     @property
     def details_link(self) -> str:
         """ A link to the details page of the deck on 17Lands"""
@@ -343,14 +378,13 @@ class LimitedDeck(Deck):
     def text_link(self) -> str:
         """ A link to a text version of the deck """
         return f"{self.URL_ROOT}/deck/{self.DECK_ID}/{self.selected_build}.txt"
+    # endregion Link Properties
 
 
 class ConstructedDeck(Deck):
-    def __init__(self, decklist: list[str], name: str, wins: int = 0, losses: int = 0):
-        # Get the data needed to initialize the super-class.
-        pre_maindeck, pre_sideboard = self.parse_decklist(decklist)
-        maindeck = [CardManager.from_name(name) for name in pre_maindeck]
-        sideboard = [CardManager.from_name(name) for name in pre_sideboard]
+    # TODO: Flesh this out with more utility.
+
+    def __init__(self, maindeck: list[Card], sideboard: list[Card], name: str, wins: int = 0, losses: int = 0):
         super().__init__(maindeck, sideboard, name, wins, losses)
 
     # noinspection PyUnreachableCode
@@ -360,10 +394,12 @@ class ConstructedDeck(Deck):
         #  This should be based on Casting Cost, Color Identity, and the Manabase.
         raise NotImplementedError()
 
+        # pragma nocover
         return ""
 
     @property
     def is_valid(self) -> bool:
+        """ If the deck is valid for organized play. """
         return len(self.maindeck) >= 60 and len(self.sideboard) <= 15
 
 
@@ -418,9 +454,7 @@ class DeckManager:
 
     @classmethod
     def _find_deck(cls, deck_id: str) -> tuple[Optional[LimitedDeck], bool]:
-        """
-        Attempts to find a deck in the cache, and if it's been searched before.
-        """
+        """ Attempts to find a deck in the cache, and if it's been searched before. """
         if deck_id in cls.DECKS:
             return cls.DECKS[deck_id], True
         else:
@@ -428,18 +462,14 @@ class DeckManager:
 
     @classmethod
     def clear_blank_decks(cls) -> None:
-        """
-        Clears cls.DECKS of pairs where the value is None.
-        """
+        """ Clears cls.DECKS of pairs where the value is None. """
         for deck_id in cls.DECKS:
             if cls.DECKS[deck_id] is None:
                 del cls.DECKS[deck_id]
 
     @classmethod
     def flush_cache(cls) -> None:
-        """
-        Clears the caches of decks.
-        """
+        """ Clears the caches of decks. """
         del cls.SETS
         del cls.DECKS
 
