@@ -1,12 +1,11 @@
 import unittest
-from datetime import date
+import requests
+from requests import Response
 
-from wubrg import COLOR_COMBINATIONS
 from Utilities.auto_logging import auto_log, LogLvl
+from Tests.settings import TEST_PERIPHERAL_URLS
 
-from game_metadata.utils.consts import CardLayouts
-from game_metadata.GameMetadata import SetMetadata, FormatMetadata
-from game_metadata.RequestScryfall import RequestScryfall, trap_error
+from game_metadata.Request17Lands import Request17Lands
 from game_metadata.GameObjects.Card import Card, CardManager
 from game_metadata.GameObjects.Deck import Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager
 from game_metadata.GameObjects.Draft import Draft, Pack
@@ -143,7 +142,59 @@ class TestConstructedDeck(TestBaseDeck):
 
 
 class TestLimitedDeck(TestBaseDeck):
-    pass
+    @staticmethod
+    def gen_deck(deck_id) -> LimitedDeck:
+        caller = Request17Lands()
+        deck_json = caller.get_deck(deck_id, 0)
+        deck = LimitedDeck(deck_json)
+        return deck
+
+    def validate_deck(self, deck):
+        self.assertEqual(40, len(deck.maindeck))
+        self.assertEqual(17, len(deck.sideboard))
+        # TODO: Consider removing lands from the card pool?
+        self.assertEqual(57, len(deck.cardpool))
+        self.assertEqual(4, deck.wins)
+        self.assertEqual(2, deck.losses)
+
+        self.assertEqual("b20a97b818f3418b94a8f4e7584398a8", deck.DECK_ID)
+        self.assertEqual(1, deck.deck_builds)
+        self.assertEqual(0, deck.selected_build)
+        self.assertEqual('DMU', deck.SET)
+        self.assertEqual('PremierDraft', deck.FORMAT)
+        self.assertTrue(deck.is_valid)
+        self.assertFalse(deck.has_trophy_stub)
+        self.assertRaises(NotImplementedError, deck._calc_colors)
+
+    def test_limited_deck_init(self):
+        deck = self.gen_deck("b20a97b818f3418b94a8f4e7584398a8")
+        self.validate_deck(deck)
+
+    @unittest.skipUnless(TEST_PERIPHERAL_URLS, "Not testing peripheral links. 'TEST_PERIPHERAL_URLS' set to False.")
+    def test_link_properties(self):
+        def handle_link(link):
+            resp: Response = requests.get(link)
+            self.assertIsNotNone(resp)
+            self.assertEqual(200, resp.status_code)
+
+        deck = self.gen_deck("b20a97b818f3418b94a8f4e7584398a8")
+
+        handle_link(deck.details_link)
+        handle_link(deck.pool_link)
+        handle_link(deck.draft_link)
+        handle_link(deck.builder_link)
+        handle_link(deck.deck_link)
+        handle_link(deck.text_link)
+
+    def test_relay(self):
+        deck = LimitedDeck.from_id("b20a97b818f3418b94a8f4e7584398a8")
+        self.validate_deck(deck)
+
+    def test_get_draft(self):
+        deck = LimitedDeck.from_id("b20a97b818f3418b94a8f4e7584398a8")
+        draft = deck.draft
+        self.assertIsNotNone(draft)
+        self.assertIsInstance(draft, Draft)
 
 
 class TestTrophyStub(TestBaseDeck):

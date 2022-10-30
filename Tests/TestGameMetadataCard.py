@@ -1,12 +1,11 @@
 import unittest
 from typing import Union
 
+from Tests.settings import TEST_MASS_DATA_PULL
+
 from game_metadata.utils.consts import CardLayouts, CARD_SIDE
 from game_metadata.RequestScryfall import RequestScryfall
 from game_metadata.GameObjects.Card import Card, CardFace, CardManager
-
-
-from Tests.settings import TEST_MASS_DATA_PULL
 
 
 def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
@@ -1166,12 +1165,12 @@ class TestCardManager(unittest.TestCase):
     def test_generate_cache_file(self):
         CardManager.generate_cache_file()
         # TODO: Check if the file exists, and is less than 5 minutes old.
-        # TODO: MAybe check if file is of certain size or structure.
+        # TODO: Maybe check if file is of certain size or structure.
 
     def test_from_file(self):
         CardManager.flush_cache()
         CardManager.load_from_file()
-        self.assertEqual(5641, len(CardManager.CARDS))
+        self.assertEqual(5640, len(CardManager.CARDS))
 
     def test_from_set(self):
         cards = CardManager.from_set('NEO')

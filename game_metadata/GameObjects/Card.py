@@ -47,8 +47,9 @@ class CardFace:
         if val is not None:
             return val
 
-        # Fall-back to the default
-        logging.debug(f"'{key}' is empty for card '{self.NAME}'")
+        # Fall-back to the default, logging unexpected absences.
+        if key not in ['mana_cost', 'colors']:  # pragma: nocover
+            logging.debug(f"'{key}' is empty for card '{self.NAME}'")
         return default
 
     def _calculate_cmc(self, json) -> int:
@@ -455,7 +456,12 @@ class CardManager:
         arena_cards = list()
         logging.info(f'Searching bulk data for Arena cards...')
         for card_dict in bulk_data:
-            if "arena_id" in card_dict and card_dict["layout"] != "token":
-                arena_cards.append(card_dict)
+            if "arena_id" not in card_dict:
+                continue
+            if card_dict["layout"] == "token":
+                continue
+            if card_dict["name"] == "City's Blessing":
+                continue
+            arena_cards.append(card_dict)
         logging.info(f'{len(arena_cards)} cards found!')
         save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, arena_cards, indent=None)

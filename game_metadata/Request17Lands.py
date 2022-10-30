@@ -21,7 +21,7 @@ class Request17Lands(Requester_2):
     TROPHY_URL = 'https://www.17lands.com/data/trophies'
     DRAFT_LOG_URL = 'https://www.17lands.com/data/draft/stream'
     DECK_URL = 'https://www.17lands.com/data/deck'
-    DETAILS_URL = 'https://www.17lands.com/data/deck'
+    DETAILS_URL = 'https://www.17lands.com/data/details'
 
     def __init__(self, tries: int = TRIES, fail_delay: int = FAIL_DELAY, success_delay: int = SUCCESS_DELAY) -> None:
         super().__init__(tries, fail_delay, success_delay)
@@ -216,17 +216,14 @@ class Request17Lands(Requester_2):
             'draft_id': draft_id,
             'deck_index': deck_index
         }
-
-        result = self.request(url=self.DECK_URL, params=params).json()
-
-        return result
+        return self.request(url=self.DECK_URL, params=params).json()
 
     def get_details(self, draft_id: str) -> None:
         params = {
             'draft_id': draft_id,
         }
 
-        result = self.request(url=self.DECK_URL, params=params).json()
+        result = self.request(url=self.DETAILS_URL, params=params).json()
         return result
 
     def get_draft(self, draft_id: str) -> Union[dict, NoReturn]:
@@ -242,48 +239,3 @@ class Request17Lands(Requester_2):
             raise ValueError(f"Response is not complete. Response type: '{result['type']}'")
 
         return result
-
-
-if __name__ == "__main__":
-    from Utilities.auto_logging import auto_log, LogLvl
-    SET = "DMU"
-    CardManager.from_set(SET)
-
-    auto_log(LogLvl.DEBUG)
-    DATA_DIR_LOC: str = r'C:\Users\Zachary\Coding\GitHub'
-    caller = Request17Lands()
-
-    # colors = caller.get_colors()
-    # print(colors)
-
-    # expansions = caller.get_expansions()
-    # print(expansions)
-
-    # events = caller.get_event_types()
-    # print(events)
-
-    # play_draw = caller.get_play_draw_stats()
-    # print(play_draw)
-
-    # meta = caller.get_color_ratings("DMU")
-    # print(meta)
-
-    """
-    deck = caller.get_deck("6f3d1315ede04510862862fb2f1cd293", 1)
-
-    print(deck.maindeck)
-    print(deck.sideboard)
-    print(deck.deck_builds)
-    print(deck.selected_build)
-    print(deck.wins)
-    print(deck.losses)
-    print(deck.DECK_ID)
-    print(deck.SET)
-    print(deck.FORMAT)
-
-    print(deck.deck_link)
-    """
-
-    trophy_decks = caller.get_trophy_deck_metadata(SET)
-    print(trophy_decks)
-

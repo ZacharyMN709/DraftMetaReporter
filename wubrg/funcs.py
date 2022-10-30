@@ -13,7 +13,7 @@ from wubrg.mana_symbols import MANA_SYMBOLS
 
 
 _mana_cost_re = re.compile(r'{(.*?)}')
-_mana_symbol_scrub = re.compile('[0-9{}]')
+_mana_symbol_scrub = re.compile('[0-9{}X]')
 
 
 # region Color String Conversions
@@ -44,7 +44,7 @@ def get_color_string(text: Optional[str]) -> COLOR_STRING:
         # noinspection PyTypeChecker
         return ALIAS_MAP[s]
 
-    # Replace '{', '}' or any numeric.
+    # Replace '{', '}', 'X' or any numeric.
     ret = _mana_symbol_scrub.sub('', s)
 
     # If the incoming string was a colorless mana-cost, it will be empty.

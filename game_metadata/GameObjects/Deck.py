@@ -325,8 +325,7 @@ class LimitedDeck(Deck):
 
         raise NotImplementedError()
 
-        # pragma: nocover
-        return ""
+        return ""  # pragma: nocover
 
     @property
     def is_valid(self) -> bool:
@@ -386,8 +385,7 @@ class ConstructedDeck(Deck):
         #  This should be based on Casting Cost, Color Identity, and the Manabase.
         raise NotImplementedError()
 
-        # pragma: nocover
-        return ""
+        return ""  # pragma: nocover
 
     @property
     def is_valid(self) -> bool:
