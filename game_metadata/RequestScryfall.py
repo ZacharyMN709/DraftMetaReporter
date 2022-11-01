@@ -4,6 +4,7 @@ from Utilities.auto_logging import logging
 from Utilities.Requester import Requester
 
 
+# TODO: Implement this as part of Requester base class.
 # A decorator which automatically catches and logs error when querying scryfall.
 def trap_error(func: Callable) -> Callable:
     def arg_wrapper(arg1, arg2):
@@ -20,6 +21,7 @@ def trap_error(func: Callable) -> Callable:
 
 
 # TODO: Figure out proper contingencies for connection errors.
+# TODO: Have this derive from Requester.
 class RequestScryfall:
     """ A small class which helps get specific data from scryfall, handling the minutia of json checking. """
     _BASE_URL = 'https://api.scryfall.com/'
@@ -37,6 +39,7 @@ class RequestScryfall:
         while next_page:
             response: dict[str, object] = cls.REQUESTER.request(url)
             cards += response['data']
+            # TODO: Implement the 'has_more_ loop in base Request
             if response['has_more']:
                 url = response['next_page']
                 logging.debug(f"Fetching next page for set: {set_code}")
@@ -56,7 +59,7 @@ class RequestScryfall:
         logging.info(f"Fetching card data for set: {set_code}")
 
         while next_page:
-            response: dict[str, object] = cls.REQUESTER.request(url)
+            response = cls.REQUESTER.request(url)
             for card_obj in response['data']:
                 if card_obj['object'] == 'card':
                     card_names.append(card_obj['name'])

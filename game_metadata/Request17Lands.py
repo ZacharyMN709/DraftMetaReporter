@@ -184,7 +184,6 @@ class Request17Lands(Requester_2):
             'expansion': expansion,
             'format': event_type or settings.DEFAULT_FORMAT
         }
-        print(params)
 
         result = self.request(url=self.TROPHY_URL, params=params).json()
 

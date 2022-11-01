@@ -1,9 +1,10 @@
+import datetime
 import unittest
 import requests
 from requests import Response
 
 from Utilities.auto_logging import auto_log, LogLvl
-from Tests.settings import TEST_PERIPHERAL_URLS
+from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
 
 from game_metadata.Request17Lands import Request17Lands
 from game_metadata.GameObjects.Card import Card, CardManager
@@ -198,6 +199,15 @@ class TestLimitedDeck(TestBaseDeck):
 
 
 class TestTrophyStub(TestBaseDeck):
+    def validate_trophy_stub(self, trophy, data):
+        rank = TrophyStub.parse_simple_rank(data['start_rank'], data['end_rank'])
+
+        self.assertEqual(data['aggregate_id'], trophy.DECK_ID)
+        self.assertEqual(data['start_rank'], trophy.start_rank)
+        self.assertEqual(data['end_rank'], trophy.end_rank)
+        self.assertEqual(rank, trophy.rank)
+        self.assertEqual(data['deck_index'], trophy.deck_idx)
+        self.assertIsInstance(trophy.time, datetime.datetime)
 
     def test_get_trophy_deck_list(self):
         requester = Request17Lands()
@@ -218,9 +228,87 @@ class TestTrophyStub(TestBaseDeck):
         self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'TradDraft')
         bo3 = requester.get_trophy_deck_metadata('DMU')
 
+        Utilities.utils.settings.DEFAULT_FORMAT = 'PremierDraft'
+        self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
+
         self.assertEqual(500, len(bo1))
         self.assertEqual(500, len(bo3))
         self.assertNotEqual(bo1[0]['aggregate_id'], bo3[0]['aggregate_id'])
+
+    def test_trophy_stub_init(self):
+        data_1 = {
+            'wins': 7,
+            'losses': 1,
+            'start_rank': 'Silver-4',
+            'end_rank': 'Silver-2',
+            'colors': 'WBR',
+            'aggregate_id': '2c653e26dc0647ca934af503d57eee3d',
+            'deck_index': 4,
+            'time': '2022-11-01 13:18'
+        }
+
+        trophy = TrophyStub(data_1)
+        self.validate_trophy_stub(trophy, data_1)
+
+        data_2 = {
+            'wins': 7,
+            'losses': 1,
+            'start_rank': 'Gold-4',
+            'end_rank': 'Silver-3',
+            'colors': 'WUBG',
+            'aggregate_id': '4163636bf1b044fdb2e78433eba333ff',
+            'deck_index': 1,
+            'time': '2022-11-01 21:47'
+        }
+
+        trophy = TrophyStub(data_2)
+        self.validate_trophy_stub(trophy, data_2)
+
+    def test_get_deck(self):
+        data = {
+            'wins': 7,
+            'losses': 1,
+            'start_rank': 'Silver-4',
+            'end_rank': 'Silver-2',
+            'colors': 'WBR',
+            'aggregate_id': '2c653e26dc0647ca934af503d57eee3d',
+            'deck_index': 4,
+            'time': '2022-11-01 13:18'
+        }
+
+        trophy = TrophyStub(data)
+        deck = trophy.deck
+
+        self.assertEqual("2c653e26dc0647ca934af503d57eee3d", deck.DECK_ID)
+        self.assertEqual('DMU', deck.SET)
+        self.assertEqual('PremierDraft', deck.FORMAT)
+        self.assertTrue(deck.is_valid)
+        self.assertTrue(deck.has_trophy_stub)
+
+    @unittest.skipUnless(FULL_TEST, "Not performing full test. 'FULL_TEST' set to False.")
+    def test_mass_gen(self):
+        import Utilities.utils.settings
+        requester = Request17Lands()
+
+        def convert_data(data_list):
+            for data in data_list:
+                try:
+                    trophy = TrophyStub(data)
+                    self.validate_trophy_stub(trophy, data)
+                except:
+                    print(data)
+
+        self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
+        bo1 = requester.get_trophy_deck_metadata('DMU')
+        convert_data(bo1)
+
+        Utilities.utils.settings.DEFAULT_FORMAT = 'TradDraft'
+        self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'TradDraft')
+        bo3 = requester.get_trophy_deck_metadata('DMU')
+        convert_data(bo3)
+
+        Utilities.utils.settings.DEFAULT_FORMAT = 'PremierDraft'
+        self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
 
 
 class TestDeckManager(TestBaseDeck):

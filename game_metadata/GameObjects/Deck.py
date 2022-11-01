@@ -15,7 +15,7 @@ import game_metadata.GameObjects.Draft as Draft
 
 
 # Alternate regex for ranks: r"(\w*)-([\d])"
-trim_numeric = re.compile(r"-[\d]*]")
+trim_numeric = re.compile(r"-[\d]*")
 card_line = re.compile(r"^([0-9]{0,3}) ?([^(\n]*)(?: |$)(\(\w{3}\))? ?(\d{1,3})?")
 
 
@@ -49,7 +49,7 @@ class TrophyStub:
         self.start_rank: str = results['start_rank']
         self.end_rank: str = results['end_rank']
         self.rank: str = self.parse_simple_rank(self.start_rank, self.end_rank)
-        self.time: datetime = datetime.strptime(results['time'], "%m-%d-%y %H:%M")
+        self.time: datetime = datetime.strptime(results['time'], "%Y-%m-%d %H:%M")
 
     @property
     def deck(self) -> LimitedDeck:
