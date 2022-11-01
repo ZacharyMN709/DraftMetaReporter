@@ -312,4 +312,24 @@ class TestTrophyStub(TestBaseDeck):
 
 
 class TestDeckManager(TestBaseDeck):
-    pass
+    def test_from_deck_id_valid(self):
+        deck = DeckManager.from_deck_id("2c653e26dc0647ca934af503d57eee3d")
+        self.assertIsInstance(deck, LimitedDeck)
+
+    def test_from_deck_id_invalid(self):
+        deck = DeckManager.from_deck_id("TunaSandwich")
+        self.assertIsNone(deck)
+
+    def test_clear_blank_decks(self):
+        is_valid = True
+        deck = DeckManager.from_deck_id("TunaSandwich")
+        self.assertIsNone(deck)
+        DeckManager.clear_blank_decks()
+        for deck in DeckManager.DECKS.values():
+            is_valid = is_valid and deck is not None
+        self.assertTrue(is_valid)
+
+    def test_flush_cache(self):
+        DeckManager.flush_cache()
+        self.assertFalse(DeckManager.SETS)
+        self.assertFalse(DeckManager.DECKS)

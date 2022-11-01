@@ -453,9 +453,13 @@ class DeckManager:
     @classmethod
     def clear_blank_decks(cls) -> None:
         """ Clears cls.DECKS of pairs where the value is None. """
+        to_del = list()
         for deck_id in cls.DECKS:
             if cls.DECKS[deck_id] is None:
-                del cls.DECKS[deck_id]
+                to_del.append(deck_id)
+
+        for deck_id in to_del:
+            del cls.DECKS[deck_id]
 
     @classmethod
     def flush_cache(cls) -> None:
