@@ -198,7 +198,29 @@ class TestLimitedDeck(TestBaseDeck):
 
 
 class TestTrophyStub(TestBaseDeck):
-    pass
+
+    def test_get_trophy_deck_list(self):
+        requester = Request17Lands()
+        data = requester.get_trophy_deck_metadata('DMU')
+
+        self.assertIsInstance(data, list)
+        self.assertIsInstance(data[0], dict)
+        self.assertEqual(500, len(data))
+
+    def test_options_switch(self):
+        import Utilities.utils.settings
+        requester = Request17Lands()
+
+        self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
+        bo1 = requester.get_trophy_deck_metadata('DMU')
+
+        Utilities.utils.settings.DEFAULT_FORMAT = 'TradDraft'
+        self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'TradDraft')
+        bo3 = requester.get_trophy_deck_metadata('DMU')
+
+        self.assertEqual(500, len(bo1))
+        self.assertEqual(500, len(bo3))
+        self.assertNotEqual(bo1[0]['aggregate_id'], bo3[0]['aggregate_id'])
 
 
 class TestDeckManager(TestBaseDeck):

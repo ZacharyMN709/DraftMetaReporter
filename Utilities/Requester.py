@@ -10,11 +10,11 @@ from Utilities.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
 class Requester:
     """ Helps to handle getting data from url end points, with some configurable options about timing. """
 
-    def __init__(self, tries: int = TRIES, fail_delay: float = FAIL_DELAY,
-                 success_delay: float = SUCCESS_DELAY) -> None:
-        self._TRIES: int = tries
-        self._FAIL_DELAY: float = fail_delay
-        self._SUCCESS_DELAY: float = success_delay
+    def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
+                 success_delay: Optional[float] = None):
+        self._TRIES: int = tries or TRIES
+        self._FAIL_DELAY: float = fail_delay or FAIL_DELAY
+        self._SUCCESS_DELAY: float = success_delay or SUCCESS_DELAY
 
     def request(self, url: str) -> Optional[Union[list, dict]]:
         """
@@ -49,11 +49,11 @@ class Requester:
 class Requester_2:  # pragma: no cover
     """ Helps to handle getting data from url end points, with some configurable options about timing. """
 
-    def __init__(self, tries: int = TRIES, fail_delay: float = FAIL_DELAY,
-                 success_delay: float = SUCCESS_DELAY) -> None:
-        self._TRIES: int = tries
-        self._FAIL_DELAY: float = fail_delay
-        self._SUCCESS_DELAY: float = success_delay
+    def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
+                 success_delay: Optional[float] = None):
+        self._TRIES: int = tries or TRIES
+        self._FAIL_DELAY: float = fail_delay or FAIL_DELAY
+        self._SUCCESS_DELAY: float = success_delay or SUCCESS_DELAY
 
     def request(self, url: str, params: Optional[dict[str, str]] = None) -> Optional[Response]:
         """

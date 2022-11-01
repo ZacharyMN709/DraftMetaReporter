@@ -4,8 +4,7 @@ import json
 import pandas as pd
 
 from Utilities.Requester import Requester_2
-from Utilities.utils.settings import DEFAULT_FORMAT, DEFAULT_DATE, TRIES, FAIL_DELAY, SUCCESS_DELAY
-from game_metadata import CardManager
+import Utilities.utils.settings as settings
 
 
 # Adapted from 'https://github.com/diogojapinto/mtg-data-mining/blob/main/utils/api_clients/seventeen_lands/client.py'
@@ -23,20 +22,9 @@ class Request17Lands(Requester_2):
     DECK_URL = 'https://www.17lands.com/data/deck'
     DETAILS_URL = 'https://www.17lands.com/data/details'
 
-    def __init__(self, tries: int = TRIES, fail_delay: int = FAIL_DELAY, success_delay: int = SUCCESS_DELAY) -> None:
+    def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
+                 success_delay: Optional[float] = None):
         super().__init__(tries, fail_delay, success_delay)
-
-    @staticmethod
-    def _tidy_mtga_names(data: list[dict[str, str]]) -> None:
-        """
-        Corrects card data returned from a 17Lands request, since data coming back from MTGA can't be trusted.
-        :param data: A dictionary of card data.
-        """
-        for value in data:
-            if 'name' in value:
-                name = value['name']
-                card_obj = CardManager.from_name(name)
-                value['name'] = card_obj.NAME
 
     def get_colors(self) -> list[str]:
         return self.request(url=self.COLOR_URL).json()
@@ -53,14 +41,18 @@ class Request17Lands(Requester_2):
         return play_draw_stats
 
     def get_color_ratings(self, expansion: str,
-                          event_type: str = DEFAULT_FORMAT,
-                          start_date: Optional[date] = DEFAULT_DATE,
-                          end_date: Optional[date] = date.today(),
+                          event_type: Optional[str] = None,
+                          start_date: Optional[date] = None,
+                          end_date: Optional[date] = None,
                           combine_splash: bool = False,
                           user_group: Optional[str] = None) -> pd.DataFrame:
+
+        start_date = start_date or settings.DEFAULT_DATE
+        end_date = end_date or date.today()
+
         params = {
             'expansion': expansion,
-            'event_type': event_type,
+            'event_type': event_type or settings.DEFAULT_FORMAT,
             'start_date': start_date.strftime('%Y-%m-%d'),
             'end_date': end_date.strftime('%Y-%m-%d'),
             'combine_splash': combine_splash,
@@ -83,14 +75,18 @@ class Request17Lands(Requester_2):
         return color_ratings
 
     def get_card_ratings(self, expansion: str,
-                         event_type: str = DEFAULT_FORMAT,
-                         start_date: Optional[date] = DEFAULT_DATE,
-                         end_date: Optional[date] = date.today(),
+                         event_type: Optional[str] = None,
+                         start_date: Optional[date] = None,
+                         end_date: Optional[date] = None,
                          user_group: Optional[str] = None,
                          deck_colors: Optional[str] = None) -> pd.DataFrame:
+
+        start_date = start_date or settings.DEFAULT_DATE
+        end_date = end_date or date.today()
+
         params = {
             'expansion': expansion,
-            'format': event_type,
+            'format': event_type or settings.DEFAULT_FORMAT,
             'start_date': start_date.strftime('%Y-%m-%d'),
             'end_date': end_date.strftime('%Y-%m-%d'),
             'user_group': user_group,
@@ -98,7 +94,6 @@ class Request17Lands(Requester_2):
         }
 
         result = self.request(url=self.CARD_RATING_URL, params=params).json()
-        self._tidy_mtga_names(result)
 
         # Apply a more intuitive columns ordering, and remove URLs and sideboard metrics
         unsorted_df = pd.DataFrame(result)
@@ -140,14 +135,18 @@ class Request17Lands(Requester_2):
         return card_ratings
 
     def get_card_evaluations(self, expansion: str,
-                             event_type: str = DEFAULT_FORMAT,
-                             start_date: Optional[date] = DEFAULT_DATE,
-                             end_date: Optional[date] = date.today(),
+                             event_type: Optional[str] = None,
+                             start_date: Optional[date] = None,
+                             end_date: Optional[date] = None,
                              rarity: Optional[str] = None,
                              color: Optional[str] = None) -> pd.DataFrame:
+
+        start_date = start_date or settings.DEFAULT_DATE
+        end_date = end_date or date.today()
+
         params = {
             'expansion': expansion,
-            'format': event_type,
+            'format': event_type or settings.DEFAULT_FORMAT,
             'start_date': start_date.strftime('%Y-%m-%d'),
             'end_date': end_date.strftime('%Y-%m-%d'),
             'rarity': rarity,
@@ -155,7 +154,6 @@ class Request17Lands(Requester_2):
         }
 
         result = self.request(url=self.CARD_EVAL_URL, params=params).json()
-        self._tidy_mtga_names(result)
 
         # Tidy up data into a dataframe of one row per date-card combination
         digested_result_accum = []
@@ -181,11 +179,12 @@ class Request17Lands(Requester_2):
 
         return card_evaluations
 
-    def get_trophy_deck_metadata(self, expansion: str, event_type: str = DEFAULT_FORMAT) -> pd.DataFrame:
+    def get_trophy_deck_metadata(self, expansion: str, event_type: Optional[str] = None) -> pd.DataFrame:
         params = {
             'expansion': expansion,
-            'format': event_type
+            'format': event_type or settings.DEFAULT_FORMAT
         }
+        print(params)
 
         result = self.request(url=self.TROPHY_URL, params=params).json()
 

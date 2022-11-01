@@ -44,14 +44,25 @@ def append_card_info(frame: pd.DataFrame, card_dict: dict[str, Card]) -> pd.Data
     :param card_dict: The dictionary of card names and card objects.
     :return: A DataFrame with the card information attached.
     """
-    frame['Cast Color'] = [card_dict[card_name].CAST_IDENTITY for card_name in frame.index]
-    frame['CMC'] = [card_dict[card_name].CMC for card_name in frame.index]
-    frame['Type Line'] = [card_dict[card_name].TYPE_LINE for card_name in frame.index]
-    frame['Supertypes'] = [card_dict[card_name].SUPERTYPES for card_name in frame.index]
-    frame['Types'] = [card_dict[card_name].TYPES for card_name in frame.index]
-    frame['Subtypes'] = [card_dict[card_name].SUBTYPES for card_name in frame.index]
-    frame['Power'] = [card_dict[card_name].POW for card_name in frame.index]
-    frame['Toughness'] = [card_dict[card_name].TOU for card_name in frame.index]
+    # Get each card from the provided card dictionary, relying on the Card's fallback
+    #  on an unknown name. This helps be forgiving about names, and patches spotty data
+    #  which can come back from 17Lands, which originates in MTGA.
+    card_list = list()
+    for card_name in frame.index:
+        try:
+            card = card_dict[card_name]
+        except KeyError:
+            card = Card.from_name(card_name)
+        card_list.append(card)
+
+    frame['Cast Color'] = [card.CAST_IDENTITY for card in card_list]
+    frame['CMC'] = [card.CMC for card in card_list]
+    frame['Type Line'] = [card.TYPE_LINE for card in card_list]
+    frame['Supertypes'] = [card.SUPERTYPES for card in card_list]
+    frame['Types'] = [card.TYPES for card in card_list]
+    frame['Subtypes'] = [card.SUBTYPES for card in card_list]
+    frame['Power'] = [card.POW for card in card_list]
+    frame['Toughness'] = [card.TOU for card in card_list]
 
     column_names = STAT_COL_NAMES + SHARED_COL_NAMES + CARD_INFO_COL_NAMES
     frame = frame.reindex(columns=column_names)
