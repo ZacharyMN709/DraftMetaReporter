@@ -114,9 +114,13 @@ class DataLoader:
                 logging.info(f"Updating data for '{filename}'. Fetching from 17Lands site...")
             else:
                 logging.info(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...")
-            raw_data = self._fetcher.fetch(url)
+            raw_data = self._fetcher.request(url)
 
-            # Handles correcting data from 17Lands, in the event since data coming back from MTGA can't be trusted.
+            if raw_data is None:
+                logging.error(f"Data fetched for '{filename}' returned None! Returning empty CARD_DATA struct")
+                return CARD_DATA
+
+            # Handles correcting data from 17Lands, since data coming back from MTGA can't be trusted.
             for data in raw_data:
                 if 'name' in data:
                     name = data['name']

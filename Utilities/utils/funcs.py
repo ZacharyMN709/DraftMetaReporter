@@ -48,3 +48,9 @@ def save_json_file(folder: str, filename: str, data: [dict, list[dict]], indent:
         logging.error(f'Error writing to json file {filename}')
         logging.error(ex)
         return False
+
+
+def reformat_json_file(folder: str, filename: str, indent: Optional[int] = 4) -> None:
+    data = load_json_file(folder, filename)
+    if data:
+        save_json_file(folder, filename, data, indent=indent)

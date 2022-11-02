@@ -38,6 +38,8 @@ class Requester:
             # TODO: Consider handling errors based on specific connection issue.
             except Exception as ex:
                 if count < self._TRIES:
+                    logging.info(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.')
+                    sleep(self._FAIL_DELAY)
                     continue
                 else:
                     logging.error(f'Failed to get data after {self._TRIES} attempts.')
