@@ -7,66 +7,31 @@ from game_metadata.GameObjects.Card import Card, CardManager
 import game_metadata.GameObjects.Deck as Deck
 
 
-class Pack:
-
+class Pick:
     def __init__(self, pick):
-        pick_dict = {
-            'pack_number': pick['pack_number'],
-            'pick_number': pick['pick_number'],
-            'colors': pick['colors'],
-            'pick': CardManager.from_name(pick['pick']['name']),
-            'available': [CardManager.from_name(a['name']) for a in pick['available']],
-            'known_missing': [CardManager.from_name(m['name']) for m in pick['known_missing']],
-            'pool': [CardManager.from_name(p['name']) for p in pick['pool']],
-        }
-        pass
+        self.pack_number = pick['pack_number']
+        self.pick_number = pick['pick_number']
+        self.card_picked = CardManager.from_name(pick['pick']['name'])
+        self.cards_available = [CardManager.from_name(a['name']) for a in pick['available']]
+        self.cards_missing = [CardManager.from_name(m['name']) for m in pick['known_missing']]
+        self.pool = [CardManager.from_name(p['name']) for p in pick['pool']]
 
 
 class Draft:
-
     @classmethod
     def from_id(cls, draft_id: str) -> Draft:
         return DraftManager.from_draft_id(draft_id)
 
-    def __init__(self, result):
-        self.DRAFT_ID: str = ''
-        self.SET: str = ''
+    def __init__(self, result: dict, draft_id: str):
+        self.DRAFT_ID: str = draft_id
+        self.SET: str = result['expansion']
         self.FORMAT: str = ''
+        self.PICKS: list[Pick] = list()
         self._DECK: Optional[Deck.LimitedDeck] = None
 
-        self.PICKS: list[Pack] = list()
-
-        # Parse payload
-        payload = result['payload']
-        expansion = payload['expansion']
-
         # Parse picks
-        picks_accum = []
-        for pick in payload['picks']:
-            picks_accum.append({
-                'expansion': expansion,
-                'pack_number': pick['pack_number'],
-                'pick_number': pick['pick_number'],
-                'colors': pick['colors'],
-                'pick': Card.from_name(pick['pick']['name']),
-                'available': [Card.from_name(a['name']) for a in pick['available']],
-                'known_missing': [Card.from_name(m['name']) for m in pick['known_missing']],
-                'pool': [Card.from_name(p['name']) for p in pick['pool']],
-                'possible_maindeck': [
-                    Card.from_name(m['name'])
-                    for m in [
-                        i for l in pick['possible_maindeck']
-                        for i in l
-                    ]
-                ],
-                'probable_sideboard': [
-                    Card.from_name(s['name'])
-                    for s in [
-                        i for l in pick['probable_sideboard']
-                        for i in l
-                    ]
-                ]
-            })
+        for pick_data in result['picks']:
+            self.PICKS.append(Pick(pick_data))
 
     @property
     def DECK(self):
@@ -105,7 +70,8 @@ class DraftManager:
 
         # Otherwise, try and get it from 17Lands.
         try:
-            draft = cls.REQUESTER.get_draft(draft_id)
+            data = cls.REQUESTER.get_draft(draft_id)
+            draft = Draft(data, draft_id)
             cls._add_draft(draft)
             return draft
         except:

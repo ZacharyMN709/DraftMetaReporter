@@ -9,7 +9,7 @@ from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
 from game_metadata.Request17Lands import Request17Lands
 from game_metadata.GameObjects.Card import Card, CardManager
 from game_metadata.GameObjects.Deck import Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager
-from game_metadata.GameObjects.Draft import Draft, Pack
+from game_metadata.GameObjects.Draft import Draft
 
 
 class TestBaseDeck(unittest.TestCase):

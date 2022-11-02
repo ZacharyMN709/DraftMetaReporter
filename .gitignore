@@ -6,4 +6,4 @@ Notebooks/.ipynb_checkpoints/*
 Tests/test.txt
 test.txt
 *.png
-/Tests/DeckLists/
+/Tests/*
