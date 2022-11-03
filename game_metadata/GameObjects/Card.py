@@ -1,14 +1,18 @@
 from __future__ import annotations
 from typing import NoReturn, Optional
+import re
 
 from Utilities.auto_logging import logging
 from Utilities.utils.funcs import load_json_file, save_json_file
-from wubrg import get_color_identity, parse_cost, parse_color_list, COLOR_STRING
+from wubrg import get_color_identity, calculate_cmc, parse_color_list, COLOR_STRING
 
 from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, ALL_SUBTYPES, \
     LAYOUT_DICT, CardLayouts, CARD_SIDE, SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA
 
 from game_metadata.RequestScryfall import RequestScryfall
+
+
+prototype_parse = re.compile(r"Prototype (.*) — (\d*)/(\d*)")
 
 
 class CardFace:
@@ -22,7 +26,7 @@ class CardFace:
         """
         Get the relevant card face dictionary based on the side of the card.
         """
-        if self.CARD_SIDE == 'default':
+        if self.CARD_SIDE in ['default', 'prototype']:
             return json
         if self.LAYOUT == CardLayouts.MELD:
             return json
@@ -62,17 +66,7 @@ class CardFace:
         if cmc is not None:
             return int(cmc)
 
-        # Get each mana symbol in the mana cost, add its cost to the total cmc.
-        cmc_str = parse_cost(self.MANA_COST)
-        cmc = 0
-        for symbol in cmc_str:
-            if symbol.isnumeric():
-                cmc += int(symbol)
-            else:
-                if symbol == 'X':
-                    continue
-                cmc += 1
-        return cmc
+        return calculate_cmc(self.MANA_COST)
 
     def _validate_types(self) -> None:
         """
@@ -112,6 +106,14 @@ class CardFace:
 
         if self.LAYOUT == CardLayouts.MODAL_DFC and self.CARD_SIDE == 'back':
             self.MANA_PRODUCED = set(json.get("produced_mana", list()))
+
+        if self.LAYOUT == CardLayouts.PROTOTYPE and self.CARD_SIDE == 'prototype':
+            c, p, t = prototype_parse.match(self.ORACLE).groups()
+            self.MANA_COST: str = c
+            self.POW: str = p
+            self.TOU: str = t
+            self.CMC: int = calculate_cmc(self.MANA_COST)
+            self.COLORS: COLOR_STRING = get_color_identity(self.MANA_COST)
 
     def __init__(self, json: CARD_INFO, layout: CardLayouts, side: CARD_SIDE = 'default'):
         self.SCRYFALL_ID: str = json['id']
@@ -174,6 +176,7 @@ class Card:
         :param json: The card data.
         """
         def get_meld_result_name():
+            print(json)
             dicts: list[dict] = json["all_parts"]
             for d in dicts:
                 if d["component"] == "meld_result":
@@ -186,9 +189,15 @@ class Card:
             self.FACE_2 = None
         elif self.LAYOUT == CardLayouts.MELD:
             self.FACE_1 = self.DEFAULT_FACE
-            meld_name = get_meld_result_name()
-            meld_json = RequestScryfall.get_card_by_name(meld_name)
-            self.FACE_2 = CardFace(meld_json, self.LAYOUT, 'melded')
+            try:
+                meld_name = get_meld_result_name()
+                meld_json = RequestScryfall.get_card_by_name(meld_name)
+                self.FACE_2 = CardFace(meld_json, self.LAYOUT, 'melded')
+            except KeyError:  # pragma: nocover
+                self.FACE_2 = None
+        elif self.LAYOUT == CardLayouts.PROTOTYPE:
+            self.FACE_1 = CardFace(json, self.LAYOUT, 'default')
+            self.FACE_2 = CardFace(json, self.LAYOUT, 'prototype')
         elif self.LAYOUT == CardLayouts.ADVENTURE:
             self.FACE_1 = CardFace(json, self.LAYOUT, 'main')
             self.FACE_2 = CardFace(json, self.LAYOUT, 'adventure')

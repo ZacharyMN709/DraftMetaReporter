@@ -50,25 +50,29 @@ class RequestScryfall:
         return cards
 
     @classmethod
-    @trap_error
-    def get_arena_cards(cls):
-        cards = list()
-        next_page = True
-        url = f'{cls._BASE_URL}/cards/search?format=json&q=game%3Aarena'
-        logging.info(f"Fetching card data for all Arena cards.")
+    def get_arena_cards(cls) -> Optional[list[dict[str, Union[str, dict[str, str], list[str]]]]]:
+        # NOTE: Hack to get parameterless function to wor with trap_error.
+        @trap_error
+        def wrapped_func(cls, _):
+            cards = list()
+            next_page = True
+            url = f'{cls._BASE_URL}/cards/search?format=json&q=game%3Aarena'
+            logging.info(f"Fetching card data for all Arena cards.")
 
-        while next_page:
-            response: dict[str, object] = cls.REQUESTER.request(url)
-            cards += response['data']
-            # TODO: Implement the 'has_more' loop in base Request
-            if response['has_more']:
-                url = response['next_page']
-                logging.debug(f"Fetching next page for all Arena cards.")
-                logging.debug(f"URL: {url}")
-            else:
-                next_page = False
+            while next_page:
+                response: dict[str, object] = cls.REQUESTER.request(url)
+                cards += response['data']
+                # TODO: Implement the 'has_more_ loop in base Request
+                if response['has_more']:
+                    url = response['next_page']
+                    logging.debug(f"Fetching next page for all Arena cards.")
+                    logging.debug(f"URL: {url}")
+                else:
+                    next_page = False
 
-        return cards
+            return cards
+
+        return wrapped_func(cls, None)
 
     @classmethod
     @trap_error

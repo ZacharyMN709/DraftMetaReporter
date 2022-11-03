@@ -6,7 +6,7 @@ from typing import Optional, Callable
 import re
 import logging
 
-from wubrg.typing import COLOR, COLOR_STRING, COLOR_IDENTITY, COLOR_ALIAS, MANA_SYMBOL
+from wubrg.typing import COLOR, COLOR_STRING, COLOR_IDENTITY, COLOR_ALIAS, MANA_SYMBOL, FORMATTED_MANA_SYMBOL
 from wubrg.consts import WUBRG, COLOR_TO_NAME, COLOR_COMBINATIONS
 from wubrg.alias_mappings import ALIAS_MAP
 from wubrg.mana_symbols import MANA_SYMBOLS
@@ -105,9 +105,11 @@ def get_color_alias(color_string: str) -> Optional[COLOR_ALIAS]:
 
     # Otherwise, we have something to map. Return its alias.
     return COLOR_TO_NAME[color_identity]
+# endregion Color String Conversions
 
 
-def parse_cost(mana_cost: str) -> list[MANA_SYMBOL]:
+# region Mana Cost Conversions
+def parse_cost(mana_cost: FORMATTED_MANA_SYMBOL) -> list[MANA_SYMBOL]:
     """
     Converts the typically used mana cost to a list of strings to more easily iterate over.
     Eg. {10}{G}{G} would return ['10', 'G', 'G']
@@ -135,7 +137,21 @@ def parse_cost(mana_cost: str) -> list[MANA_SYMBOL]:
 
     # If all checks passed, return the found values.
     return costs
-# endregion Color String Conversions
+
+
+def calculate_cmc(mana_cost: FORMATTED_MANA_SYMBOL) -> int:
+    # Get each mana symbol in the mana cost, add its cost to the total cmc.
+    cmc_str = parse_cost(mana_cost)
+    cmc = 0
+    for symbol in cmc_str:
+        if symbol.isnumeric():
+            cmc += int(symbol)
+        else:
+            if symbol == 'X':
+                continue
+            cmc += 1
+    return cmc
+# endregion Mana Cost Conversions
 
 
 # region Color Set Generation

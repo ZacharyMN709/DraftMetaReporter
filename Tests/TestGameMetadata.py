@@ -2,8 +2,8 @@ import unittest
 from datetime import date
 
 from wubrg import COLOR_COMBINATIONS
-from Tests.settings import TEST_MASS_DATA_PULL
 
+from game_metadata.utils.funcs import new_color_count_dict
 from game_metadata.GameMetadata import SetMetadata, FormatMetadata
 from game_metadata.RequestScryfall import RequestScryfall, trap_error
 from game_metadata.GameObjects.Card import Card
@@ -57,11 +57,6 @@ class TestRequestScryfall(unittest.TestCase):
         card = RequestScryfall.get_card_by_name(name)
         self.assertIsInstance(card, dict)
         self.assertEqual(card['err_msg'], f'Error: Cannot find card "{name}"')
-
-    @unittest.skipUnless(TEST_MASS_DATA_PULL, "Not testing mass data functions. 'TEST_MASS_DATA_PULL' set to False.")
-    def test_get_bulk_data(self):
-        data = RequestScryfall.get_bulk_data()
-        self.assertIsInstance(data, list)
 
 
 class TestSetMetadata(unittest.TestCase):
@@ -193,3 +188,10 @@ class TestFormatMetadata(unittest.TestCase):
         self.assertEqual(active, date.today() <= date(2022, 4, 28))
 
         self.assertTrue(form.has_started)
+
+
+class TestMetadataUtilities(unittest.TestCase):
+    def test_new_color_count_dict(self):
+        d = new_color_count_dict()
+        self.assertIsInstance(d, dict)
+

@@ -544,6 +544,93 @@ class TestCardFace(unittest.TestCase):
         }
         self.eval_card_face(eval_dict, face)
 
+    def test_card_face_prototype_main(self):
+        # https://api.scryfall.com/cards/62d37423-3445-412a-9abd-0480da404637?format=json&pretty=true
+        name = 'Phyrexian Fleshgorger'
+        layout: CardLayouts = CardLayouts.PROTOTYPE
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "d3a5a830-cd14-49da-9412-c50049c74c92",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Phyrexian Fleshgorger",
+            "MANA_COST": "{7}",
+            "CMC": 7,
+            "COLORS": "",
+            "COLOR_IDENTITY": "B",
+            "TYPE_LINE": "Artifact Creature — Phyrexian Wurm",
+            "ALL_TYPES": {"Artifact", "Creature", "Phyrexian", "Wurm"},
+            "TYPES": {"Artifact", "Creature"},
+            "SUBTYPES": {"Phyrexian", "Wurm"},
+            "ORACLE": "Prototype {1}{B}{B} — 3/3 (You may cast this spell with "
+                      "different mana cost, color, and size. It keeps its abilities and types.)\n"
+                      "Menace, lifelink\n"
+                      "Ward—Pay life equal to Phyrexian Fleshgorger's power.",
+            "POW": "7",
+            "TOU": "5"
+        }
+        self.eval_card_face(eval_dict, face)
+
+    def test_card_face_prototype_prototype(self):
+        # https://api.scryfall.com/cards/62d37423-3445-412a-9abd-0480da404637?format=json&pretty=true
+        name = 'Phyrexian Fleshgorger'
+        layout: CardLayouts = CardLayouts.PROTOTYPE
+        side: CARD_SIDE = 'prototype'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "d3a5a830-cd14-49da-9412-c50049c74c92",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Phyrexian Fleshgorger",
+            "MANA_COST": "{1}{B}{B}",                                      # NOTE: Prototype diff.
+            "CMC": 3,                                                      # NOTE: Prototype diff.
+            "COLORS": "B",                                                 # NOTE: Prototype diff.
+            "COLOR_IDENTITY": "B",
+            "TYPE_LINE": "Artifact Creature — Phyrexian Wurm",
+            "ALL_TYPES": {"Artifact", "Creature", "Phyrexian", "Wurm"},
+            "TYPES": {"Artifact", "Creature"},
+            "SUBTYPES": {"Phyrexian", "Wurm"},
+            "ORACLE": "Prototype {1}{B}{B} — 3/3 (You may cast this spell with "
+                      "different mana cost, color, and size. It keeps its abilities and types.)\n"
+                      "Menace, lifelink\n"
+                      "Ward—Pay life equal to Phyrexian Fleshgorger's power.",
+            "POW": "3",                                                   # NOTE: Prototype diff.
+            "TOU": "3"                                                    # NOTE: Prototype diff.
+        }
+        self.eval_card_face(eval_dict, face)
+
+    def test_card_face_prototype_default(self):
+        # https://api.scryfall.com/cards/62d37423-3445-412a-9abd-0480da404637?format=json&pretty=true
+        name = 'Phyrexian Fleshgorger'
+        layout: CardLayouts = CardLayouts.PROTOTYPE
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "d3a5a830-cd14-49da-9412-c50049c74c92",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Phyrexian Fleshgorger",
+            "MANA_COST": "{7}",
+            "CMC": 7,
+            "COLORS": "",
+            "COLOR_IDENTITY": "B",
+            "TYPE_LINE": "Artifact Creature — Phyrexian Wurm",
+            "ALL_TYPES": {"Artifact", "Creature", "Phyrexian", "Wurm"},
+            "TYPES": {"Artifact", "Creature"},
+            "SUBTYPES": {"Phyrexian", "Wurm"},
+            "ORACLE": "Prototype {1}{B}{B} — 3/3 (You may cast this spell with "
+                      "different mana cost, color, and size. It keeps its abilities and types.)\n"
+                      "Menace, lifelink\n"
+                      "Ward—Pay life equal to Phyrexian Fleshgorger's power.",
+            "POW": "7",
+            "TOU": "5"
+        }
+        self.eval_card_face(eval_dict, face)
+
     def test_card_face_meld_front(self):
         # https://api.scryfall.com/cards/8aefe8bd-216a-4ec1-9362-3f9dbf7fd083?format=json&pretty=true
         # https://api.scryfall.com/cards/40a01679-3224-427e-bd1d-b797b0ab68b7?format=json&pretty=true
@@ -647,7 +734,6 @@ class TestCardFace(unittest.TestCase):
             "TOU": "4"
         }
         self.eval_card_face(eval_dict, face)
-
     # endregion Basic Face Tests
 
     # region Additional Face Tests
