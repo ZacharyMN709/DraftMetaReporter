@@ -3,7 +3,8 @@ from enum import Flag, auto
 
 
 SCRYFALL_CACHE_DIR = r'C:\Users\Zachary\Coding\GitHub\ScryfallData'
-SCRYFALL_CACHE_FILE = r'oracle-cards-arena.json'
+SCRYFALL_CACHE_FILE = r'oracle-cards.json'
+SCRYFALL_CACHE_FILE_ARENA = r'oracle-cards-arena.json'
 
 # Type information for the card json Scryfall returns.
 CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str], list[dict]]]

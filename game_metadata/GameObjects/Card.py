@@ -6,7 +6,7 @@ from Utilities.utils.funcs import load_json_file, save_json_file
 from wubrg import get_color_identity, parse_cost, parse_color_list, COLOR_STRING
 
 from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, ALL_SUBTYPES, \
-    LAYOUT_DICT, CardLayouts, CARD_SIDE, SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE
+    LAYOUT_DICT, CardLayouts, CARD_SIDE, SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA
 
 from game_metadata.RequestScryfall import RequestScryfall
 
@@ -202,7 +202,7 @@ class Card:
             self.FACE_1 = CardFace(json, self.LAYOUT, 'front')
             self.FACE_2 = CardFace(json, self.LAYOUT, 'back')
         else:  # pragma: nocover
-            # TODO: Create a test with a token to promtpt this error as part of testing.
+            # TODO: Create a test with a token to prompt this error as part of testing.
             raise ValueError(f"Unknown layout '{self.LAYOUT}'")
 
     def __init__(self, json: CARD_INFO):
@@ -441,7 +441,7 @@ class CardManager:
     @classmethod
     def load_from_file(cls) -> None:
         """ Loads the cache of Arena cards from a configurable location disk. """
-        dictionary = load_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE)
+        dictionary = load_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE_ARENA)
         for line in dictionary:
             card = Card(line)
             cls._add_card(card)
@@ -455,6 +455,7 @@ class CardManager:
         bulk_data = RequestScryfall.get_bulk_data()
         arena_cards = list()
         logging.info(f'Searching bulk data for Arena cards...')
+
         for card_dict in bulk_data:
             if "arena_id" not in card_dict:
                 continue
@@ -465,3 +466,15 @@ class CardManager:
             arena_cards.append(card_dict)
         logging.info(f'{len(arena_cards)} cards found!')
         save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, arena_cards, indent=None)
+
+    # NOTE: This function is masked from code coverage as its testing is expensive and slow.
+    #  Removing the comment 'pragma: nocover' below will re-add it to code coverage.
+    #  This should be done only as required, and then re-added.
+    @classmethod
+    def generate_arena_cache_file(cls):  # pragma: nocover
+        """ Generate a cache of Arena cards on a configurable location on disk. """
+        bulk_data = RequestScryfall.get_arena_cards()
+        logging.info(f'Searching bulk data for Arena cards...')
+
+        logging.info(f'{len(bulk_data)} cards found!')
+        save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE_ARENA, bulk_data, indent=None)

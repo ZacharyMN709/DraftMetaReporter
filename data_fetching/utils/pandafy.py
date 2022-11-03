@@ -51,7 +51,7 @@ def append_card_info(frame: pd.DataFrame, card_dict: dict[str, Card]) -> pd.Data
     for card_name in frame.index:
         try:
             card = card_dict[card_name]
-        except KeyError:
+        except KeyError:  # pragma: nocover
             card = Card.from_name(card_name)
         card_list.append(card)
 

@@ -1164,6 +1164,7 @@ class TestCardManager(unittest.TestCase):
     @unittest.skipUnless(TEST_MASS_DATA_PULL, "Not testing mass data functions. 'TEST_MASS_DATA_PULL' set to False.")
     def test_generate_cache_file(self):
         CardManager.generate_cache_file()
+        CardManager.generate_arena_cache_file()
         # TODO: Check if the file exists, and is less than 5 minutes old.
         # TODO: Maybe check if file is of certain size or structure.
 
