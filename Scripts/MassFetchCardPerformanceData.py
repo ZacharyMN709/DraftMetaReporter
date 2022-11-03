@@ -2,7 +2,6 @@ import sys
 from datetime import datetime
 
 from Utilities.auto_logging import LogLvl, set_log_level, logging
-import Utilities.utils.settings as settings
 
 from game_metadata import SETS
 from data_fetching import SetManager, CentralManager
@@ -12,7 +11,6 @@ LOAD_ALL = False
 TARGET_SET = 'DMU'
 LOG_LEVEL = LogLvl.INFO
 set_log_level(LOG_LEVEL)
-settings.SUCCESS_DELAY = 2.5
 
 
 def info_splash():

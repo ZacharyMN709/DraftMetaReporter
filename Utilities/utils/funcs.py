@@ -33,7 +33,7 @@ def save_json_file(folder: str, filename: str, data: [dict, list[dict]], indent:
     :param folder: The folder the json file is in.
     :param filename: The name of the json file (including filetype).
     :param data: The object to be saved as json.
-    :param indent: The indeting to use for the json.
+    :param indent: The indenting to use for the json.
     :return: Whether the save operation was successful.
     """
     filepath = path.join(folder, filename)
@@ -51,6 +51,12 @@ def save_json_file(folder: str, filename: str, data: [dict, list[dict]], indent:
 
 
 def reformat_json_file(folder: str, filename: str, indent: Optional[int] = 4) -> None:
+    """
+    Re-writes the json file in question, if it can be parsed, with the provided indents.
+    :param folder: The folder the json file is in.
+    :param filename: The name of the json file (including filetype).
+    :param indent: The indenting to use for the json.
+    """
     data = load_json_file(folder, filename)
     if data:
         save_json_file(folder, filename, data, indent=indent)

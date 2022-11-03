@@ -111,9 +111,9 @@ class DataLoader:
         fetch = overwrite or (not self.file_exists(filename)) or (not self._file_valid(filename))
         if fetch:
             if overwrite:
-                logging.info(f"Updating data for '{filename}'. Fetching from 17Lands site...")
+                logging.verbose(f"Updating data for '{filename}'. Fetching from 17Lands site...")
             else:
-                logging.info(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...")
+                logging.verbose(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...")
             raw_data = self._fetcher.request(url)
 
             if raw_data is None:

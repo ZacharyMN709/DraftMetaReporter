@@ -3,7 +3,7 @@ from typing import Optional
 
 from Utilities.auto_logging import logging
 from game_metadata.Request17Lands import Request17Lands
-from game_metadata.GameObjects.Card import Card, CardManager
+from game_metadata.GameObjects.Card import Card
 import game_metadata.GameObjects.Deck as Deck
 
 
@@ -11,10 +11,10 @@ class Pick:
     def __init__(self, pick):
         self.pack_number = pick['pack_number']
         self.pick_number = pick['pick_number']
-        self.card_picked = CardManager.from_name(pick['pick']['name'])
-        self.cards_available = [CardManager.from_name(a['name']) for a in pick['available']]
-        self.cards_missing = [CardManager.from_name(m['name']) for m in pick['known_missing']]
-        self.pool = [CardManager.from_name(p['name']) for p in pick['pool']]
+        self.card_picked = Card.from_name(pick['pick']['name'])
+        self.cards_available = [Card.from_name(a['name']) for a in pick['available']]
+        self.cards_missing = [Card.from_name(m['name']) for m in pick['known_missing']]
+        self.pool = [Card.from_name(p['name']) for p in pick['pool']]
 
 
 class Draft:
@@ -25,19 +25,26 @@ class Draft:
     def __init__(self, result: dict, draft_id: str):
         self.DRAFT_ID: str = draft_id
         self.SET: str = result['expansion']
-        self.FORMAT: str = ''
-        self.PICKS: list[Pick] = list()
-        self._DECK: Optional[Deck.LimitedDeck] = None
+        self._FORMAT: str = ''
+        self.picks: list[Pick] = list()
+        self._deck: Optional[Deck.LimitedDeck] = None
 
         # Parse picks
         for pick_data in result['picks']:
-            self.PICKS.append(Pick(pick_data))
+            self.picks.append(Pick(pick_data))
 
     @property
-    def DECK(self):
-        if self._DECK is None:
-            self._DECK = Deck.LimitedDeck.from_id(self.DRAFT_ID)
-        return self._DECK
+    def deck(self):
+        if self._deck is None:
+            self._deck = Deck.LimitedDeck.from_id(self.DRAFT_ID)
+            self._FORMAT = self._deck.FORMAT
+        return self._deck
+
+    @property
+    def FORMAT(self):
+        if self._FORMAT == '':
+            self._FORMAT = self.deck.FORMAT
+        return self._FORMAT
 
 
 class DraftManager:
@@ -89,15 +96,18 @@ class DraftManager:
 
     @classmethod
     def clear_blank_drafts(cls) -> None:
-        for draft_id in cls.DRAFTS:
-            if cls.DRAFTS[draft_id] is None:
-                del cls.DRAFTS[draft_id]
+        """ Clears cls.DRAFTS of pairs where the value is None. """
+        to_del = list()
+        for deck_id in cls.DRAFTS:
+            if cls.DRAFTS[deck_id] is None:
+                to_del.append(deck_id)
+
+        for deck_id in to_del:
+            del cls.DRAFTS[deck_id]
 
     @classmethod
     def flush_cache(cls) -> None:
-        """
-        Clears the caches of drafts.
-        """
+        """ Clears the caches of drafts. """
         del cls.SETS
         del cls.DRAFTS
 

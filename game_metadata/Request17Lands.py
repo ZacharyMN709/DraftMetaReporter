@@ -230,10 +230,11 @@ class Request17Lands(Requester_2):
         }
 
         # Process built-in JSON
-        result = json.loads(self.request(url=self.DRAFT_LOG_URL, params=params).text[6:-2])
+        text = self.request(url=self.DRAFT_LOG_URL, params=params).text[6:-2]
+        result = json.loads(text)
 
         # Only return results if payload is complete
-        if result['type'] != 'complete':
+        if result['type'] != 'complete':  # pragma: nocover
             raise ValueError(f"Response is not complete. Response type: '{result['type']}'")
 
-        return result
+        return result['payload']

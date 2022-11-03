@@ -38,7 +38,7 @@ class Requester:
             # TODO: Consider handling errors based on specific connection issue.
             except Exception as ex:
                 if count < self._TRIES:
-                    logging.info(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.')
+                    logging.warning(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.')
                     sleep(self._FAIL_DELAY)
                     continue
                 else:
@@ -83,7 +83,7 @@ class Requester_2:  # pragma: no cover
             # TODO: Consider handling errors based on specific connection issue.
             except Exception as ex:
                 if count < self._TRIES:
-                    logging.info(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.')
+                    logging.warning(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.')
                     sleep(self._FAIL_DELAY)
                     continue
                 else:

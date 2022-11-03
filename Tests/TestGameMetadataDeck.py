@@ -330,6 +330,8 @@ class TestDeckManager(TestBaseDeck):
         self.assertTrue(is_valid)
 
     def test_flush_cache(self):
+        DeckManager.from_deck_id("2c653e26dc0647ca934af503d57eee3d")
+        DeckManager.from_deck_id("TunaSandwich")
         DeckManager.flush_cache()
         self.assertFalse(DeckManager.SETS)
         self.assertFalse(DeckManager.DECKS)
