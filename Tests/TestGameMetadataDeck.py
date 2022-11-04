@@ -7,9 +7,9 @@ from Utilities.auto_logging import auto_log, LogLvl
 from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
 
 from game_metadata.Request17Lands import Request17Lands
-from game_metadata.GameObjects.Card import Card, CardManager
-from game_metadata.GameObjects.Deck import Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager
-from game_metadata.GameObjects.Draft import Draft
+from game_metadata.game_objects.Card import Card, CardManager
+from game_metadata.game_objects.Deck import Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager
+from game_metadata.game_objects.Draft import Draft
 
 
 class TestBaseDeck(unittest.TestCase):

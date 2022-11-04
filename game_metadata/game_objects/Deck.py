@@ -10,8 +10,8 @@ from Utilities.auto_logging import logging
 from game_metadata.utils.consts import RANKS
 from game_metadata.utils.funcs import new_color_count_dict
 from game_metadata.Request17Lands import Request17Lands
-from game_metadata.GameObjects.Card import CardManager, Card
-import game_metadata.GameObjects.Draft as Draft
+from game_metadata.game_objects.Card import CardManager, Card
+import game_metadata.game_objects.Draft as Draft
 
 
 # Alternate regex for ranks: r"(\w*)-([\d])"

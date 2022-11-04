@@ -5,7 +5,7 @@ from Tests.settings import TEST_MASS_DATA_PULL
 
 from game_metadata.utils.consts import CardLayouts, CARD_SIDE
 from game_metadata.RequestScryfall import RequestScryfall
-from game_metadata.GameObjects.Card import Card, CardFace, CardManager
+from game_metadata.game_objects.Card import Card, CardFace, CardManager
 
 
 def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
