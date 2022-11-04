@@ -1,8 +1,8 @@
 import unittest
 from datetime import date
 
-from Utilities.utils.funcs import load_json_file
-from Utilities.auto_logging import auto_log, LogLvl
+from utilities.utils.funcs import load_json_file
+from utilities.auto_logging import auto_log, LogLvl
 from wubrg import COLOR_COMBINATIONS
 
 from game_metadata.utils.consts import CardLayouts

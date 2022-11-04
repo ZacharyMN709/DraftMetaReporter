@@ -1,7 +1,7 @@
 from typing import Union, Callable, Optional
 
-from Utilities.auto_logging import logging
-from Utilities.Requester import Requester
+from utilities.auto_logging import logging
+from utilities.Requester import Requester
 
 
 # TODO: Implement this as part of Requester base class.

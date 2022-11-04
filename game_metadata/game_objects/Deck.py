@@ -6,7 +6,7 @@ from os import path
 
 from wubrg import COLOR
 
-from Utilities.auto_logging import logging
+from utilities.auto_logging import logging
 from game_metadata.utils.consts import RANKS
 from game_metadata.utils.funcs import new_color_count_dict
 from game_metadata.Request17Lands import Request17Lands

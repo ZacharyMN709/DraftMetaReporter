@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 
-from Utilities.auto_logging import logging
+from utilities.auto_logging import logging
 from game_metadata.Request17Lands import Request17Lands
 from game_metadata.game_objects.Card import Card
 import game_metadata.game_objects.Deck as Deck

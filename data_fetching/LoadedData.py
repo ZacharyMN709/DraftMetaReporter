@@ -1,7 +1,7 @@
 from data_fetching.utils import META_DATA, WUBRG_CARD_DATA
 from datetime import time, date, datetime, timedelta
 
-from Utilities.auto_logging import logging
+from utilities.auto_logging import logging
 from game_metadata import FormatMetadata
 
 from data_fetching.utils.date_helper import get_prev_17lands_update_time

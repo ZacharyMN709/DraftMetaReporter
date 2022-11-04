@@ -1,7 +1,7 @@
 import sys
 from datetime import datetime
 
-from Utilities.auto_logging import LogLvl, set_log_level, logging
+from utilities.auto_logging import LogLvl, set_log_level, logging
 
 from game_metadata import SETS
 from data_fetching import SetManager, CentralManager

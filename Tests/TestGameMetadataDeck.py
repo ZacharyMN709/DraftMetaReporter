@@ -3,7 +3,7 @@ import unittest
 import requests
 from requests import Response
 
-from Utilities.auto_logging import auto_log, LogLvl
+from utilities.auto_logging import auto_log, LogLvl
 from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
 
 from game_metadata.Request17Lands import Request17Lands
@@ -218,18 +218,18 @@ class TestTrophyStub(TestBaseDeck):
         self.assertEqual(500, len(data))
 
     def test_options_switch(self):
-        import Utilities.utils.settings
+        import utilities.utils.settings
         requester = Request17Lands()
 
-        self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
+        self.assertEqual(utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
         bo1 = requester.get_trophy_deck_metadata('DMU')
 
-        Utilities.utils.settings.DEFAULT_FORMAT = 'TradDraft'
-        self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'TradDraft')
+        utilities.utils.settings.DEFAULT_FORMAT = 'TradDraft'
+        self.assertEqual(utilities.utils.settings.DEFAULT_FORMAT, 'TradDraft')
         bo3 = requester.get_trophy_deck_metadata('DMU')
 
-        Utilities.utils.settings.DEFAULT_FORMAT = 'PremierDraft'
-        self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
+        utilities.utils.settings.DEFAULT_FORMAT = 'PremierDraft'
+        self.assertEqual(utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
 
         self.assertEqual(500, len(bo1))
         self.assertEqual(500, len(bo3))
@@ -287,7 +287,7 @@ class TestTrophyStub(TestBaseDeck):
 
     @unittest.skipUnless(FULL_TEST, "Not performing full test. 'FULL_TEST' set to False.")
     def test_mass_gen(self):
-        import Utilities.utils.settings
+        import utilities.utils.settings
         requester = Request17Lands()
 
         def convert_data(data_list):
@@ -299,17 +299,17 @@ class TestTrophyStub(TestBaseDeck):
                     # If the trophy stub can't be handled, some possible oddities in data need to be better handled.
                     print(data)
 
-        self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
+        self.assertEqual(utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
         bo1 = requester.get_trophy_deck_metadata('DMU')
         convert_data(bo1)
 
-        Utilities.utils.settings.DEFAULT_FORMAT = 'TradDraft'
-        self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'TradDraft')
+        utilities.utils.settings.DEFAULT_FORMAT = 'TradDraft'
+        self.assertEqual(utilities.utils.settings.DEFAULT_FORMAT, 'TradDraft')
         bo3 = requester.get_trophy_deck_metadata('DMU')
         convert_data(bo3)
 
-        Utilities.utils.settings.DEFAULT_FORMAT = 'PremierDraft'
-        self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
+        utilities.utils.settings.DEFAULT_FORMAT = 'PremierDraft'
+        self.assertEqual(utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
 
 
 class TestDeckManager(TestBaseDeck):

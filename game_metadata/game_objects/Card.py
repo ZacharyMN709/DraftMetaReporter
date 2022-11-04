@@ -2,8 +2,8 @@ from __future__ import annotations
 from typing import NoReturn, Optional
 import re
 
-from Utilities.auto_logging import logging
-from Utilities.utils.funcs import load_json_file, save_json_file
+from utilities.auto_logging import logging
+from utilities.utils.funcs import load_json_file, save_json_file
 from wubrg import get_color_identity, calculate_cmc, parse_color_list, COLOR_STRING
 
 from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, ALL_SUBTYPES, \

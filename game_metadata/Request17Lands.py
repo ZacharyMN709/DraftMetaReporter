@@ -3,8 +3,8 @@ from datetime import date, datetime
 import json
 import pandas as pd
 
-from Utilities.Requester import Requester_2
-import Utilities.utils.settings as settings
+from utilities.Requester import Requester_2
+import utilities.utils.settings as settings
 
 
 # Adapted from 'https://github.com/diogojapinto/mtg-data-mining/blob/main/utils/api_clients/seventeen_lands/client.py'

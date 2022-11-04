@@ -1,6 +1,6 @@
 import pandas as pd
 
-from Utilities.auto_logging import logging
+from utilities.auto_logging import logging
 
 from data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame, append_card_info
 from data_fetching.LoadedData import LoadedData

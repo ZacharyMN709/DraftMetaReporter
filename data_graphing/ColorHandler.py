@@ -1,6 +1,6 @@
 import seaborn as sns
 
-from Utilities.auto_logging import logging
+from utilities.auto_logging import logging
 
 
 sns.set_theme()

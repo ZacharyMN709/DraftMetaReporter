@@ -2,10 +2,10 @@ import logging
 import os
 import unittest
 
-from Utilities import TRIES, FAIL_DELAY, SUCCESS_DELAY
-from Utilities import load_json_file, save_json_file, reformat_json_file
-from Utilities import Requester
-from Utilities import auto_logging
+from utilities import TRIES, FAIL_DELAY, SUCCESS_DELAY
+from utilities import load_json_file, save_json_file, reformat_json_file
+from utilities import Requester
+from utilities import auto_logging
 
 
 class TestFetcher(unittest.TestCase):

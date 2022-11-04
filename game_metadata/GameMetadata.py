@@ -3,7 +3,7 @@ from typing import Optional, Union, Callable
 from functools import cmp_to_key
 from datetime import date, time, datetime, timedelta
 
-from Utilities.auto_logging import logging
+from utilities.auto_logging import logging
 from wubrg import index_dist_wubrg, COLOR_IDENTITY
 
 from game_metadata.utils.settings import SET_CONFIG

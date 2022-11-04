@@ -2,8 +2,8 @@ from typing import Union, Optional
 from os import path
 import json
 
-from Utilities.utils.settings import ENCODING
-from Utilities.auto_logging import logging
+from utilities.utils.settings import ENCODING
+from utilities.auto_logging import logging
 
 
 def load_json_file(folder: str, filename: str) -> Union[dict, list[dict], None]:
