@@ -1,9 +1,17 @@
-from typing import Union
+from typing import Union, Literal
 from enum import Flag, auto
 
-# Type information for the card json Scryfall returns.
-CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str]]]
 
+SCRYFALL_CACHE_DIR = r'C:\Users\Zachary\Coding\GitHub\ScryfallData'
+SCRYFALL_CACHE_FILE = r'oracle-cards.json'
+SCRYFALL_CACHE_FILE_ARENA = r'oracle-cards-arena.json'
+
+# Type information for the card json Scryfall returns.
+CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str], list[dict]]]
+CARD_SIDE = Literal['default', 'main', 'adventure', 'left', 'right', 'front', 'back', 'flipped', 'melded', 'prototype']
+
+# Rank Consts
+RANKS = ['None', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Mythic']
 
 # Card Consts
 RARITIES: set[str] = {'C', 'U', 'R', 'M'}
@@ -74,7 +82,7 @@ PLANESWALKER_SUBTYPES: set[str] = {
     "Jeska", "Kaito", "Karn", "Kasmina", "Kaya", "Kiora", "Koth", "Liliana", "Lolth", "Lukka",
     "Minsc", "Mordenkainen", "Nahiri", "Narset", "Niko", "Nissa", "Nixilis", "Oko", "Ral", "Rowan",
     "Saheeli", "Samut", "Sarkhan", "Serra", "Sorin", "Szat", "Tamiyo", "Tasha", "Teferi", "Teyo",
-    "Tezzeret", "Tibalt", "Tyvar", "Ugin", "Venser", "Vivien", "Vraska", "Will", "Windgrace",
+    "Tezzeret", "Tibalt", "Tyvar", "Ugin", "Urza", "Venser", "Vivien", "Vraska", "Will", "Windgrace",
     "Wrenn", "Xenagos", "Yanggu", "Yanling", "Zariel"
 }
 
@@ -108,9 +116,11 @@ class CardLayouts(Flag):
     CLASS = auto()
     SAGA = auto()
     ADVENTURE = auto()
+    PROTOTYPE = auto()
 
-    TWO_SIDED = TRANSFORM | MODAL_DFC
-    FUSED = ADVENTURE | SPLIT | FLIP
+    BASIC = NORMAL | LEVELER | CLASS | SAGA
+    FUSED = ADVENTURE | SPLIT | FLIP | PROTOTYPE
+    TWO_SIDED = TRANSFORM | MODAL_DFC | MELD
 
 
 LAYOUT_DICT: dict[str, CardLayouts] = {
@@ -123,5 +133,6 @@ LAYOUT_DICT: dict[str, CardLayouts] = {
     "leveler": CardLayouts.LEVELER,
     "class": CardLayouts.CLASS,
     "saga": CardLayouts.SAGA,
-    "adventure": CardLayouts.ADVENTURE
+    "adventure": CardLayouts.ADVENTURE,
+    "prototype": CardLayouts.PROTOTYPE,
 }

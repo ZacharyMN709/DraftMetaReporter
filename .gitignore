@@ -3,6 +3,6 @@ __pychache__
 Notebooks/.ipynb_checkpoints/*
 .idea
 .coverage
-Tests/test.txt
 test.txt
 *.png
+/Tests/*

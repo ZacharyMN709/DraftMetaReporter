@@ -7,9 +7,8 @@ from Utilities.auto_logging import logging
 from wubrg import index_dist_wubrg, COLOR_IDENTITY
 
 from game_metadata.utils.settings import SET_CONFIG
-from game_metadata.CallScryfall import CallScryfall
-from game_metadata.CardManager import CardManager
-from game_metadata.Card import Card
+from game_metadata.RequestScryfall import RequestScryfall
+from game_metadata.GameObjects.Card import Card, CardManager
 
 
 class SetMetadata:
@@ -40,15 +39,15 @@ class SetMetadata:
 
         self.SET: str = set_code
         logging.info(f"Loading set metadata for: {set_code}")
-        _full_name, _icon_url = CallScryfall.get_set_info(set_code)
+        _full_name, _icon_url = RequestScryfall.get_set_info(set_code)
         self.FULL_NAME: str = _full_name
         self.ICON_URL: str = _icon_url
         self.RELEASE_DATE: date = SET_CONFIG[self.SET]["PremierDraft"][0][0]
         # Set up dictionaries for quicker sorting.
         self.CARD_PRINT_ORDER_INDEXES: dict[str, int] = \
-            {k: v for v, k in enumerate(self.CARD_LIST)}
-        self.CARD_REVIEW_ORDER_INDEXES: dict[str: int] = \
-            {k: v for v, k in enumerate(CallScryfall.get_set_review_order(self.SET))}
+            {k.NAME: v for v, k in enumerate(self.CARD_LIST)}
+        self.CARD_REVIEW_ORDER_INDEXES: dict[str, int] = \
+            {k: v for v, k in enumerate(RequestScryfall.get_set_review_order(self.SET))}
         self.CARD_PRINT_ORDER_KEY: Callable = cmp_to_key(self._print_order_compare)
         self.CARD_REVIEW_ORDER_KEY: Callable = cmp_to_key(self._review_order_compare)
         self.FRAME_ORDER_KEY: Callable = cmp_to_key(self._frame_order_compare)
@@ -97,9 +96,11 @@ class SetMetadata:
             old_name = card_name
             card_name = CardManager.REDIRECT[card_name]
             logging.verbose(f"Changing '{old_name}' to '{card_name}'")
+
         if card_name in self.CARD_DICT:
             return self.CARD_DICT[card_name]
         else:
+            logging.warning(f"Could not find {card_name} in CARD_DICT")
             return None
 
     def get_cards_by_colors(self, colors: list[str]) -> list[Card]:
@@ -171,7 +172,7 @@ class FormatMetadata:
     def find_card(self, card_name: str) -> Optional[Card]:
         """
         Looks for a card name in the list of cards for the set.
-        :param card_name: The card name, simple or full. Must be an exact match. If 'NONE', today's date is used.
+        :param card_name: The card name, simple or full. Must be an exact match.
         :return: A Card object or None
         """
         return self._set_metadata.find_card(card_name)

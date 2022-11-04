@@ -6,7 +6,7 @@ from datetime import date, datetime, time
 
 from wubrg import COLOR_COMBINATIONS
 from Utilities.auto_logging import logging
-from Utilities import Fetcher
+from Utilities import Requester
 from Utilities import save_json_file, load_json_file
 
 from data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
@@ -30,7 +30,7 @@ class DataLoader:
         self.FORMAT: str = format_name
         self.DATE: Optional[date] = target_date
         os.makedirs(self.get_folder_path(), exist_ok=True)
-        self._fetcher: Fetcher = Fetcher()
+        self._fetcher: Requester = Requester()
 
     def _get_date_filter(self) -> str:
         """Generates a piece of the url to isolate data to a certain date range."""
@@ -111,12 +111,16 @@ class DataLoader:
         fetch = overwrite or (not self.file_exists(filename)) or (not self._file_valid(filename))
         if fetch:
             if overwrite:
-                logging.info(f"Updating data for '{filename}'. Fetching from 17Lands site...")
+                logging.verbose(f"Updating data for '{filename}'. Fetching from 17Lands site...")
             else:
-                logging.info(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...")
-            raw_data = self._fetcher.fetch(url)
+                logging.verbose(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...")
+            raw_data = self._fetcher.request(url)
 
-            # Handles correcting data from 17Lands, in the event since data coming back from MTGA can't be trusted.
+            if raw_data is None:
+                logging.error(f"Data fetched for '{filename}' returned None! Returning empty CARD_DATA struct")
+                return CARD_DATA
+
+            # Handles correcting data from 17Lands, since data coming back from MTGA can't be trusted.
             for data in raw_data:
                 if 'name' in data:
                     name = data['name']

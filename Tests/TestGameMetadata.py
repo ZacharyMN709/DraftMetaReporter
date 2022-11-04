@@ -2,12 +2,14 @@ import unittest
 from datetime import date
 
 from wubrg import COLOR_COMBINATIONS
-from game_metadata import CallScryfall, Card, CardManager, SetMetadata, FormatMetadata
-from game_metadata.CallScryfall import trap_error
-from game_metadata.utils.consts import CardLayouts
+
+from game_metadata.utils.funcs import new_color_count_dict
+from game_metadata.GameMetadata import SetMetadata, FormatMetadata
+from game_metadata.RequestScryfall import RequestScryfall, trap_error
+from game_metadata.GameObjects.Card import Card
 
 
-class TestCallScryfall(unittest.TestCase):
+class TestRequestScryfall(unittest.TestCase):
     def test_trap_error(self):
         def raise_test_error(v=True, _=None):
             if v:
@@ -17,214 +19,44 @@ class TestCallScryfall(unittest.TestCase):
         self.assertIsNone(val)
 
     def test_get_set_cards_valid(self):
-        cards = CallScryfall.get_set_cards('NEO')
+        cards = RequestScryfall.get_set_cards('NEO')
         self.assertIsInstance(cards, list)
 
     def test_get_set_cards_invalid(self):
-        ret = CallScryfall.get_set_cards('INVALID')
+        ret = RequestScryfall.get_set_cards('INVALID')
         self.assertIsNone(ret)
 
     def test_get_set_info_valid(self):
-        cards = CallScryfall.get_set_info('NEO')
+        cards = RequestScryfall.get_set_info('NEO')
         self.assertIsInstance(cards, tuple)
 
     def test_get_set_info_invalid(self):
-        ret = CallScryfall.get_set_info('INVALID')
+        ret = RequestScryfall.get_set_info('INVALID')
         self.assertIsNone(ret)
 
     def test_get_card_by_name_valid(self):
-        card = CallScryfall.get_card_by_name('Virus Beetle')
+        card = RequestScryfall.get_card_by_name('Virus Beetle')
         self.assertIsInstance(card, dict)
         self.assertEqual(card['object'], 'card')
         self.assertEqual(card['name'], 'Virus Beetle')
 
     def test_get_card_by_name_valid_misspelled(self):
-        card = CallScryfall.get_card_by_name('Vires Beetle')
+        card = RequestScryfall.get_card_by_name('Vires Beetle')
         self.assertIsInstance(card, dict)
         self.assertEqual(card['object'], 'card')
         self.assertEqual(card['name'], 'Virus Beetle')
 
     def test_get_card_by_name_multiple(self):
         name = 'Bolt'
-        card = CallScryfall.get_card_by_name(name)
+        card = RequestScryfall.get_card_by_name(name)
         self.assertIsInstance(card, dict)
         self.assertEqual(card['err_msg'], f'Error: Multiple card matches for "{name}"')
 
     def test_get_card_by_name_dne(self):
         name = 'Supercalifragilisticexpialidocious'
-        card = CallScryfall.get_card_by_name(name)
+        card = RequestScryfall.get_card_by_name(name)
         self.assertIsInstance(card, dict)
         self.assertEqual(card['err_msg'], f'Error: Cannot find card "{name}"')
-
-
-class TestCard(unittest.TestCase):
-    @staticmethod
-    def gen_card(card_name):
-        json = CallScryfall.get_card_by_name(card_name)
-        return Card(json)
-
-    def test_card_normal(self):
-        name = 'Jukai Preserver'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
-
-    def test_card_adventure(self):
-        name = 'Bonecrusher Giant'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.ADVENTURE)
-
-    def test_card_split(self):
-        name = 'Invert // Invent'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.SPLIT)
-
-    def test_card_transform(self):
-        name = 'Boseiju Reaches Skyward'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.TRANSFORM)
-
-    def test_card_modal_dfc(self):
-        name = 'Shatterskull Smashing'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.MODAL_DFC)
-
-    def test_card_saga(self):
-        name = 'Fall of the Thran'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.SAGA)
-
-    def test_card_class(self):
-        name = 'Ranger Class'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.CLASS)
-
-    def test_card_flip(self):
-        name = 'Bushi Tenderfoot'
-        self.assertRaises(Exception, self.gen_card, name)
-
-    def test_card_legendary(self):
-        name = 'Cormella, Glamor Thief'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
-
-    def test_card_snow(self):
-        name = 'Berg Strider'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
-
-    def test_card_planeswalker(self):
-        name = 'The Wandering Emperor'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
-
-    def test_card_error(self):
-        # noinspection SpellCheckingInspection
-        name = 'ujbn uiblubiihno;cinoef r'
-        self.assertRaises(Exception, self.gen_card, name)
-
-    def test_card_short_name(self):
-        name = 'Jukai Preserver'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
-        self.assertEqual(str(card), name)
-        self.assertEqual(repr(card), name)
-        self.assertEqual(card.NAME, name)
-        self.assertEqual(card.MANA_COST, '{3}{G}')
-        self.assertEqual(card.CAST_IDENTITY, 'G')
-
-    def test_card_dual_name(self):
-        name = 'Boseiju Reaches Skyward'
-        full_name = 'Boseiju Reaches Skyward // Branch of Boseiju'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.TRANSFORM)
-        self.assertEqual(str(card), full_name)
-        self.assertEqual(repr(card), full_name)
-        self.assertEqual(card.NAME, name)
-        self.assertEqual(card.MANA_COST, '{3}{G}')
-        self.assertEqual(card.CAST_IDENTITY, 'G')
-
-    def test_card_full_name(self):
-        name = 'Invert // Invent'
-        card = self.gen_card(name)
-        self.assertEqual(card.LAYOUT, CardLayouts.SPLIT)
-        self.assertEqual(str(card), name)
-        self.assertEqual(repr(card), name)
-        self.assertEqual(card.NAME, name)
-        self.assertEqual(card.MANA_COST, '{U/R} // {4}{U}{R}')
-        self.assertEqual(card.CAST_IDENTITY, 'UR')
-
-    def test_card_links(self):
-        name = 'Shatterskull Smashing'
-        card = self.gen_card(name)
-        self.assertEqual(card.API, 'https://api.scryfall.com/cards/bc7239ea-f8aa-4a6f-87bd-c35359635673')
-        self.assertEqual(card.URL, 'https://scryfall.com/card/znr/161')
-        self.assertEqual(card.IMAGE_URL, 'https://c1.scryfall.com/file/scryfall-cards/normal/'
-                                         'front/b/c/bc7239ea-f8aa-4a6f-87bd-c35359635673.jpg')
-
-
-class TestCardManager(unittest.TestCase):
-    def test_from_set(self):
-        cards = CardManager.from_set('NEO')
-        self.assertIsInstance(cards, dict)
-        self.assertEqual(len(cards), 282)
-
-    def test_from_name(self):
-        card = CardManager.from_name('Shock')
-        self.assertIsInstance(card, Card)
-
-    def test_from_name_invalid(self):
-        # noinspection SpellCheckingInspection
-        card = CardManager.from_name('ucbubfsvudgiru  bvubvfyfj ')
-        self.assertIsNone(card)
-
-    def test_reset_redirects(self):
-        CardManager.reset_redirects()
-        for name in CardManager.REDIRECT.keys():
-            self.assertEqual(CardManager.REDIRECT[name], name)
-
-    def test_redirects(self):
-        proper_name = 'Virus Beetle'
-        misspell_name = 'Vires Beetle'
-        # noinspection SpellCheckingInspection
-        gibberish = 'ucbubfsvudgiru  bvubvfyfj '
-        # Clear any data in CardManager
-        CardManager.flush_cache()
-
-        # This redirect should not exist yet.
-        card, found = CardManager._find_card(proper_name)
-        self.assertIsNone(card)
-        self.assertFalse(found)
-
-        # Get the card
-        org_card = CardManager.from_name(proper_name)
-
-        # The redirect should now exist.
-        card, found = CardManager._find_card(proper_name)
-        self.assertIsInstance(card, Card)
-        self.assertTrue(found)
-
-        # The redirect should not exist yet.
-        card, found = CardManager._find_card(misspell_name)
-        self.assertIsNone(card)
-        self.assertFalse(found)
-
-        # Tests "from_name"'s use of a previous copy of a card on a misspelled card name.
-        miss_card = CardManager.from_name(misspell_name)
-        self.assertEqual(org_card, miss_card)  # Tests if the objects are the same instance
-
-        # The redirect should now exist.
-        card, found = CardManager._find_card(misspell_name)
-        self.assertIsInstance(card, Card)
-        self.assertTrue(found)
-
-        # This tests the short-circuit to not re-call a cached card.
-        CardManager.from_name(proper_name)
-
-        # Tests redirection of unresolvable card names
-        CardManager.from_name(gibberish)
-        card, found = CardManager._find_card(gibberish)
-        self.assertIsNone(card)
-        self.assertTrue(found)
 
 
 class TestSetMetadata(unittest.TestCase):
@@ -241,14 +73,6 @@ class TestSetMetadata(unittest.TestCase):
 
     def test_get_metadata_invalid_constructor(self):
         self.assertRaises(Exception, SetMetadata, object(), 'NEO')
-
-    def test_card_type_parsing(self):
-        meta = SetMetadata.get_metadata('NEO')
-        card = meta.find_card('Enthusiastic Mechanaut')
-
-        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, None)
-        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Gobbledygook')
-        self.assertRaises(ValueError, card.DEFAULT_FACE.handle_types, 'Creature — Gobbledygook')
 
     def test_find_card(self):
         meta = SetMetadata.get_metadata('NEO')
@@ -274,7 +98,37 @@ class TestSetMetadata(unittest.TestCase):
         self.assertIn(card, izzet)
         self.assertNotIn(card, red_or_blue)
 
-    def test_sort_compare(self):
+    def test_print_order_compare(self):
+        meta = SetMetadata.get_metadata('NEO')
+
+        name_1 = meta.CARD_LIST[0].NAME
+        name_2 = meta.CARD_LIST[-1].NAME
+        name_3 = meta.CARD_LIST[2].NAME
+
+        self.assertLessEqual(meta._print_order_compare(name_1, name_2), -1)
+        self.assertGreaterEqual(meta._print_order_compare(name_2, name_1), 1)
+        self.assertLessEqual(meta._print_order_compare(name_1, name_3), -1)
+        self.assertGreaterEqual(meta._print_order_compare(name_3, name_1), 1)
+        self.assertLessEqual(meta._print_order_compare(name_3, name_2), -1)
+        self.assertGreaterEqual(meta._print_order_compare(name_2, name_3), 1)
+        self.assertEqual(meta._print_order_compare(name_3, name_3), 0)
+
+    def test_review_order_compare(self):
+        meta = SetMetadata.get_metadata('NEO')
+
+        name_1 = meta.CARD_LIST[0].NAME
+        name_2 = meta.CARD_LIST[-1].NAME
+        name_3 = meta.CARD_LIST[2].NAME
+
+        self.assertLessEqual(meta._review_order_compare(name_1, name_2), -1)
+        self.assertGreaterEqual(meta._review_order_compare(name_2, name_1), 1)
+        self.assertLessEqual(meta._review_order_compare(name_1, name_3), -1)
+        self.assertGreaterEqual(meta._review_order_compare(name_3, name_1), 1)
+        self.assertLessEqual(meta._review_order_compare(name_3, name_2), -1)
+        self.assertGreaterEqual(meta._review_order_compare(name_2, name_3), 1)
+        self.assertEqual(meta._review_order_compare(name_3, name_3), 0)
+
+    def test_frame_order_compare(self):
         meta = SetMetadata.get_metadata('NEO')
 
         tup_1 = (COLOR_COMBINATIONS[0], meta.CARD_LIST[0].NAME)
@@ -283,8 +137,8 @@ class TestSetMetadata(unittest.TestCase):
 
         self.assertEqual(meta._frame_order_compare(tup_1, tup_2), -31)
         self.assertEqual(meta._frame_order_compare(tup_2, tup_1), 31)
-        self.assertEqual(meta._frame_order_compare(tup_1, tup_3), -1)
-        self.assertEqual(meta._frame_order_compare(tup_3, tup_1), 1)
+        self.assertEqual(meta._frame_order_compare(tup_1, tup_3), -2)
+        self.assertEqual(meta._frame_order_compare(tup_3, tup_1), 2)
         self.assertEqual(meta._frame_order_compare(tup_3, tup_2), -31)
         self.assertEqual(meta._frame_order_compare(tup_2, tup_3), 31)
 
@@ -303,9 +157,11 @@ class TestFormatMetadata(unittest.TestCase):
 
     def test_find_card(self):
         form = FormatMetadata.get_metadata('NEO', 'PremierDraft')
-        card_1 = form.find_card('Boseiju Reaches Skyward')
-        card_2 = form.find_card('Boseiju Reaches Skyward // Branch of Boseiju')
+        card_1 = form.find_card('Boseiju Reaches Skyward // Branch of Boseiju')
+        card_2 = form.find_card('Boseiju Reaches Skyward')
+        self.assertNotEqual(card_1.NAME, card_1.FULL_NAME)
         self.assertIsInstance(card_1, Card)
+        self.assertIsInstance(card_2, Card)
         self.assertEqual(card_1, card_2)
 
         card_3 = form.find_card('Shock')
@@ -332,3 +188,10 @@ class TestFormatMetadata(unittest.TestCase):
         self.assertEqual(active, date.today() <= date(2022, 4, 28))
 
         self.assertTrue(form.has_started)
+
+
+class TestMetadataUtilities(unittest.TestCase):
+    def test_new_color_count_dict(self):
+        d = new_color_count_dict()
+        self.assertIsInstance(d, dict)
+
