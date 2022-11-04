@@ -175,12 +175,15 @@ class Card:
         Automatically generates and sets the CardFaces for the Card object.
         :param json: The card data.
         """
-        def get_meld_result_name():
-            print(json)
-            dicts: list[dict] = json["all_parts"]
-            for d in dicts:
-                if d["component"] == "meld_result":
-                    return d["name"]
+        def get_meld_json():
+            try:
+                dicts: list[dict] = json["all_parts"]
+                for d in dicts:
+                    if d["component"] == "meld_result":
+                        return RequestScryfall.get_card_by_name(d["name"])
+                raise ValueError("Cannot find a back to provided meld card!")
+            except KeyError:
+                raise ValueError("Could not parse json for returned meld card.")
 
         self.DEFAULT_FACE = CardFace(json, self.LAYOUT, 'default')
 
@@ -189,12 +192,7 @@ class Card:
             self.FACE_2 = None
         elif self.LAYOUT == CardLayouts.MELD:
             self.FACE_1 = self.DEFAULT_FACE
-            try:
-                meld_name = get_meld_result_name()
-                meld_json = RequestScryfall.get_card_by_name(meld_name)
-                self.FACE_2 = CardFace(meld_json, self.LAYOUT, 'melded')
-            except KeyError:  # pragma: nocover
-                self.FACE_2 = None
+            self.FACE_2 = CardFace(get_meld_json(), self.LAYOUT, 'melded')
         elif self.LAYOUT == CardLayouts.PROTOTYPE:
             self.FACE_1 = CardFace(json, self.LAYOUT, 'default')
             self.FACE_2 = CardFace(json, self.LAYOUT, 'prototype')
@@ -219,7 +217,7 @@ class Card:
             raise ValueError("Invalid JSON provided! Object type is not 'card'")
 
         # Handle simple layout information to reference later.
-        self.LAYOUT: CardLayouts = LAYOUT_DICT[json['layout']]
+        self.LAYOUT: CardLayouts = LAYOUT_DICT[json['layout']]  # TODO: May need special parsing for prototype.
         self.TWO_SIDED: bool = self.LAYOUT is CardLayouts.TWO_SIDED
         self.SPLIT: bool = self.LAYOUT is CardLayouts.FUSED
 

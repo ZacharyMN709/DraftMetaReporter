@@ -1113,6 +1113,17 @@ class TestCard(unittest.TestCase):
         self.assertNotEqual(card.FACE_1.NAME, card.FACE_2.NAME)
         self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
 
+    def test_card_prototype(self):
+        name = 'Phyrexian Fleshgorger'
+        layout: CardLayouts = CardLayouts.PROTOTYPE
+        card = self.gen_card(name)
+        self.assertEqual(layout, card.LAYOUT)
+        self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
+        self.assertEqual('default', card.FACE_1.CARD_SIDE)
+        self.assertEqual('prototype', card.FACE_2.CARD_SIDE)
+
+        self.assertEqual(card.DEFAULT_FACE, card.FACE_1)
+
     def test_card_meld(self):
         name = 'Urza, Lord Protector'
         layout: CardLayouts = CardLayouts.MELD
@@ -1257,7 +1268,7 @@ class TestCardManager(unittest.TestCase):
     def test_from_file(self):
         CardManager.flush_cache()
         CardManager.load_from_file()
-        self.assertEqual(5640, len(CardManager.CARDS))
+        self.assertGreaterEqual(len(CardManager.CARDS), 5640)
 
     def test_from_set(self):
         cards = CardManager.from_set('NEO')

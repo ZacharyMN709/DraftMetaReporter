@@ -295,7 +295,8 @@ class TestTrophyStub(TestBaseDeck):
                 try:
                     trophy = TrophyStub(data)
                     self.validate_trophy_stub(trophy, data)
-                except:
+                except:  # pragma: nocover
+                    # If the trophy stub can't be handled, some possible oddities in data need to be better handled.
                     print(data)
 
         self.assertEqual(Utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
@@ -322,6 +323,7 @@ class TestDeckManager(TestBaseDeck):
 
     def test_clear_blank_decks(self):
         is_valid = True
+        DeckManager.from_deck_id("2c653e26dc0647ca934af503d57eee3d")
         deck = DeckManager.from_deck_id("TunaSandwich")
         self.assertIsNone(deck)
         DeckManager.clear_blank_decks()
