@@ -9,7 +9,7 @@ from wubrg import get_color_identity, calculate_cmc, parse_color_list, COLOR_STR
 from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, ALL_SUBTYPES, \
     LAYOUT_DICT, CardLayouts, CARD_SIDE, SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA
 
-from game_metadata.RequestScryfall import RequestScryfall
+from data_interface.RequestScryfall import RequestScryfall
 
 
 prototype_parse = re.compile(r"Prototype (.*) — (\d*)/(\d*)")
@@ -162,6 +162,8 @@ class Card:
     SCRY_URL = 'https://scryfall.com/card/'
     API_URL = 'https://api.scryfall.com/cards/'
 
+    MELD_BACKS = dict()
+
     @classmethod
     def from_name(cls, name) -> Card:
         return CardManager.from_name(name)
@@ -180,7 +182,10 @@ class Card:
                 dicts: list[dict] = json["all_parts"]
                 for d in dicts:
                     if d["component"] == "meld_result":
-                        return RequestScryfall.get_card_by_name(d["name"])
+                        name = d["name"]
+                        if name not in Card.MELD_BACKS:
+                            Card.MELD_BACKS[name] = RequestScryfall.get_card_by_name(name)
+                        return Card.MELD_BACKS[name]
                 raise ValueError("Cannot find a back to provided meld card!")
             except KeyError:
                 raise ValueError("Could not parse json for returned meld card.")

@@ -4,8 +4,9 @@ import unittest
 
 from utilities import TRIES, FAIL_DELAY, SUCCESS_DELAY
 from utilities import load_json_file, save_json_file, reformat_json_file
-from utilities import Requester
 from utilities import auto_logging
+
+from data_interface.Requester import Requester
 
 
 class TestFetcher(unittest.TestCase):

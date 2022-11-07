@@ -6,11 +6,11 @@ from datetime import date, datetime, time
 
 from wubrg import COLOR_COMBINATIONS
 from utilities.auto_logging import logging
-from utilities import Requester
 from utilities import save_json_file, load_json_file
 
-from data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
+from data_interface.Requester import Requester
 from game_metadata import CardManager
+from data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
 
 
 class DataLoader:

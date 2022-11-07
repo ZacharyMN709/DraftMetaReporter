@@ -6,7 +6,7 @@ from requests import Response
 from utilities.auto_logging import auto_log, LogLvl
 from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
 
-from game_metadata.Request17Lands import Request17Lands
+from data_interface.Request17Lands import Request17Lands
 from game_metadata.game_objects.Card import Card, CardManager
 from game_metadata.game_objects.Deck import Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager
 from game_metadata.game_objects.Draft import Draft
@@ -48,8 +48,6 @@ class TestDeck(TestBaseDeck):
         self.assertEqual(60, len(deck_bo1.maindeck))
 
         maindeck_diff, sideboard_diff = deck_bo3 - deck_bo1
-        print(maindeck_diff)
-        print(sideboard_diff)
 
         maindeck_comp = {
             "Soul-Guide Lantern": -2,
@@ -86,7 +84,6 @@ Raffine's Informant
 4 (NEO) 220"""
 
         maindeck, sideboard = Deck.parse_decklist(decklist.split('\n'))
-        print(maindeck)
         self.assertEqual(9, len(maindeck))
         self.assertEqual(0, len(sideboard))
 

@@ -1,15 +1,9 @@
 import unittest
-from datetime import date
 
 from utilities.utils.funcs import load_json_file
 from utilities.auto_logging import auto_log, LogLvl
-from wubrg import COLOR_COMBINATIONS
 
-from game_metadata.utils.consts import CardLayouts
-from game_metadata.GameMetadata import SetMetadata, FormatMetadata
-from game_metadata.RequestScryfall import RequestScryfall, trap_error
 from game_metadata.game_objects.Card import Card, CardManager
-from game_metadata.game_objects.Deck import LimitedDeck
 from game_metadata.game_objects.Draft import Draft, Pick, DraftManager
 
 

@@ -3,7 +3,7 @@ from datetime import date, datetime
 import json
 import pandas as pd
 
-from utilities.Requester import Requester_2
+from data_interface.Requester import Requester_2
 import utilities.utils.settings as settings
 
 

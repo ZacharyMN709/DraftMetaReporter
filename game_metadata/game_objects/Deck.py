@@ -9,7 +9,7 @@ from wubrg import COLOR
 from utilities.auto_logging import logging
 from game_metadata.utils.consts import RANKS
 from game_metadata.utils.funcs import new_color_count_dict
-from game_metadata.Request17Lands import Request17Lands
+from data_interface.Request17Lands import Request17Lands
 from game_metadata.game_objects.Card import CardManager, Card
 import game_metadata.game_objects.Draft as Draft
 

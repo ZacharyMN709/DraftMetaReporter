@@ -5,7 +5,7 @@ from wubrg import COLOR_COMBINATIONS
 
 from game_metadata.utils.funcs import new_color_count_dict
 from game_metadata.GameMetadata import SetMetadata, FormatMetadata
-from game_metadata.RequestScryfall import RequestScryfall, trap_error
+from data_interface.RequestScryfall import RequestScryfall, trap_error
 from game_metadata.game_objects.Card import Card
 
 

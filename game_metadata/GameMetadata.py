@@ -7,7 +7,7 @@ from utilities.auto_logging import logging
 from wubrg import index_dist_wubrg, COLOR_IDENTITY
 
 from game_metadata.utils.settings import SET_CONFIG
-from game_metadata.RequestScryfall import RequestScryfall
+from data_interface.RequestScryfall import RequestScryfall
 from game_metadata.game_objects.Card import Card, CardManager
 
 
