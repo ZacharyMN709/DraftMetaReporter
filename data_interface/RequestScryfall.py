@@ -1,114 +1,43 @@
-from typing import Union, Callable, Optional
+from typing import Union, Optional, NoReturn, Any
 
 from utilities.auto_logging import logging
-from data_interface.Requester import Requester
+from utilities.utils.funcs import flatten_lists
+
+from data_interface.Requester import RequesterBase
 
 
-# TODO: Implement this as part of Requester base class.
-# A decorator which automatically catches and logs error when querying scryfall.
-def trap_error(func: Callable) -> Callable:
-    def arg_wrapper(arg1, arg2):
-        try:
-            return func(arg1, arg2)
-        except Exception as ex:
-            logging.error(f'Error: Error occurred while querying Scryfall!')
-            if isinstance(ex, KeyError):
-                logging.error(f"{ex} was not found in the returned json.")
-            else:
-                logging.error(ex)
-            return None
-    return arg_wrapper
-
-
-# TODO: Figure out proper contingencies for connection errors.
-# TODO: Have this derive from Requester.
-class RequestScryfall:
+class RequestScryfall(RequesterBase):
     """ A small class which helps get specific data from scryfall, handling the minutia of json checking. """
     _BASE_URL = 'https://api.scryfall.com/'
-    REQUESTER = Requester()
 
-    @classmethod
-    @trap_error
-    def get_set_cards(cls, set_code: str) -> Optional[list[dict[str, Union[str, dict[str, str], list[str]]]]]:
-        cards = list()
-        next_page = True
-        url = f'{cls._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
+    def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
+                 success_delay: Optional[float] = None):
+        super().__init__(tries, fail_delay, success_delay)
+
+    def get_set_cards(self, set_code: str) -> Union[NoReturn, list[dict[str, Any]]]:
+        url = f'{self._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
               f'&order=set&page=1&q=e%3A{set_code}+is%3Abooster&unique=cards'
         logging.info(f"Fetching card data for set: {set_code}")
+        return flatten_lists(self.paginated_request(url))
 
-        while next_page:
-            response: dict[str, object] = cls.REQUESTER.request(url)
-            cards += response['data']
-            # TODO: Implement the 'has_more_ loop in base Request
-            if response['has_more']:
-                url = response['next_page']
-                logging.debug(f"Fetching next page for set: {set_code}")
-                logging.debug(f"URL: {url}")
-            else:
-                next_page = False
+    def get_arena_cards(self) -> Union[NoReturn, list[dict[str, Any]]]:
+        url = f'{self._BASE_URL}/cards/search?format=json&q=game%3Aarena'
+        logging.info(f"Fetching card data for all Arena cards.")
+        return flatten_lists(self.paginated_request(url))
 
-        return cards
-
-    @classmethod
-    def get_arena_cards(cls) -> Optional[list[dict[str, Union[str, dict[str, str], list[str]]]]]:
-        # NOTE: Hack to get parameterless function to wor with trap_error.
-        @trap_error
-        def wrapped_func(cls, _):
-            cards = list()
-            next_page = True
-            url = f'{cls._BASE_URL}/cards/search?format=json&q=game%3Aarena'
-            logging.info(f"Fetching card data for all Arena cards.")
-
-            while next_page:
-                response: dict[str, object] = cls.REQUESTER.raw_request(url)
-                cards += response['data']
-                # TODO: Implement the 'has_more_ loop in base Request
-                if response['has_more']:
-                    url = response['next_page']
-                    logging.debug(f"Fetching next page for all Arena cards.")
-                    logging.debug(f"URL: {url}")
-                else:
-                    next_page = False
-
-            return cards
-
-        return wrapped_func(cls, None)
-
-    @classmethod
-    @trap_error
-    def get_set_review_order(cls, set_code: str) -> Optional[list[str]]:
-        card_names = list()
-        next_page = True
-        url = f'{cls._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
+    def get_set_review_order(self, set_code: str) -> Union[NoReturn, list[dict[str, Any]]]:
+        url = f'{self._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
               f'&order=review&page=1&q=e%3A{set_code}+is%3Abooster&unique=cards'
         logging.info(f"Fetching card data for set: {set_code}")
+        return flatten_lists(self.paginated_request(url))
 
-        while next_page:
-            response = cls.REQUESTER.request(url)
-            for card_obj in response['data']:
-                if card_obj['object'] == 'card':
-                    card_names.append(card_obj['name'])
-
-            if response['has_more']:
-                url = response['next_page']
-                logging.debug(f"Fetching next page for set: {set_code}")
-                logging.debug(f"URL: {url}")
-            else:
-                next_page = False
-
-        return card_names
-
-    @classmethod
-    @trap_error
-    def get_set_info(cls, set_code: str) -> Optional[tuple[str, str]]:
-        url = f'{cls._BASE_URL}sets/{set_code}'
+    def get_set_info(self, set_code: str) -> Union[NoReturn, tuple[str, str]]:
+        url = f'{self._BASE_URL}sets/{set_code}'
         logging.info(f"Fetching data for set: {set_code}")
-        response: dict[str, str] = cls.REQUESTER.request(url)
+        response = self.request(url)
         return response['name'], response['icon_svg_uri']
 
-    @classmethod
-    @trap_error
-    def get_card_by_name(cls, name: str) -> Optional[dict[str, Union[str, dict[str, str], list[str]]]]:
+    def get_card_by_name(self, name: str) -> Union[NoReturn, dict[str, Any]]:
         """
         Gets card data from scryfall based on a name. Scryfall's fuzzy filter is
         used to handle imprecise queries and spelling errors.
@@ -116,12 +45,13 @@ class RequestScryfall:
         :return: A card info struct which contains card data, and an error
         message if a problem occurred.
         """
-        card_info = dict()
-        card_info['name'] = name
+        params = {
+            "fuzzy": name
+        }
 
         # Attempt to get information on the card.
         logging.info(f"Fetching data for card: {name}")
-        response = cls.REQUESTER.request(f'{cls._BASE_URL}cards/named?fuzzy={name}')
+        response = self.request(f'{self._BASE_URL}cards/named', params)
 
         # If is not a card, do some processing and return the struct with some information.
         if response['object'] != 'card':
@@ -137,9 +67,7 @@ class RequestScryfall:
     # NOTE: This function is masked from code coverage as its testing is expensive and slow.
     #  Removing the comment 'pragma: nocover' below will re-add it to code coverage.
     #  This should be done only as required, and then re-added.
-    @classmethod
-    def get_bulk_data(cls) -> list[dict]:  # pragma: nocover
-        logging.info(f"Fetching bulk data.")
-        response = cls.REQUESTER.request(f'{cls._BASE_URL}bulk-data/oracle-cards')
-        data = cls.REQUESTER.request(response['download_uri'])
-        return data
+    def get_bulk_data(self) -> Union[NoReturn, list[dict[str, Any]]]:  # pragma: nocover
+        logging.info(f"Fetching bulk data...")
+        response = self.request(f'{self._BASE_URL}bulk-data/oracle-cards')
+        return self.request(response['download_uri'])

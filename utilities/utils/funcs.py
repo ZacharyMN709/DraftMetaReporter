@@ -1,9 +1,15 @@
-from typing import Union, Optional
+from typing import Union, Optional, TypeVar
 from os import path
 import json
 
 from utilities.utils.settings import ENCODING
 from utilities.auto_logging import logging
+
+T = TypeVar('T')
+
+
+def flatten_lists(lst: list[list[T]]) -> list[T]:
+    return [item for sublist in lst for item in sublist]
 
 
 def load_json_file(folder: str, filename: str) -> Union[dict, list[dict], None]:

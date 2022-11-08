@@ -48,9 +48,10 @@ def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
 
 
 class TestCardFace(unittest.TestCase):
-    @staticmethod
-    def get_card_face(card_name: str, layout: CardLayouts, face: CARD_SIDE):
-        json = RequestScryfall.get_card_by_name(card_name)
+    REQUESTER = RequestScryfall(tries=2, fail_delay=15)
+
+    def get_card_face(self, card_name: str, layout: CardLayouts, face: CARD_SIDE):
+        json = self.REQUESTER.get_card_by_name(card_name)
         return CardFace(json, layout, face)
 
     def eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
@@ -667,7 +668,7 @@ class TestCardFace(unittest.TestCase):
         # https://api.scryfall.com/cards/8aefe8bd-216a-4ec1-9362-3f9dbf7fd083?format=json&pretty=true
         # https://api.scryfall.com/cards/40a01679-3224-427e-bd1d-b797b0ab68b7?format=json&pretty=true
         card_name = 'Urza, Lord Protector'
-        json = RequestScryfall.get_card_by_name(card_name)
+        json = RequestScryfall().get_card_by_name(card_name)
         dicts = json["all_parts"]
         name = None
         for d in dicts:
@@ -1012,9 +1013,10 @@ class TestCardFace(unittest.TestCase):
 
 
 class TestCard(unittest.TestCase):
-    @staticmethod
-    def gen_card(card_name):
-        json = RequestScryfall.get_card_by_name(card_name)
+    REQUESTER = RequestScryfall(tries=2, fail_delay=15)
+
+    def gen_card(self, card_name):
+        json = self.REQUESTER.get_card_by_name(card_name)
         return Card(json)
 
     def eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):

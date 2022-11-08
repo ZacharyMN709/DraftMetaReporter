@@ -75,7 +75,7 @@ class RequesterBase:
         return ret
 
     def paginated_request(self, url: str, params: Optional[dict[str, str]] = None) -> list[Union[list, dict]]:
-        return [r.json() for r in self.raw_paginated_request(url, params)]
+        return [r.json() for r in self.raw_paginated_request(url, params) if r]
 
     def raw_request(self, url: str, params: Optional[dict[str, str]] = None) -> Optional[Response]:
         """
@@ -97,7 +97,7 @@ class RequesterBase:
                 response = get(composed_url)
 
                 # And returning the data on a success, breaking the loop.
-                if response.status_code == 200:
+                if response is not None:
                     logging.debug(f"Successfully got data from '{composed_url}'.")
                     sleep(self._SUCCESS_DELAY)
                     return response
@@ -114,5 +114,8 @@ class RequesterBase:
         logging.error(f'Failed URL: {composed_url}')
         return None
 
-    def request(self, url: str, params: Optional[dict[str, str]] = None) -> Union[list, dict]:
-        return self.raw_request(url, params).json()
+    def request(self, url: str, params: Optional[dict[str, str]] = None) -> Optional[Union[list, dict]]:
+        ret = self.raw_request(url, params)
+        if ret is not None:
+            return ret.json()
+        return None

@@ -4,6 +4,7 @@ from datetime import datetime
 import re
 from os import path
 
+from utilities.utils.funcs import flatten_lists
 from wubrg import COLOR
 
 from utilities.auto_logging import logging
@@ -106,9 +107,6 @@ class Deck:
             # Return the card name the number of times it appears in the deck.
             return [_card] * int(_cnt)
 
-        def flatten(lst: list[list[str]]) -> list[str]:
-            return [item for sublist in lst for item in sublist]
-
         # Find the line to split for sideboard cards,
         try:
             # If the list contains 'Sideboard', split the list on that index.
@@ -121,8 +119,8 @@ class Deck:
             pre_sideboard = list()
 
         # Flatten the lists and return them as Cards.
-        maindeck = [CardManager.from_name(name) for name in flatten(pre_maindeck)]
-        sideboard = [CardManager.from_name(name) for name in flatten(pre_sideboard)]
+        maindeck = [CardManager.from_name(name) for name in flatten_lists(pre_maindeck)]
+        sideboard = [CardManager.from_name(name) for name in flatten_lists(pre_sideboard)]
         return maindeck, sideboard
 
     @classmethod

@@ -2,59 +2,53 @@ import unittest
 from datetime import date
 
 from wubrg import COLOR_COMBINATIONS
+from utilities.auto_logging import auto_log, LogLvl
 
 from game_metadata.utils.funcs import new_color_count_dict
 from game_metadata.GameMetadata import SetMetadata, FormatMetadata
-from data_interface.RequestScryfall import RequestScryfall, trap_error
+from data_interface.RequestScryfall import RequestScryfall
 from game_metadata.game_objects.Card import Card
 
 
 class TestRequestScryfall(unittest.TestCase):
-    def test_trap_error(self):
-        def raise_test_error(v=True, _=None):
-            if v:
-                raise Exception("Test Error!")
-
-        val = trap_error(raise_test_error)(True, None)
-        self.assertIsNone(val)
+    REQUESTER = RequestScryfall(tries=2, fail_delay=15)
 
     def test_get_set_cards_valid(self):
-        cards = RequestScryfall.get_set_cards('NEO')
+        cards = self.REQUESTER.get_set_cards('NEO')
         self.assertIsInstance(cards, list)
 
     def test_get_set_cards_invalid(self):
-        ret = RequestScryfall.get_set_cards('INVALID')
-        self.assertIsNone(ret)
+        ret = self.REQUESTER.get_set_cards('INVALID')
+        self.assertListEqual(list(), ret)
 
     def test_get_set_info_valid(self):
-        cards = RequestScryfall.get_set_info('NEO')
+        cards = self.REQUESTER.get_set_info('NEO')
         self.assertIsInstance(cards, tuple)
 
     def test_get_set_info_invalid(self):
-        ret = RequestScryfall.get_set_info('INVALID')
-        self.assertIsNone(ret)
+        self.assertRaises(KeyError, self.REQUESTER.get_set_info, 'INVALID')
 
     def test_get_card_by_name_valid(self):
-        card = RequestScryfall.get_card_by_name('Virus Beetle')
+        card = self.REQUESTER.get_card_by_name('Virus Beetle')
         self.assertIsInstance(card, dict)
         self.assertEqual(card['object'], 'card')
         self.assertEqual(card['name'], 'Virus Beetle')
 
     def test_get_card_by_name_valid_misspelled(self):
-        card = RequestScryfall.get_card_by_name('Vires Beetle')
+        card = self.REQUESTER.get_card_by_name('Vires Beetle')
         self.assertIsInstance(card, dict)
         self.assertEqual(card['object'], 'card')
         self.assertEqual(card['name'], 'Virus Beetle')
 
     def test_get_card_by_name_multiple(self):
         name = 'Bolt'
-        card = RequestScryfall.get_card_by_name(name)
+        card = self.REQUESTER.get_card_by_name(name)
         self.assertIsInstance(card, dict)
         self.assertEqual(card['err_msg'], f'Error: Multiple card matches for "{name}"')
 
     def test_get_card_by_name_dne(self):
         name = 'Supercalifragilisticexpialidocious'
-        card = RequestScryfall.get_card_by_name(name)
+        card = self.REQUESTER.get_card_by_name(name)
         self.assertIsInstance(card, dict)
         self.assertEqual(card['err_msg'], f'Error: Cannot find card "{name}"')
 

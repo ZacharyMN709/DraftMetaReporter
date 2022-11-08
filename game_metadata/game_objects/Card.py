@@ -161,6 +161,7 @@ class Card:
     """
     SCRY_URL = 'https://scryfall.com/card/'
     API_URL = 'https://api.scryfall.com/cards/'
+    REQUESTER = RequestScryfall()
 
     MELD_BACKS = dict()
 
@@ -184,7 +185,7 @@ class Card:
                     if d["component"] == "meld_result":
                         name = d["name"]
                         if name not in Card.MELD_BACKS:
-                            Card.MELD_BACKS[name] = RequestScryfall.get_card_by_name(name)
+                            Card.MELD_BACKS[name] = self.REQUESTER.get_card_by_name(name)
                         return Card.MELD_BACKS[name]
                 raise ValueError("Cannot find a back to provided meld card!")
             except KeyError:
@@ -329,6 +330,8 @@ class CardManager:
     SETS: dict[str, dict[str, Card]] = dict()
     CARDS: dict[str, Card] = dict()
 
+    REQUESTER = RequestScryfall()
+
     @classmethod
     def _add_card(cls, card: Card, searched_name: str = '', force_update=True) -> None:
         """
@@ -362,7 +365,7 @@ class CardManager:
             return prev_card
 
         # Otherwise, get the card info from scryfall.
-        json = RequestScryfall.get_card_by_name(name)
+        json = cls.REQUESTER.get_card_by_name(name)
         # If there's an error, log it, mark the alias as '' and return None.
         if 'err_msg' in json:
             logging.info(f'Could not get card for {name}')
@@ -393,7 +396,7 @@ class CardManager:
         if set_code not in cls.SETS:
             # Create a new dictionary for it,
             cls.SETS[set_code] = dict()
-            for json in RequestScryfall.get_set_cards(set_code):
+            for json in cls.REQUESTER.get_set_cards(set_code):
                 # And fill it with cards fetched from Scryfall.
                 new_card = Card(json)
 
@@ -464,7 +467,7 @@ class CardManager:
     @classmethod
     def generate_cache_file(cls):  # pragma: nocover
         """ Generate a cache of Arena cards on a configurable location on disk. """
-        bulk_data = RequestScryfall.get_bulk_data()
+        bulk_data = cls.REQUESTER.get_bulk_data()
         arena_cards = list()
         logging.info(f'Searching bulk data for Arena cards...')
 
@@ -485,7 +488,7 @@ class CardManager:
     @classmethod
     def generate_arena_cache_file(cls):  # pragma: nocover
         """ Generate a cache of Arena cards on a configurable location on disk. """
-        bulk_data = RequestScryfall.get_arena_cards()
+        bulk_data = cls.REQUESTER.get_arena_cards()
         logging.info(f'Searching bulk data for Arena cards...')
 
         logging.info(f'{len(bulk_data)} cards found!')
