@@ -3,40 +3,31 @@ from datetime import date, datetime
 import json
 import pandas as pd
 
-from data_interface.Requester import Requester_2
-import utilities.utils.settings as settings
+
+from data_interface.Requester import RequesterBase
+import data_interface.utils.settings as settings
+from data_interface.utils.consts import COLOR_17L_URL, EXPANSIONS_17L_URL, FORMATS_17L_URL, PLAY_DRAW_17L_URL, \
+    COLOR_RATING_17L_URL, CARD_RATING_17L_URL, CARD_EVAL_17L_URL, TROPHY_17L_URL, DRAFT_LOG_17L_URL, DECK_17L_URL, \
+    DETAILS_17L_URL
 
 
 # Adapted from 'https://github.com/diogojapinto/mtg-data-mining/blob/main/utils/api_clients/seventeen_lands/client.py'
-class Request17Lands(Requester_2):
-    BASE_URL = 'https://www.17lands.com'
-    COLOR_URL = 'https://www.17lands.com/data/colors'
-    EXPANSIONS_URL = 'https://www.17lands.com/data/expansions'
-    FORMATS_URL = 'https://www.17lands.com/data/formats'
-    PLAY_DRAW_URL = 'https://www.17lands.com/data/play_draw'
-    COLOR_RATING_URL = 'https://www.17lands.com/color_ratings/data'
-    CARD_RATING_URL = 'https://www.17lands.com/card_ratings/data'
-    CARD_EVAL_URL = 'https://www.17lands.com/card_evaluation_metagame/data'
-    TROPHY_URL = 'https://www.17lands.com/data/trophies'
-    DRAFT_LOG_URL = 'https://www.17lands.com/data/draft/stream'
-    DECK_URL = 'https://www.17lands.com/data/deck'
-    DETAILS_URL = 'https://www.17lands.com/data/details'
-
+class Request17Lands(RequesterBase):
     def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
                  success_delay: Optional[float] = None):
         super().__init__(tries, fail_delay, success_delay)
 
     def get_colors(self) -> list[str]:
-        return self.request(url=self.COLOR_URL).json()
+        return self.request(url=COLOR_17L_URL)
 
     def get_expansions(self) -> list[str]:
-        return self.request(url=self.EXPANSIONS_URL).json()
+        return self.request(url=EXPANSIONS_17L_URL)
 
     def get_event_types(self) -> list[str]:
-        return self.request(url=self.FORMATS_URL).json()
+        return self.request(url=FORMATS_17L_URL)
 
     def get_play_draw_stats(self) -> pd.DataFrame:
-        result = self.request(url=self.PLAY_DRAW_URL).json()
+        result = self.request(url=PLAY_DRAW_17L_URL)
         play_draw_stats = pd.DataFrame(result)
         return play_draw_stats
 
@@ -59,7 +50,7 @@ class Request17Lands(Requester_2):
             'user_group': user_group
         }
 
-        result = self.request(url=self.COLOR_RATING_URL, params=params).json()
+        result = self.request(url=COLOR_RATING_17L_URL, params=params)
 
         # Apply a more intuitive columns ordering
         unsorted_df = pd.DataFrame(result)
@@ -93,7 +84,7 @@ class Request17Lands(Requester_2):
             'colors': deck_colors
         }
 
-        result = self.request(url=self.CARD_RATING_URL, params=params).json()
+        result = self.request(url=CARD_RATING_17L_URL, params=params)
 
         # Apply a more intuitive columns ordering, and remove URLs and sideboard metrics
         unsorted_df = pd.DataFrame(result)
@@ -153,7 +144,7 @@ class Request17Lands(Requester_2):
             'color': color
         }
 
-        result = self.request(url=self.CARD_EVAL_URL, params=params).json()
+        result = self.request(url=CARD_EVAL_17L_URL, params=params)
 
         # Tidy up data into a dataframe of one row per date-card combination
         digested_result_accum = []
@@ -179,13 +170,13 @@ class Request17Lands(Requester_2):
 
         return card_evaluations
 
-    def get_trophy_deck_metadata(self, expansion: str, event_type: Optional[str] = None) -> pd.DataFrame:
+    def get_trophy_deck_metadata(self, expansion: str, event_type: Optional[str] = None) -> dict:
         params = {
             'expansion': expansion,
             'format': event_type or settings.DEFAULT_FORMAT
         }
 
-        result = self.request(url=self.TROPHY_URL, params=params).json()
+        result = self.request(url=TROPHY_17L_URL, params=params)
 
         # Apply a more intuitive columns ordering
         unsorted_df = pd.DataFrame(result)
@@ -214,14 +205,14 @@ class Request17Lands(Requester_2):
             'draft_id': draft_id,
             'deck_index': deck_index
         }
-        return self.request(url=self.DECK_URL, params=params).json()
+        return self.request(url=DECK_17L_URL, params=params)
 
-    def get_details(self, draft_id: str) -> None:
+    def get_details(self, draft_id: str) -> dict:
         params = {
             'draft_id': draft_id,
         }
 
-        result = self.request(url=self.DETAILS_URL, params=params).json()
+        result = self.request(url=DETAILS_17L_URL, params=params)
         return result
 
     def get_draft(self, draft_id: str) -> Union[dict, NoReturn]:
@@ -230,7 +221,7 @@ class Request17Lands(Requester_2):
         }
 
         # Process built-in JSON
-        text = self.request(url=self.DRAFT_LOG_URL, params=params).text[6:-2]
+        text = self.raw_request(url=DRAFT_LOG_17L_URL, params=params).text[6:-2]
         result = json.loads(text)
 
         # Only return results if payload is complete

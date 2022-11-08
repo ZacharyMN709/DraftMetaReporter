@@ -60,7 +60,7 @@ class RequestScryfall:
             logging.info(f"Fetching card data for all Arena cards.")
 
             while next_page:
-                response: dict[str, object] = cls.REQUESTER.request(url)
+                response: dict[str, object] = cls.REQUESTER.raw_request(url)
                 cards += response['data']
                 # TODO: Implement the 'has_more_ loop in base Request
                 if response['has_more']:
