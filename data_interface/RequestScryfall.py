@@ -14,22 +14,34 @@ class RequestScryfall(RequesterBase):
                  success_delay: Optional[float] = None):
         super().__init__(tries, fail_delay, success_delay)
 
-    def get_set_cards(self, set_code: str) -> Union[NoReturn, list[dict[str, Any]]]:
-        url = f'{self._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
-              f'&order=set&page=1&q=e%3A{set_code}+is%3Abooster&unique=cards'
+    def _get_set_cards(self, set_code: str, order: str) -> Union[NoReturn, list[dict[str, Any]]]:
+        params = {
+            'format': 'json',
+            'q': f'e%3A{set_code}',
+            'is': 'booster',
+            'unique': 'cards',
+            'order': order,
+            'include_multilingual': False,
+            'include_extras': False,
+        }
+        url = f'{self._BASE_URL}cards/search'
         logging.info(f"Fetching card data for set: {set_code}")
-        return flatten_lists(self.paginated_request(url))
+        return flatten_lists([x['data'] for x in self.paginated_request(url, params=params)])
 
-    def get_arena_cards(self) -> Union[NoReturn, list[dict[str, Any]]]:
-        url = f'{self._BASE_URL}/cards/search?format=json&q=game%3Aarena'
-        logging.info(f"Fetching card data for all Arena cards.")
-        return flatten_lists(self.paginated_request(url))
+    def get_set_cards(self, set_code: str) -> Union[NoReturn, list[dict[str, Any]]]:
+        return self._get_set_cards(set_code, 'set')
 
     def get_set_review_order(self, set_code: str) -> Union[NoReturn, list[dict[str, Any]]]:
-        url = f'{self._BASE_URL}cards/search?format=json&include_extras=false&include_multilingual=false' \
-              f'&order=review&page=1&q=e%3A{set_code}+is%3Abooster&unique=cards'
-        logging.info(f"Fetching card data for set: {set_code}")
-        return flatten_lists(self.paginated_request(url))
+        return self._get_set_cards(set_code, 'review')
+
+    def get_arena_cards(self) -> Union[NoReturn, list[dict[str, Any]]]:
+        params = {
+            'format': 'json',
+            'q': f'game%3Aarena',
+        }
+        url = f'{self._BASE_URL}/cards/search'
+        logging.info(f"Fetching card data for all Arena cards.")
+        return flatten_lists([x['data'] for x in self.paginated_request(url, params=params)])
 
     def get_set_info(self, set_code: str) -> Union[NoReturn, tuple[str, str]]:
         url = f'{self._BASE_URL}sets/{set_code}'

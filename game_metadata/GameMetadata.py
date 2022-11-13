@@ -48,7 +48,7 @@ class SetMetadata:
         self.CARD_PRINT_ORDER_INDEXES: dict[str, int] = \
             {k.NAME: v for v, k in enumerate(self.CARD_LIST)}
         self.CARD_REVIEW_ORDER_INDEXES: dict[str, int] = \
-            {k: v for v, k in enumerate(self.REQUESTER.get_set_review_order(self.SET))}
+            {k['name']: v for v, k in enumerate(self.REQUESTER.get_set_review_order(self.SET))}
         self.CARD_PRINT_ORDER_KEY: Callable = cmp_to_key(self._print_order_compare)
         self.CARD_REVIEW_ORDER_KEY: Callable = cmp_to_key(self._review_order_compare)
         self.FRAME_ORDER_KEY: Callable = cmp_to_key(self._frame_order_compare)

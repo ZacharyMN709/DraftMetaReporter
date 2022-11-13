@@ -220,7 +220,7 @@ class Card:
 
     def __init__(self, json: CARD_INFO):
         if json['object'] != 'card':
-            raise ValueError("Invalid JSON provided! Object type is not 'card'")
+            raise ValueError(f"Invalid JSON provided! Object type is not 'card'")
 
         # Handle simple layout information to reference later.
         self.LAYOUT: CardLayouts = LAYOUT_DICT[json['layout']]  # TODO: May need special parsing for prototype.
@@ -467,29 +467,25 @@ class CardManager:
     @classmethod
     def generate_cache_file(cls):  # pragma: nocover
         """ Generate a cache of Arena cards on a configurable location on disk. """
+        logging.info(f'Requesting bulk data for all Scryfall cards...')
         bulk_data = cls.REQUESTER.get_bulk_data()
-        arena_cards = list()
-        logging.info(f'Searching bulk data for Arena cards...')
-
-        for card_dict in bulk_data:
-            if "arena_id" not in card_dict:
-                continue
-            if card_dict["layout"] == "token":
-                continue
-            if card_dict["name"] == "City's Blessing":
-                continue
-            arena_cards.append(card_dict)
-        logging.info(f'{len(arena_cards)} cards found!')
-        save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, arena_cards, indent=None)
+        logging.info(f'{len(bulk_data)} cards found!')
+        save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, bulk_data, indent=None)
 
     # NOTE: This function is masked from code coverage as its testing is expensive and slow.
     #  Removing the comment 'pragma: nocover' below will re-add it to code coverage.
     #  This should be done only as required, and then re-added.
+    # noinspection PyDefaultArgument
     @classmethod
-    def generate_arena_cache_file(cls):  # pragma: nocover
+    def generate_arena_cache_file(cls, extras: Optional[list[str]] = list()):  # pragma: nocover
         """ Generate a cache of Arena cards on a configurable location on disk. """
+        logging.info(f'Querying scryfall for Arena cards...')
         bulk_data = cls.REQUESTER.get_arena_cards()
-        logging.info(f'Searching bulk data for Arena cards...')
+
+        for set_code in extras:
+            logging.info(f"Finding extra cards for '{set_code}'")
+            extra_cards = cls.REQUESTER.get_set_cards(set_code)
+            bulk_data += extra_cards
 
         logging.info(f'{len(bulk_data)} cards found!')
         save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE_ARENA, bulk_data, indent=None)

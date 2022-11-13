@@ -8,7 +8,7 @@ from data_interface.Requester import RequesterBase
 import data_interface.utils.settings as settings
 from data_interface.utils.consts import COLOR_17L_URL, EXPANSIONS_17L_URL, FORMATS_17L_URL, PLAY_DRAW_17L_URL, \
     COLOR_RATING_17L_URL, CARD_RATING_17L_URL, CARD_EVAL_17L_URL, TROPHY_17L_URL, DRAFT_LOG_17L_URL, DECK_17L_URL, \
-    DETAILS_17L_URL
+    DETAILS_17L_URL, TIER_17L_URL
 
 
 # Adapted from 'https://github.com/diogojapinto/mtg-data-mining/blob/main/utils/api_clients/seventeen_lands/client.py'
@@ -229,3 +229,9 @@ class Request17Lands(RequesterBase):
             raise ValueError(f"Response is not complete. Response type: '{result['type']}'")
 
         return result['payload']
+
+    def get_tier_list(self, guid: str) -> Union[dict, NoReturn]:
+        url_to_parse = TIER_17L_URL + f"/{guid}"
+
+        result = self.request(url=url_to_parse)
+        return result
