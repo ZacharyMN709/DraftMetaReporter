@@ -6,3 +6,4 @@ Notebooks/.ipynb_checkpoints/*
 test.txt
 *.png
 /Tests/*
+.ipynb_checkpoints/TierList Aggregator-checkpoint.ipynb
