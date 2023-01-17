@@ -3,16 +3,16 @@ from datetime import date
 # Game Format Defaults and Data
 SETS: list[str] = ["BRO", "DMU", "SNC", "NEO", "VOW", "MID"]  # ['AFR', 'STX', 'KHM', 'ZNR']
 
-FORMATS: list[str] = ["PremierDraft", "TradDraft", "QuickDraft"]
+FORMATS: list[str] = ["PremierDraft", "TradDraft"]  # ["PremierDraft", "TradDraft", "QuickDraft"]
 
 # TODO: Change this so the dates are formatted strings, and the Set/FormatMetadata objects parse the dates on load.
 #  This will allow for the SET_CONFIG to be updated from a JSON file and have the Set/FormatMetadata objects re-
 #  parse the data to update the sets information.
 SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
     "BRO": {
-        "PremierDraft": [(date(2022, 11, 15), date(2022, 12, 31))],
-        "TradDraft": [(date(2022, 11, 15), date(2022, 12, 31))],
-        "QuickDraft": [(date(2022, 12, 31), date(2022, 12, 31))]
+        "PremierDraft": [(date(2022, 11, 15), date(2023, 1, 31))],
+        "TradDraft": [(date(2022, 11, 15), date(2023, 1, 31))],
+        "QuickDraft": [(date(2022, 11, 25), date(2022, 12, 9))]
     },
     "DMU": {
         "PremierDraft": [(date(2022, 9, 1), date(2022, 11, 15))],
@@ -28,7 +28,7 @@ SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
         "PremierDraft": [(date(2022, 2, 10), date(2022, 4, 28))],
         "TradDraft": [(date(2022, 2, 10), date(2022, 4, 28))],
         "QuickDraft": [(date(2022, 2, 25), date(2022, 3, 11)), (date(2022, 3, 25), date(2022, 4, 8)),
-                       (date(2022, 4, 22), date(2022, 4, 29))]
+                       (date(2022, 4, 22), date(2022, 4, 29)), (date(2022, 11, 11), date(2022, 11, 25))]
     },
     "VOW": {
         "PremierDraft": [(date(2021, 11, 11), date(2022, 2, 10))],

@@ -16,7 +16,7 @@ class TestBaseDeck(unittest.TestCase):
     def setUp(self) -> None:
         auto_log(LogLvl.DEBUG)
         # Load all arena cards to speed up tests and reduce load on Scryfall server.
-        CardManager.load_from_file()
+        CardManager.load_cache_from_file()
 
 
 class TestDeck(TestBaseDeck):

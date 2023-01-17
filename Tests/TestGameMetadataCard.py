@@ -1269,7 +1269,7 @@ class TestCardManager(unittest.TestCase):
 
     def test_from_file(self):
         CardManager.flush_cache()
-        CardManager.load_from_file()
+        CardManager.load_cache_from_file()
         self.assertGreaterEqual(len(CardManager.CARDS), 5640)
 
     def test_from_set(self):

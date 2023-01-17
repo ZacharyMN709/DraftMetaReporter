@@ -454,7 +454,7 @@ class CardManager:
         cls.CARDS = dict()
 
     @classmethod
-    def load_from_file(cls) -> None:
+    def load_cache_from_file(cls) -> None:
         """ Loads the cache of Arena cards from a configurable location disk. """
         dictionary = load_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE_ARENA)
         for line in dictionary:

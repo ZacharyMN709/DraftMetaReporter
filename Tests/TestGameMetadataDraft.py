@@ -11,7 +11,7 @@ class TestBaseDraft(unittest.TestCase):
     def setUp(self) -> None:
         auto_log(LogLvl.DEBUG)
         # Load all arena cards to speed up tests and reduce load on Scryfall server.
-        CardManager.load_from_file()
+        CardManager.load_cache_from_file()
 
     def eval_pick(self, pick):
         self.assertEqual(0, pick.pack_number)

@@ -62,6 +62,7 @@ class TrophyStub:
 
 
 class Deck:
+    _DECKS = 0
     _maindeck: list[Card] = list()
     _sideboard: list[Card] = list()
     name: str
@@ -74,16 +75,6 @@ class Deck:
     _casting_pips: Optional[dict[COLOR, int]]
     _all_pips: Optional[dict[COLOR, int]]
     colors: str
-
-    def __init__(self, maindeck: list[Card], sideboard: list[Card], name: str, wins: int = 0, losses: int = 0):
-        self._maindeck = maindeck
-        self._sideboard = sideboard
-        self.wins = wins
-        self.losses = losses
-        self.name = name
-
-        self._maindeck_dict = self._gen_card_dict(self.maindeck)
-        self._sideboard_dict = self._gen_card_dict(self.sideboard)
 
     # region Decklist Parsing
     @classmethod
@@ -124,20 +115,20 @@ class Deck:
         return maindeck, sideboard
 
     @classmethod
+    def parse_decklist_from_string(cls, text: str) -> tuple[list[Card], list[Card]]:
+        # Split the string into a list on newlines.
+        return cls.parse_decklist(text.split('\n'))
+
+    @classmethod
     def parse_decklist_from_file(cls, file_path: str) -> tuple[list[Card], list[Card]]:
         # Check that the file exists.
         load = path.exists(file_path) and path.isfile(file_path)
         if not load:
             raise ValueError(f"Provided value ({file_path}) is not a file path!")
 
-        # If it does, load its lines, trimming each.
-        decklist = list()
+        # If it does, load it as a string, And parse the decklist.
         with open(file_path, 'r') as f:
-            for line in f.readlines():
-                decklist.append(line.strip())
-
-        # And parse the decklist.
-        return cls.parse_decklist(decklist)
+            return cls.parse_decklist_from_string(f.read())
 
     # noinspection PyUnreachableCode
     @classmethod
@@ -148,6 +139,38 @@ class Deck:
         decklist = []  # pragma: nocover
         return cls.parse_decklist(decklist)  # pragma: nocover
     # endregion Decklist Parsing
+
+    def __init__(self, maindeck: list[Card], sideboard: list[Card], name: Optional[str],
+                 wins: int = 0, losses: int = 0):
+        self._maindeck = maindeck
+        self._sideboard = sideboard
+        self.wins = wins
+        self.losses = losses
+
+        # Track the number of decks instantiated, and use it as a deault name if needed.
+        Deck._DECKS += 1
+        if not name:
+            self.name = f"Deck {Deck._DECKS}"
+        else:
+            self.name = name
+
+        self._maindeck_dict = self._gen_card_dict(self.maindeck)
+        self._sideboard_dict = self._gen_card_dict(self.sideboard)
+
+    @classmethod
+    def from_decklist(cls, card_list: list[str], name: Optional[str], wins: int = 0, losses: int = 0) -> Deck:
+        maindeck, sideboard = Deck.parse_decklist(card_list)
+        return Deck(maindeck, sideboard, name, wins, losses)
+
+    @classmethod
+    def from_string(cls, text: str, name: Optional[str], wins: int = 0, losses: int = 0) -> Deck:
+        maindeck, sideboard = Deck.parse_decklist_from_string(text)
+        return Deck(maindeck, sideboard, name, wins, losses)
+
+    @classmethod
+    def from_file(cls, file_path: str, name: Optional[str], wins: int = 0, losses: int = 0) -> Deck:
+        maindeck, sideboard = Deck.parse_decklist_from_file(file_path)
+        return Deck(maindeck, sideboard, name, wins, losses)
 
     # region Pip Calculations
     @classmethod
