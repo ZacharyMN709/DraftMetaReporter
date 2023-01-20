@@ -4,7 +4,7 @@ import re
 
 from utilities.auto_logging import logging
 from utilities.utils.funcs import load_json_file, save_json_file
-from wubrg import get_color_identity, calculate_cmc, parse_color_list, COLOR_STRING
+from wubrg import get_color_identity, calculate_cmc, parse_color_list, COLOR_STRING, WUBRG_COLOR_INDEXES
 
 from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, ALL_SUBTYPES, \
     LAYOUT_DICT, CardLayouts, CARD_SIDE, SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA
@@ -13,6 +13,14 @@ from data_interface.RequestScryfall import RequestScryfall
 
 
 prototype_parse = re.compile(r"Prototype (.*) — (\d*)/(\d*)")
+
+"""
+A modified version of WUBRG order, which is used as part of a lambda for sorting cards,
+in the order one would expect to see them on Untapped or SealedDeck
+"""
+DECK_DISPLAY_INDEXES = dict(WUBRG_COLOR_INDEXES)
+DECK_DISPLAY_INDEXES[''] = 32
+def decklist_sort_lambda(x): return x.CMC, DECK_DISPLAY_INDEXES[x.CAST_IDENTITY], x.NAME
 
 
 class CardFace:

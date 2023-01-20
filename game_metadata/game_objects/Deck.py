@@ -68,8 +68,8 @@ class Deck:
     name: str
     wins: int
     losses: int
-    _maindeck_dict: dict[str, int] = dict()
-    _sideboard_dict: dict[str, int] = dict()
+    _maindeck_dict: dict[Card, int] = dict()
+    _sideboard_dict: dict[Card, int] = dict()
 
     _produced_mana: Optional[dict[COLOR, int]]
     _casting_pips: Optional[dict[COLOR, int]]
@@ -81,7 +81,7 @@ class Deck:
     def parse_decklist(cls, decklist: list[str]) -> tuple[list[Card], list[Card]]:
         def parse_line(line: str) -> list[str]:
             # If the line is empty or the deck header, return
-            if not line or line == "Deck" or line == "Sideboard":
+            if line in ["Deck", "Sideboard", "Commander"]:
                 return list()
 
             # Split the card line into bits, based on a typical Arena decklist export.
@@ -133,11 +133,14 @@ class Deck:
     # noinspection PyUnreachableCode
     @classmethod
     def parse_decklist_from_url(cls, url: str) -> tuple[list[Card], list[Card]]:
-        # TODO: Get the decklist from url.
-        raise NotImplementedError()
-
-        decklist = []  # pragma: nocover
-        return cls.parse_decklist(decklist)  # pragma: nocover
+        requester = Request17Lands()
+        _id, _deck = re.match("https://www.17lands.com/deck/(.*)/(.*)", url).groups()
+        # _id, _deck = re.match("https://www.17lands.com/data/deck?draft_id=(.*)&deck_index=(.*)", url).groups()
+        data = requester.get_deck(_id, _deck)['groups']
+        deck = ["Deck"] + [d['name'] for d in data[0]['cards']]
+        sideboard = ["Sideboard"] + [d['name'] for d in data[1]['cards']]
+        decklist = deck + [''] + sideboard
+        return cls.parse_decklist(decklist)
     # endregion Decklist Parsing
 
     def __init__(self, maindeck: list[Card], sideboard: list[Card], name: Optional[str],
@@ -147,7 +150,7 @@ class Deck:
         self.wins = wins
         self.losses = losses
 
-        # Track the number of decks instantiated, and use it as a deault name if needed.
+        # Track the number of decks instantiated, and use it as a default name if needed.
         Deck._DECKS += 1
         if not name:
             self.name = f"Deck {Deck._DECKS}"
@@ -172,14 +175,19 @@ class Deck:
         maindeck, sideboard = Deck.parse_decklist_from_file(file_path)
         return Deck(maindeck, sideboard, name, wins, losses)
 
+    @classmethod
+    def from_url(cls, url: str, name: Optional[str], wins: int = 0, losses: int = 0) -> Deck:
+        maindeck, sideboard = Deck.parse_decklist_from_url(url)
+        return Deck(maindeck, sideboard, name, wins, losses)
+
     # region Pip Calculations
     @classmethod
-    def _gen_card_dict(cls, card_list: list[Card]) -> dict[str, int]:  # pragma: nocover
+    def _gen_card_dict(cls, card_list: list[Card]) -> dict[Card, int]:  # pragma: nocover
         card_dict = dict()
         for card in card_list:
-            if card.NAME not in card_dict:
-                card_dict[card.NAME] = 0
-            card_dict[card.NAME] += 1
+            if card not in card_dict:
+                card_dict[card] = 0
+            card_dict[card] += 1
         return card_dict
 
     def _get_produced_mana(self) -> dict[COLOR, int]:  # pragma: nocover
@@ -252,25 +260,26 @@ class Deck:
             return (self.wins / denominator) * 100
     # endregion Basic Deck Properties
 
-    def compare_decks(self, deck: Deck) -> tuple[dict[str, int], dict[str, int]]:
+    def deck_differences(self, deck: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
         """
         Compares the contents of this deck with a provided deck. Differences of 0 are omitted.
         :param deck: The deck to compare with.
-        :return: A maindeck and sideboard dictionary of card number differences.
+        :return: A maindeck and sideboard dictionary of card differences.
         """
-        def subtract_dicts(d1: dict[str, int], d2: dict[str, int]) -> dict[str, int]:
+        def subtract_dicts(d1: dict[Card, int], d2: dict[Card, int]) -> dict[Card, int]:
             """
             Generates a dictionary which contains the card differences between the two card dictionaries.
             Differences of 0 are omitted from the output dictionary for clarity.
             """
-            # Create an empty dictionary and split the keys.
+            # Create an empty dictionary and get all the keys.
             d = dict()
             all_keys = d1.keys() | d2.keys()
 
-            # For each key get it's value, defaulting to 0 if not in the dictionary.
+            # For each key get its value, defaulting to 0 if not in the dictionary.
             for k in all_keys:
+                # Subtract the values, to get the difference i cards counts between the two decks.
+                # If the difference is 0, skip the entry, since the decks have the same number of the given card.
                 v = d1.get(k, 0) - d2.get(k, 0)
-                # If the difference is 0, skip the entry.
                 if v != 0:
                     d[k] = v
 
@@ -280,8 +289,43 @@ class Deck:
         sideboard_diff = subtract_dicts(self._sideboard_dict, deck._sideboard_dict)
         return maindeck_diff, sideboard_diff
 
-    def __sub__(self, other: Deck):
-        return self.compare_decks(other)
+    def deck_overlap(self, deck: Deck) -> tuple[dict[str, int], dict[str, int]]:
+        """
+        Compares the contents of this deck with a provided deck. Gets the shared cards between the two.
+        :param deck: The deck to compare with.
+        :return: A maindeck and sideboard dictionary of cards shared.
+        """
+        def overlap_dicts(d1: dict[str, int], d2: dict[str, int]) -> dict[str, int]:
+            """
+            Generates a dictionary which contains the card overlaps between the two card dictionaries.
+            """
+            # Create an empty dictionary and split the keys.
+            d = dict()
+            all_keys = d1.keys() | d2.keys()
+
+            # For each key get its value, defaulting to 0 if not in the dictionary.
+            for k in all_keys:
+                # Get thw lowest of the two values, which is how many copies of a card the decks share.
+                # If the value is 0, skip the entry, since one deck has none of the given card.
+                v = min(d1.get(k, 0), d2.get(k, 0))
+                if v != 0:
+                    d[k] = v
+
+            return d
+
+        maindeck_over = overlap_dicts(self._maindeck_dict, deck._maindeck_dict)
+        sideboard_over = overlap_dicts(self._sideboard_dict, deck._sideboard_dict)
+        return maindeck_over, sideboard_over
+
+    def __sub__(self, other: Deck) -> tuple[dict[str, int], dict[str, int]]:
+        return self.deck_differences(other)
+
+    def __or__(self, other: Deck) -> tuple[dict[str, int], dict[str, int]]:
+        return self.deck_overlap(other)
+
+    def __repr__(self):
+        # TODO: Improve this with colour information and similar.
+        return self.name
 
 
 class LimitedDeck(Deck):
