@@ -24,6 +24,13 @@ RARITY_ALIASES: dict[str, str] = {
     'basic': "C"  # This comes from arena, for common lands in draft packs. May be a better way to handle this.
 }
 
+RARITY_INDEXES: dict[str, int] = {
+    "C": 0,
+    "U": 1,
+    "R": 2,
+    "M": 3,
+}
+
 # https://mtg.fandom.com/wiki/Supertype
 SUPERTYPES: set[str] = {"Basic", "Legendary", "Snow", "World", "Host"}
 TYPES: set[str] = {"Land", "Creature", "Artifact", "Enchantment", "Planeswalker", "Instant", "Sorcery", "Tribal"}

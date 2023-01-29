@@ -314,6 +314,15 @@ class Card:
         """Returns a link to the image of the card."""
         return self.DEFAULT_FACE.image_url('normal')
 
+    @property
+    def ORACLE(self) -> str:
+        """Returns rules text of the card."""
+        s = self.FACE_1.ORACLE
+        if self.FACE_2 is not None:
+            s += "\n\n  ---  \n\n"
+            s += self.FACE_2.ORACLE
+        return s
+
     def __str__(self):
         return self.FULL_NAME
 
