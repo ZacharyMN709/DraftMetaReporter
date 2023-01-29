@@ -3,7 +3,8 @@ import logging
 from utilities.auto_logging import LogLvl, auto_log
 from game_metadata.game_objects.Card import CardManager
 
-EXTRA_SETS = ["BRO", "BRR"]
+NEXT_SET = "ONE"
+EXTRA_SETS = [NEXT_SET, "BRR", "STA"]
 
 
 def refresh_scryfall_caches():

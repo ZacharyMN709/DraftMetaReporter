@@ -1,7 +1,7 @@
 from datetime import date
 
 # Game Format Defaults and Data
-SETS: list[str] = ["BRO", "DMU", "SNC", "NEO", "VOW", "MID"]  # ['AFR', 'STX', 'KHM', 'ZNR']
+SETS: list[str] = ["ONE", "BRO", "DMU", "SNC", "NEO", "VOW", "MID"]  # ['AFR', 'STX', 'KHM', 'ZNR']
 
 FORMATS: list[str] = ["PremierDraft", "TradDraft"]  # ["PremierDraft", "TradDraft", "QuickDraft"]
 
@@ -9,9 +9,14 @@ FORMATS: list[str] = ["PremierDraft", "TradDraft"]  # ["PremierDraft", "TradDraf
 #  This will allow for the SET_CONFIG to be updated from a JSON file and have the Set/FormatMetadata objects re-
 #  parse the data to update the sets information.
 SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
+    "ONE": {
+        "PremierDraft": [( date(2023, 2, 7), date(2022, 4, 15))],
+        "TradDraft": [(date(2023, 2, 7), date(2022, 4, 15))],
+        "QuickDraft": [(date(2023, 3, 7), date(2023, 4, 7))]
+    },
     "BRO": {
-        "PremierDraft": [(date(2022, 11, 15), date(2023, 1, 31))],
-        "TradDraft": [(date(2022, 11, 15), date(2023, 1, 31))],
+        "PremierDraft": [(date(2022, 11, 15), date(2023, 2, 7))],
+        "TradDraft": [(date(2022, 11, 15), date(2023, 2, 7))],
         "QuickDraft": [(date(2022, 11, 25), date(2022, 12, 9))]
     },
     "DMU": {
