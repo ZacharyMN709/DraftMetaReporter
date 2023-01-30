@@ -4,6 +4,7 @@
 from IPython.core.display import display, HTML
 import sys
 import os
+import datetime
 from os import path
 from datetime import date, time, datetime, timedelta
 import numpy as np
@@ -14,9 +15,9 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
 
-from Utilities.auto_logging import LogLvl, set_log_level, logging
-import WUBRG
-from WUBRG import get_color_identity, list_color_dict
+from utilities import LogLvl, set_log_level, logging
+import wubrg
+from wubrg import get_color_identity
 
 from game_metadata import SETS, FORMATS
 from game_metadata import Card, CardManager, SetMetadata, FormatMetadata
@@ -27,18 +28,17 @@ from data_fetching.utils import get_next_17lands_update_time, get_prev_17lands_u
 
 
 LOAD_ALL = False
-TRGT_SET = 'DMU'
+TRGT_SET = 'BRO'
 LOG_LEVEL = LogLvl.INFO
-set_log_level(LOG_LEVEL)
 
 
-def set_notebook_display():
+def set_notebook_display() -> None:
     sns.set_theme()
     sns.set_color_codes()
     display(HTML("<style>.container { width:95% !important; }</style>"))
 
 
-def info_splash():
+def info_splash() -> None:
     print(f"PYTHON VER:          {sys.version}")
     print(f"LOAD_ALL:            {LOAD_ALL}")
     print(f"TRGT_SET:            {TRGT_SET}")
@@ -52,7 +52,7 @@ def info_splash():
     print(f"Next 17Lands Update: {get_next_17lands_update_time()}")
 
 
-def load_set_data():
+def load_set_data() -> tuple[CentralManager, SetManager]:
     data_manager = None
     set_data = None
 
@@ -72,6 +72,13 @@ def load_set_data():
     return data_manager, set_data
 
 
-# When this module is loaded, run these functions, as the assumption is this module automatically sets up a notebook.
-set_notebook_display()
-info_splash()
+def notebook_set_up(target_set=SETS[-1], log_lvl=LogLvl.DEBUG, load_all=False):
+    global LOAD_ALL, TRGT_SET, LOG_LEVEL
+
+    LOAD_ALL = load_all
+    TRGT_SET = target_set
+    LOG_LEVEL = log_lvl
+
+    set_log_level(LOG_LEVEL)
+    set_notebook_display()
+    info_splash()
