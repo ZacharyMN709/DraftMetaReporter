@@ -5,12 +5,11 @@ import re
 from os import path
 
 from utilities.utils.funcs import flatten_lists
-from wubrg import COLOR
-
 from utilities.auto_logging import logging
-from game_metadata.utils.consts import RANKS
-from game_metadata.utils.funcs import new_color_count_dict
+from wubrg import COLOR
 from data_interface.Request17Lands import Request17Lands
+
+from game_metadata.utils import RANKS, new_color_count_dict
 from game_metadata.game_objects.Card import CardManager, Card
 import game_metadata.game_objects.Draft as Draft
 
@@ -291,13 +290,13 @@ class Deck:
         sideboard_diff = subtract_dicts(self._sideboard_dict, deck._sideboard_dict)
         return maindeck_diff, sideboard_diff
 
-    def deck_overlap(self, deck: Deck) -> tuple[dict[str, int], dict[str, int]]:
+    def deck_overlap(self, deck: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
         """
         Compares the contents of this deck with a provided deck. Gets the shared cards between the two.
         :param deck: The deck to compare with.
         :return: A maindeck and sideboard dictionary of cards shared.
         """
-        def overlap_dicts(d1: dict[str, int], d2: dict[str, int]) -> dict[str, int]:
+        def overlap_dicts(d1: dict[Card, int], d2: dict[Card, int]) -> dict[Card, int]:
             """
             Generates a dictionary which contains the card overlaps between the two card dictionaries.
             """
@@ -319,10 +318,10 @@ class Deck:
         sideboard_over = overlap_dicts(self._sideboard_dict, deck._sideboard_dict)
         return maindeck_over, sideboard_over
 
-    def __sub__(self, other: Deck) -> tuple[dict[str, int], dict[str, int]]:
+    def __sub__(self, other: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
         return self.deck_differences(other)
 
-    def __or__(self, other: Deck) -> tuple[dict[str, int], dict[str, int]]:
+    def __or__(self, other: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
         return self.deck_overlap(other)
 
     def __repr__(self):
@@ -358,7 +357,7 @@ class LimitedDeck(Deck):
         self.FORMAT: str = _format
         self.deck_builds: int = len(event_info['deck_links'])
         self.selected_build: int = self.deck_builds - 1
-        self._draft: Optional[Draft.Draft] = None
+        self._draft: Optional[Draft] = None
         self.trophy_stub: Optional[TrophyStub] = None
 
     @property

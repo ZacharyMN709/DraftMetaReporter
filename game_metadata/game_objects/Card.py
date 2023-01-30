@@ -5,14 +5,14 @@ import re
 from utilities.auto_logging import logging
 from utilities.utils.funcs import load_json_file, save_json_file
 from wubrg import get_color_identity, calculate_cmc, parse_color_list, COLOR_STRING, WUBRG_COLOR_INDEXES
-
-from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, ALL_SUBTYPES, \
-    LAYOUT_DICT, CardLayouts, CARD_SIDE, SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA
-
 from data_interface.RequestScryfall import RequestScryfall
 
+from game_metadata.utils.consts import RARITY_ALIASES, SUPERTYPES, TYPES, SUBTYPES, \
+    CARD_INFO, CARD_SIDE, LAYOUT_DICT, CardLayouts
+from game_metadata.utils.settings import SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA
 
-prototype_parse = re.compile(r"Prototype (.*?) [—-] (\d*)\/(\d*)")
+
+prototype_parse = re.compile(r"Prototype (.*?) [—-] (\d*)/(\d*)")
 
 """
 A modified version of WUBRG order, which is used as part of a lambda for sorting cards,
@@ -141,7 +141,7 @@ class CardFace:
         self.ALL_TYPES: set[str] = set(self.TYPE_LINE.split(' ')) - {'—', '//'}
         self.SUPERTYPES: set[str] = self.ALL_TYPES & SUPERTYPES
         self.TYPES: set[str] = self.ALL_TYPES & TYPES
-        self.SUBTYPES: set[str] = self.ALL_TYPES & ALL_SUBTYPES
+        self.SUBTYPES: set[str] = self.ALL_TYPES & SUBTYPES
         self._validate_types()
 
         face_dict = self._extract_face_dict(json)

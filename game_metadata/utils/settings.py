@@ -1,5 +1,10 @@
 from datetime import date
 
+# Locations of card caches.
+SCRYFALL_CACHE_DIR = r'C:\Users\Zachary\Coding\GitHub\ScryfallData'
+SCRYFALL_CACHE_FILE = r'oracle-cards.json'
+SCRYFALL_CACHE_FILE_ARENA = r'oracle-cards-arena.json'
+
 # Game Format Defaults and Data
 SETS: list[str] = ["ONE", "BRO", "DMU", "SNC", "NEO", "VOW", "MID"]  # ['AFR', 'STX', 'KHM', 'ZNR']
 

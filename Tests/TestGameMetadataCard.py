@@ -1145,10 +1145,10 @@ class TestCard(unittest.TestCase):
         self.assertEqual('melded', card.FACE_2.CARD_SIDE)
 
         self.assertEqual(card.DEFAULT_FACE, card.FACE_1)
+        self.assertEqual(card.ORACLE, card.FACE_1.ORACLE)
 
         self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
         self.assertNotEqual(card.FACE_2.NAME, card.FACE_1.NAME)
-        self.assertNotEqual(card.ORACLE, card.FACE_1.ORACLE)
 
     def test_card_face_generation(self):
         name = 'Boseiju Reaches Skyward'
