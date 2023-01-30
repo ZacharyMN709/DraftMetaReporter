@@ -1,7 +1,6 @@
 import unittest
 from datetime import date, datetime
 from os import path
-
 from pandas import DataFrame
 
 from wubrg import subset

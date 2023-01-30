@@ -3,12 +3,8 @@ from datetime import date, datetime
 import json
 import pandas as pd
 
-
+from data_interface.utils import *
 from data_interface.Requester import Requester
-import data_interface.utils.settings as settings
-from data_interface.utils.consts import COLOR_17L_URL, EXPANSIONS_17L_URL, FORMATS_17L_URL, PLAY_DRAW_17L_URL, \
-    COLOR_RATING_17L_URL, CARD_RATING_17L_URL, CARD_EVAL_17L_URL, TROPHY_17L_URL, DRAFT_LOG_17L_URL, DECK_17L_URL, \
-    DETAILS_17L_URL, TIER_17L_URL
 
 
 # Adapted from 'https://github.com/diogojapinto/mtg-data-mining/blob/main/utils/api_clients/seventeen_lands/client.py'
@@ -38,12 +34,12 @@ class Request17Lands(Requester):
                           combine_splash: bool = False,
                           user_group: Optional[str] = None) -> pd.DataFrame:
 
-        start_date = start_date or settings.DEFAULT_DATE
+        start_date = start_date or DEFAULT_DATE
         end_date = end_date or date.today()
 
         params = {
             'expansion': expansion,
-            'event_type': event_type or settings.DEFAULT_FORMAT,
+            'event_type': event_type or DEFAULT_FORMAT,
             'start_date': start_date.strftime('%Y-%m-%d'),
             'end_date': end_date.strftime('%Y-%m-%d'),
             'combine_splash': combine_splash,
@@ -72,12 +68,12 @@ class Request17Lands(Requester):
                          user_group: Optional[str] = None,
                          deck_colors: Optional[str] = None) -> pd.DataFrame:
 
-        start_date = start_date or settings.DEFAULT_DATE
+        start_date = start_date or DEFAULT_DATE
         end_date = end_date or date.today()
 
         params = {
             'expansion': expansion,
-            'format': event_type or settings.DEFAULT_FORMAT,
+            'format': event_type or DEFAULT_FORMAT,
             'start_date': start_date.strftime('%Y-%m-%d'),
             'end_date': end_date.strftime('%Y-%m-%d'),
             'user_group': user_group,
@@ -132,12 +128,12 @@ class Request17Lands(Requester):
                              rarity: Optional[str] = None,
                              color: Optional[str] = None) -> pd.DataFrame:
 
-        start_date = start_date or settings.DEFAULT_DATE
+        start_date = start_date or DEFAULT_DATE
         end_date = end_date or date.today()
 
         params = {
             'expansion': expansion,
-            'format': event_type or settings.DEFAULT_FORMAT,
+            'format': event_type or DEFAULT_FORMAT,
             'start_date': start_date.strftime('%Y-%m-%d'),
             'end_date': end_date.strftime('%Y-%m-%d'),
             'rarity': rarity,
@@ -173,7 +169,7 @@ class Request17Lands(Requester):
     def get_trophy_deck_metadata(self, expansion: str, event_type: Optional[str] = None) -> dict:
         params = {
             'expansion': expansion,
-            'format': event_type or settings.DEFAULT_FORMAT
+            'format': event_type or DEFAULT_FORMAT
         }
 
         result = self.request(url=TROPHY_17L_URL, params=params)

@@ -1,7 +1,6 @@
 from typing import Union, Optional, NoReturn, Any
 
-from utilities.auto_logging import logging
-from utilities.utils.funcs import flatten_lists
+from utilities import logging, flatten_lists
 
 from data_interface.Requester import Requester
 

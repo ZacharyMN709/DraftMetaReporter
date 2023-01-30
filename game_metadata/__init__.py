@@ -8,7 +8,7 @@ from game_metadata.game_objects import *
 from game_metadata.GameMetadata import *
 
 
-from_utils = ['SUPERTYPES', 'TYPES', 'SUBTYPES', 'SETS', 'FORMATS']
+from_utils = ['SUPERTYPES', 'TYPES', 'SUBTYPES', 'SETS', 'FORMATS', 'CardLayouts']
 
 from_game_objects = ['Card', 'CardManager',
                      'Deck', 'DeckManager', 'ConstructedDeck', 'LimitedDeck',

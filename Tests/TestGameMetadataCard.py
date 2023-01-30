@@ -1,11 +1,11 @@
 import unittest
 from typing import Union
 
-from Tests.settings import TEST_MASS_DATA_PULL
+from data_interface import RequestScryfall
+from game_metadata import CardLayouts, Card, CardFace, CardManager
+from game_metadata.utils.consts import CARD_SIDE
 
-from game_metadata.utils.consts import CardLayouts, CARD_SIDE
-from data_interface.RequestScryfall import RequestScryfall
-from game_metadata.game_objects.Card import Card, CardFace, CardManager
+from Tests.settings import TEST_MASS_DATA_PULL
 
 
 def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):

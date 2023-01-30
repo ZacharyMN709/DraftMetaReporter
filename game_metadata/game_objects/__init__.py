@@ -6,6 +6,10 @@ from game_metadata.game_objects.Card import *
 from game_metadata.game_objects.Deck import *
 from game_metadata.game_objects.Draft import *
 
+# Explicitly masking the name of the file.
+from game_metadata.game_objects.Card import Card as Card
+from game_metadata.game_objects.Deck import Deck as Deck
+from game_metadata.game_objects.Draft import Draft as Draft
 
 from_card = ['CardFace', 'Card', 'CardManager']
 

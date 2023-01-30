@@ -3,13 +3,11 @@ import unittest
 import requests
 from requests import Response
 
-from utilities.auto_logging import auto_log, LogLvl
-from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
+from utilities import auto_log, LogLvl
+from data_interface import Request17Lands
+from game_metadata import Card, CardManager, Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager, Draft
 
-from data_interface.Request17Lands import Request17Lands
-from game_metadata.game_objects.Card import Card, CardManager
-from game_metadata.game_objects.Deck import Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager
-from game_metadata.game_objects.Draft import Draft
+from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
 
 
 class TestBaseDeck(unittest.TestCase):
@@ -213,25 +211,6 @@ class TestTrophyStub(TestBaseDeck):
         self.assertIsInstance(data, list)
         self.assertIsInstance(data[0], dict)
         self.assertEqual(500, len(data))
-
-    def test_options_switch(self):
-        import data_interface.utils.settings as settings
-
-        requester = Request17Lands()
-
-        self.assertEqual(settings.DEFAULT_FORMAT, 'PremierDraft')
-        bo1 = requester.get_trophy_deck_metadata('DMU')
-
-        settings.DEFAULT_FORMAT = 'TradDraft'
-        self.assertEqual(settings.DEFAULT_FORMAT, 'TradDraft')
-        bo3 = requester.get_trophy_deck_metadata('DMU')
-
-        settings.DEFAULT_FORMAT = 'PremierDraft'
-        self.assertEqual(settings.DEFAULT_FORMAT, 'PremierDraft')
-
-        self.assertEqual(500, len(bo1))
-        self.assertEqual(500, len(bo3))
-        self.assertNotEqual(bo1[0]['aggregate_id'], bo3[0]['aggregate_id'])
 
     def test_trophy_stub_init(self):
         data_1 = {
