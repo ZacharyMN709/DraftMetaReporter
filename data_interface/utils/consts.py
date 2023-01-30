@@ -1,3 +1,4 @@
+# 17 Lands URL Bases
 BASE_17L_URL = 'https://www.17lands.com'
 COLOR_17L_URL = f'{BASE_17L_URL}/data/colors'
 EXPANSIONS_17L_URL = f'{BASE_17L_URL}/data/expansions'

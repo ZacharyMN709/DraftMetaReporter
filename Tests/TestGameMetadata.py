@@ -2,12 +2,10 @@ import unittest
 from datetime import date
 
 from wubrg import COLOR_COMBINATIONS
-from utilities.auto_logging import auto_log, LogLvl
-
-from game_metadata.utils.funcs import new_color_count_dict
-from game_metadata.GameMetadata import SetMetadata, FormatMetadata
 from data_interface.RequestScryfall import RequestScryfall
-from game_metadata.game_objects.Card import Card
+
+from game_metadata import SetMetadata, FormatMetadata, Card
+from game_metadata.utils import new_color_count_dict
 
 
 class TestRequestScryfall(unittest.TestCase):

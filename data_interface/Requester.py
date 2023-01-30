@@ -3,7 +3,7 @@ from time import sleep
 from requests import Response, get
 
 from utilities.auto_logging import logging
-from utilities.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
+from data_interface.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
 
 
 class Requester:
