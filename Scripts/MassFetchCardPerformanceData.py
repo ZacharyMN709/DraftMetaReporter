@@ -8,7 +8,7 @@ from data_fetching import SetManager, CentralManager
 from data_fetching.utils import get_next_17lands_update_time, get_prev_17lands_update_time
 
 LOAD_ALL = False
-TARGET_SET = 'DMU'
+TARGET_SET = 'BRO'
 LOG_LEVEL = LogLvl.INFO
 set_log_level(LOG_LEVEL)
 
@@ -48,6 +48,8 @@ def load_set_data():
 
 
 def main():
+    from game_metadata.game_objects.Card import CardManager
+    CardManager.load_cache_from_file()
     info_splash()
     load_set_data()
 

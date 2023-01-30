@@ -1,3 +1,11 @@
+"""
+Used to represent Decks, which are mainly parsed from 17Lands data.
+
+Various types of decks exist, and are attempted to be represented here.
+Decks support simple comparisons between their card lists.
+In the future, Decks will contain functions which allow for more nuanced colour information.
+"""
+
 from __future__ import annotations
 from typing import Optional
 from datetime import datetime
@@ -5,11 +13,10 @@ import re
 from os import path
 
 from wubrg import COLOR
+from utilities import flatten_lists, logging
+from data_interface import Request17Lands
 
-from utilities.auto_logging import logging
-from game_metadata.utils.consts import RANKS
-from game_metadata.utils.funcs import new_color_count_dict
-from game_metadata.Request17Lands import Request17Lands
+from game_metadata.utils import RANKS, new_color_count_dict
 from game_metadata.game_objects.Card import CardManager, Card
 import game_metadata.game_objects.Draft as Draft
 
@@ -61,35 +68,26 @@ class TrophyStub:
 
 
 class Deck:
+    _DECKS = 0
     _maindeck: list[Card] = list()
     _sideboard: list[Card] = list()
     name: str
     wins: int
     losses: int
-    _maindeck_dict: dict[str, int] = dict()
-    _sideboard_dict: dict[str, int] = dict()
+    _maindeck_dict: dict[Card, int] = dict()
+    _sideboard_dict: dict[Card, int] = dict()
 
     _produced_mana: Optional[dict[COLOR, int]]
     _casting_pips: Optional[dict[COLOR, int]]
     _all_pips: Optional[dict[COLOR, int]]
     colors: str
 
-    def __init__(self, maindeck: list[Card], sideboard: list[Card], name: str, wins: int = 0, losses: int = 0):
-        self._maindeck = maindeck
-        self._sideboard = sideboard
-        self.wins = wins
-        self.losses = losses
-        self.name = name
-
-        self._maindeck_dict = self._gen_card_dict(self.maindeck)
-        self._sideboard_dict = self._gen_card_dict(self.sideboard)
-
     # region Decklist Parsing
     @classmethod
     def parse_decklist(cls, decklist: list[str]) -> tuple[list[Card], list[Card]]:
         def parse_line(line: str) -> list[str]:
             # If the line is empty or the deck header, return
-            if not line or line == "Deck" or line == "Sideboard":
+            if line in ["Deck", "Sideboard", "Commander"]:
                 return list()
 
             # Split the card line into bits, based on a typical Arena decklist export.
@@ -106,9 +104,6 @@ class Deck:
             # Return the card name the number of times it appears in the deck.
             return [_card] * int(_cnt)
 
-        def flatten(lst: list[list[str]]) -> list[str]:
-            return [item for sublist in lst for item in sublist]
-
         # Find the line to split for sideboard cards,
         try:
             # If the list contains 'Sideboard', split the list on that index.
@@ -121,9 +116,14 @@ class Deck:
             pre_sideboard = list()
 
         # Flatten the lists and return them as Cards.
-        maindeck = [CardManager.from_name(name) for name in flatten(pre_maindeck)]
-        sideboard = [CardManager.from_name(name) for name in flatten(pre_sideboard)]
+        maindeck = [CardManager.from_name(name) for name in flatten_lists(pre_maindeck)]
+        sideboard = [CardManager.from_name(name) for name in flatten_lists(pre_sideboard)]
         return maindeck, sideboard
+
+    @classmethod
+    def parse_decklist_from_string(cls, text: str) -> tuple[list[Card], list[Card]]:
+        # Split the string into a list on newlines.
+        return cls.parse_decklist(text.split('\n'))
 
     @classmethod
     def parse_decklist_from_file(cls, file_path: str) -> tuple[list[Card], list[Card]]:
@@ -132,36 +132,73 @@ class Deck:
         if not load:
             raise ValueError(f"Provided value ({file_path}) is not a file path!")
 
-        # If it does, load its lines, trimming each.
-        decklist = list()
+        # If it does, load it as a string, And parse the decklist.
         with open(file_path, 'r') as f:
-            for line in f.readlines():
-                decklist.append(line.strip())
-
-        # And parse the decklist.
-        return cls.parse_decklist(decklist)
+            return cls.parse_decklist_from_string(f.read())
 
     # noinspection PyUnreachableCode
     @classmethod
     def parse_decklist_from_url(cls, url: str) -> tuple[list[Card], list[Card]]:
-        # TODO: Get the decklist from url.
         raise NotImplementedError()
-
-        decklist = []  # pragma: nocover
-        return cls.parse_decklist(decklist)  # pragma: nocover
+        requester = Request17Lands()
+        # TODO: Handle urls without '/#'.
+        _id, _deck = re.match("https://www.17lands.com/deck/(.*)/(.*)", url).groups()
+        # _id, _deck = re.match("https://www.17lands.com/data/deck?draft_id=(.*)&deck_index=(.*)", url).groups()
+        data = requester.get_deck(_id, _deck)['groups']
+        deck = ["Deck"] + [d['name'] for d in data[0]['cards']]
+        sideboard = ["Sideboard"] + [d['name'] for d in data[1]['cards']]
+        decklist = deck + [''] + sideboard
+        return cls.parse_decklist(decklist)
     # endregion Decklist Parsing
+
+    def __init__(self, maindeck: list[Card], sideboard: list[Card], name: Optional[str],
+                 wins: int = 0, losses: int = 0):
+        self._maindeck = maindeck
+        self._sideboard = sideboard
+        self.wins = wins
+        self.losses = losses
+
+        # Track the number of decks instantiated, and use it as a default name if needed.
+        Deck._DECKS += 1
+        if not name:
+            self.name = f"Deck {Deck._DECKS}"
+        else:
+            self.name = name
+
+        self._maindeck_dict = self._gen_card_dict(self.maindeck)
+        self._sideboard_dict = self._gen_card_dict(self.sideboard)
+
+    @classmethod
+    def from_decklist(cls, card_list: list[str], name: Optional[str], wins: int = 0, losses: int = 0) -> Deck:
+        maindeck, sideboard = Deck.parse_decklist(card_list)
+        return Deck(maindeck, sideboard, name, wins, losses)
+
+    @classmethod
+    def from_string(cls, text: str, name: Optional[str], wins: int = 0, losses: int = 0) -> Deck:
+        maindeck, sideboard = Deck.parse_decklist_from_string(text)
+        return Deck(maindeck, sideboard, name, wins, losses)
+
+    @classmethod
+    def from_file(cls, file_path: str, name: Optional[str], wins: int = 0, losses: int = 0) -> Deck:
+        maindeck, sideboard = Deck.parse_decklist_from_file(file_path)
+        return Deck(maindeck, sideboard, name, wins, losses)
+
+    @classmethod
+    def from_url(cls, url: str, name: Optional[str], wins: int = 0, losses: int = 0) -> Deck:
+        maindeck, sideboard = Deck.parse_decklist_from_url(url)
+        return Deck(maindeck, sideboard, name, wins, losses)
 
     # region Pip Calculations
     @classmethod
-    def _gen_card_dict(cls, card_list: list[Card]) -> dict[str, int]:  # pragma: nocover
+    def _gen_card_dict(cls, card_list: list[Card]) -> dict[Card, int]:
         card_dict = dict()
         for card in card_list:
-            if card.NAME not in card_dict:
-                card_dict[card.NAME] = 0
-            card_dict[card.NAME] += 1
+            if card not in card_dict:
+                card_dict[card] = 0
+            card_dict[card] += 1
         return card_dict
 
-    def _get_produced_mana(self) -> dict[COLOR, int]:  # pragma: nocover
+    def _get_produced_mana(self) -> dict[COLOR, int]:
         d = new_color_count_dict()
         for card in self.cardpool:
             for mana in card.DEFAULT_FACE.MANA_PRODUCED:
@@ -169,12 +206,12 @@ class Deck:
         return d
 
     @property
-    def produced_mana(self) -> Optional[dict[COLOR, int]]:  # pragma: nocover
+    def produced_mana(self) -> Optional[dict[COLOR, int]]:
         if self._produced_mana is None:
             self._produced_mana = self._get_produced_mana()
         return self._produced_mana
 
-    def _get_casting_pips(self) -> dict[COLOR, int]:  # pragma: nocover
+    def _get_casting_pips(self) -> dict[COLOR, int]:
         d = new_color_count_dict()
         for card in self.cardpool:
             for mana in card.DEFAULT_FACE.MANA_COST:
@@ -182,12 +219,12 @@ class Deck:
         return d
 
     @property
-    def casting_pips(self) -> Optional[dict[COLOR, int]]:  # pragma: nocover
+    def casting_pips(self) -> Optional[dict[COLOR, int]]:
         if self._casting_pips is None:
             self._casting_pips = self._get_casting_pips()
         return self._casting_pips
 
-    def _get_all_pips(self) -> dict[COLOR, int]:  # pragma: nocover
+    def _get_all_pips(self) -> dict[COLOR, int]:
         d = new_color_count_dict()
         for card in self.cardpool:
             for mana in card.DEFAULT_FACE.MANA_PRODUCED:
@@ -195,7 +232,7 @@ class Deck:
         return d
 
     @property
-    def all_pips(self) -> Optional[dict[COLOR, int]]:  # pragma: nocover
+    def all_pips(self) -> Optional[dict[COLOR, int]]:
         if self._all_pips is None:
             self._all_pips = self._get_all_pips()
         return self._all_pips
@@ -231,25 +268,26 @@ class Deck:
             return (self.wins / denominator) * 100
     # endregion Basic Deck Properties
 
-    def compare_decks(self, deck: Deck) -> tuple[dict[str, int], dict[str, int]]:
+    def deck_differences(self, deck: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
         """
         Compares the contents of this deck with a provided deck. Differences of 0 are omitted.
         :param deck: The deck to compare with.
-        :return: A maindeck and sideboard dictionary of card number differences.
+        :return: A maindeck and sideboard dictionary of card differences.
         """
-        def subtract_dicts(d1: dict[str, int], d2: dict[str, int]) -> dict[str, int]:
+        def subtract_dicts(d1: dict[Card, int], d2: dict[Card, int]) -> dict[Card, int]:
             """
             Generates a dictionary which contains the card differences between the two card dictionaries.
             Differences of 0 are omitted from the output dictionary for clarity.
             """
-            # Create an empty dictionary and split the keys.
+            # Create an empty dictionary and get all the keys.
             d = dict()
             all_keys = d1.keys() | d2.keys()
 
-            # For each key get it's value, defaulting to 0 if not in the dictionary.
+            # For each key get its value, defaulting to 0 if not in the dictionary.
             for k in all_keys:
+                # Subtract the values, to get the difference i cards counts between the two decks.
+                # If the difference is 0, skip the entry, since the decks have the same number of the given card.
                 v = d1.get(k, 0) - d2.get(k, 0)
-                # If the difference is 0, skip the entry.
                 if v != 0:
                     d[k] = v
 
@@ -259,8 +297,43 @@ class Deck:
         sideboard_diff = subtract_dicts(self._sideboard_dict, deck._sideboard_dict)
         return maindeck_diff, sideboard_diff
 
-    def __sub__(self, other: Deck):
-        return self.compare_decks(other)
+    def deck_overlap(self, deck: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
+        """
+        Compares the contents of this deck with a provided deck. Gets the shared cards between the two.
+        :param deck: The deck to compare with.
+        :return: A maindeck and sideboard dictionary of cards shared.
+        """
+        def overlap_dicts(d1: dict[Card, int], d2: dict[Card, int]) -> dict[Card, int]:
+            """
+            Generates a dictionary which contains the card overlaps between the two card dictionaries.
+            """
+            # Create an empty dictionary and split the keys.
+            d = dict()
+            all_keys = d1.keys() | d2.keys()
+
+            # For each key get its value, defaulting to 0 if not in the dictionary.
+            for k in all_keys:
+                # Get thw lowest of the two values, which is how many copies of a card the decks share.
+                # If the value is 0, skip the entry, since one deck has none of the given card.
+                v = min(d1.get(k, 0), d2.get(k, 0))
+                if v != 0:
+                    d[k] = v
+
+            return d
+
+        maindeck_over = overlap_dicts(self._maindeck_dict, deck._maindeck_dict)
+        sideboard_over = overlap_dicts(self._sideboard_dict, deck._sideboard_dict)
+        return maindeck_over, sideboard_over
+
+    def __sub__(self, other: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
+        return self.deck_differences(other)
+
+    def __or__(self, other: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
+        return self.deck_overlap(other)
+
+    def __repr__(self):
+        # TODO: Improve this with colour information and similar.
+        return self.name
 
 
 class LimitedDeck(Deck):
@@ -291,7 +364,7 @@ class LimitedDeck(Deck):
         self.FORMAT: str = _format
         self.deck_builds: int = len(event_info['deck_links'])
         self.selected_build: int = self.deck_builds - 1
-        self._draft: Optional[Draft.Draft] = None
+        self._draft: Optional[Draft] = None
         self.trophy_stub: Optional[TrophyStub] = None
 
     @property

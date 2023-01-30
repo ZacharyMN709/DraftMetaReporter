@@ -1,8 +1,16 @@
+"""
+Used to represent Drafts, which are parsed from 17Lands data.
+
+Condenses information from a user's draft into a Draft object, with Pick objects
+helping to show the state of the pack and current cards taken.
+"""
+
 from __future__ import annotations
 from typing import Optional
 
-from utilities.auto_logging import logging
-from game_metadata.Request17Lands import Request17Lands
+from utilities import logging
+from data_interface import Request17Lands
+
 from game_metadata.game_objects.Card import Card
 import game_metadata.game_objects.Deck as Deck
 
@@ -26,12 +34,13 @@ class Draft:
         self.DRAFT_ID: str = draft_id
         self.SET: str = result['expansion']
         self._FORMAT: str = ''
-        self.picks: list[Pick] = list()
+        self.picks: list[Pick] = [Pick(pick_data) for pick_data in result['picks']]
         self._deck: Optional[Deck.LimitedDeck] = None
 
-        # Parse picks
-        for pick_data in result['picks']:
-            self.picks.append(Pick(pick_data))
+    def get_pick(self, pack: int = 1, pick: int = 1) -> Pick:
+        # TODO: Modify pack count based on set.
+        i = ((pack - 1) * 14) + (pick - 1)
+        return self.picks[i]
 
     @property
     def deck(self):

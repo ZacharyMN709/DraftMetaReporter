@@ -1,10 +1,10 @@
 import pandas as pd
 
 from wubrg import ALIAS_MAP
+from game_metadata import Card, RARITY_ALIASES
 
 from data_fetching.utils.consts import STAT_NAME_DICT, META_COLS_ALIAS_DICT, \
     STAT_COL_NAMES, SHARED_COL_NAMES, CARD_INFO_COL_NAMES, COLOR_COUNT_MAP
-from game_metadata import Card, RARITY_ALIASES
 
 
 def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:

@@ -1,4 +1,14 @@
-from utilities.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
-from utilities.utils.funcs import save_json_file, load_json_file, reformat_json_file
-from utilities import auto_logging
-from utilities.Requester import Requester
+"""
+This package helps simplify logging, handling data types, and json files.
+"""
+
+from utilities.funcs import *
+from utilities.auto_logging import *
+
+
+from_funcs = ['flatten_lists', 'load_json_file', 'save_json_file']
+
+from_auto_logging = ['LogLvl', 'set_log_level', 'auto_log', 'logging']
+
+
+__all__ = from_funcs + from_auto_logging

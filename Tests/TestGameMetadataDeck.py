@@ -3,20 +3,18 @@ import unittest
 import requests
 from requests import Response
 
-from utilities.auto_logging import auto_log, LogLvl
-from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
+from utilities import auto_log, LogLvl
+from data_interface import Request17Lands
+from game_metadata import Card, CardManager, Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager, Draft
 
-from game_metadata.Request17Lands import Request17Lands
-from game_metadata.game_objects.Card import Card, CardManager
-from game_metadata.game_objects.Deck import Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager
-from game_metadata.game_objects.Draft import Draft
+from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
 
 
 class TestBaseDeck(unittest.TestCase):
     def setUp(self) -> None:
         auto_log(LogLvl.DEBUG)
         # Load all arena cards to speed up tests and reduce load on Scryfall server.
-        CardManager.load_from_file()
+        CardManager.load_cache_from_file()
 
 
 class TestDeck(TestBaseDeck):
@@ -48,23 +46,21 @@ class TestDeck(TestBaseDeck):
         self.assertEqual(60, len(deck_bo1.maindeck))
 
         maindeck_diff, sideboard_diff = deck_bo3 - deck_bo1
-        print(maindeck_diff)
-        print(sideboard_diff)
 
         maindeck_comp = {
-            "Soul-Guide Lantern": -2,
-            "Karn, Scion of Urza": 2
+            CardManager.from_name("Soul-Guide Lantern"): -2,
+            CardManager.from_name("Karn, Scion of Urza"): 2
         }
 
         sideboard_comp = {
-            "Karn, Scion of Urza": 1,
-            "Sai, Master Thopterist": 2,
-            "Dovin's Veto": 3,
-            "Mystical Dispute": 1,
-            "Soul-Guide Lantern": 2,
-            "Glass Casket": 4,
-            "Unlicensed Hearse": 1,
-            "Skysovereign, Consul Flagship": 1,
+            CardManager.from_name("Karn, Scion of Urza"): 1,
+            CardManager.from_name("Sai, Master Thopterist"): 2,
+            CardManager.from_name("Dovin's Veto"): 3,
+            CardManager.from_name("Mystical Dispute"): 1,
+            CardManager.from_name("Soul-Guide Lantern"): 2,
+            CardManager.from_name("Glass Casket"): 4,
+            CardManager.from_name("Unlicensed Hearse"): 1,
+            CardManager.from_name("Skysovereign, Consul Flagship"): 1,
         }
 
         self.assertDictEqual(maindeck_comp, maindeck_diff)
@@ -86,7 +82,6 @@ Raffine's Informant
 4 (NEO) 220"""
 
         maindeck, sideboard = Deck.parse_decklist(decklist.split('\n'))
-        print(maindeck)
         self.assertEqual(9, len(maindeck))
         self.assertEqual(0, len(sideboard))
 
@@ -103,7 +98,7 @@ Raffine's Informant
         self.assertEqual(0, len(deck._sideboard_dict))
 
         self.assertIsInstance(deck.maindeck[0], Card)
-        self.assertEqual(1, deck._maindeck_dict['Island'])
+        self.assertEqual(1, deck._maindeck_dict[CardManager.from_name('Island')])
 
     def test_deck_from_file(self):
         loc = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\E3.txt"
@@ -155,8 +150,8 @@ class TestLimitedDeck(TestBaseDeck):
         self.assertEqual(17, len(deck.sideboard))
         # TODO: Consider removing lands from the card pool?
         self.assertEqual(57, len(deck.cardpool))
-        self.assertEqual(4, deck.wins)
-        self.assertEqual(2, deck.losses)
+        self.assertEqual(5, deck.wins)
+        self.assertEqual(3, deck.losses)
 
         self.assertEqual("b20a97b818f3418b94a8f4e7584398a8", deck.DECK_ID)
         self.assertEqual(1, deck.deck_builds)
@@ -217,24 +212,6 @@ class TestTrophyStub(TestBaseDeck):
         self.assertIsInstance(data[0], dict)
         self.assertEqual(500, len(data))
 
-    def test_options_switch(self):
-        import utilities.utils.settings
-        requester = Request17Lands()
-
-        self.assertEqual(utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
-        bo1 = requester.get_trophy_deck_metadata('DMU')
-
-        utilities.utils.settings.DEFAULT_FORMAT = 'TradDraft'
-        self.assertEqual(utilities.utils.settings.DEFAULT_FORMAT, 'TradDraft')
-        bo3 = requester.get_trophy_deck_metadata('DMU')
-
-        utilities.utils.settings.DEFAULT_FORMAT = 'PremierDraft'
-        self.assertEqual(utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
-
-        self.assertEqual(500, len(bo1))
-        self.assertEqual(500, len(bo3))
-        self.assertNotEqual(bo1[0]['aggregate_id'], bo3[0]['aggregate_id'])
-
     def test_trophy_stub_init(self):
         data_1 = {
             'wins': 7,
@@ -287,7 +264,8 @@ class TestTrophyStub(TestBaseDeck):
 
     @unittest.skipUnless(FULL_TEST, "Not performing full test. 'FULL_TEST' set to False.")
     def test_mass_gen(self):
-        import utilities.utils.settings
+        import data_interface.utils.settings as settings
+
         requester = Request17Lands()
 
         def convert_data(data_list):
@@ -299,17 +277,17 @@ class TestTrophyStub(TestBaseDeck):
                     # If the trophy stub can't be handled, some possible oddities in data need to be better handled.
                     print(data)
 
-        self.assertEqual(utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
+        self.assertEqual(settings.DEFAULT_FORMAT, 'PremierDraft')
         bo1 = requester.get_trophy_deck_metadata('DMU')
         convert_data(bo1)
 
-        utilities.utils.settings.DEFAULT_FORMAT = 'TradDraft'
-        self.assertEqual(utilities.utils.settings.DEFAULT_FORMAT, 'TradDraft')
+        settings.DEFAULT_FORMAT = 'TradDraft'
+        self.assertEqual(settings.DEFAULT_FORMAT, 'TradDraft')
         bo3 = requester.get_trophy_deck_metadata('DMU')
         convert_data(bo3)
 
-        utilities.utils.settings.DEFAULT_FORMAT = 'PremierDraft'
-        self.assertEqual(utilities.utils.settings.DEFAULT_FORMAT, 'PremierDraft')
+        settings.DEFAULT_FORMAT = 'PremierDraft'
+        self.assertEqual(settings.DEFAULT_FORMAT, 'PremierDraft')
 
 
 class TestDeckManager(TestBaseDeck):

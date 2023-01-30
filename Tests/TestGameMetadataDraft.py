@@ -1,15 +1,9 @@
 import unittest
-from datetime import date
 
-from utilities.utils.funcs import load_json_file
+from utilities.funcs import load_json_file
 from utilities.auto_logging import auto_log, LogLvl
-from wubrg import COLOR_COMBINATIONS
 
-from game_metadata.utils.consts import CardLayouts
-from game_metadata.GameMetadata import SetMetadata, FormatMetadata
-from game_metadata.RequestScryfall import RequestScryfall, trap_error
 from game_metadata.game_objects.Card import Card, CardManager
-from game_metadata.game_objects.Deck import LimitedDeck
 from game_metadata.game_objects.Draft import Draft, Pick, DraftManager
 
 
@@ -17,7 +11,7 @@ class TestBaseDraft(unittest.TestCase):
     def setUp(self) -> None:
         auto_log(LogLvl.DEBUG)
         # Load all arena cards to speed up tests and reduce load on Scryfall server.
-        CardManager.load_from_file()
+        CardManager.load_cache_from_file()
 
     def eval_pick(self, pick):
         self.assertEqual(0, pick.pack_number)

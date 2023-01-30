@@ -1,19 +1,21 @@
+"""
+Contains constants about magic cards and arena ranks.
+
+Key things outlined are:
+ - Card Templating (Split, Adventure, etc.)
+ - Card Rarity (Rarity list, Aliases, Indexes for sorting)
+ - Types (Supertypes, Types, and Subtypes, split by Type)
+ - Arena Ranks (Bronze - Mythic)
+"""
+
 from typing import Union, Literal
 from enum import Flag, auto
 
-
-SCRYFALL_CACHE_DIR = r'C:\Users\Zachary\Coding\GitHub\ScryfallData'
-SCRYFALL_CACHE_FILE = r'oracle-cards.json'
-SCRYFALL_CACHE_FILE_ARENA = r'oracle-cards-arena.json'
-
-# Type information for the card json Scryfall returns.
-CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str], list[dict]]]
-CARD_SIDE = Literal['default', 'main', 'adventure', 'left', 'right', 'front', 'back', 'flipped', 'melded', 'prototype']
-
-# Rank Consts
+# Arena Rank Consts
 RANKS = ['None', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Mythic']
 
-# Card Consts
+
+# region Rarity
 RARITIES: set[str] = {'C', 'U', 'R', 'M'}
 
 RARITY_ALIASES: dict[str, str] = {
@@ -21,16 +23,27 @@ RARITY_ALIASES: dict[str, str] = {
     'uncommon': "U",
     'rare': "R",
     'mythic': "M",
-    'basic': "C"  # This comes from arena, for common lands in draft packs. May be a better way to handle this.
+    # TODO: See if there's a better way to handle this.
+    'basic': "C"  # This comes from arena, for common lands in draft packs.
 }
 
+RARITY_INDEXES: dict[str, int] = {
+    "C": 0,
+    "U": 1,
+    "R": 2,
+    "M": 3,
+}
+# endregion Rarity
+
+
+# region Typing
 # https://mtg.fandom.com/wiki/Supertype
 SUPERTYPES: set[str] = {"Basic", "Legendary", "Snow", "World", "Host"}
 TYPES: set[str] = {"Land", "Creature", "Artifact", "Enchantment", "Planeswalker", "Instant", "Sorcery", "Tribal"}
 
-# Various Subtypes
 LAND_SUBTYPES: set[str] = {
-    "Plains", "Island", "Swamp", "Mountain", "Forest", "Desert", "Gate", "Lair", "Locus",
+    "Plains", "Island", "Swamp", "Mountain", "Forest",
+    "Desert", "Gate", "Lair", "Locus", "Sphere",
     "Urza's", "Mine", "Power-Plant", "Tower"
 }
 
@@ -49,7 +62,7 @@ CREATURE_SUBTYPES: set[str] = {
      "Horror", "Horse", "Human", "Hydra", "Hyena", "Illusion", "Imp", "Incarnation", "Inkling",
      "Insect", "Jackal", "Jellyfish", "Juggernaut", "Kavu", "Kirin", "Kithkin", "Knight", "Kobold",
      "Kor", "Kraken", "Lamia", "Lammasu", "Leech", "Leviathan", "Lhurgoyf", "Licid", "Lizard",
-     "Manticore", "Masticore", "Mercenary", "Merfolk", "Metathran", "Minion", "Minotaur", "Mole",
+     "Manticore", "Masticore", "Mercenary", "Merfolk", "Metathran", "Minion", "Minotaur", "Mite", "Mole",
      "Monger", "Mongoose", "Monk", "Monkey", "Moonfolk", "Mouse", "Mutant", "Myr", "Mystic", "Naga",
      "Nautilus", "Nephilim", "Nightmare", "Nightstalker", "Ninja", "Noble", "Noggle", "Nomad", "Nymph",
      "Octopus", "Ogre", "Ooze", "Orb", "Orc", "Orgg", "Otter", "Ouphe", "Ox", "Oyster", "Pangolin",
@@ -68,7 +81,7 @@ CREATURE_SUBTYPES: set[str] = {
 
 ARTIFACT_SUBTYPES: set[str] = {
     "Blood", "Clue", "Contraption", "Equipment", "Food",
-    "Gold", "Fortification", "Treasure", "Vehicle"
+    "Gold", "Fortification", "Powerstone", "Treasure", "Vehicle"
 }
 
 ENCHANTMENT_SUBTYPES: set[str] = {
@@ -90,8 +103,8 @@ INSTANT_SUBTYPES: set[str] = {"Adventure", "Arcane", "Trap"}
 
 SORCERY_SUBTYPES: set[str] = {"Adventure", "Arcane", "Lesson"}
 
-ALL_SUBTYPES: set[str] = LAND_SUBTYPES | CREATURE_SUBTYPES | ARTIFACT_SUBTYPES | ENCHANTMENT_SUBTYPES |\
-                         PLANESWALKER_SUBTYPES | INSTANT_SUBTYPES | SORCERY_SUBTYPES
+SUBTYPES: set[str] = LAND_SUBTYPES | CREATURE_SUBTYPES | ARTIFACT_SUBTYPES | ENCHANTMENT_SUBTYPES | \
+                     PLANESWALKER_SUBTYPES | INSTANT_SUBTYPES | SORCERY_SUBTYPES
 
 SUBTYPE_DICT: dict[str, set[str]] = {
     "Land": LAND_SUBTYPES,
@@ -102,6 +115,13 @@ SUBTYPE_DICT: dict[str, set[str]] = {
     "Instant": INSTANT_SUBTYPES,
     "Sorcery": SORCERY_SUBTYPES
 }
+# endregion Typing
+
+
+# region Card Layouts
+# Type information for the card json Scryfall returns.
+CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str], list[dict]]]
+CARD_SIDE = Literal['default', 'main', 'adventure', 'left', 'right', 'front', 'back', 'flipped', 'melded', 'prototype']
 
 
 # https://scryfall.com/docs/api/layouts
@@ -136,3 +156,4 @@ LAYOUT_DICT: dict[str, CardLayouts] = {
     "adventure": CardLayouts.ADVENTURE,
     "prototype": CardLayouts.PROTOTYPE,
 }
+# endregion Card Layouts

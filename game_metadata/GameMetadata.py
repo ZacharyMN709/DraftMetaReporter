@@ -1,13 +1,22 @@
+"""
+Contains objects to organize general concepts surrounding sets and formats.
+
+SetMetadata uses the three letter set code, and lists a set's cards,
+along with functions to help sort/filter cards.
+FormatMetadata contains information about when that set and format
+is/was active on Arena. It contains a reference to the appropriate SetMetadata.
+"""
+
 from __future__ import annotations
 from typing import Optional, Union, Callable
 from functools import cmp_to_key
 from datetime import date, time, datetime, timedelta
 
-from utilities.auto_logging import logging
 from wubrg import index_dist_wubrg, COLOR_IDENTITY
+from utilities import logging
+from data_interface import RequestScryfall
 
 from game_metadata.utils.settings import SET_CONFIG
-from game_metadata.RequestScryfall import RequestScryfall
 from game_metadata.game_objects.Card import Card, CardManager
 
 
@@ -19,6 +28,7 @@ class SetMetadata:
     getting all cards in a set only needs to be done once, and then can be accessed from any place in the code.
     """
     METADATA: dict[str, Optional[SetMetadata]] = dict()
+    REQUESTER = RequestScryfall()
     __cls_lock = object()
 
     @classmethod
@@ -39,7 +49,7 @@ class SetMetadata:
 
         self.SET: str = set_code
         logging.info(f"Loading set metadata for: {set_code}")
-        _full_name, _icon_url = RequestScryfall.get_set_info(set_code)
+        _full_name, _icon_url = self.REQUESTER.get_set_info(set_code)
         self.FULL_NAME: str = _full_name
         self.ICON_URL: str = _icon_url
         self.RELEASE_DATE: date = SET_CONFIG[self.SET]["PremierDraft"][0][0]
@@ -47,7 +57,7 @@ class SetMetadata:
         self.CARD_PRINT_ORDER_INDEXES: dict[str, int] = \
             {k.NAME: v for v, k in enumerate(self.CARD_LIST)}
         self.CARD_REVIEW_ORDER_INDEXES: dict[str, int] = \
-            {k: v for v, k in enumerate(RequestScryfall.get_set_review_order(self.SET))}
+            {k['name']: v for v, k in enumerate(self.REQUESTER.get_set_review_order(self.SET))}
         self.CARD_PRINT_ORDER_KEY: Callable = cmp_to_key(self._print_order_compare)
         self.CARD_REVIEW_ORDER_KEY: Callable = cmp_to_key(self._review_order_compare)
         self.FRAME_ORDER_KEY: Callable = cmp_to_key(self._frame_order_compare)

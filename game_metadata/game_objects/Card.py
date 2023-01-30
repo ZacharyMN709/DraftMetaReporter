@@ -1,18 +1,31 @@
+"""
+Used to represent Magic Cards in a more organized and natural format than
+JSON provided by Scryfall. Also supplements data with additional concepts.
+
+Cards attempt to be smart about default information, deriving needed
+information from the card's available faces.
+"""
+
 from __future__ import annotations
 from typing import NoReturn, Optional
 import re
 
-from utilities.auto_logging import logging
-from utilities.utils.funcs import load_json_file, save_json_file
-from wubrg import get_color_identity, calculate_cmc, parse_color_list, COLOR_STRING
+from utilities import logging, load_json_file, save_json_file
+from wubrg import get_color_identity, calculate_cmc, parse_color_list, COLOR_STRING, WUBRG_COLOR_INDEXES
+from data_interface import RequestScryfall
 
-from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TYPES, ALL_SUBTYPES, \
-    LAYOUT_DICT, CardLayouts, CARD_SIDE, SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA
-
-from game_metadata.RequestScryfall import RequestScryfall
+from game_metadata.utils import RARITY_ALIASES, SUPERTYPES, TYPES, SUBTYPES, CARD_INFO, CARD_SIDE, LAYOUT_DICT, \
+    CardLayouts, SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA
 
 
-prototype_parse = re.compile(r"Prototype (.*) — (\d*)/(\d*)")
+prototype_parse = re.compile(r"Prototype (.*?) [—-] (\d*)/(\d*)")
+
+# A modified version of WUBRG order, which is used as part of a lambda for sorting cards,
+#  in the order one would expect to see them on Untapped or SealedDeck
+# TODO: Consider where this function should reside.
+DECK_DISPLAY_INDEXES = dict(WUBRG_COLOR_INDEXES)
+DECK_DISPLAY_INDEXES[''] = 32
+def decklist_sort_lambda(x: Card): return x.CMC, DECK_DISPLAY_INDEXES[x.CAST_IDENTITY], x.NAME
 
 
 class CardFace:
@@ -79,9 +92,6 @@ class CardFace:
                             f"TYPE_LINE: '{self.TYPE_LINE}'\n INVALID_TYPES: {invalid_types}")
 
     def _apply_overrides(self, json):
-        # TODO: These are something akin to hacks, and it would (likely) be better to handle this
-        #  as part of the base logic which populates each field of the CardFace.
-
         if self.LAYOUT == CardLayouts.FLIP and self.CARD_SIDE == 'flipped':
             self.MANA_COST = json['mana_cost']
             self.CMC: int = self._calculate_cmc(json)
@@ -133,7 +143,7 @@ class CardFace:
         self.ALL_TYPES: set[str] = set(self.TYPE_LINE.split(' ')) - {'—', '//'}
         self.SUPERTYPES: set[str] = self.ALL_TYPES & SUPERTYPES
         self.TYPES: set[str] = self.ALL_TYPES & TYPES
-        self.SUBTYPES: set[str] = self.ALL_TYPES & ALL_SUBTYPES
+        self.SUBTYPES: set[str] = self.ALL_TYPES & SUBTYPES
         self._validate_types()
 
         face_dict = self._extract_face_dict(json)
@@ -161,6 +171,9 @@ class Card:
     """
     SCRY_URL = 'https://scryfall.com/card/'
     API_URL = 'https://api.scryfall.com/cards/'
+    REQUESTER = RequestScryfall()
+
+    MELD_BACKS = dict()
 
     @classmethod
     def from_name(cls, name) -> Card:
@@ -180,9 +193,14 @@ class Card:
                 dicts: list[dict] = json["all_parts"]
                 for d in dicts:
                     if d["component"] == "meld_result":
-                        return RequestScryfall.get_card_by_name(d["name"])
-                raise ValueError("Cannot find a back to provided meld card!")
-            except KeyError:
+                        name = d["name"]
+                        if name not in Card.MELD_BACKS:
+                            Card.MELD_BACKS[name] = self.REQUESTER.get_card_by_name(name)
+                        return Card.MELD_BACKS[name]
+                # This should only occur during preview season, if one half of a meld card exists on Scryfall.
+                raise ValueError("Cannot find a back to provided meld card!")  # pragma: nocover
+            # Unsure when this would occur, but is a safety, to not mislead users that a card was successfully parsed.
+            except KeyError:  # pragma: nocover
                 raise ValueError("Could not parse json for returned meld card.")
 
         self.DEFAULT_FACE = CardFace(json, self.LAYOUT, 'default')
@@ -194,7 +212,7 @@ class Card:
             self.FACE_1 = self.DEFAULT_FACE
             self.FACE_2 = CardFace(get_meld_json(), self.LAYOUT, 'melded')
         elif self.LAYOUT == CardLayouts.PROTOTYPE:
-            self.FACE_1 = CardFace(json, self.LAYOUT, 'default')
+            self.FACE_1 = self.DEFAULT_FACE
             self.FACE_2 = CardFace(json, self.LAYOUT, 'prototype')
         elif self.LAYOUT == CardLayouts.ADVENTURE:
             self.FACE_1 = CardFace(json, self.LAYOUT, 'main')
@@ -214,10 +232,12 @@ class Card:
 
     def __init__(self, json: CARD_INFO):
         if json['object'] != 'card':
-            raise ValueError("Invalid JSON provided! Object type is not 'card'")
+            raise ValueError(f"Invalid JSON provided! Object type is not 'card'")
 
         # Handle simple layout information to reference later.
-        self.LAYOUT: CardLayouts = LAYOUT_DICT[json['layout']]  # TODO: May need special parsing for prototype.
+        self.LAYOUT: CardLayouts = LAYOUT_DICT[json['layout']]
+        if 'Prototype' in json["keywords"]:
+            self.LAYOUT = LAYOUT_DICT["prototype"]
         self.TWO_SIDED: bool = self.LAYOUT is CardLayouts.TWO_SIDED
         self.SPLIT: bool = self.LAYOUT is CardLayouts.FUSED
 
@@ -300,6 +320,15 @@ class Card:
         """Returns a link to the image of the card."""
         return self.DEFAULT_FACE.image_url('normal')
 
+    @property
+    def ORACLE(self) -> str:
+        """Returns rules text of the card."""
+        s = self.FACE_1.ORACLE
+        if self.FACE_2 is not None and (self.LAYOUT not in [CardLayouts.PROTOTYPE, CardLayouts.MELD]):
+            s += "\n\n  ---  \n\n"
+            s += self.FACE_2.ORACLE
+        return s
+
     def __str__(self):
         return self.FULL_NAME
 
@@ -323,6 +352,8 @@ class CardManager:
     # Used to maintain a constant-time lookup cache of previously requested cards.
     SETS: dict[str, dict[str, Card]] = dict()
     CARDS: dict[str, Card] = dict()
+
+    REQUESTER = RequestScryfall()
 
     @classmethod
     def _add_card(cls, card: Card, searched_name: str = '', force_update=True) -> None:
@@ -357,7 +388,7 @@ class CardManager:
             return prev_card
 
         # Otherwise, get the card info from scryfall.
-        json = RequestScryfall.get_card_by_name(name)
+        json = cls.REQUESTER.get_card_by_name(name)
         # If there's an error, log it, mark the alias as '' and return None.
         if 'err_msg' in json:
             logging.info(f'Could not get card for {name}')
@@ -388,7 +419,7 @@ class CardManager:
         if set_code not in cls.SETS:
             # Create a new dictionary for it,
             cls.SETS[set_code] = dict()
-            for json in RequestScryfall.get_set_cards(set_code):
+            for json in cls.REQUESTER.get_set_cards(set_code):
                 # And fill it with cards fetched from Scryfall.
                 new_card = Card(json)
 
@@ -446,42 +477,36 @@ class CardManager:
         cls.CARDS = dict()
 
     @classmethod
-    def load_from_file(cls) -> None:
+    def load_cache_from_file(cls) -> None:
         """ Loads the cache of Arena cards from a configurable location disk. """
         dictionary = load_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE_ARENA)
         for line in dictionary:
             card = Card(line)
             cls._add_card(card)
 
-    # NOTE: This function is masked from code coverage as its testing is expensive and slow.
-    #  Removing the comment 'pragma: nocover' below will re-add it to code coverage.
-    #  This should be done only as required, and then re-added.
+    # NOTE: The two functions below are expensive and slow, especially to Scryfall.
+    #  They should be called only as required.
     @classmethod
-    def generate_cache_file(cls):  # pragma: nocover
+    def generate_cache_file(cls):
         """ Generate a cache of Arena cards on a configurable location on disk. """
-        bulk_data = RequestScryfall.get_bulk_data()
-        arena_cards = list()
-        logging.info(f'Searching bulk data for Arena cards...')
+        logging.info(f'Requesting bulk data for all Scryfall cards...')
+        bulk_data = cls.REQUESTER.get_bulk_data()
+        logging.info(f'{len(bulk_data)} cards found!')
+        save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, bulk_data, indent=None)
 
-        for card_dict in bulk_data:
-            if "arena_id" not in card_dict:
-                continue
-            if card_dict["layout"] == "token":
-                continue
-            if card_dict["name"] == "City's Blessing":
-                continue
-            arena_cards.append(card_dict)
-        logging.info(f'{len(arena_cards)} cards found!')
-        save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, arena_cards, indent=None)
-
-    # NOTE: This function is masked from code coverage as its testing is expensive and slow.
-    #  Removing the comment 'pragma: nocover' below will re-add it to code coverage.
-    #  This should be done only as required, and then re-added.
+    # Inspection of the default argument is masked, as every time this is called, if no parameter is passed,
+    #  the list should be empty. Rather than doing a None check, a "mutable" argument is used.
+    # noinspection PyDefaultArgument
     @classmethod
-    def generate_arena_cache_file(cls):  # pragma: nocover
+    def generate_arena_cache_file(cls, extras: Optional[list[str]] = list()):
         """ Generate a cache of Arena cards on a configurable location on disk. """
-        bulk_data = RequestScryfall.get_arena_cards()
-        logging.info(f'Searching bulk data for Arena cards...')
+        logging.info(f'Querying scryfall for Arena cards...')
+        bulk_data = cls.REQUESTER.get_arena_cards()
+
+        for set_code in extras:
+            logging.info(f"Finding extra cards for '{set_code}'")
+            extra_cards = cls.REQUESTER.get_set_cards(set_code)
+            bulk_data += extra_cards
 
         logging.info(f'{len(bulk_data)} cards found!')
         save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE_ARENA, bulk_data, indent=None)

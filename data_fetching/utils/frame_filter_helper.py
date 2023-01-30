@@ -1,6 +1,7 @@
 import functools
 from typing import Callable, Literal, Union, NoReturn
 import pandas as pd
+
 from wubrg import get_color_identity
 
 

@@ -1,14 +1,34 @@
+"""
+Stores information about sets and format to gte data from, along with the dates to get data for.
+Also stores the location of where card caches should be saved.
+"""
+
 from datetime import date
 
-# Game Format Defaults and Data
-SETS: list[str] = ["DMU", "SNC", "NEO", "VOW", "MID"]  # ['AFR', 'STX', 'KHM', 'ZNR']
+# Locations of card caches.
+SCRYFALL_CACHE_DIR = r'C:\Users\Zachary\Coding\GitHub\ScryfallData'
+SCRYFALL_CACHE_FILE = r'oracle-cards.json'
+SCRYFALL_CACHE_FILE_ARENA = r'oracle-cards-arena.json'
 
-FORMATS: list[str] = ["PremierDraft", "TradDraft", "QuickDraft"]
+# Game Format Defaults and Data
+SETS: list[str] = ["ONE", "BRO", "DMU", "SNC", "NEO", "VOW", "MID"]  # ['AFR', 'STX', 'KHM', 'ZNR']
+
+FORMATS: list[str] = ["PremierDraft", "TradDraft"]  # ["PremierDraft", "TradDraft", "QuickDraft"]
 
 # TODO: Change this so the dates are formatted strings, and the Set/FormatMetadata objects parse the dates on load.
 #  This will allow for the SET_CONFIG to be updated from a JSON file and have the Set/FormatMetadata objects re-
 #  parse the data to update the sets information.
 SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
+    "ONE": {
+        "PremierDraft": [(date(2023, 2, 7), date(2022, 4, 15))],
+        "TradDraft": [(date(2023, 2, 7), date(2022, 4, 15))],
+        "QuickDraft": [(date(2023, 3, 7), date(2023, 4, 7))]
+    },
+    "BRO": {
+        "PremierDraft": [(date(2022, 11, 15), date(2023, 2, 7))],
+        "TradDraft": [(date(2022, 11, 15), date(2023, 2, 7))],
+        "QuickDraft": [(date(2022, 11, 25), date(2022, 12, 9))]
+    },
     "DMU": {
         "PremierDraft": [(date(2022, 9, 1), date(2022, 11, 15))],
         "TradDraft": [(date(2022, 9, 1), date(2022, 11, 15))],
@@ -23,7 +43,7 @@ SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
         "PremierDraft": [(date(2022, 2, 10), date(2022, 4, 28))],
         "TradDraft": [(date(2022, 2, 10), date(2022, 4, 28))],
         "QuickDraft": [(date(2022, 2, 25), date(2022, 3, 11)), (date(2022, 3, 25), date(2022, 4, 8)),
-                       (date(2022, 4, 22), date(2022, 4, 29))]
+                       (date(2022, 4, 22), date(2022, 4, 29)), (date(2022, 11, 11), date(2022, 11, 25))]
     },
     "VOW": {
         "PremierDraft": [(date(2021, 11, 11), date(2022, 2, 10))],

@@ -1,9 +1,22 @@
-from typing import Union, Optional
+"""
+Hosts basic functions which can be useful throughout the application.
+
+Data structure manipulation and json handling are the current focus.
+"""
+
+from typing import Union, Optional, TypeVar
 from os import path
 import json
 
-from utilities.utils.settings import ENCODING
 from utilities.auto_logging import logging
+
+ENCODING = 'utf-8'
+
+T = TypeVar('T')
+
+
+def flatten_lists(lst: list[list[T]]) -> list[T]:
+    return [item for sublist in lst for item in sublist]
 
 
 def load_json_file(folder: str, filename: str) -> Union[dict, list[dict], None]:
