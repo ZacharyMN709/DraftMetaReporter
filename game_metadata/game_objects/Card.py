@@ -12,7 +12,7 @@ from game_metadata.utils.consts import RARITY_ALIASES, CARD_INFO, SUPERTYPES, TY
 from data_interface.RequestScryfall import RequestScryfall
 
 
-prototype_parse = re.compile(r"Prototype (.*) — (\d*)/(\d*)")
+prototype_parse = re.compile(r"Prototype (.*?) [—-] (\d*)\/(\d*)")
 
 """
 A modified version of WUBRG order, which is used as part of a lambda for sorting cards,
@@ -195,8 +195,10 @@ class Card:
                         if name not in Card.MELD_BACKS:
                             Card.MELD_BACKS[name] = self.REQUESTER.get_card_by_name(name)
                         return Card.MELD_BACKS[name]
-                raise ValueError("Cannot find a back to provided meld card!")
-            except KeyError:
+                # This should only occur during preview season, if one half of a meld card exists on Scryfall.
+                raise ValueError("Cannot find a back to provided meld card!")  # pragma: nocover
+            # Unsure when this would occur, but is a safety, to not mislead users that a card was successfully parsed.
+            except KeyError:  # pragma: nocover
                 raise ValueError("Could not parse json for returned meld card.")
 
         self.DEFAULT_FACE = CardFace(json, self.LAYOUT, 'default')
@@ -208,7 +210,7 @@ class Card:
             self.FACE_1 = self.DEFAULT_FACE
             self.FACE_2 = CardFace(get_meld_json(), self.LAYOUT, 'melded')
         elif self.LAYOUT == CardLayouts.PROTOTYPE:
-            self.FACE_1 = CardFace(json, self.LAYOUT, 'default')
+            self.FACE_1 = self.DEFAULT_FACE
             self.FACE_2 = CardFace(json, self.LAYOUT, 'prototype')
         elif self.LAYOUT == CardLayouts.ADVENTURE:
             self.FACE_1 = CardFace(json, self.LAYOUT, 'main')
@@ -231,7 +233,9 @@ class Card:
             raise ValueError(f"Invalid JSON provided! Object type is not 'card'")
 
         # Handle simple layout information to reference later.
-        self.LAYOUT: CardLayouts = LAYOUT_DICT[json['layout']]  # TODO: May need special parsing for prototype.
+        self.LAYOUT: CardLayouts = LAYOUT_DICT[json['layout']]
+        if 'Prototype' in json["keywords"]:
+            self.LAYOUT = LAYOUT_DICT["prototype"]
         self.TWO_SIDED: bool = self.LAYOUT is CardLayouts.TWO_SIDED
         self.SPLIT: bool = self.LAYOUT is CardLayouts.FUSED
 
@@ -318,7 +322,7 @@ class Card:
     def ORACLE(self) -> str:
         """Returns rules text of the card."""
         s = self.FACE_1.ORACLE
-        if self.FACE_2 is not None:
+        if self.FACE_2 is not None and (self.LAYOUT not in [CardLayouts.PROTOTYPE, CardLayouts.MELD]):
             s += "\n\n  ---  \n\n"
             s += self.FACE_2.ORACLE
         return s
@@ -478,23 +482,21 @@ class CardManager:
             card = Card(line)
             cls._add_card(card)
 
-    # NOTE: This function is masked from code coverage as its testing is expensive and slow.
-    #  Removing the comment 'pragma: nocover' below will re-add it to code coverage.
-    #  This should be done only as required, and then re-added.
+    # NOTE: The two functions below are expensive and slow, especially to Scryfall.
+    #  They should be called only as required.
     @classmethod
-    def generate_cache_file(cls):  # pragma: nocover
+    def generate_cache_file(cls):
         """ Generate a cache of Arena cards on a configurable location on disk. """
         logging.info(f'Requesting bulk data for all Scryfall cards...')
         bulk_data = cls.REQUESTER.get_bulk_data()
         logging.info(f'{len(bulk_data)} cards found!')
         save_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, bulk_data, indent=None)
 
-    # NOTE: This function is masked from code coverage as its testing is expensive and slow.
-    #  Removing the comment 'pragma: nocover' below will re-add it to code coverage.
-    #  This should be done only as required, and then re-added.
+    # Inspection of the default argument is masked, as every time this is called, if no parameter is passed,
+    #  the list should be empty. Rather than doing a None check, a "mutable" argument is used.
     # noinspection PyDefaultArgument
     @classmethod
-    def generate_arena_cache_file(cls, extras: Optional[list[str]] = list()):  # pragma: nocover
+    def generate_arena_cache_file(cls, extras: Optional[list[str]] = list()):
         """ Generate a cache of Arena cards on a configurable location on disk. """
         logging.info(f'Querying scryfall for Arena cards...')
         bulk_data = cls.REQUESTER.get_arena_cards()

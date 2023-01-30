@@ -3,10 +3,10 @@ from typing import Union, Optional, NoReturn, Any
 from utilities.auto_logging import logging
 from utilities.utils.funcs import flatten_lists
 
-from data_interface.Requester import RequesterBase
+from data_interface.Requester import Requester
 
 
-class RequestScryfall(RequesterBase):
+class RequestScryfall(Requester):
     """ A small class which helps get specific data from scryfall, handling the minutia of json checking. """
     _BASE_URL = 'https://api.scryfall.com/'
 
@@ -33,15 +33,6 @@ class RequestScryfall(RequesterBase):
 
     def get_set_review_order(self, set_code: str) -> Union[NoReturn, list[dict[str, Any]]]:
         return self._get_set_cards(set_code, 'review')
-
-    def get_arena_cards(self) -> Union[NoReturn, list[dict[str, Any]]]:
-        params = {
-            'format': 'json',
-            'q': f'game%3Aarena',
-        }
-        url = f'{self._BASE_URL}/cards/search'
-        logging.info(f"Fetching card data for all Arena cards.")
-        return flatten_lists([x['data'] for x in self.paginated_request(url, params=params)])
 
     def get_set_info(self, set_code: str) -> Union[NoReturn, tuple[str, str]]:
         url = f'{self._BASE_URL}sets/{set_code}'
@@ -76,10 +67,18 @@ class RequestScryfall(RequesterBase):
 
         return response
 
-    # NOTE: This function is masked from code coverage as its testing is expensive and slow.
-    #  Removing the comment 'pragma: nocover' below will re-add it to code coverage.
-    #  This should be done only as required, and then re-added.
-    def get_bulk_data(self) -> Union[NoReturn, list[dict[str, Any]]]:  # pragma: nocover
+    # NOTE: The two functions below are expensive and slow, especially to Scryfall.
+    #  They should be called only as required.
+    def get_arena_cards(self) -> Union[NoReturn, list[dict[str, Any]]]:
+        params = {
+            'format': 'json',
+            'q': f'game%3Aarena',
+        }
+        url = f'{self._BASE_URL}/cards/search'
+        logging.info(f"Fetching card data for all Arena cards.")
+        return flatten_lists([x['data'] for x in self.paginated_request(url, params=params)])
+
+    def get_bulk_data(self) -> Union[NoReturn, list[dict[str, Any]]]:
         logging.info(f"Fetching bulk data...")
         response = self.request(f'{self._BASE_URL}bulk-data/oracle-cards')
         return self.request(response['download_uri'])

@@ -50,19 +50,19 @@ class TestDeck(TestBaseDeck):
         maindeck_diff, sideboard_diff = deck_bo3 - deck_bo1
 
         maindeck_comp = {
-            "Soul-Guide Lantern": -2,
-            "Karn, Scion of Urza": 2
+            CardManager.from_name("Soul-Guide Lantern"): -2,
+            CardManager.from_name("Karn, Scion of Urza"): 2
         }
 
         sideboard_comp = {
-            "Karn, Scion of Urza": 1,
-            "Sai, Master Thopterist": 2,
-            "Dovin's Veto": 3,
-            "Mystical Dispute": 1,
-            "Soul-Guide Lantern": 2,
-            "Glass Casket": 4,
-            "Unlicensed Hearse": 1,
-            "Skysovereign, Consul Flagship": 1,
+            CardManager.from_name("Karn, Scion of Urza"): 1,
+            CardManager.from_name("Sai, Master Thopterist"): 2,
+            CardManager.from_name("Dovin's Veto"): 3,
+            CardManager.from_name("Mystical Dispute"): 1,
+            CardManager.from_name("Soul-Guide Lantern"): 2,
+            CardManager.from_name("Glass Casket"): 4,
+            CardManager.from_name("Unlicensed Hearse"): 1,
+            CardManager.from_name("Skysovereign, Consul Flagship"): 1,
         }
 
         self.assertDictEqual(maindeck_comp, maindeck_diff)
@@ -100,7 +100,7 @@ Raffine's Informant
         self.assertEqual(0, len(deck._sideboard_dict))
 
         self.assertIsInstance(deck.maindeck[0], Card)
-        self.assertEqual(1, deck._maindeck_dict['Island'])
+        self.assertEqual(1, deck._maindeck_dict[CardManager.from_name('Island')])
 
     def test_deck_from_file(self):
         loc = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\E3.txt"
@@ -152,8 +152,8 @@ class TestLimitedDeck(TestBaseDeck):
         self.assertEqual(17, len(deck.sideboard))
         # TODO: Consider removing lands from the card pool?
         self.assertEqual(57, len(deck.cardpool))
-        self.assertEqual(4, deck.wins)
-        self.assertEqual(2, deck.losses)
+        self.assertEqual(5, deck.wins)
+        self.assertEqual(3, deck.losses)
 
         self.assertEqual("b20a97b818f3418b94a8f4e7584398a8", deck.DECK_ID)
         self.assertEqual(1, deck.deck_builds)

@@ -140,7 +140,7 @@ class DataFramer:
 
     def check_for_updates(self) -> None:  # pragma: no cover
         """Populates and updates data properties, filling in missing selected data."""
-        logging.sparse(f'Checking for missing data for {self.SET} {self.FORMAT}...')
+        logging.sparse(f'Checking for missing {self.SET} {self.FORMAT} data...')
         if self.load_summary:
             self.gen_summary()
         if self.load_history:

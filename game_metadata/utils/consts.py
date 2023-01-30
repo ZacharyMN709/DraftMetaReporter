@@ -37,7 +37,8 @@ TYPES: set[str] = {"Land", "Creature", "Artifact", "Enchantment", "Planeswalker"
 
 # Various Subtypes
 LAND_SUBTYPES: set[str] = {
-    "Plains", "Island", "Swamp", "Mountain", "Forest", "Desert", "Gate", "Lair", "Locus",
+    "Plains", "Island", "Swamp", "Mountain", "Forest",
+    "Desert", "Gate", "Lair", "Locus", "Sphere",
     "Urza's", "Mine", "Power-Plant", "Tower"
 }
 
@@ -56,7 +57,7 @@ CREATURE_SUBTYPES: set[str] = {
      "Horror", "Horse", "Human", "Hydra", "Hyena", "Illusion", "Imp", "Incarnation", "Inkling",
      "Insect", "Jackal", "Jellyfish", "Juggernaut", "Kavu", "Kirin", "Kithkin", "Knight", "Kobold",
      "Kor", "Kraken", "Lamia", "Lammasu", "Leech", "Leviathan", "Lhurgoyf", "Licid", "Lizard",
-     "Manticore", "Masticore", "Mercenary", "Merfolk", "Metathran", "Minion", "Minotaur", "Mole",
+     "Manticore", "Masticore", "Mercenary", "Merfolk", "Metathran", "Minion", "Minotaur", "Mite", "Mole",
      "Monger", "Mongoose", "Monk", "Monkey", "Moonfolk", "Mouse", "Mutant", "Myr", "Mystic", "Naga",
      "Nautilus", "Nephilim", "Nightmare", "Nightstalker", "Ninja", "Noble", "Noggle", "Nomad", "Nymph",
      "Octopus", "Ogre", "Ooze", "Orb", "Orc", "Orgg", "Otter", "Ouphe", "Ox", "Oyster", "Pangolin",
@@ -75,7 +76,7 @@ CREATURE_SUBTYPES: set[str] = {
 
 ARTIFACT_SUBTYPES: set[str] = {
     "Blood", "Clue", "Contraption", "Equipment", "Food",
-    "Gold", "Fortification", "Treasure", "Vehicle"
+    "Gold", "Fortification", "Powerstone", "Treasure", "Vehicle"
 }
 
 ENCHANTMENT_SUBTYPES: set[str] = {

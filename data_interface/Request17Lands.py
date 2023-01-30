@@ -4,7 +4,7 @@ import json
 import pandas as pd
 
 
-from data_interface.Requester import RequesterBase
+from data_interface.Requester import Requester
 import data_interface.utils.settings as settings
 from data_interface.utils.consts import COLOR_17L_URL, EXPANSIONS_17L_URL, FORMATS_17L_URL, PLAY_DRAW_17L_URL, \
     COLOR_RATING_17L_URL, CARD_RATING_17L_URL, CARD_EVAL_17L_URL, TROPHY_17L_URL, DRAFT_LOG_17L_URL, DECK_17L_URL, \
@@ -12,7 +12,7 @@ from data_interface.utils.consts import COLOR_17L_URL, EXPANSIONS_17L_URL, FORMA
 
 
 # Adapted from 'https://github.com/diogojapinto/mtg-data-mining/blob/main/utils/api_clients/seventeen_lands/client.py'
-class Request17Lands(RequesterBase):
+class Request17Lands(Requester):
     def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
                  success_delay: Optional[float] = None):
         super().__init__(tries, fail_delay, success_delay)

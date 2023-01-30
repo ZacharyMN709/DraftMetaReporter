@@ -8,46 +8,6 @@ from utilities.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
 
 class Requester:
     """ Helps to handle getting data from url end points, with some configurable options about timing. """
-
-    def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
-                 success_delay: Optional[float] = None):
-        self._TRIES: int = tries or TRIES
-        self._FAIL_DELAY: float = fail_delay or FAIL_DELAY
-        self._SUCCESS_DELAY: float = success_delay or SUCCESS_DELAY
-
-    def request(self, url: str) -> Optional[Union[list, dict]]:
-        """
-        Attempts to get json data from a url.
-        :param url: The url to get data from
-        :return: A json object or None
-        """
-        success = False
-        count = 0
-        url = url.replace(' ', '_')
-
-        while not success:
-            count += 1
-            try:
-                logging.debug(f"Attempting to get data from '{url}'.")
-                response = get(url)
-                data = response.json()
-                success = True
-                sleep(self._SUCCESS_DELAY)
-                return data
-            except Exception as ex:
-                if count < self._TRIES:
-                    logging.warning(f'Failed to get data. Trying again in {self._FAIL_DELAY} seconds.')
-                    sleep(self._FAIL_DELAY)
-                    continue
-                else:
-                    logging.error(f'Failed to get data after {self._TRIES} attempts.')
-                    logging.error(f'Failed URL: {url}')
-                    logging.error(f'Exception: {ex}')
-                    return None
-
-
-class RequesterBase:
-    """ Helps to handle getting data from url end points, with some configurable options about timing. """
     def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
                  success_delay: Optional[float] = None):
         self._TRIES: int = tries or TRIES
@@ -65,10 +25,10 @@ class RequesterBase:
                 response = self.raw_request(url)
                 ret.append(response)
                 url = response.json().get('next_page')
-            except KeyError as ex:
+            except KeyError as ex:  # pragma: nocover
                 logging.error(f"{ex} was not found in the returned json.")
                 break
-            except Exception as ex:
+            except Exception as ex:  # pragma: nocover
                 logging.error(f'Encountered unexpected error: {ex}')
                 break
 

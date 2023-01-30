@@ -48,14 +48,14 @@ class TestFuncs(unittest.TestCase):
         try:
             with open(r'C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\Misc\test.json', 'w') as f:
                 f.write('{"test": "results", "second": 2}')
-        except FileNotFoundError:  # pragma: nocover
-            pass
+        except FileNotFoundError as ex:  # pragma: nocover
+            raise ex
 
     def tearDown(self) -> None:
         try:
             os.remove(r'Tests\Misc\test.json')
-        except FileNotFoundError:  # pragma: nocover
-            pass
+        except FileNotFoundError as ex:  # pragma: nocover
+            raise ex
 
     def test_get_invalid_save(self):
         ret = save_json_file('./+%', 'test+test.json', {'test': 'results'})

@@ -692,8 +692,8 @@ class TestCardFace(unittest.TestCase):
             "SUPERTYPES": {"Legendary"},
             "TYPES": {"Planeswalker"},
             "SUBTYPES": {"Urza"},
-            "ORACLE":  "Once during each of your turns, you may activate an additional loyalty ability of "
-                       "Urza, Planeswalker. (You may activate the same ability twice.)\n"
+            "ORACLE":  "You may activate the loyalty abilities of Urza, Planeswalker "
+                       "twice each turn rather than only once.\n"
                        "+2: Artifact, instant, and sorcery spells you cast this turn cost {2} less to cast. "
                        "You gain 2 life.\n"
                        "+1: Draw two cards, then discard a card.\n"
@@ -1031,6 +1031,7 @@ class TestCard(unittest.TestCase):
         self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
         self.assertEqual('default', card.FACE_1.CARD_SIDE)
         self.assertEqual(card.DEFAULT_FACE, card.FACE_1)
+        self.assertEqual(card.ORACLE, card.FACE_1.ORACLE)
 
     def test_card_saga(self):
         name = 'Fall of the Thran'
@@ -1040,6 +1041,7 @@ class TestCard(unittest.TestCase):
         self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
         self.assertEqual('default', card.FACE_1.CARD_SIDE)
         self.assertEqual(card.DEFAULT_FACE, card.FACE_1)
+        self.assertEqual(card.ORACLE, card.FACE_1.ORACLE)
 
     def test_card_class(self):
         name = 'Bard Class'
@@ -1049,6 +1051,7 @@ class TestCard(unittest.TestCase):
         self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
         self.assertEqual('default', card.FACE_1.CARD_SIDE)
         self.assertEqual(card.DEFAULT_FACE, card.FACE_1)
+        self.assertEqual(card.ORACLE, card.FACE_1.ORACLE)
 
     def test_card_adventure(self):
         name = 'Bonecrusher Giant'
@@ -1062,6 +1065,7 @@ class TestCard(unittest.TestCase):
         self.assertNotEqual(card.DEFAULT_FACE.NAME, card.FACE_1.NAME)
         self.assertNotEqual(card.FACE_1.NAME, card.FACE_2.NAME)
         self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
+        self.assertNotEqual(card.ORACLE, card.FACE_1.ORACLE)
 
     def test_card_split(self):
         name = 'Invert // Invent'
@@ -1075,6 +1079,7 @@ class TestCard(unittest.TestCase):
         self.assertNotEqual(card.DEFAULT_FACE.NAME, card.FACE_1.NAME)
         self.assertNotEqual(card.FACE_1.NAME, card.FACE_2.NAME)
         self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
+        self.assertNotEqual(card.ORACLE, card.FACE_1.ORACLE)
 
     def test_card_transform(self):
         name = 'Boseiju Reaches Skyward'
@@ -1088,6 +1093,7 @@ class TestCard(unittest.TestCase):
         self.assertNotEqual(card.DEFAULT_FACE.NAME, card.FACE_1.NAME)
         self.assertNotEqual(card.FACE_1.NAME, card.FACE_2.NAME)
         self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
+        self.assertNotEqual(card.ORACLE, card.FACE_1.ORACLE)
 
     def test_card_modal_dfc(self):
         name = 'Shatterskull Smashing'
@@ -1101,6 +1107,7 @@ class TestCard(unittest.TestCase):
         self.assertNotEqual(card.DEFAULT_FACE.NAME, card.FACE_1.NAME)
         self.assertNotEqual(card.FACE_1.NAME, card.FACE_2.NAME)
         self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
+        self.assertNotEqual(card.ORACLE, card.FACE_1.ORACLE)
 
     def test_card_flip(self):
         name = 'Bushi Tenderfoot'
@@ -1114,6 +1121,7 @@ class TestCard(unittest.TestCase):
         self.assertNotEqual(card.DEFAULT_FACE.NAME, card.FACE_1.NAME)
         self.assertNotEqual(card.FACE_1.NAME, card.FACE_2.NAME)
         self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
+        self.assertNotEqual(card.ORACLE, card.FACE_1.ORACLE)
 
     def test_card_prototype(self):
         name = 'Phyrexian Fleshgorger'
@@ -1123,6 +1131,7 @@ class TestCard(unittest.TestCase):
         self.assertEqual('default', card.DEFAULT_FACE.CARD_SIDE)
         self.assertEqual('default', card.FACE_1.CARD_SIDE)
         self.assertEqual('prototype', card.FACE_2.CARD_SIDE)
+        self.assertEqual(card.ORACLE, card.FACE_1.ORACLE)
 
         self.assertEqual(card.DEFAULT_FACE, card.FACE_1)
 
@@ -1139,6 +1148,7 @@ class TestCard(unittest.TestCase):
 
         self.assertNotEqual(card.FACE_2.NAME, card.DEFAULT_FACE.NAME)
         self.assertNotEqual(card.FACE_2.NAME, card.FACE_1.NAME)
+        self.assertNotEqual(card.ORACLE, card.FACE_1.ORACLE)
 
     def test_card_face_generation(self):
         name = 'Boseiju Reaches Skyward'
