@@ -1,26 +1,31 @@
+"""
+Used to represent Magic Cards in a more organized and natural format than
+JSON provided by Scryfall. Also supplements data with additional concepts.
+
+Cards attempt to be smart about default information, deriving needed
+information from the card's available faces.
+"""
+
 from __future__ import annotations
 from typing import NoReturn, Optional
 import re
 
-from utilities.auto_logging import logging
-from utilities.utils.funcs import load_json_file, save_json_file
+from utilities import logging, load_json_file, save_json_file
 from wubrg import get_color_identity, calculate_cmc, parse_color_list, COLOR_STRING, WUBRG_COLOR_INDEXES
-from data_interface.RequestScryfall import RequestScryfall
+from data_interface import RequestScryfall
 
-from game_metadata.utils.consts import RARITY_ALIASES, SUPERTYPES, TYPES, SUBTYPES, \
-    CARD_INFO, CARD_SIDE, LAYOUT_DICT, CardLayouts
-from game_metadata.utils.settings import SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA
+from game_metadata.utils import RARITY_ALIASES, SUPERTYPES, TYPES, SUBTYPES, CARD_INFO, CARD_SIDE, LAYOUT_DICT, \
+    CardLayouts, SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA
 
 
 prototype_parse = re.compile(r"Prototype (.*?) [—-] (\d*)/(\d*)")
 
-"""
-A modified version of WUBRG order, which is used as part of a lambda for sorting cards,
-in the order one would expect to see them on Untapped or SealedDeck
-"""
+# A modified version of WUBRG order, which is used as part of a lambda for sorting cards,
+#  in the order one would expect to see them on Untapped or SealedDeck
+# TODO: Consider where this function should reside.
 DECK_DISPLAY_INDEXES = dict(WUBRG_COLOR_INDEXES)
 DECK_DISPLAY_INDEXES[''] = 32
-def decklist_sort_lambda(x): return x.CMC, DECK_DISPLAY_INDEXES[x.CAST_IDENTITY], x.NAME
+def decklist_sort_lambda(x: Card): return x.CMC, DECK_DISPLAY_INDEXES[x.CAST_IDENTITY], x.NAME
 
 
 class CardFace:
@@ -87,9 +92,6 @@ class CardFace:
                             f"TYPE_LINE: '{self.TYPE_LINE}'\n INVALID_TYPES: {invalid_types}")
 
     def _apply_overrides(self, json):
-        # TODO: These are something akin to hacks, and it would (likely) be better to handle this
-        #  as part of the base logic which populates each field of the CardFace.
-
         if self.LAYOUT == CardLayouts.FLIP and self.CARD_SIDE == 'flipped':
             self.MANA_COST = json['mana_cost']
             self.CMC: int = self._calculate_cmc(json)

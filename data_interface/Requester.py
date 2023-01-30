@@ -1,3 +1,7 @@
+"""
+Helps to handle getting data from url end points, with some configurable options about timing.
+"""
+
 from typing import Optional, Union
 from time import sleep
 from requests import Response, get

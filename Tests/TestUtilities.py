@@ -3,7 +3,7 @@ import os
 import unittest
 
 from utilities import load_json_file, save_json_file, auto_logging
-from utilities.utils.funcs import reformat_json_file
+from utilities.funcs import reformat_json_file
 
 
 class TestLogging(unittest.TestCase):

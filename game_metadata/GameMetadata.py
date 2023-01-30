@@ -1,13 +1,22 @@
+"""
+Contains objects to organize general concepts surrounding sets and formats.
+
+SetMetadata uses the three letter set code, and lists a set's cards,
+along with functions to help sort/filter cards.
+FormatMetadata contains information about when that set and format
+is/was active on Arena. It contains a reference to the appropriate SetMetadata.
+"""
+
 from __future__ import annotations
 from typing import Optional, Union, Callable
 from functools import cmp_to_key
 from datetime import date, time, datetime, timedelta
 
-from utilities.auto_logging import logging
 from wubrg import index_dist_wubrg, COLOR_IDENTITY
+from utilities import logging
+from data_interface import RequestScryfall
 
 from game_metadata.utils.settings import SET_CONFIG
-from data_interface.RequestScryfall import RequestScryfall
 from game_metadata.game_objects.Card import Card, CardManager
 
 

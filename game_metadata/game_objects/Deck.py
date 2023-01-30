@@ -1,13 +1,20 @@
+"""
+Used to represent Decks, which are mainly parsed from 17Lands data.
+
+Various types of decks exist, and are attempted to be represented here.
+Decks support simple comparisons between their card lists.
+In the future, Decks will contain functions which allow for more nuanced colour information.
+"""
+
 from __future__ import annotations
 from typing import Optional
 from datetime import datetime
 import re
 from os import path
 
-from utilities.utils.funcs import flatten_lists
-from utilities.auto_logging import logging
 from wubrg import COLOR
-from data_interface.Request17Lands import Request17Lands
+from utilities import flatten_lists, logging
+from data_interface import Request17Lands
 
 from game_metadata.utils import RANKS, new_color_count_dict
 from game_metadata.game_objects.Card import CardManager, Card

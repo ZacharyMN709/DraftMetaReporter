@@ -1,3 +1,11 @@
+"""
+Contains an enumeration which can be used to control or compare the level of logging.
+
+Loading this module also automatically adds in two levels to the
+base 'logging' module: SPARSE and VERBOSE. Functions to write to those levels
+are also added to the base 'logging' module.
+"""
+
 from typing import Optional, NoReturn
 from enum import IntEnum, unique
 import logging

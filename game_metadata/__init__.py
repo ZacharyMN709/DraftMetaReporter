@@ -1,6 +1,6 @@
 """
 This package helps simplify dealing with constructs related to game objects and concepts.
- The game objects includes drafts, decks and cards. The concepts include card faces, rarities, and types.
+The game objects includes drafts, decks and cards. The concepts include card faces, rarities, and types.
 """
 
 from game_metadata.utils import *

@@ -1,9 +1,16 @@
+"""
+Hosts basic functions which can be useful throughout the application.
+
+Data structure manipulation and json handling are the current focus.
+"""
+
 from typing import Union, Optional, TypeVar
 from os import path
 import json
 
-from utilities.utils.settings import ENCODING
 from utilities.auto_logging import logging
+
+ENCODING = 'utf-8'
 
 T = TypeVar('T')
 

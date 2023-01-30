@@ -1,6 +1,6 @@
 import unittest
 
-from utilities.utils.funcs import load_json_file
+from utilities.funcs import load_json_file
 from utilities.auto_logging import auto_log, LogLvl
 
 from game_metadata.game_objects.Card import Card, CardManager

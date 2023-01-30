@@ -1,14 +1,17 @@
+"""
+A small class which helps get specific data from scryfall, handling the minutia of json checking.
+"""
+
 from typing import Union, Optional, NoReturn, Any
 
 from utilities import logging, flatten_lists
 
+from data_interface.utils import *
 from data_interface.Requester import Requester
 
 
 class RequestScryfall(Requester):
     """ A small class which helps get specific data from scryfall, handling the minutia of json checking. """
-    _BASE_URL = 'https://api.scryfall.com/'
-
     def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
                  success_delay: Optional[float] = None):
         super().__init__(tries, fail_delay, success_delay)
@@ -23,9 +26,8 @@ class RequestScryfall(Requester):
             'include_multilingual': False,
             'include_extras': False,
         }
-        url = f'{self._BASE_URL}cards/search'
         logging.info(f"Fetching card data for set: {set_code}")
-        return flatten_lists([x['data'] for x in self.paginated_request(url, params=params)])
+        return flatten_lists([x['data'] for x in self.paginated_request(CARD_SCRYFALL_URL, params=params)])
 
     def get_set_cards(self, set_code: str) -> Union[NoReturn, list[dict[str, Any]]]:
         return self._get_set_cards(set_code, 'set')
@@ -34,7 +36,7 @@ class RequestScryfall(Requester):
         return self._get_set_cards(set_code, 'review')
 
     def get_set_info(self, set_code: str) -> Union[NoReturn, tuple[str, str]]:
-        url = f'{self._BASE_URL}sets/{set_code}'
+        url = f'{SET_SCRYFALL_URL}/{set_code}'
         logging.info(f"Fetching data for set: {set_code}")
         response = self.request(url)
         return response['name'], response['icon_svg_uri']
@@ -53,7 +55,7 @@ class RequestScryfall(Requester):
 
         # Attempt to get information on the card.
         logging.info(f"Fetching data for card: {name}")
-        response = self.request(f'{self._BASE_URL}cards/named', params)
+        response = self.request(FUZZY_SCRYFALL_URL, params)
 
         # If is not a card, do some processing and return the struct with some information.
         if response['object'] != 'card':
@@ -73,11 +75,10 @@ class RequestScryfall(Requester):
             'format': 'json',
             'q': f'game%3Aarena',
         }
-        url = f'{self._BASE_URL}/cards/search'
         logging.info(f"Fetching card data for all Arena cards.")
-        return flatten_lists([x['data'] for x in self.paginated_request(url, params=params)])
+        return flatten_lists([x['data'] for x in self.paginated_request(CARD_SCRYFALL_URL, params=params)])
 
     def get_bulk_data(self) -> Union[NoReturn, list[dict[str, Any]]]:
         logging.info(f"Fetching bulk data...")
-        response = self.request(f'{self._BASE_URL}bulk-data/oracle-cards')
+        response = self.request(BULK_SCRYFALL_URL)
         return self.request(response['download_uri'])

@@ -1,3 +1,7 @@
+"""
+A small class which helps get specific data from scryfall, handling the minutia of json checking.
+"""
+
 from typing import Optional, Union, NoReturn
 from datetime import date, datetime
 import json
@@ -9,6 +13,7 @@ from data_interface.Requester import Requester
 
 # Adapted from 'https://github.com/diogojapinto/mtg-data-mining/blob/main/utils/api_clients/seventeen_lands/client.py'
 class Request17Lands(Requester):
+    """ A small class which helps get specific data from scryfall, handling the minutia of json checking. """
     def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
                  success_delay: Optional[float] = None):
         super().__init__(tries, fail_delay, success_delay)

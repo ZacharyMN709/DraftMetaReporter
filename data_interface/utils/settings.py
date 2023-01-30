@@ -1,3 +1,7 @@
+"""
+Contains configuration for how to query websites.
+"""
+
 from datetime import date
 
 # Web Request Defaults

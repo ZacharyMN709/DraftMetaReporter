@@ -1,6 +1,6 @@
 """
 This package helps simplify dealing with the properties of cards, decks and drafts in Magic.
- It provides values surrounding card faces, card rarities, and card types. It also has Arena's user ranks.
+It provides values surrounding card faces, card rarities, and card types. It also has Arena's user ranks.
 """
 
 from game_metadata.utils.consts import *

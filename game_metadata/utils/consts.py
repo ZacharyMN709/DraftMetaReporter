@@ -1,3 +1,13 @@
+"""
+Contains constants about magic cards and arena ranks.
+
+Key things outlined are:
+ - Card Templating (Split, Adventure, etc.)
+ - Card Rarity (Rarity list, Aliases, Indexes for sorting)
+ - Types (Supertypes, Types, and Subtypes, split by Type)
+ - Arena Ranks (Bronze - Mythic)
+"""
+
 from typing import Union, Literal
 from enum import Flag, auto
 

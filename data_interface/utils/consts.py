@@ -1,3 +1,7 @@
+"""
+Contains links or link fragments to be used when querying websites.
+"""
+
 # 17 Lands URL Bases
 BASE_17L_URL = 'https://www.17lands.com'
 COLOR_17L_URL = f'{BASE_17L_URL}/data/colors'
@@ -12,3 +16,9 @@ DRAFT_LOG_17L_URL = f'{BASE_17L_URL}/data/draft/stream'
 DECK_17L_URL = f'{BASE_17L_URL}/data/deck'
 DETAILS_17L_URL = f'{BASE_17L_URL}/data/details'
 TIER_17L_URL = f'{BASE_17L_URL}/card_tiers/data'
+
+BASE_SCRYFALL_URL = 'https://api.scryfall.com'
+CARD_SCRYFALL_URL = f'{BASE_SCRYFALL_URL}/cards/search'
+SET_SCRYFALL_URL = f'{BASE_SCRYFALL_URL}/sets'
+FUZZY_SCRYFALL_URL = f'{BASE_SCRYFALL_URL}/cards/named'
+BULK_SCRYFALL_URL = f'{BASE_SCRYFALL_URL}/bulk-data/oracle-cards'

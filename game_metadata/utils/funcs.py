@@ -1,4 +1,8 @@
-from wubrg import COLOR
+"""
+Contains a function to generate a colour dict, which helps track pips in cards more easily.
+"""
+
+from wubrg import COLOR, WUBRG_COLOR_INDEXES
 
 
 def new_color_count_dict() -> dict[COLOR, int]:

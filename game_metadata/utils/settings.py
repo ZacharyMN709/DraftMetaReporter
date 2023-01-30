@@ -1,3 +1,8 @@
+"""
+Stores information about sets and format to gte data from, along with the dates to get data for.
+Also stores the location of where card caches should be saved.
+"""
+
 from datetime import date
 
 # Locations of card caches.
@@ -15,7 +20,7 @@ FORMATS: list[str] = ["PremierDraft", "TradDraft"]  # ["PremierDraft", "TradDraf
 #  parse the data to update the sets information.
 SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
     "ONE": {
-        "PremierDraft": [( date(2023, 2, 7), date(2022, 4, 15))],
+        "PremierDraft": [(date(2023, 2, 7), date(2022, 4, 15))],
         "TradDraft": [(date(2023, 2, 7), date(2022, 4, 15))],
         "QuickDraft": [(date(2023, 3, 7), date(2023, 4, 7))]
     },
