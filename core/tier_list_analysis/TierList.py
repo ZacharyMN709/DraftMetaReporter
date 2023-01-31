@@ -1,3 +1,5 @@
+import logging
+from typing import Optional
 import pandas as pd
 
 from core.data_interface import Request17Lands
@@ -8,11 +10,11 @@ from core.tier_list_analysis.utils.consts import TIER_LIST_ROOT, tier_to_rank
 
 class TierList:
     def __init__(self, user, link):
-        self.user = user
-        self.link = link
-        self.tiers = self.frame_from_url()
+        self.user: str = user
+        self.link: str = link
+        self.tiers: pd.DataFrame = self.gen_frame()
 
-    def frame_from_url(self):
+    def gen_frame(self) -> pd.DataFrame:
         def gen_card_dict(data):
             return {
                 'Card': data['name'],
@@ -30,17 +32,32 @@ class TierList:
         return frame
 
     def refresh_data(self):
-        self.tiers = self.frame_from_url()
+        self.tiers = self.gen_frame()
 
 
 class TierAggregator:
     def __init__(self, SET):
-        self.SET = SET
-        self.set_data = SetMetadata.get_metadata('ONE')
-        self.tier_dict = dict()
-        self.tier_frame = None
+        self.set_data: SetMetadata = SetMetadata.get_metadata(SET)
+        self.tier_dict: dict[str, TierList] = dict()
+        self._tier_frame: Optional[pd.DataFrame] = None
 
-    def add_tier(self):
+    @property
+    def SET(self) -> str:
+        return self.set_data.SET
+
+    @property
+    def tier_frame(self) -> pd.DataFrame:
+        if self._tier_frame is None:
+            self._tier_frame = self.merge_rankings()
+        return self._tier_frame
+
+    def add_tier(self, user, link):
+        try:
+            t = TierList(user, link)
+            self.tier_dict[user] = t
+            self._tier_frame = None
+        except:
+            logging.warning("Failed to create TierList object. Please check the link provided.")
         pass
 
     def merge_rankings(self):
@@ -81,5 +98,15 @@ class TierAggregator:
 
         return frame
 
-    def refresh_data(self):
-        self.tier_frame = self.merge_rankings()
+    def refresh_data(self, key=None):
+        if key is None:
+            for tier in self.tier_dict.values():
+                tier.refresh_data()
+            self._tier_frame = self.merge_rankings()
+        else:
+            try:
+                self.tier_dict[key].refresh_data()
+                self._tier_frame = self.merge_rankings()
+
+            except KeyError:
+                logging.warning("Failed to find TierList object. Please check the key provided.")
