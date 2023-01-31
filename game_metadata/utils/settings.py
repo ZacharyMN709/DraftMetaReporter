@@ -22,7 +22,7 @@ SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
     "ONE": {
         "PremierDraft": [(date(2023, 2, 7), date(2022, 4, 15))],
         "TradDraft": [(date(2023, 2, 7), date(2022, 4, 15))],
-        "QuickDraft": [(date(2023, 3, 7), date(2023, 4, 7))]
+        "QuickDraft": [(date(2023, 2, 17), date(2023, 3, 2))]
     },
     "BRO": {
         "PremierDraft": [(date(2022, 11, 15), date(2023, 2, 7))],
