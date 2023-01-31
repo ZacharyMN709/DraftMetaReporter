@@ -1,19 +1,19 @@
 # This is intended as a helper file which can be imported at the top of notebooks in this project to automatically
 #  handle key imports, tune the notebook settings, and prints out cursory information about the default state.
 
-from IPython.core.display import display, HTML
 import sys
 import os
 import datetime
 from os import path
 from datetime import date, time, datetime, timedelta
-import numpy as np
-import pandas as pd
 import dataframe_image as dfi
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import numpy as np
+import pandas as pd
 import seaborn as sns
+from IPython.core.display import display, HTML
 
 from utilities import LogLvl, set_log_level, logging
 import wubrg
@@ -27,11 +27,6 @@ from data_fetching.utils import get_next_17lands_update_time, get_prev_17lands_u
     rarity_filter, cmc_filter, card_color_filter, cast_color_filter, compose_filters
 
 
-LOAD_ALL = False
-TRGT_SET = 'BRO'
-LOG_LEVEL = LogLvl.INFO
-
-
 def set_notebook_display() -> None:
     sns.set_theme()
     sns.set_color_codes()
@@ -40,11 +35,10 @@ def set_notebook_display() -> None:
 
 def info_splash() -> None:
     print(f"PYTHON VER:          {sys.version}")
-    print(f"LOAD_ALL:            {LOAD_ALL}")
-    print(f"TRGT_SET:            {TRGT_SET}")
-    print(f"LOG LEVEL:           {LOG_LEVEL.name} ({LOG_LEVEL})")
+    print(f"LOG LEVEL:           {logging.root.name} ({logging.root.level})")
     print()
     print(f'Available sets:      {SETS}')
+    print(f"Default Set:         {SETS[0]}")
     print()
     print(f"Current Local Time:  {datetime.now()}")
     print(f"Last 17Lands Update: {get_prev_17lands_update_time()}")
@@ -52,19 +46,19 @@ def info_splash() -> None:
     print(f"Next 17Lands Update: {get_next_17lands_update_time()}")
 
 
-def load_set_data() -> tuple[CentralManager, SetManager]:
+def load_set_data(target_set=SETS[0], load_all=False) -> tuple[CentralManager, SetManager]:
     data_manager = None
     set_data = None
 
     start = datetime.utcnow()
-    if LOAD_ALL:
+    if load_all:
         if data_manager is None:
             data_manager = CentralManager()
-            set_data = data_manager[TRGT_SET]
+            set_data = data_manager[target_set]
         data_manager.check_for_updates()
     else:
         if set_data is None:
-            set_data = SetManager(TRGT_SET)
+            set_data = SetManager(target_set)
         set_data.check_for_updates()
     end = datetime.utcnow()
     logging.sparse(f"\n --- Data loaded in {end - start}.")
@@ -72,13 +66,7 @@ def load_set_data() -> tuple[CentralManager, SetManager]:
     return data_manager, set_data
 
 
-def notebook_set_up(target_set=SETS[-1], log_lvl=LogLvl.DEBUG, load_all=False):
-    global LOAD_ALL, TRGT_SET, LOG_LEVEL
-
-    LOAD_ALL = load_all
-    TRGT_SET = target_set
-    LOG_LEVEL = log_lvl
-
-    set_log_level(LOG_LEVEL)
+def notebook_set_up(log_lvl=LogLvl.DEBUG):
+    set_log_level(log_lvl)
     set_notebook_display()
     info_splash()
