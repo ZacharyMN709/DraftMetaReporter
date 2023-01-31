@@ -1,7 +1,7 @@
 import logging
 
-from utilities.auto_logging import LogLvl, auto_log
-from game_metadata.game_objects.Card import CardManager
+from core.utilities.auto_logging import LogLvl, auto_log
+from core.game_metadata.game_objects.Card import CardManager
 
 NEXT_SET = "ONE"
 EXTRA_SETS = [NEXT_SET, "BRR", "STA"]

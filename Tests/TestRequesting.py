@@ -1,8 +1,7 @@
 import unittest
 
-from utilities import logging
-from data_interface.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
-from data_interface.Requester import Requester
+from core.data_interface.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
+from core.data_interface.Requester import Requester
 
 
 # TODO: Create new test suites for Requesting objects.

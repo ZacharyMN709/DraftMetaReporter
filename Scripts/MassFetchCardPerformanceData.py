@@ -1,6 +1,6 @@
 from datetime import datetime
-from utilities import LogLvl, set_log_level, logging
-from data_fetching import SetManager
+from core.utilities import LogLvl, set_log_level, logging
+from core.data_fetching import SetManager
 
 
 TARGET_SET = 'BRO'
@@ -19,7 +19,7 @@ def load_set_data():
 
 
 def main():
-    from game_metadata.game_objects.Card import CardManager
+    from core.game_metadata.game_objects.Card import CardManager
     CardManager.load_cache_from_file()
     load_set_data()
 

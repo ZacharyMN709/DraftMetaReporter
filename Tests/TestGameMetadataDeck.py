@@ -3,9 +3,9 @@ import unittest
 import requests
 from requests import Response
 
-from utilities import auto_log, LogLvl
-from data_interface import Request17Lands
-from game_metadata import Card, CardManager, Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager, Draft
+from core.utilities import auto_log, LogLvl
+from core.data_interface import Request17Lands
+from core.game_metadata import Card, CardManager, Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager, Draft
 
 from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
 
@@ -264,7 +264,7 @@ class TestTrophyStub(TestBaseDeck):
 
     @unittest.skipUnless(FULL_TEST, "Not performing full test. 'FULL_TEST' set to False.")
     def test_mass_gen(self):
-        import data_interface.utils.settings as settings
+        import core.data_interface.utils.settings as settings
 
         requester = Request17Lands()
 

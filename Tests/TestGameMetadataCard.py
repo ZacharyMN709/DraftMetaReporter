@@ -1,9 +1,9 @@
 import unittest
 from typing import Union
 
-from data_interface import RequestScryfall
-from game_metadata import CardLayouts, Card, CardFace, CardManager
-from game_metadata.utils.consts import CARD_SIDE
+from core.data_interface import RequestScryfall
+from core.game_metadata import CardLayouts, Card, CardFace, CardManager
+from core.game_metadata.utils.consts import CARD_SIDE
 
 from Tests.settings import TEST_MASS_DATA_PULL
 

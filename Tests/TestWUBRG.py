@@ -4,9 +4,7 @@ Tests code from the wubrg module.
 
 import unittest
 
-from wubrg import *
-from wubrg import FAILSAFE, GROUP_COLOR_COMBINATIONS, index_dist_wubrg, index_dist_pentad, \
-    order_by_wubrg, order_by_pentad, exact, superset, subset, adjacent, shares
+from core.wubrg import *
 
 
 class TestWUBRGStringFuncs(unittest.TestCase):
