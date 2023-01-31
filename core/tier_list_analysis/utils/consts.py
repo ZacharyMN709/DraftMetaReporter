@@ -1,3 +1,5 @@
+from core.utilities import invert_dict
+
 TIER_LIST_ROOT = "https://www.17lands.com/tier_list/"
 
 
@@ -20,7 +22,7 @@ tier_to_rank = {
 }
 
 
-rank_to_tier = {v: k for k, v in tier_to_rank.items()}
+rank_to_tier = invert_dict(tier_to_rank)
 
 
 range_map_vals = [

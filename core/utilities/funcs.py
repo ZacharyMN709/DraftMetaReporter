@@ -13,10 +13,16 @@ from core.utilities.auto_logging import logging
 ENCODING = 'utf-8'
 
 T = TypeVar('T')
+T1 = TypeVar('T1')
+T2 = TypeVar('T2')
 
 
 def flatten_lists(lst: list[list[T]]) -> list[T]:
     return [item for sublist in lst for item in sublist]
+
+
+def invert_dict(d: dict[T1, T2]) -> dict[T2, T1]:
+    return {v: k for k, v in d.items()}
 
 
 def load_json_file(folder: str, filename: str) -> Union[dict, list[dict], None]:
