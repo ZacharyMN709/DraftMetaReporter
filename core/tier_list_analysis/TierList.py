@@ -49,6 +49,10 @@ class TierAggregator:
         return self.set_data.SET
 
     @property
+    def users(self) -> list[str]:
+        return list(self.tier_dict.keys())
+
+    @property
     def tier_frame(self) -> pd.DataFrame:
         if self._tier_frame is None:
             self._tier_frame = self.merge_rankings()
@@ -103,7 +107,6 @@ class TierAggregator:
             filters.append(rarity_filter(rarity))
         frame = filter_frame(self.tier_frame, order=ordering, filters=filters).head(count)
 
-
     def style_frame(self, frame):
         # Set the display to accommodate the card count.
         card_dict = self.set_data.CARD_DICT
@@ -121,33 +124,54 @@ class TierAggregator:
             return html
 
         def to_int(val):
-            return int(val)
+            try:
+                return int(val)
+            except Exception:
+                return ' - '
 
         def format_short_float(val):
             return '{:.1f}'.format(val)
 
-        def format_mean(val):
-            return '{:.2f} ({:2})'.format(val, rank_to_tier[round(val)])
+        def format_long_float(val):
+            return '{:.3f}'.format(val)
 
-        def format_rank(val):
+        def card_color(val):
+            single = {
+                'W': '#fffeeb',
+                'U': '#d2edfa',
+                'B': '#ccc7c6',
+                'R': '#fadcd2',
+                'G': '#caedd5',
+            }
+            if len(val) == 1:
+                return f'color: black; background-color: {single[val]}'
+            elif len(val) > 1:
+                return f'color: black; background-color: #f2d79d'
+
+        def color_map(val):
+            colors = ['#e67c73', '#eb8b70', '#ef9b6e', '#f3a96c', '#f7b96a',
+                      '#fbc768', '#ffd666', '#e3d16c', '#c7cd72',
+                      '#abc878', '#8fc47e', '#73bf84', '#57bb8a']
             try:
-                return '{:} ({:2})'.format(int(val), rank_to_tier[val])
-            except Exception:
-                return ' - '
+                x = round(val)
+                return f'color: black; background-color: {colors[x]}'
+            except:
+                return f'color: black; background-color: grey'
 
-        user_formats = {name: format_rank for name in self.tier_dict.keys()}
+        user_formats = {name: to_int for name in self.tier_dict.keys()}
         default_formats = {
             'Image': hover_img,
             'CMC': to_int,
-            'mean': format_mean,
-            'max': format_rank,
-            'min': format_rank,
+            'mean': format_long_float,
+            'max': to_int,
+            'min': to_int,
             'range': format_short_float,
             'dist': format_short_float,
             'std': format_short_float,
         }
 
-        return frame.style.format(default_formats | user_formats)
+        styler = frame.style.format(default_formats | user_formats)
+        return styler.applymap(card_color, subset=['Color', 'Cast Color']).applymap(color_map, subset=self.users)
 
     # region Calculate Tables
     def append_stat_summary(self, frame, round_to=2):
