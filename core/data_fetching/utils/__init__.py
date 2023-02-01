@@ -15,7 +15,8 @@ from_consts = ['FORMAT_NICKNAME_DICT', 'STAT_NAME_DICT', 'META_COLS_ALIAS_DICT',
 
 from_date_helper = ['utc_today', 'get_prev_17lands_update_time', 'get_next_17lands_update_time']
 
-from_frame_filter_helper = ['rarity_filter', 'cmc_filter', 'card_color_filter', 'cast_color_filter', 'compose_filters']
+from_frame_filter_helper = ['rarity_filter', 'cmc_filter', 'card_color_filter', 'cast_color_filter',
+                            'compose_filters', 'filter_frame']
 
 from_index_slice_helper = ['get_name_slice', 'get_color_slice', 'get_date_slice', 'stringify_for_date_slice']
 

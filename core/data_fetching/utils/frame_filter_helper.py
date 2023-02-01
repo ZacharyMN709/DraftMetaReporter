@@ -108,3 +108,16 @@ def compose_filters(filters: list[Callable[[pd.DataFrame], pd.Series]]) -> Calla
         return filtered_frame.T.all()
 
     return composed_func
+
+
+def filter_frame(frame, order=None, filters=None):
+    if filters:
+        sub_frame = pd.DataFrame()
+        for f in filters:
+            sub_frame[id(f)] = f(frame)
+        frame = frame[sub_frame.T.all()]
+
+    if order:
+        return frame.sort_values(order, ascending=False)
+    else:
+        return frame

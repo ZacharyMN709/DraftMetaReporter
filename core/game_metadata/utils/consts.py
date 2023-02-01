@@ -16,7 +16,7 @@ RANKS = ['None', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Mythic']
 
 
 # region Rarity
-RARITIES: set[str] = {'C', 'U', 'R', 'M'}
+RARITIES: list[str] = ['M', 'R', 'U', 'C']
 
 RARITY_ALIASES: dict[str, str] = {
     'common': "C",
