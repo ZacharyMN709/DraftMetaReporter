@@ -7,6 +7,8 @@ from core.data_interface import Request17Lands
 from core.game_metadata import SetMetadata, RARITIES
 
 from core.tier_list_analysis.utils.consts import TIER_LIST_ROOT, tier_to_rank, rank_to_tier
+from core.tier_list_analysis.utils.funcs import safe_to_int, hover_card, format_long_float, format_short_float, \
+    color_map, rarity_map, stat_map, user_map, range_map, dict_from_card_json
 from core.wubrg import WUBRG, COLOR_COMBINATIONS
 
 
@@ -17,18 +19,9 @@ class TierList:
         self.tiers: pd.DataFrame = self.gen_frame()
 
     def gen_frame(self) -> pd.DataFrame:
-        def gen_card_dict(data):
-            return {
-                'Card': data['name'],
-                'Tier': data['tier'],
-                'Rank': tier_to_rank[data['tier']],
-                'Synergy': data['flags']['synergy'],
-                'Buildaround': data['flags']['buildaround']
-            }
-
         fetcher = Request17Lands()
         raw_data = fetcher.get_tier_list(self.link.replace(TIER_LIST_ROOT, ""))
-        tier_data = {card_data['name']: gen_card_dict(card_data) for card_data in raw_data}
+        tier_data = {card_data['name']: dict_from_card_json(card_data) for card_data in raw_data}
         frame = pd.DataFrame.from_dict(tier_data, orient="index")
         frame.index.name = self.user
         return frame
@@ -108,70 +101,37 @@ class TierAggregator:
         frame = filter_frame(self.tier_frame, order=ordering, filters=filters).head(count)
 
     def style_frame(self, frame):
+        # https://pandas.pydata.org/docs/reference/api/pandas.io.formats.style.Styler.background_gradient.html
+        # https://pandas.pydata.org/docs/user_guide/style.html
+        # https://matplotlib.org/stable/tutorials/colors/colormaps.html
+        
         # Set the display to accommodate the card count.
         card_dict = self.set_data.CARD_DICT
         pd.set_option('display.max_rows', len(card_dict))
 
         def hover_img(card_name):
-            card = card_dict[card_name]
-            html = '<style>.hover_img a { position:relative; }\n' + \
-                   '.hover_img a span { position:absolute; display:none; z-index:300; }\n' + \
-                   '.hover_img a:hover span { display:block; height: 300px; width: 300px; overflow: visible; ' \
-                   'margin-left: -175px; }</style>\n' + \
-                   '<div class="hover_img">\n' + \
-                   f'<a href="#">{card_name}<span><img src="{card.IMAGE_URL}" alt="image"/></span></a>\n' + \
-                   '</div>'
-            return html
+            return hover_card(card_dict[card_name])
 
-        def to_int(val):
-            try:
-                return int(val)
-            except Exception:
-                return ' - '
-
-        def format_short_float(val):
-            return '{:.1f}'.format(val)
-
-        def format_long_float(val):
-            return '{:.3f}'.format(val)
-
-        def card_color(val):
-            single = {
-                'W': '#fffeeb',
-                'U': '#d2edfa',
-                'B': '#ccc7c6',
-                'R': '#fadcd2',
-                'G': '#caedd5',
-            }
-            if len(val) == 1:
-                return f'color: black; background-color: {single[val]}'
-            elif len(val) > 1:
-                return f'color: black; background-color: #f2d79d'
-
-        def color_map(val):
-            colors = ['#e67c73', '#eb8b70', '#ef9b6e', '#f3a96c', '#f7b96a',
-                      '#fbc768', '#ffd666', '#e3d16c', '#c7cd72',
-                      '#abc878', '#8fc47e', '#73bf84', '#57bb8a']
-            try:
-                x = round(val)
-                return f'color: black; background-color: {colors[x]}'
-            except:
-                return f'color: black; background-color: grey'
-
-        user_formats = {name: to_int for name in self.tier_dict.keys()}
+        user_formats = {name: safe_to_int for name in self.tier_dict.keys()}
         default_formats = {
             'Image': hover_img,
-            'CMC': to_int,
+            'CMC': safe_to_int,
             'mean': format_long_float,
-            'max': to_int,
-            'min': to_int,
+            'max': safe_to_int,
+            'min': safe_to_int,
             'range': format_short_float,
             'dist': format_short_float,
             'std': format_short_float,
         }
 
-        styler = frame.style.format(default_formats | user_formats)
-        return styler.applymap(card_color, subset=['Color', 'Cast Color']).applymap(color_map, subset=self.users)
+        styler = frame.style.format(default_formats | user_formats) \
+            .applymap(color_map, subset=['Color', 'Cast Color']) \
+            .applymap(rarity_map, subset=['Rarity']) \
+            .applymap(stat_map, subset=['mean', 'max', 'min']) \
+            .applymap(user_map, subset=self.users) \
+            .applymap(range_map, subset=['range']) \
+            .background_gradient(subset=['std', 'dist'], cmap='Purples')
+        return styler
 
     # region Calculate Tables
     def append_stat_summary(self, frame, round_to=2):
@@ -248,6 +208,7 @@ class TierAggregator:
         ret = pd.concat(avgs)
         self.append_stat_summary(ret)
         return ret
+
     # endregion Calculate Tables
 
     # region Tier Management
@@ -276,8 +237,8 @@ class TierAggregator:
 
             except KeyError:
                 logging.warning("Failed to find TierList object. Please check the key provided.")
+
     # endregion Tier Management
 
     def __getitem__(self, item) -> TierList:
         return self.tier_dict[item]
-

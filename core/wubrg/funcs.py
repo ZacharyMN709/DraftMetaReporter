@@ -13,7 +13,7 @@ from core.wubrg.mana_symbols import MANA_SYMBOLS
 
 
 _mana_cost_re = re.compile(r'{(.*?)}')
-_mana_symbol_scrub = re.compile('[0-9{}X]')
+_mana_symbol_scrub = re.compile('[0-9{}XC]')
 
 
 # region Color String Conversions
