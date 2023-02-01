@@ -2,14 +2,16 @@ import logging
 from typing import Optional
 import pandas as pd
 
+from core.data_fetching import cast_color_filter, rarity_filter, filter_frame
 from core.data_interface import Request17Lands
-from core.game_metadata import SetMetadata
+from core.game_metadata import SetMetadata, RARITIES
 
-from core.tier_list_analysis.utils.consts import TIER_LIST_ROOT, tier_to_rank
+from core.tier_list_analysis.utils.consts import TIER_LIST_ROOT, tier_to_rank, rank_to_tier
+from core.wubrg import WUBRG, COLOR_COMBINATIONS
 
 
 class TierList:
-    def __init__(self, user, link):
+    def __init__(self, link, user):
         self.user: str = user
         self.link: str = link
         self.tiers: pd.DataFrame = self.gen_frame()
@@ -40,6 +42,7 @@ class TierAggregator:
         self.set_data: SetMetadata = SetMetadata.get_metadata(SET)
         self.tier_dict: dict[str, TierList] = dict()
         self._tier_frame: Optional[pd.DataFrame] = None
+        self._avg_frame: Optional[pd.DataFrame] = None
 
     @property
     def SET(self) -> str:
@@ -51,14 +54,125 @@ class TierAggregator:
             self._tier_frame = self.merge_rankings()
         return self._tier_frame
 
-    def add_tier(self, user, link):
-        try:
-            t = TierList(user, link)
-            self.tier_dict[user] = t
-            self._tier_frame = None
-        except:
-            logging.warning("Failed to create TierList object. Please check the link provided.")
-        pass
+    @property
+    def avg_frame(self) -> pd.DataFrame:
+        if self._avg_frame is None:
+            self._avg_frame = self.calc_avgs()
+        return self._avg_frame
+
+    def suborder_by_rarity(self, ordering='mean', style=False):
+        rarities = RARITIES
+        by_rarities = [filter_frame(self.tier_frame, order=ordering, filters=[rarity_filter(r)]) for r in rarities]
+        frame = pd.concat(by_rarities)
+        if style:
+            return self.style_frame(frame)
+        else:
+            return frame
+
+    def suborder_by_color(self, ordering='mean', style=False):
+        colors = COLOR_COMBINATIONS
+        by_colors = [filter_frame(self.tier_frame, order=ordering, filters=[cast_color_filter(c)]) for c in colors]
+        frame = pd.concat(by_colors)
+        if style:
+            return self.style_frame(frame)
+        else:
+            return frame
+
+    def top_picks(self, ordering='mean', style=False):
+        top = list()
+
+        for c in WUBRG:
+            filters = [rarity_filter('U'), cast_color_filter(c)]
+            top.append(filter_frame(self.tier_frame, order=ordering, filters=filters).head(3))
+
+            filters = [rarity_filter('C'), cast_color_filter(c)]
+            top.append(filter_frame(self.tier_frame, order=ordering, filters=filters).head(5))
+
+        frame = pd.concat(top)
+        if style:
+            return self.style_frame(frame)
+        else:
+            return frame
+
+    # TODO: Revisit this function.
+    def get_top(self, color=None, rarity=None, ordering='mean', count=5):
+        filters = list()
+        if color:
+            filters.append(cast_color_filter(color))
+        if rarity:
+            filters.append(rarity_filter(rarity))
+        frame = filter_frame(self.tier_frame, order=ordering, filters=filters).head(count)
+
+
+    def style_frame(self, frame):
+        # Set the display to accommodate the card count.
+        card_dict = self.set_data.CARD_DICT
+        pd.set_option('display.max_rows', len(card_dict))
+
+        def hover_img(card_name):
+            card = card_dict[card_name]
+            html = '<style>.hover_img a { position:relative; }\n' + \
+                   '.hover_img a span { position:absolute; display:none; z-index:300; }\n' + \
+                   '.hover_img a:hover span { display:block; height: 300px; width: 300px; overflow: visible; ' \
+                   'margin-left: -175px; }</style>\n' + \
+                   '<div class="hover_img">\n' + \
+                   f'<a href="#">{card_name}<span><img src="{card.IMAGE_URL}" alt="image"/></span></a>\n' + \
+                   '</div>'
+            return html
+
+        def to_int(val):
+            return int(val)
+
+        def format_short_float(val):
+            return '{:.1f}'.format(val)
+
+        def format_mean(val):
+            return '{:.2f} ({:2})'.format(val, rank_to_tier[round(val)])
+
+        def format_rank(val):
+            try:
+                return '{:} ({:2})'.format(int(val), rank_to_tier[val])
+            except Exception:
+                return ' - '
+
+        user_formats = {name: format_rank for name in self.tier_dict.keys()}
+        default_formats = {
+            'Image': hover_img,
+            'CMC': to_int,
+            'mean': format_mean,
+            'max': format_rank,
+            'min': format_rank,
+            'range': format_short_float,
+            'dist': format_short_float,
+            'std': format_short_float,
+        }
+
+        return frame.style.format(default_formats | user_formats)
+
+    # region Calculate Tables
+    def append_stat_summary(self, frame, round_to=2):
+        # Keep a list of the original columns, to use later.
+        org_cols = list(frame.columns)
+
+        # Calculate the general stats, keeping them separate to not contaminate the frame.
+        frame_mean = frame.mean(axis=1).round(round_to)
+        frame_max = frame.max(axis=1)
+        frame_min = frame.min(axis=1)
+        frame_range = frame_max - frame_min
+        frame_std = frame.std(axis=1).round(round_to)
+
+        # Append the general stats after they've all been calculated.
+        frame['mean'] = frame_mean
+        frame['max'] = frame_max
+        frame['min'] = frame_min
+        frame['range'] = frame_range
+        frame['std'] = frame_std
+
+        # Get the sum of distances to figure out most 'controversial' rows.
+        dist = pd.DataFrame()
+        for col in org_cols:
+            dist[col] = abs(frame['mean'] - frame[col])
+        frame['dist'] = dist.mean(axis=1).round(round_to)
 
     def merge_rankings(self):
         # Create an empty frame, to be indexed by card names.
@@ -68,21 +182,11 @@ class TierAggregator:
         # Get each user's converted ranks as ints.
         ranks = pd.DataFrame()
         for indiv in self.tier_dict.values():
-            ranks[indiv.index.name] = indiv['Rank'].astype('Int64')
-            frame[indiv.index.name] = indiv['Rank'].astype('Int64')
+            user_frame = indiv.tiers
+            ranks[user_frame.index.name] = user_frame['Rank'].astype('Int64')
+            frame[user_frame.index.name] = user_frame['Rank'].astype('Int64')
 
-        # Calculate the general stats and append them.
-        frame['mean'] = ranks.mean(axis=1)
-        frame['max'] = ranks.max(axis=1)
-        frame['min'] = ranks.min(axis=1)
-        frame['range'] = frame['max'] - frame['min']
-        frame['std'] = ranks.std(axis=1).round(1)
-
-        # Get the difference of squares distance to figure out most 'controversial' cards.
-        dist = pd.DataFrame()
-        for indiv in self.tier_dict.values():
-            dist[indiv.index.name] = abs(frame['mean'] - ranks[indiv.index.name])
-        frame['dist'] = dist.mean(axis=1).round(1)
+        self.append_stat_summary(frame)
 
         # Append card information to the frame.
         series = frame.index.to_series()
@@ -98,6 +202,44 @@ class TierAggregator:
 
         return frame
 
+    def calc_avgs(self):
+        avgs = dict()
+
+        # For each rarity and colour, get each user's average evaluation.
+        for r in RARITIES:
+            color_frame = pd.DataFrame()
+
+            for c in WUBRG:
+                working = filter_frame(self.tier_frame, filters=[cast_color_filter(c), rarity_filter(r)])
+                working = working.drop(
+                    ['Image', 'CMC', 'Rarity', 'Color', 'Cast Color', 'std', 'max', 'min', 'mean', 'range', 'dist'],
+                    axis=1)
+                working = working.dropna(how='all', axis=1)
+                color_frame[c] = working.mean().round(1)
+
+            # Translate it to a row, and add it to the inner frame.
+            avgs[r] = color_frame.T
+
+        # Concatenate the inner frames to make the full frame, and add the stat summary.
+        ret = pd.concat(avgs)
+        self.append_stat_summary(ret)
+        return ret
+    # endregion Calculate Tables
+
+    # region Tier Management
+    def add_tier(self, link: str, user: str):
+        try:
+            t = TierList(link, user)
+            self.tier_dict[user] = t
+            self._tier_frame = None
+        except:
+            logging.warning("Failed to create TierList object. Please check the link provided.")
+        pass
+
+    def add_tiers(self, lst: list[tuple[str, str]]):
+        for link, user, in lst:
+            self.add_tier(link, user)
+
     def refresh_data(self, key=None):
         if key is None:
             for tier in self.tier_dict.values():
@@ -110,3 +252,8 @@ class TierAggregator:
 
             except KeyError:
                 logging.warning("Failed to find TierList object. Please check the key provided.")
+    # endregion Tier Management
+
+    def __getitem__(self, item) -> TierList:
+        return self.tier_dict[item]
+
