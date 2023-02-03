@@ -1,9 +1,11 @@
 from typing import Callable
+import numpy as np
 import pandas as pd
+from scipy.stats import norm
 
 from core.game_metadata import SetMetadata
 
-from core.data_fetching.utils.consts import FORMAT_NICKNAME_DICT
+from core.data_fetching.utils.consts import FORMAT_NICKNAME_DICT, rank_to_tier, range_map_vals
 from core.data_fetching.utils.index_slice_helper import get_name_slice, get_color_slice, get_date_slice
 from core.data_fetching.DataFramer import DataFramer
 
@@ -66,6 +68,19 @@ class FramedData:
         else:
             return self.DATA.CARD_HISTORY_FRAME.loc(axis=0)[date_slice, deck_color_slice, name_slice]
 
+    def get_stats_grades(self, deck_color: str = ''):
+        # Get the non-colour specific card stats, then normalize GIH WR to from 0-100 for each card.
+        frame = self.card_frame(deck_color=deck_color, summary=True).copy()
+        mu, std = norm.fit(frame['GIH WR'])
+        frame['Percentile'] = norm.cdf(frame['GIH WR'], mu, std).round(4) * 100
+
+        # For each "Percentile", use a pre-defined mapping to assign that a tier, and in turn, a letter grade.
+        range_map = [frame['Percentile'].between(start, end) for start, end in range_map_vals]
+        frame['Tier'] = np.select(range_map, [i for i in range(0, len(range_map))], 0)
+        frame['Rank'] = frame['Tier'].map(rank_to_tier)
+        return frame
+
+    # region Dataframe Creation
     def aggregate_card_frame(self, frame: pd.DataFrame) -> pd.DataFrame:  # pragma: no cover
         """
         Summarizes card data over a provided set of time.
@@ -115,3 +130,4 @@ class FramedData:
 
     def aggregate_archetype_summary_data(self, frame: pd.DataFrame) -> pd.DataFrame:  # pragma: no cover
         return frame
+    # endregion Dataframe Creation

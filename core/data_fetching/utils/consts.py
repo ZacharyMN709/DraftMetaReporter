@@ -1,5 +1,5 @@
-from typing import Union
-
+from typing import Union, Optional
+from core.utilities import invert_dict
 
 # region Colour Count Mappings
 # TODO: Tidy this up a little.
@@ -43,14 +43,15 @@ WUBRG_CARD_DATA = dict[str, CARD_DATA]
 # Set Consts
 # noinspection SpellCheckingInspection
 FORMAT_NICKNAME_DICT: dict[str, str] = {
-    'PremierDraft': 'Bo1',
-    'TradDraft': 'Bo3',
-    'QuickDraft': 'Quick',
-    'Sealed': 'Seal',
-    'TradSealed': 'Bo3Seal',
+    'PremierDraft': 'BO1',
+    'TradDraft': 'BO3',
+    'QuickDraft': 'QD',
+    'Sealed': 'SBO1',
+    'TradSealed': 'SBO3',
     'DraftChallenge': 'Chal.',
 }
 
+# region Frame Column Consts
 STAT_NAME_DICT: dict[str, str] = {
     "name": "Name",
     "color": "Color",
@@ -110,3 +111,44 @@ SHARED_COL_NAMES: list[str] = ['Rarity', 'Color']
 
 CARD_INFO_COL_NAMES: list[str] = ['Cast Color', 'CMC', 'Type Line', 'Supertypes', 'Types', 'Subtypes',
                                   'Power', 'Toughness']
+# endregion Frame Column Consts
+
+# region Tier Rank Consts
+tier_to_rank: dict[str, Optional[int]] = {
+    "A+": 12,
+    "A": 11,
+    "A-": 10,
+    "B+": 9,
+    "B": 8,
+    "B-": 7,
+    "C+": 6,
+    "C": 5,
+    "C-": 4,
+    "D+": 3,
+    "D": 2,
+    "D-": 1,
+    "F": 0,
+    "SB": None,
+    "TBD": None
+}
+
+
+rank_to_tier: dict[Optional[int], str] = invert_dict(tier_to_rank)
+
+
+range_map_vals: list[tuple[int, int]] = [
+    (0, 5),
+    (5, 17),
+    (17, 27),
+    (27, 36),
+    (36, 45),
+    (45, 57),
+    (57, 68),
+    (68, 76),
+    (76, 85),
+    (85, 90),
+    (90, 95),
+    (95, 99),
+    (99, 100),
+]
+# endregion Tier Rank Consts

@@ -2,13 +2,15 @@ import logging
 from typing import Optional
 import pandas as pd
 
-from core.data_fetching import cast_color_filter, rarity_filter, filter_frame
+from core.data_fetching import cast_color_filter, rarity_filter, filter_frame, tier_to_rank, SetManager, \
+    FORMAT_NICKNAME_DICT
 from core.data_interface import Request17Lands
-from core.game_metadata import SetMetadata, RARITIES
+from core.game_metadata import SetMetadata, RARITIES, CardManager
 
-from core.tier_list_analysis.utils.consts import TIER_LIST_ROOT, tier_to_rank, rank_to_tier
+from core.tier_list_analysis.utils.consts import TIER_LIST_ROOT
 from core.tier_list_analysis.utils.funcs import safe_to_int, hover_card, format_long_float, format_short_float, \
-    color_map, rarity_map, stat_map, user_map, range_map, dict_from_card_json
+    color_map, rarity_map, stat_map, user_map, range_map
+
 from core.wubrg import WUBRG, COLOR_COMBINATIONS
 
 
@@ -19,9 +21,28 @@ class TierList:
         self.tiers: pd.DataFrame = self.gen_frame()
 
     def gen_frame(self) -> pd.DataFrame:
+        def gen_tier_tuple(data: dict) -> tuple[str, dict]:
+            # Use the card name from 17Lands to get the relevant card from Scryfall.
+            # This patches bad names coming back from Arena or 17Lands.
+            card = CardManager.from_name(data['name'])
+            tier_dict = {
+                    'Card': card.NAME,
+                    'Tier': data['tier'],
+                    'Rank': tier_to_rank[data['tier']],
+                    'Synergy': data['flags']['synergy'],
+                    'Buildaround': data['flags']['buildaround']
+            }
+            return card.NAME, tier_dict
+
+        # Generate a requester to get data from the 17Lands website.
         fetcher = Request17Lands()
         raw_data = fetcher.get_tier_list(self.link.replace(TIER_LIST_ROOT, ""))
-        tier_data = {card_data['name']: dict_from_card_json(card_data) for card_data in raw_data}
+
+        # Clean and the data down to what's needed, and cleanly format it for a DataFrame.
+        tier_tuples = [gen_tier_tuple(card_data) for card_data in raw_data]
+        tier_data = {k: v for k, v in tier_tuples}
+
+        # Create teh DataFrame, setting the index to be the user who provided the TierList.
         frame = pd.DataFrame.from_dict(tier_data, orient="index")
         frame.index.name = self.user
         return frame
@@ -32,14 +53,15 @@ class TierList:
 
 class TierAggregator:
     def __init__(self, SET):
-        self.set_data: SetMetadata = SetMetadata.get_metadata(SET)
+        self.set_metadata: SetMetadata = SetMetadata.get_metadata(SET)
+        self.set_data: SetManager = SetManager(SET)
         self.tier_dict: dict[str, TierList] = dict()
         self._tier_frame: Optional[pd.DataFrame] = None
         self._avg_frame: Optional[pd.DataFrame] = None
 
     @property
     def SET(self) -> str:
-        return self.set_data.SET
+        return self.set_metadata.SET
 
     @property
     def users(self) -> list[str]:
@@ -104,14 +126,15 @@ class TierAggregator:
         # https://pandas.pydata.org/docs/reference/api/pandas.io.formats.style.Styler.background_gradient.html
         # https://pandas.pydata.org/docs/user_guide/style.html
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
-        
+
         # Set the display to accommodate the card count.
-        card_dict = self.set_data.CARD_DICT
+        card_dict = self.set_metadata.CARD_DICT
         pd.set_option('display.max_rows', len(card_dict))
 
         def hover_img(card_name):
             return hover_card(card_dict[card_name])
 
+        # These can be safely applied if the column doesn't exist.
         user_formats = {name: safe_to_int for name in self.tier_dict.keys()}
         default_formats = {
             'Image': hover_img,
@@ -122,19 +145,23 @@ class TierAggregator:
             'range': format_short_float,
             'dist': format_short_float,
             'std': format_short_float,
+            'BO1': safe_to_int,
+            'BO3': safe_to_int,
+            'Sealed': safe_to_int,
         }
+        styler = frame.style.format(default_formats | user_formats)
 
-        styler = frame.style.format(default_formats | user_formats) \
-            .applymap(color_map, subset=['Color', 'Cast Color']) \
-            .applymap(rarity_map, subset=['Rarity']) \
-            .applymap(stat_map, subset=['mean', 'max', 'min']) \
-            .applymap(user_map, subset=self.users) \
-            .applymap(range_map, subset=['range']) \
-            .background_gradient(subset=['std', 'dist'], cmap='Purples')
+        # These _cannot_ be safely applied if the column doesn't exist. Create class to "pretty print" tables.
+        styler = styler.applymap(color_map, subset=['Color', 'Cast Color'])
+        styler = styler.applymap(rarity_map, subset=['Rarity'])
+        styler = styler.applymap(stat_map, subset=['mean', 'max', 'min'])
+        styler = styler.applymap(user_map, subset=['BO1', 'BO3'] + self.users)
+        styler = styler.applymap(range_map, subset=['range'])
+        styler = styler.background_gradient(subset=['std', 'dist'], cmap='Purples')
         return styler
 
     # region Calculate Tables
-    def append_stat_summary(self, frame, round_to=2):
+    def append_stat_summary(self, frame, round_to=2) -> pd.DataFrame:
         # Keep a list of the original columns, to use later.
         org_cols = list(frame.columns)
 
@@ -157,33 +184,53 @@ class TierAggregator:
         for col in org_cols:
             dist[col] = abs(frame['mean'] - frame[col])
         frame['dist'] = dist.mean(axis=1).round(round_to)
+        return frame
 
-    def merge_rankings(self):
+    # noinspection PyPep8Naming
+    def prepend_17L_ranks(self, frame) -> pd.DataFrame:
+        # Note the original columns, so the new ones can be put before them.
+        org_cols = list(frame.columns)
+        new_cols = list()
+
+        for col, data in self.set_data.DATA.items():
+            if data.DATA.CARD_SUMMARY_FRAME is not None:
+                short_col = FORMAT_NICKNAME_DICT[col]
+                frame[short_col] = data.get_stats_grades().droplevel(0)['Tier'].astype('Int64')
+                new_cols.append(short_col)
+
+        # Re-order the frame so the data-based stats are first.
+        frame = frame[new_cols + org_cols]
+        return frame
+
+    def prepend_card_info(self, frame) -> pd.DataFrame:
+        # Note the original columns, so the new ones can be put before them.
+        org_cols = list(frame.columns)
+
+        # Append card information to the frame.
+        series = frame.index.to_series()
+        frame['Image'] = series.map({card.NAME: card.NAME for card in self.set_metadata.CARD_DICT.values()})
+        frame['Cast Color'] = series.map({card.NAME: card.CAST_IDENTITY for card in self.set_metadata.CARD_DICT.values()})
+        frame['Color'] = series.map({card.NAME: card.COLOR_IDENTITY for card in self.set_metadata.CARD_DICT.values()})
+        frame['Rarity'] = series.map({card.NAME: card.RARITY for card in self.set_metadata.CARD_DICT.values()})
+        frame['CMC'] = series.map({card.NAME: card.CMC for card in self.set_metadata.CARD_DICT.values()})
+
+        # Re-order the frame so card information is first.
+        frame = frame[['Image', 'CMC', 'Rarity', 'Color', 'Cast Color'] + org_cols]
+        return frame
+
+    def merge_rankings(self) -> pd.DataFrame:
         # Create an empty frame, to be indexed by card names.
         frame = pd.DataFrame()
         frame.index.name = 'Card'
 
         # Get each user's converted ranks as ints.
-        ranks = pd.DataFrame()
         for indiv in self.tier_dict.values():
             user_frame = indiv.tiers
-            ranks[user_frame.index.name] = user_frame['Rank'].astype('Int64')
             frame[user_frame.index.name] = user_frame['Rank'].astype('Int64')
 
-        self.append_stat_summary(frame)
-
-        # Append card information to the frame.
-        series = frame.index.to_series()
-        frame['Image'] = series.map({card.NAME: card.NAME for card in self.set_data.CARD_DICT.values()})
-        frame['Cast Color'] = series.map({card.NAME: card.CAST_IDENTITY for card in self.set_data.CARD_DICT.values()})
-        frame['Color'] = series.map({card.NAME: card.COLOR_IDENTITY for card in self.set_data.CARD_DICT.values()})
-        frame['Rarity'] = series.map({card.NAME: card.RARITY for card in self.set_data.CARD_DICT.values()})
-        frame['CMC'] = series.map({card.NAME: card.CMC for card in self.set_data.CARD_DICT.values()})
-
-        # Re-order the frame so card information is first.
-        cols = list(frame.columns)
-        frame = frame[['Image', 'CMC', 'Rarity', 'Color', 'Cast Color'] + cols[:-5]]
-
+        frame = self.append_stat_summary(frame)
+        frame = self.prepend_17L_ranks(frame)
+        frame = self.prepend_card_info(frame)
         return frame
 
     def calc_avgs(self):
@@ -208,7 +255,6 @@ class TierAggregator:
         ret = pd.concat(avgs)
         self.append_stat_summary(ret)
         return ret
-
     # endregion Calculate Tables
 
     # region Tier Management

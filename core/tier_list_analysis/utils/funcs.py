@@ -1,15 +1,4 @@
-from core.tier_list_analysis.utils.consts import tier_to_rank, rank_to_tier, \
-    range_hexes, rarity_hexes, rank_hexes, color_hexes
-
-
-def dict_from_card_json(data: dict):
-    return {
-        'Card': data['name'],
-        'Tier': data['tier'],
-        'Rank': tier_to_rank[data['tier']],
-        'Synergy': data['flags']['synergy'],
-        'Buildaround': data['flags']['buildaround']
-    }
+from core.tier_list_analysis.utils.consts import range_hexes, rarity_hexes, rank_hexes, color_hexes
 
 
 # region Dataframe Formatting

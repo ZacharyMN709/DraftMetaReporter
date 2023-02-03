@@ -11,7 +11,8 @@ from core.data_fetching.utils.settings import *
 
 
 from_consts = ['FORMAT_NICKNAME_DICT', 'STAT_NAME_DICT', 'META_COLS_ALIAS_DICT', 'STAT_FORMAT_STRINGS',
-               'PERCENT_COLUMNS', 'STAT_COL_NAMES', 'SHARED_COL_NAMES', 'CARD_INFO_COL_NAMES']
+               'PERCENT_COLUMNS', 'STAT_COL_NAMES', 'SHARED_COL_NAMES', 'CARD_INFO_COL_NAMES',
+               'tier_to_rank', 'rank_to_tier']
 
 from_date_helper = ['utc_today', 'get_prev_17lands_update_time', 'get_next_17lands_update_time']
 
