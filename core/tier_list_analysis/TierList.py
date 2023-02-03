@@ -1,6 +1,8 @@
 import logging
-from typing import Optional
+from typing import Optional, Callable
 import pandas as pd
+from pandas.io.formats.style import Styler
+from functools import partial
 
 from core.data_fetching import cast_color_filter, rarity_filter, filter_frame, tier_to_rank, SetManager, \
     FORMAT_NICKNAME_DICT
@@ -122,43 +124,85 @@ class TierAggregator:
             filters.append(rarity_filter(rarity))
         frame = filter_frame(self.tier_frame, order=ordering, filters=filters).head(count)
 
-    def style_frame(self, frame):
-        # https://pandas.pydata.org/docs/reference/api/pandas.io.formats.style.Styler.background_gradient.html
-        # https://pandas.pydata.org/docs/user_guide/style.html
-        # https://matplotlib.org/stable/tutorials/colors/colormaps.html
-
-        # Set the display to accommodate the card count.
-        card_dict = self.set_metadata.CARD_DICT
-        pd.set_option('display.max_rows', len(card_dict))
-
-        def hover_img(card_name):
-            return hover_card(card_dict[card_name])
-
-        # These can be safely applied if the column doesn't exist.
-        user_formats = {name: safe_to_int for name in self.tier_dict.keys()}
-        default_formats = {
-            'Image': hover_img,
+    # region Styling & Formatting
+    def apply_formatting(self, styler: Styler) -> Styler:
+        # TODO: Consider if this should be able to be more finely controlled.
+        card_info = {
+            'Image': hover_card,
             'CMC': safe_to_int,
-            'mean': format_long_float,
-            'max': safe_to_int,
-            'min': safe_to_int,
-            'range': format_short_float,
-            'dist': format_short_float,
-            'std': format_short_float,
+        }
+
+        data_rank_formats = {
             'BO1': safe_to_int,
             'BO3': safe_to_int,
             'Sealed': safe_to_int,
         }
-        styler = frame.style.format(default_formats | user_formats)
 
-        # These _cannot_ be safely applied if the column doesn't exist. Create class to "pretty print" tables.
-        styler = styler.applymap(color_map, subset=['Color', 'Cast Color'])
-        styler = styler.applymap(rarity_map, subset=['Rarity'])
-        styler = styler.applymap(stat_map, subset=['mean', 'max', 'min'])
-        styler = styler.applymap(user_map, subset=['BO1', 'BO3'] + self.users)
-        styler = styler.applymap(range_map, subset=['range'])
-        styler = styler.background_gradient(subset=['std', 'dist'], cmap='Purples')
+        user_rank_formats = {name: safe_to_int for name in self.tier_dict.keys()}
+
+        stat_formats = {
+            'mean': format_long_float,
+            'max': safe_to_int,
+            'min': safe_to_int,
+        }
+
+        disagree_formats = {
+            'range': format_short_float,
+            'dist': format_short_float,
+            'std': format_short_float,
+        }
+
+        all_dicts = card_info | data_rank_formats | user_rank_formats | stat_formats | disagree_formats
+        styler = styler.format(all_dicts)
         return styler
+
+    def apply_styles(self, styler: Styler) -> Styler:
+        # TODO: Consider if this should be able to be more finely controlled.
+        # https://pandas.pydata.org/docs/reference/api/pandas.io.formats.style.Styler.background_gradient.html
+        # https://pandas.pydata.org/docs/user_guide/style.html
+        # https://matplotlib.org/stable/tutorials/colors/colormaps.html
+
+        # Create methods to be converted into partials with a consistent set of arguments.
+        def apply(m: callable, s: Styler, c: str) -> Styler:
+            return s.applymap(m, subset=[c])
+
+        def gradient(m: str, s: Styler, c: str) -> Styler:
+            return s.background_gradient(subset=[c], cmap=m)
+
+        # Create mappings of partial functions for each column name to style.
+        user_style_dict = {user: partial(apply, user_map) for user in self.users}
+        const_style_dict = {
+            "Color": partial(apply, color_map),
+            "Cast Color": partial(apply, color_map),
+            "Rarity": partial(apply, rarity_map),
+            "mean": partial(apply, stat_map),
+            "max": partial(apply, stat_map),
+            "min": partial(apply, stat_map),
+            "BO1": partial(apply, user_map),
+            "BO3": partial(apply, user_map),
+            "range": partial(apply, range_map),
+            "std": partial(gradient, 'Purples'),
+            "dist": partial(gradient, 'Purples'),
+        }
+        style_dict = user_style_dict | const_style_dict
+
+        for col in styler.data.columns:
+            if col in style_dict:
+                styler = style_dict[col](styler, col)
+
+        return styler
+
+    def style_frame(self, frame) -> Styler:
+        # Set the display to accommodate the card count.
+        pd.set_option('display.max_rows', len(self.set_metadata.CARD_DICT))
+
+        # Then apply the formatting and styling.
+        styler = frame.style
+        styler = self.apply_formatting(styler)
+        styler = self.apply_styles(styler)
+
+        return styler
+    # endregion Styling & Formatting
 
     # region Calculate Tables
     def append_stat_summary(self, frame, round_to=2) -> pd.DataFrame:

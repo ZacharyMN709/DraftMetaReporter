@@ -11,8 +11,8 @@ color_hexes: dict[str, str] = {
 }
 
 rarity_hexes: dict[str, str] = {
-    'C': '#d0d0d0',
-    'U': '#576b73',
+    'C': '#ffffff',
+    'U': '#426a6e',
     'R': '#83703d',
     'M': '#b02911',
 }

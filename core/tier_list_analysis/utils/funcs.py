@@ -1,3 +1,5 @@
+from core.game_metadata import CardManager
+
 from core.tier_list_analysis.utils.consts import range_hexes, rarity_hexes, rank_hexes, color_hexes
 
 
@@ -17,7 +19,8 @@ def format_long_float(val):
     return '{:.3f}'.format(val)
 
 
-def hover_card(card):
+def hover_card(card_name):
+    card = CardManager.from_name(card_name)
     html = '<style>.hover_img a { position:relative; }\n' + \
            '.hover_img a span { position:absolute; display:none; z-index:300; }\n' + \
            '.hover_img a:hover span { display:block; height: 300px; width: 300px; overflow: visible; ' \
