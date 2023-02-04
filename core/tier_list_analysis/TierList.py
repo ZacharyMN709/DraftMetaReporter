@@ -1,65 +1,95 @@
-import logging
-from typing import Optional, Callable
+from __future__ import annotations
+from typing import Optional
 import pandas as pd
+import os
+import pickle
 from pandas.io.formats.style import Styler
 from functools import partial
+from datetime import datetime, date
 
 from core.data_fetching import cast_color_filter, rarity_filter, filter_frame, tier_to_rank, SetManager, \
-    FORMAT_NICKNAME_DICT
+    FORMAT_NICKNAME_DICT, DATA_DIR_LOC, DATA_DIR_NAME
 from core.data_interface import Request17Lands
 from core.game_metadata import SetMetadata, RARITIES, CardManager
+from core.utilities import logging
+from core.wubrg import WUBRG, COLOR_COMBINATIONS
 
 from core.tier_list_analysis.utils.consts import TIER_LIST_ROOT
 from core.tier_list_analysis.utils.funcs import safe_to_int, hover_card, format_long_float, format_short_float, \
     color_map, rarity_map, stat_map, user_map, range_map
 
-from core.wubrg import WUBRG, COLOR_COMBINATIONS
-
 
 class TierList:
-    def __init__(self, link, user):
-        self.user: str = user
+    ext: str = '.tier'
+
+    def __init__(self, link, user, SET):
         self.link: str = link
+        self.user: str = user
+        self.SET: str = SET  # TODO: Auto determine the set from cards in tierlist.
+        self.pull_time: datetime = datetime.utcnow()
+
         self.tiers: pd.DataFrame = self.gen_frame()
+        self.data_root: str = os.path.join(DATA_DIR_LOC, DATA_DIR_NAME, self.SET, 'Tiers')
+        self.filename = f'{self.SET}-{self.user}-{self.pull_time.strftime("%y%m%d")}{self.ext}'
 
-    def gen_frame(self) -> pd.DataFrame:
-        def gen_tier_tuple(data: dict) -> tuple[str, dict]:
-            # Use the card name from 17Lands to get the relevant card from Scryfall.
-            # This patches bad names coming back from Arena or 17Lands.
-            card = CardManager.from_name(data['name'])
-            tier_dict = {
-                    'Card': card.NAME,
-                    'Tier': data['tier'],
-                    'Rank': tier_to_rank[data['tier']],
-                    'Synergy': data['flags']['synergy'],
-                    'Buildaround': data['flags']['buildaround']
-            }
-            return card.NAME, tier_dict
-
+    def pull_data(self) -> dict:
         # Generate a requester to get data from the 17Lands website.
         fetcher = Request17Lands()
         raw_data = fetcher.get_tier_list(self.link.replace(TIER_LIST_ROOT, ""))
 
-        # Clean and the data down to what's needed, and cleanly format it for a DataFrame.
-        tier_tuples = [gen_tier_tuple(card_data) for card_data in raw_data]
-        tier_data = {k: v for k, v in tier_tuples}
+        # Update the time data was pulled.
+        self.pull_time = datetime.utcnow()
+        return raw_data
 
-        # Create teh DataFrame, setting the index to be the user who provided the TierList.
-        frame = pd.DataFrame.from_dict(tier_data, orient="index")
+    def gen_frame(self) -> pd.DataFrame:
+        def adjust_data(tier_dict: dict):
+            # Use the card name from 17Lands to get the relevant card from Scryfall.
+            # This patches bad names coming back from Arena or 17Lands.
+            card = CardManager.from_name(tier_dict['Card'])
+            tier_dict['Card'] = card.NAME
+            tier_dict['Rank'] = tier_to_rank[tier_dict['Tier']]
+            del tier_dict['Comment']
+            del tier_dict['Sideboard']
+
+        # Pull and adjust the data from 17Lands.
+        data = self.pull_data()
+        for tier in data:
+            adjust_data(tier)
+
+        # Create the DataFrame, setting the index to be the user who provided the TierList.
+        frame_dict = {tier['Card']: tier for tier in data}
+        frame = pd.DataFrame.from_dict(frame_dict, orient="index")
         frame.index.name = self.user
+
         return frame
 
     def refresh_data(self):
         self.tiers = self.gen_frame()
 
+    def save(self):
+        os.makedirs(self.data_root, exist_ok=True)
+        with open(os.path.join(self.data_root, self.filename), 'wb') as f:
+            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+
+    @classmethod
+    def load(cls, filename: str) -> TierList:
+        data_root = os.path.join(DATA_DIR_LOC, DATA_DIR_NAME, filename[:3], 'Tiers')
+        with open(os.path.join(data_root, filename), 'rb') as f:
+            obj = pickle.load(f)
+        return obj
+
 
 class TierAggregator:
+    ext: str = '.tagg'
+
     def __init__(self, SET):
         self.set_metadata: SetMetadata = SetMetadata.get_metadata(SET)
         self.set_data: SetManager = SetManager(SET)
         self.tier_dict: dict[str, TierList] = dict()
         self._tier_frame: Optional[pd.DataFrame] = None
         self._avg_frame: Optional[pd.DataFrame] = None
+
+        self.data_root: str = os.path.join(DATA_DIR_LOC, DATA_DIR_NAME, self.SET, 'Tiers')
 
     @property
     def SET(self) -> str:
@@ -302,18 +332,13 @@ class TierAggregator:
     # endregion Calculate Tables
 
     # region Tier Management
-    def add_tier(self, link: str, user: str):
-        try:
-            t = TierList(link, user)
-            self.tier_dict[user] = t
-            self._tier_frame = None
-        except:
-            logging.warning("Failed to create TierList object. Please check the link provided.")
-        pass
+    def add_tier(self, tier: TierList):
+        self.tier_dict[tier.user] = tier
+        self._tier_frame = None
 
-    def add_tiers(self, lst: list[tuple[str, str]]):
-        for link, user, in lst:
-            self.add_tier(link, user)
+    def add_tiers(self, lst: list[TierList]):
+        for tier, in lst:
+            self.add_tier(tier)
 
     def refresh_data(self, key=None):
         if key is None:
@@ -324,11 +349,30 @@ class TierAggregator:
             try:
                 self.tier_dict[key].refresh_data()
                 self._tier_frame = self.merge_rankings()
-
             except KeyError:
                 logging.warning("Failed to find TierList object. Please check the key provided.")
 
     # endregion Tier Management
+
+    def save(self, filename: str):
+        if not filename.endswith(self.ext):
+            logging.warning(f"TierAggregator object should end with '{self.ext}'!")
+
+        # TODO: Need to remove partial function so that this can be pickled.
+        os.makedirs(self.data_root, exist_ok=True)
+        with open(os.path.join(self.data_root, filename), 'wb') as f:
+            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+
+    @classmethod
+    def load(cls, filename) -> TierList:
+        if not filename.endswith(cls.ext):
+            logging.warning(f"TierAggregator object should end with '{cls.ext}'!")
+
+        SET = ""  # Parse filename for set.
+        data_root = os.path.join(DATA_DIR_LOC, DATA_DIR_NAME, SET, 'Tiers')
+        with open(os.path.join(data_root, filename), 'rb') as f:
+            obj = pickle.load(f)
+        return obj
 
     def __getitem__(self, item) -> TierList:
         return self.tier_dict[item]

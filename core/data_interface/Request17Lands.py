@@ -235,4 +235,4 @@ class Request17Lands(Requester):
         url_to_parse = TIER_17L_URL + f"/{guid}"
 
         result = self.request(url=url_to_parse)
-        return result
+        return [clean_card_tier(card_data) for card_data in result]
