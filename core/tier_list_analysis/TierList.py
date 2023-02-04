@@ -1,36 +1,32 @@
 from __future__ import annotations
 from typing import Optional
+from functools import partial
 import pandas as pd
 import os
 import pickle
 from pandas.io.formats.style import Styler
-from functools import partial
 from datetime import datetime, date
 
-from core.data_fetching import cast_color_filter, rarity_filter, filter_frame, tier_to_rank, SetManager, \
-    FORMAT_NICKNAME_DICT, DATA_DIR_LOC, DATA_DIR_NAME
+from core.wubrg import WUBRG, COLOR_COMBINATIONS
+from core.utilities import logging
 from core.data_interface import Request17Lands
 from core.game_metadata import SetMetadata, RARITIES, CardManager
-from core.utilities import logging
-from core.wubrg import WUBRG, COLOR_COMBINATIONS
+from core.data_fetching import cast_color_filter, rarity_filter, filter_frame, tier_to_rank, SetManager, \
+    FORMAT_NICKNAME_DICT, DATA_DIR_LOC, DATA_DIR_NAME
 
-from core.tier_list_analysis.utils.consts import TIER_LIST_ROOT
-from core.tier_list_analysis.utils.funcs import safe_to_int, hover_card, format_long_float, format_short_float, \
-    color_map, rarity_map, stat_map, user_map, range_map
+from core.tier_list_analysis.utils import *
 
 
 class TierList:
-    ext: str = '.tier'
-
-    def __init__(self, link, user, SET):
+    def __init__(self, link, user, _set):
         self.link: str = link
         self.user: str = user
-        self.SET: str = SET  # TODO: Auto determine the set from cards in tierlist.
+        self.SET: str = _set  # TODO: Auto determine the set from cards in tierlist.
         self.pull_time: datetime = datetime.utcnow()
 
         self.tiers: pd.DataFrame = self.gen_frame()
         self.data_root: str = os.path.join(DATA_DIR_LOC, DATA_DIR_NAME, self.SET, 'Tiers')
-        self.filename = f'{self.SET}-{self.user}-{self.pull_time.strftime("%y%m%d")}{self.ext}'
+        self.filename = f'{self.SET}-{self.user}-{self.pull_time.strftime("%y%m%d")}{TIER_LIST_EXT}'
 
     def pull_data(self) -> dict:
         # Generate a requester to get data from the 17Lands website.
@@ -80,11 +76,9 @@ class TierList:
 
 
 class TierAggregator:
-    ext: str = '.tagg'
-
-    def __init__(self, SET):
-        self.set_metadata: SetMetadata = SetMetadata.get_metadata(SET)
-        self.set_data: SetManager = SetManager(SET)
+    def __init__(self, _set):
+        self.set_metadata: SetMetadata = SetMetadata.get_metadata(_set)
+        self.set_data: SetManager = SetManager(_set)
         self.tier_dict: dict[str, TierList] = dict()
         self._tier_frame: Optional[pd.DataFrame] = None
         self._avg_frame: Optional[pd.DataFrame] = None
@@ -197,6 +191,7 @@ class TierAggregator:
             return s.applymap(m, subset=[c])
 
         def gradient(m: str, s: Styler, c: str) -> Styler:
+            # TODO: Handle NANs here.
             return s.background_gradient(subset=[c], cmap=m)
 
         # Create mappings of partial functions for each column name to style.
@@ -353,26 +348,6 @@ class TierAggregator:
                 logging.warning("Failed to find TierList object. Please check the key provided.")
 
     # endregion Tier Management
-
-    def save(self, filename: str):
-        if not filename.endswith(self.ext):
-            logging.warning(f"TierAggregator object should end with '{self.ext}'!")
-
-        # TODO: Need to remove partial function so that this can be pickled.
-        os.makedirs(self.data_root, exist_ok=True)
-        with open(os.path.join(self.data_root, filename), 'wb') as f:
-            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
-
-    @classmethod
-    def load(cls, filename) -> TierList:
-        if not filename.endswith(cls.ext):
-            logging.warning(f"TierAggregator object should end with '{cls.ext}'!")
-
-        SET = ""  # Parse filename for set.
-        data_root = os.path.join(DATA_DIR_LOC, DATA_DIR_NAME, SET, 'Tiers')
-        with open(os.path.join(data_root, filename), 'rb') as f:
-            obj = pickle.load(f)
-        return obj
 
     def __getitem__(self, item) -> TierList:
         return self.tier_dict[item]

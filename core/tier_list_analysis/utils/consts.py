@@ -1,5 +1,5 @@
 TIER_LIST_ROOT = "https://www.17lands.com/tier_list/"
-
+TIER_LIST_EXT: str = '.tier'
 
 # region Colour Hexes
 color_hexes: dict[str, str] = {
