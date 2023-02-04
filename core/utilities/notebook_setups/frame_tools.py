@@ -53,4 +53,5 @@ def load_set_data(target_set=SETS[0], load_all=False) -> tuple[CentralManager, S
 def set_up(log_lvl=LogLvl.DEBUG, target_set=SETS[0], load_all=False) -> tuple[CentralManager, SetManager]:
     sub_set_up(log_lvl)
     info_splash()
+    CardManager.load_cache_from_file()
     return load_set_data(target_set, load_all)
