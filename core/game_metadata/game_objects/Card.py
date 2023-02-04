@@ -14,8 +14,9 @@ from core.utilities import logging, load_json_file, save_json_file
 from core.wubrg import get_color_identity, calculate_cmc, parse_color_list, COLOR_STRING, WUBRG_COLOR_INDEXES
 from core.data_interface import RequestScryfall
 
-from core.game_metadata.utils import RARITY_ALIASES, SUPERTYPES, TYPES, SUBTYPES, CARD_INFO, CARD_SIDE, LAYOUT_DICT, \
-    CardLayouts, SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA
+from core.game_metadata.utils import *
+from core.game_metadata.utils.settings import SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA
+from core.game_metadata.utils.consts import LAYOUT_DICT
 
 
 prototype_parse = re.compile(r"Prototype (.*?) [—-] (\d*)/(\d*)")
@@ -119,17 +120,17 @@ class CardFace:
 
         if self.LAYOUT == CardLayouts.PROTOTYPE and self.CARD_SIDE == 'prototype':
             c, p, t = prototype_parse.match(self.ORACLE).groups()
-            self.MANA_COST: str = c
-            self.POW: str = p
-            self.TOU: str = t
-            self.CMC: int = calculate_cmc(self.MANA_COST)
+            self.MANA_COST = c
+            self.POW = p
+            self.TOU = t
+            self.CMC = calculate_cmc(self.MANA_COST)
             self.COLORS: COLOR_STRING = get_color_identity(self.MANA_COST)
 
     def __init__(self, json: CARD_INFO, layout: CardLayouts, side: CARD_SIDE = 'default'):
         self.SCRYFALL_ID: str = json['id']
         self.ORACLE_ID: str = json['oracle_id']
         self.LAYOUT: CardLayouts = layout
-        self.CARD_SIDE: str = side
+        self.CARD_SIDE: CARD_SIDE = side
         self.IMG_SIDE: str = 'back' if (side == 'back' or side == 'melded') else 'front'
         self.NAME: str = self._parse_from_json(json, 'name')
 
@@ -140,17 +141,17 @@ class CardFace:
         self.COLOR_IDENTITY: COLOR_STRING = parse_color_list(self._parse_from_json(json, 'color_identity', ''))
 
         self.TYPE_LINE: str = self._parse_from_json(json, 'type_line', '')
-        self.ALL_TYPES: set[str] = set(self.TYPE_LINE.split(' ')) - {'—', '//'}
-        self.SUPERTYPES: set[str] = self.ALL_TYPES & SUPERTYPES
-        self.TYPES: set[str] = self.ALL_TYPES & TYPES
-        self.SUBTYPES: set[str] = self.ALL_TYPES & SUBTYPES
+        self.ALL_TYPES: set[ANY_TYPE] = set(self.TYPE_LINE.split(' ')) - {'—', '//'}
+        self.SUPERTYPES: set[SUPERTYPE] = self.ALL_TYPES & SUPERTYPES
+        self.TYPES: set[TYPE] = self.ALL_TYPES & TYPES
+        self.SUBTYPES: set[SUBTYPE] = self.ALL_TYPES & SUBTYPES
         self._validate_types()
 
         face_dict = self._extract_face_dict(json)
         self.ORACLE: str = face_dict.get('oracle_text')
         self.KEYWORDS: set = set(face_dict.get('keywords', list()))
         self.MANA_PRODUCED: set = set(face_dict.get('produced_mana', list()))
-        self.FLAVOR_TEXT: str = face_dict.get('flavor_text')
+        self.FLAVOR_TEXT: Optional[str] = face_dict.get('flavor_text')
 
         self.POW: Optional[str] = face_dict.get('power')
         self.TOU: Optional[str] = face_dict.get('toughness')

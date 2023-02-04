@@ -8,7 +8,10 @@ from core.game_metadata.game_objects import *
 from core.game_metadata.GameMetadata import *
 
 
-from_utils = ['SUPERTYPES', 'TYPES', 'SUBTYPES', 'SETS', 'FORMATS', 'CardLayouts']
+from_utils = ['SUPERTYPES', 'TYPES', 'SUBTYPES', 'SETS', 'FORMATS', 'CardLayouts',
+              'RARITY', 'RANK', 'CARD_INFO', 'CARD_SIDE',
+              'SUPERTYPE', 'TYPE', 'LAND_SUBTYPE', 'CREATURE_SUBTYPE', 'ARTIFACT_SUBTYPE', 'ENCHANTMENT_SUBTYPE',
+              'PLANESWALKER_SUBTYPE', 'INSTANT_SUBTYPE', 'SORCERY_SUBTYPE', 'SUBTYPE', 'ANY_TYPE']
 
 from_game_objects = ['Card', 'CardManager',
                      'Deck', 'DeckManager', 'ConstructedDeck', 'LimitedDeck',

@@ -17,7 +17,7 @@ from_settings = ['SETS', 'FORMATS', 'SET_CONFIG']
 
 from_typing = ['RARITY', 'RANK', 'CARD_INFO', 'CARD_SIDE',
                'SUPERTYPE', 'TYPE', 'LAND_SUBTYPE', 'CREATURE_SUBTYPE', 'ARTIFACT_SUBTYPE', 'ENCHANTMENT_SUBTYPE',
-               'PLANESWALKER_SUBTYPE', 'INSTANT_SUBTYPE', 'SORCERY_SUBTYPE', 'SUBTYPE']
+               'PLANESWALKER_SUBTYPE', 'INSTANT_SUBTYPE', 'SORCERY_SUBTYPE', 'SUBTYPE', 'ANY_TYPE']
 
 
 __all__ = from_consts + from_funcs + from_settings + from_typing

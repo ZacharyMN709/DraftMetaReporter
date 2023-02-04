@@ -9,6 +9,8 @@ CARD_INFO = dict[str, Union[str, int, dict[str, str], list[str], list[dict]]]
 
 CARD_SIDE = Literal['default', 'main', 'adventure', 'left', 'right', 'front', 'back', 'flipped', 'melded', 'prototype']
 
+# TODO: Add KEYWORD Literal.
+
 
 # region Card Types
 # https://mtg.fandom.com/wiki/Supertype
@@ -80,4 +82,6 @@ SORCERY_SUBTYPE = Literal["Adventure", "Arcane", "Lesson"]
 
 SUBTYPE = Union[LAND_SUBTYPE, CREATURE_SUBTYPE, ARTIFACT_SUBTYPE, ENCHANTMENT_SUBTYPE,
                 PLANESWALKER_SUBTYPE, INSTANT_SUBTYPE, SORCERY_SUBTYPE]
+
+ANY_TYPE = Union[SUPERTYPE, TYPE, SUBTYPE]
 # endregion Card Types
