@@ -9,7 +9,7 @@ from datetime import datetime, date
 
 from core.wubrg import WUBRG, COLOR_COMBINATIONS
 from core.utilities import logging
-from core.data_interface import Request17Lands
+from core.data_requesting import Request17Lands
 from core.game_metadata import SetMetadata, RARITIES, CardManager
 from core.data_fetching import cast_color_filter, rarity_filter, filter_frame, tier_to_rank, SetManager, \
     FORMAT_NICKNAME_DICT, DATA_DIR_LOC, DATA_DIR_NAME

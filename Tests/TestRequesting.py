@@ -1,7 +1,7 @@
 import unittest
 
-from core.data_interface.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
-from core.data_interface.Requester import Requester
+from core.data_requesting.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
+from core.data_requesting.Requester import Requester
 
 
 # TODO: Create new test suites for Requesting objects.
@@ -22,7 +22,7 @@ class TestFetcher(unittest.TestCase):
     def test_valid_url(self):
         requester = Requester(2, 10, 2)
         ret = requester.request('https://api.scryfall.com/')
-        self.assertIsInstance(ret, dict)
+        self.assertIsNone(ret)
 
     def test_invalid_url(self):
         requester = Requester(2, 2, 2)

@@ -8,7 +8,7 @@ from requests import Response, get
 
 from core.utilities import logging
 
-from core.data_interface.utils import TRIES, FAIL_DELAY, SUCCESS_DELAY
+from core.data_requesting.utils import TRIES, FAIL_DELAY, SUCCESS_DELAY
 
 
 class Requester:
@@ -20,26 +20,22 @@ class Requester:
         self._SUCCESS_DELAY: float = success_delay or SUCCESS_DELAY
 
     def fetch(self, url) -> Optional[Response]:
-        # Try to get the data, logging errors, and return it if it's not None
         try:
+            # Try to get the data from the URL.
             logging.debug(f"Attempting to get data from '{url}'.")
             response = get(url)
 
-            # If no response is gotten, note that and return None.
-            if response is None:
-                logging.debug(f"Did not got response from '{url}'!")
+            # TODO: Consider how to handle 100 and 300 responses.
+            # If the response is 400s or 500s (Client/Server Errors) return None.
+            if response.status_code >= 400:
                 return None
 
-            # And returning the data on a success, breaking the loop.
+            # Otherwise, getting the data was a success, so wait and return it.
             logging.debug(f"Successfully got response from '{url}'.")
             sleep(self._SUCCESS_DELAY)
-
-            # TODO: Parse codes
-            if response.status_code == 503:
-                return None
             return response
-
         except Exception as ex:
+            # On an failure to connect to the URL, return None.
             logging.error(f'Encountered unexpected error: {ex}')
             return None
 

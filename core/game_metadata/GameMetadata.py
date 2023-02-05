@@ -14,7 +14,7 @@ from datetime import date, time, datetime, timedelta
 
 from core.wubrg import index_dist_wubrg, COLOR_IDENTITY
 from core.utilities import logging
-from core.data_interface import RequestScryfall
+from core.data_requesting import RequestScryfall
 
 from core.game_metadata.utils.settings import SET_CONFIG
 from core.game_metadata.game_objects.Card import Card, CardManager

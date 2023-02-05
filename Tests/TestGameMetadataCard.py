@@ -1,7 +1,7 @@
 import unittest
 from typing import Union
 
-from core.data_interface import RequestScryfall
+from core.data_requesting import RequestScryfall
 from core.game_metadata import CardLayouts, Card, CardFace, CardManager
 from core.game_metadata.utils.consts import CARD_SIDE
 

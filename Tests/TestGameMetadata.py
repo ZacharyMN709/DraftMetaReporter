@@ -2,7 +2,7 @@ import unittest
 from datetime import date
 
 from core.wubrg import COLOR_COMBINATIONS
-from core.data_interface import RequestScryfall
+from core.data_requesting import RequestScryfall
 from core.game_metadata import SetMetadata, FormatMetadata, Card
 from core.game_metadata import new_color_count_dict
 

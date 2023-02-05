@@ -6,8 +6,8 @@ from typing import Union, Optional, NoReturn, Any
 
 from core.utilities import logging, flatten_lists
 
-from core.data_interface.utils import *
-from core.data_interface.Requester import Requester
+from core.data_requesting.utils import *
+from core.data_requesting.Requester import Requester
 
 
 class RequestScryfall(Requester):
