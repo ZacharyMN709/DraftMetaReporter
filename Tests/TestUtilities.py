@@ -2,8 +2,8 @@ import logging
 import os
 import unittest
 
-from utilities import load_json_file, save_json_file, auto_logging
-from utilities.funcs import reformat_json_file
+from core.utilities import load_json_file, save_json_file, auto_logging
+from core.utilities import reformat_json_file
 
 
 class TestLogging(unittest.TestCase):

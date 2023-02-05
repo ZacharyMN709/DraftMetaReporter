@@ -1,10 +1,10 @@
 import unittest
 
-from utilities.funcs import load_json_file
-from utilities.auto_logging import auto_log, LogLvl
+from core.utilities import load_json_file
+from core.utilities.auto_logging import auto_log, LogLvl
 
-from game_metadata.game_objects.Card import Card, CardManager
-from game_metadata.game_objects.Draft import Draft, Pick, DraftManager
+from core.game_metadata.game_objects.Card import Card, CardManager
+from core.game_metadata.game_objects.Draft import Draft, Pick, DraftManager
 
 
 class TestBaseDraft(unittest.TestCase):
