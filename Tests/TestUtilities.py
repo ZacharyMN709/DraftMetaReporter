@@ -3,7 +3,7 @@ import os
 import unittest
 
 from core.utilities import load_json_file, save_json_file, auto_logging
-from core.utilities import reformat_json_file
+from core.utilities.funcs import reformat_json_file
 
 
 class TestLogging(unittest.TestCase):
@@ -17,16 +17,18 @@ class TestLogging(unittest.TestCase):
 
 
 class TestFuncs(unittest.TestCase):
+    test_dir = r'C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\Misc'
+
     def setUp(self) -> None:
         try:
-            with open(r'C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\Misc\test.json', 'w') as f:
+            with open(os.path.join(self.test_dir, 'test.json'), 'w') as f:
                 f.write('{"test": "results", "second": 2}')
         except FileNotFoundError as ex:  # pragma: nocover
             raise ex
 
     def tearDown(self) -> None:
         try:
-            os.remove(r'Tests\Misc\test.json')
+            os.remove(os.path.join(self.test_dir, 'test.json'))
         except FileNotFoundError as ex:  # pragma: nocover
             raise ex
 
@@ -35,7 +37,7 @@ class TestFuncs(unittest.TestCase):
         self.assertFalse(ret)
 
     def test_get_valid_save(self):
-        ret = save_json_file(r'C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\Misc', 'test.json', {'test': 'results'})
+        ret = save_json_file(self.test_dir, 'test.json', {'test': 'results'})
         self.assertTrue(ret)
 
     def test_get_invalid_load(self):
@@ -43,8 +45,8 @@ class TestFuncs(unittest.TestCase):
         self.assertIsNone(ret)
 
     def test_get_valid_load(self):
-        ret = load_json_file(r'C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\Misc', 'test.json')
+        ret = load_json_file(self.test_dir, 'test.json')
         self.assertIsInstance(ret, dict)
 
     def test_reformat(self):
-        reformat_json_file(r'C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\Misc', 'test.json', indent=8)
+        reformat_json_file(self.test_dir, 'test.json', indent=8)

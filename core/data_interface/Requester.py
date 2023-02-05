@@ -81,7 +81,7 @@ class Requester:
         # Try to get the data the number of time prescribed, returning it when it's not None.
         for cnt in range(1, self._TRIES + 1):
             response = self.fetch(composed_url)
-            if response:
+            if response is not None:
                 return response
 
             # If it isn't the last try, wait and try again.

@@ -5,6 +5,8 @@ Tests code from the wubrg module.
 import unittest
 
 from core.wubrg import *
+from core.wubrg import index_dist_wubrg, index_dist_pentad, GROUP_COLOR_COMBINATIONS, \
+    exact, subset, superset, adjacent, shares
 
 
 class TestWUBRGStringFuncs(unittest.TestCase):
