@@ -3,7 +3,7 @@ import unittest
 from core.data_requesting.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
 from core.data_requesting import Requester, RequestScryfall, Request17Lands
 
-from settings import _tries, _fail_delay, _success_delay
+from Tests.settings import _tries, _fail_delay, _success_delay
 
 
 # TODO: Create new test suites for Requesting objects.

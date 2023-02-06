@@ -5,7 +5,7 @@ from core.utilities.auto_logging import auto_log, LogLvl
 from core.game_metadata.game_objects.Card import Card, CardManager
 from core.game_metadata.game_objects.Draft import Draft, Pick, DraftManager
 
-from settings import _tries, _success_delay, _fail_delay
+from Tests.settings import _tries, _success_delay, _fail_delay
 
 
 class TestBaseDraft(unittest.TestCase):

@@ -1,10 +1,14 @@
 __pychache__
-*.pyc
 Notebooks/.ipynb_checkpoints/*
 .idea
-.coverage
-test.txt
-*.png
-/Tests/*
-.ipynb_checkpoints/TierList Aggregator-checkpoint.ipynb
+
+/Tests/.pytest_cache
+/Tests/DeckLists
+/Tests/Drafts
+/Tests/htmlcov
+/Tests/Misc
+
 *.ipynb
+*.coverage
+*.pyc
+*.png

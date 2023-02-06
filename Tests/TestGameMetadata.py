@@ -5,7 +5,7 @@ from core.wubrg import COLOR_COMBINATIONS
 from core.game_metadata import SetMetadata, FormatMetadata, Card
 from core.game_metadata import new_color_count_dict
 
-from settings import _tries, _success_delay, _fail_delay
+from Tests.settings import _tries, _success_delay, _fail_delay
 
 
 class TestSetMetadata(unittest.TestCase):

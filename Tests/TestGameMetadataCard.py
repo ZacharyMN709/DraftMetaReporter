@@ -6,7 +6,7 @@ from core.game_metadata import CardLayouts, Card, CardFace, CardManager
 from core.game_metadata.utils.consts import CARD_SIDE
 
 from Tests.settings import TEST_MASS_DATA_PULL
-from settings import _tries, _success_delay, _fail_delay
+from Tests.settings import _tries, _success_delay, _fail_delay
 
 
 def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
@@ -1278,7 +1278,7 @@ class TestCardManager(unittest.TestCase):
         CardManager.REQUESTER._FAIL_DELAY = _fail_delay
 
     @unittest.skipUnless(TEST_MASS_DATA_PULL, "Not testing mass data functions. 'TEST_MASS_DATA_PULL' set to False.")
-    def test_generate_cache_file(self):
+    def test_generate_cache_file(self):  # pragma: nocover
         CardManager.generate_cache_file()
         CardManager.generate_arena_cache_file()
         # TODO: Check if the file exists, and is less than 5 minutes old.

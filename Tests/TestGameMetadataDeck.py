@@ -8,7 +8,7 @@ from core.data_requesting import Request17Lands
 from core.game_metadata import Card, CardManager, Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager, Draft
 
 from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
-from settings import _tries, _success_delay, _fail_delay
+from Tests.settings import _tries, _success_delay, _fail_delay
 
 
 class TestBaseDeck(unittest.TestCase):
@@ -272,10 +272,9 @@ class TestTrophyStub(TestBaseDeck):
         self.assertTrue(deck.has_trophy_stub)
 
     @unittest.skipUnless(FULL_TEST, "Not performing full test. 'FULL_TEST' set to False.")
-    def test_mass_gen(self):
+    def test_mass_gen(self):  # pragma: nocover
         import core.data_requesting.utils.settings as settings
-
-        requester = Request17Lands()
+        from Tests.settings import _tries, _fail_delay, _success_delay
 
         def convert_data(data_list):
             for data in data_list:
@@ -285,6 +284,8 @@ class TestTrophyStub(TestBaseDeck):
                 except:  # pragma: nocover
                     # If the trophy stub can't be handled, some possible oddities in data need to be better handled.
                     print(data)
+
+        requester = Request17Lands(_tries, _fail_delay, _success_delay)
 
         self.assertEqual(settings.DEFAULT_FORMAT, 'PremierDraft')
         bo1 = requester.get_trophy_deck_metadata('DMU')
@@ -314,9 +315,11 @@ class TestDeckManager(TestBaseDeck):
         deck = DeckManager.from_deck_id("TunaSandwich")
         self.assertIsNone(deck)
         DeckManager.clear_blank_decks()
+        DeckManager.from_deck_id("2c653e26dc0647ca934af503d57eee3d")
         for deck in DeckManager.DECKS.values():
             is_valid = is_valid and deck is not None
         self.assertTrue(is_valid)
+        self.assertLessEqual(len(DeckManager.DECKS), 1)
 
     def test_flush_cache(self):
         DeckManager.from_deck_id("2c653e26dc0647ca934af503d57eee3d")
