@@ -65,6 +65,16 @@ class TestWUBRGStringFuncs(unittest.TestCase):
         ret = get_color_alias(s)
         self.assertIsNone(ret)
 
+    def test_calculate_cmc(self):
+        self.assertEqual(calculate_cmc('{X}'), 0)
+        self.assertEqual(calculate_cmc('{R}'), 1)
+        self.assertEqual(calculate_cmc('{R}{B}'), 2)
+        self.assertEqual(calculate_cmc('{R}{B}{2}'), 4)
+        # TODO: Create something which repairs this to 'B/R'
+        # self.assertEqual(calculate_cmc('{R/B}'), 1)
+        self.assertEqual(calculate_cmc('{B/R}'), 1)
+        self.assertEqual(calculate_cmc('RRX'), 0)
+
 
 class TestWUBRGListFuncs(unittest.TestCase):
     def test_get_color_supersets(self):
@@ -126,6 +136,10 @@ class TestWUBRGListFuncs(unittest.TestCase):
         s = '{2}{V}U}'
         ret = parse_cost(s)
         self.assertListEqual(ret, ['A'])
+
+    def test_parse_color_list(self):
+        lst: list[COLOR] = ['W', 'U', 'B', 'R', 'G']
+        self.assertEqual(parse_color_list(lst), WUBRG)
 
 
 class TestWUBRGSortFuncs(unittest.TestCase):

@@ -2,7 +2,7 @@ import logging
 import os
 import unittest
 
-from core.utilities import load_json_file, save_json_file, auto_logging
+from core.utilities import load_json_file, save_json_file, auto_logging, flatten_lists, invert_dict
 from core.utilities.funcs import reformat_json_file
 
 
@@ -50,3 +50,24 @@ class TestFuncs(unittest.TestCase):
 
     def test_reformat(self):
         reformat_json_file(self.test_dir, 'test.json', indent=8)
+        self.assertTrue(True)
+
+    def test_flatten_lists(self):
+        _in = [[1, 2], [3], [4, 5, 6, 7], [8, ]]
+        _out = [1, 2, 3, 4, 5, 6, 7, 8]
+        self.assertListEqual(flatten_lists(_in), _out)
+
+    def test_invert_dict(self):
+        _in = {
+            'A': 1,
+            'B': 2,
+            'C': 3,
+        }
+
+        _out = {
+            1: 'A',
+            2: 'B',
+            3: 'C',
+        }
+
+        self.assertDictEqual(invert_dict(_in), _out)

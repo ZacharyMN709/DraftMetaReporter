@@ -1,4 +1,5 @@
 cd ../..
-coverage run --data-file='Tests/Coverage Scripts/.coverage' -m unittest discover
-coverage html --data-file='Tests/Coverage Scripts/.coverage'
+file='Tests/Coverage Scripts/.coverage.single'
+coverage run --data-file="$file" -m unittest discover
+coverage html --data-file="$file"
 exit

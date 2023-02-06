@@ -1,6 +1,8 @@
 __pychache__
 Notebooks/.ipynb_checkpoints/*
 .idea
+.coverage
+.coverage.*
 
 /Tests/.pytest_cache
 /Tests/DeckLists
@@ -9,6 +11,5 @@ Notebooks/.ipynb_checkpoints/*
 /Tests/Misc
 
 *.ipynb
-*.coverage
 *.pyc
 *.png
