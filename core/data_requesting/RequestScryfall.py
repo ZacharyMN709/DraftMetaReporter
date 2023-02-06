@@ -15,6 +15,7 @@ class RequestScryfall(Requester):
     def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
                  success_delay: Optional[float] = None):
         super().__init__(tries, fail_delay, success_delay)
+        self.valid_responses = [200, 404]
 
     def _get_set_cards(self, set_code: str, order: str) -> Union[NoReturn, list[dict[str, Any]]]:
         params = {
@@ -35,13 +36,18 @@ class RequestScryfall(Requester):
     def get_set_review_order(self, set_code: str) -> Union[NoReturn, list[dict[str, Any]]]:
         return self._get_set_cards(set_code, 'review')
 
-    def get_set_info(self, set_code: str) -> Union[NoReturn, tuple[str, str]]:
+    def get_set_info(self, set_code: str) -> Union[tuple[None, None], tuple[str, str]]:
         url = f'{SET_SCRYFALL_URL}/{set_code}'
         logging.info(f"Fetching data for set: {set_code}")
         response = self.request(url)
-        return response['name'], response['icon_svg_uri']
 
-    def get_card_by_name(self, name: str) -> Union[NoReturn, dict[str, Any]]:
+        try:
+            return response['name'], response['icon_svg_uri']
+        except KeyError:
+            logging.warning(f"No info for set: {set_code}")
+            return None, None
+
+    def get_card_by_name(self, name: str) -> Optional[dict[str, Any]]:
         """
         Gets card data from scryfall based on a name. Scryfall's fuzzy filter is
         used to handle imprecise queries and spelling errors.
@@ -56,6 +62,9 @@ class RequestScryfall(Requester):
         # Attempt to get information on the card.
         logging.info(f"Fetching data for card: {name}")
         response = self.request(FUZZY_SCRYFALL_URL, params)
+
+        if response is None:
+            return None
 
         # If is not a card, do some processing and return the struct with some information.
         if response['object'] != 'card':

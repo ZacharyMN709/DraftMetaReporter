@@ -6,6 +6,7 @@ from core.game_metadata import CardLayouts, Card, CardFace, CardManager
 from core.game_metadata.utils.consts import CARD_SIDE
 
 from Tests.settings import TEST_MASS_DATA_PULL
+from settings import _tries, _success_delay, _fail_delay
 
 
 def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
@@ -1270,6 +1271,12 @@ class TestCard(unittest.TestCase):
 
 
 class TestCardManager(unittest.TestCase):
+    def setUp(self) -> None:
+        # Load all arena cards to speed up tests and reduce load on Scryfall server.
+        CardManager.REQUESTER._TRIES = _tries
+        CardManager.REQUESTER._SUCCESS_DELAY = _success_delay
+        CardManager.REQUESTER._FAIL_DELAY = _fail_delay
+
     @unittest.skipUnless(TEST_MASS_DATA_PULL, "Not testing mass data functions. 'TEST_MASS_DATA_PULL' set to False.")
     def test_generate_cache_file(self):
         CardManager.generate_cache_file()

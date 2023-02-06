@@ -8,12 +8,21 @@ from core.data_requesting import Request17Lands
 from core.game_metadata import Card, CardManager, Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager, Draft
 
 from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
+from settings import _tries, _success_delay, _fail_delay
 
 
 class TestBaseDeck(unittest.TestCase):
     def setUp(self) -> None:
         auto_log(LogLvl.DEBUG)
         # Load all arena cards to speed up tests and reduce load on Scryfall server.
+        CardManager.REQUESTER._TRIES = _tries
+        CardManager.REQUESTER._SUCCESS_DELAY = _success_delay
+        CardManager.REQUESTER._FAIL_DELAY = _fail_delay
+
+        DeckManager.REQUESTER._TRIES = _tries
+        DeckManager.REQUESTER._SUCCESS_DELAY = _success_delay
+        DeckManager.REQUESTER._FAIL_DELAY = _fail_delay
+
         CardManager.load_cache_from_file()
 
 

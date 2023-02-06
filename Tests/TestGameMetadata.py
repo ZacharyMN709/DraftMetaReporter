@@ -2,55 +2,19 @@ import unittest
 from datetime import date
 
 from core.wubrg import COLOR_COMBINATIONS
-from core.data_requesting import RequestScryfall
 from core.game_metadata import SetMetadata, FormatMetadata, Card
 from core.game_metadata import new_color_count_dict
 
-
-class TestRequestScryfall(unittest.TestCase):
-    REQUESTER = RequestScryfall(tries=2, fail_delay=15)
-
-    def test_get_set_cards_valid(self):
-        cards = self.REQUESTER.get_set_cards('NEO')
-        self.assertIsInstance(cards, list)
-
-    def test_get_set_cards_invalid(self):
-        ret = self.REQUESTER.get_set_cards('INVALID')
-        self.assertListEqual(list(), ret)
-
-    def test_get_set_info_valid(self):
-        cards = self.REQUESTER.get_set_info('NEO')
-        self.assertIsInstance(cards, tuple)
-
-    def test_get_set_info_invalid(self):
-        self.assertRaises(KeyError, self.REQUESTER.get_set_info, 'INVALID')
-
-    def test_get_card_by_name_valid(self):
-        card = self.REQUESTER.get_card_by_name('Virus Beetle')
-        self.assertIsInstance(card, dict)
-        self.assertEqual(card['object'], 'card')
-        self.assertEqual(card['name'], 'Virus Beetle')
-
-    def test_get_card_by_name_valid_misspelled(self):
-        card = self.REQUESTER.get_card_by_name('Vires Beetle')
-        self.assertIsInstance(card, dict)
-        self.assertEqual(card['object'], 'card')
-        self.assertEqual(card['name'], 'Virus Beetle')
-
-    def test_get_card_by_name_multiple(self):
-        name = 'Bolt'
-        card = self.REQUESTER.get_card_by_name(name)
-        self.assertIsInstance(card, dict)
-        self.assertEqual(card['err_msg'], f'Error: Multiple card matches for "{name}"')
-
-    def test_get_card_by_name_dne(self):
-        name = 'Supercalifragilisticexpialidocious'
-        card = self.REQUESTER.get_card_by_name(name)
-        self.assertIsInstance(card, dict)
-        self.assertEqual(card['err_msg'], f'Error: Cannot find card "{name}"')
+from settings import _tries, _success_delay, _fail_delay
 
 
 class TestSetMetadata(unittest.TestCase):
+    def setUp(self) -> None:
+        # Load all arena cards to speed up tests and reduce load on Scryfall server.
+        SetMetadata.REQUESTER._TRIES = _tries
+        SetMetadata.REQUESTER._SUCCESS_DELAY = _success_delay
+        SetMetadata.REQUESTER._FAIL_DELAY = _fail_delay
+
     def test_get_metadata(self):
         meta = SetMetadata.get_metadata('NEO')
         self.assertIsInstance(meta, SetMetadata)

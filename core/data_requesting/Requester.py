@@ -18,6 +18,7 @@ class Requester:
         self._TRIES: int = tries or TRIES
         self._FAIL_DELAY: float = fail_delay or FAIL_DELAY
         self._SUCCESS_DELAY: float = success_delay or SUCCESS_DELAY
+        self.valid_responses: list[int] = [200]
 
     def fetch(self, url) -> Optional[Response]:
         try:
@@ -27,7 +28,8 @@ class Requester:
 
             # TODO: Consider how to handle 100 and 300 responses.
             # If the response is 400s or 500s (Client/Server Errors) return None.
-            if response.status_code >= 400:
+            if response.status_code not in self.valid_responses:
+                logging.debug(f'Response did not contain a valid status code. ({response.status_code})')
                 return None
 
             # Otherwise, getting the data was a success, so wait and return it.
@@ -38,29 +40,6 @@ class Requester:
             # On an failure to connect to the URL, return None.
             logging.error(f'Encountered unexpected error: {ex}')
             return None
-
-    def raw_paginated_request(self, url: str, params: Optional[dict[str, str]] = None) -> list[Optional[Response]]:
-        response = self.raw_request(url, params)
-        ret = [response]
-        url = response.json().get('next_page')
-
-        while url:
-            try:
-                logging.debug(f"Fetching next page. ({url})")
-                response = self.raw_request(url)
-                ret.append(response)
-                url = response.json().get('next_page')
-            except KeyError as ex:  # pragma: nocover
-                logging.error(f"{ex} was not found in the returned json.")
-                break
-            except Exception as ex:  # pragma: nocover
-                logging.error(f'Encountered unexpected error: {ex}')
-                break
-
-        return ret
-
-    def paginated_request(self, url: str, params: Optional[dict[str, str]] = None) -> list[Union[list, dict]]:
-        return [r.json() for r in self.raw_paginated_request(url, params) if r]
 
     def raw_request(self, url: str, params: Optional[dict[str, str]] = None) -> Optional[Response]:
         """
@@ -101,3 +80,30 @@ class Requester:
                 logging.error(ret.content)
                 raise ex
         return None
+
+    def raw_paginated_request(self, url: str, params: Optional[dict[str, str]] = None) -> list[Optional[Response]]:
+        response = self.raw_request(url, params)
+
+        if response is None:
+            return [None]
+
+        ret = [response]
+        url = response.json().get('next_page')
+
+        while url:
+            try:
+                logging.debug(f"Fetching next page. ({url})")
+                response = self.raw_request(url)
+                ret.append(response)
+                url = response.json().get('next_page')
+            except KeyError as ex:  # pragma: nocover
+                logging.error(f"{ex} was not found in the returned json.")
+                break
+            except Exception as ex:  # pragma: nocover
+                logging.error(f'Encountered unexpected error: {ex}')
+                break
+
+        return ret
+
+    def paginated_request(self, url: str, params: Optional[dict[str, str]] = None) -> list[Union[list, dict]]:
+        return [r.json() for r in self.raw_paginated_request(url, params) if r]
