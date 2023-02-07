@@ -23,8 +23,8 @@ class LogLvl(IntEnum):
     NOTSET = 0
 
 
-# Taken from: https://stackoverflow.com/q/35804945#35804945
-def addLoggingLevel(level_name: str, level_num: int, method_name: str) -> Optional[NoReturn]:
+# Taken from: https://stackoverflow.com/a/35804945/1691778
+def add_logging_level(level_name: str, level_num: int, method_name: str = None) -> Optional[NoReturn]:
     """
     Comprehensively adds a new logging level to the `logging` module and the
     currently configured logging class.
@@ -39,27 +39,27 @@ def addLoggingLevel(level_name: str, level_num: int, method_name: str) -> Option
     raise an `AttributeError` if the level name is already an attribute of the
     `logging` module or if the method name is already present
     """
-    if hasattr(logging, level_name):  # pragma: no cover
-        raise AttributeError('{} already defined in logging module'.format(level_name))
-    if hasattr(logging, method_name):  # pragma: no cover
-        raise AttributeError('{} already defined in logging module'.format(method_name))
-    if hasattr(logging.getLoggerClass(), method_name):  # pragma: no cover
-        raise AttributeError('{} already defined in logger class'.format(method_name))
+    if not method_name:
+        method_name = level_name.lower()
 
-    # This method was inspired by the answers to Stack Overflow post
-    # http://stackoverflow.com/q/2183233/2988730, especially
-    # http://stackoverflow.com/a/13638084/2988730
-    def logForLevel(self, message, *args, **kwargs):  # pragma: no cover
+    if hasattr(logging, level_name):
+        raise AttributeError(f'{level_name} already defined in logging module')
+    if hasattr(logging, method_name):
+        raise AttributeError(f'{method_name} already defined in logging module')
+    if hasattr(logging.getLoggerClass(), method_name):
+        raise AttributeError(f'{method_name} already defined in logger class')
+
+    def log_for_level(self, message, *args, **kwargs):
         if self.isEnabledFor(level_num):
             self._log(level_num, message, args, **kwargs)
 
-    def logToRoot(message, *args, **kwargs):  # pragma: no cover
+    def log_to_root(message, *args, **kwargs):
         logging.log(level_num, message, *args, **kwargs)
 
     logging.addLevelName(level_num, level_name)
     setattr(logging, level_name, level_num)
-    setattr(logging.getLoggerClass(), method_name, logForLevel)
-    setattr(logging, method_name, logToRoot)
+    setattr(logging.getLoggerClass(), method_name, log_for_level)
+    setattr(logging, method_name, log_to_root)
 
 
 def add_custom_levels() -> None:
@@ -68,7 +68,7 @@ def add_custom_levels() -> None:
     """
     for lvl in LogLvl:
         try:
-            addLoggingLevel(lvl.name.upper(), lvl, lvl.name.lower())
+            add_logging_level(lvl.name.upper(), lvl, lvl.name.lower())
         except AttributeError:
             pass
 

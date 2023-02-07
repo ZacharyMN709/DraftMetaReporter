@@ -11,6 +11,6 @@ file='Tests/Coverage Scripts/.coverage.cumulative'
 # coverage run -a --data-file="$file" -m unittest 'Tests/TestGameMetadataDeck.py'
 # coverage run -a --data-file="$file" -m unittest 'Tests/TestGameMetadataDraft.py'
 
-# coverage run -a --data-file="$file" -m unittest 'Tests/TestGameMetadataDraft.py'
-coverage html
+coverage run -a --data-file="$file" -m unittest 'Tests/TestGameMetadataDraft.py'
+coverage html --data-file="$file"
 exit

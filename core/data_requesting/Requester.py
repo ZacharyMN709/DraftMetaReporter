@@ -81,11 +81,11 @@ class Requester:
                 raise ex
         return None
 
-    def raw_paginated_request(self, url: str, params: Optional[dict[str, str]] = None) -> list[Optional[Response]]:
+    def raw_paginated_request(self, url: str, params: Optional[dict[str, str]] = None) -> Optional[list[Response]]:
         response = self.raw_request(url, params)
 
-        if response is None:
-            return [None]
+        if response is None:  # pragma: nocover
+            return None
 
         ret = [response]
         url = response.json().get('next_page')
@@ -105,5 +105,8 @@ class Requester:
 
         return ret
 
-    def paginated_request(self, url: str, params: Optional[dict[str, str]] = None) -> list[Union[list, dict]]:
-        return [r.json() for r in self.raw_paginated_request(url, params) if r]
+    def paginated_request(self, url: str, params: Optional[dict[str, str]] = None) -> Optional[list]:
+        ret = self.raw_paginated_request(url, params)
+        if ret is None:
+            return None
+        return [r.json() for r in ret if r]
