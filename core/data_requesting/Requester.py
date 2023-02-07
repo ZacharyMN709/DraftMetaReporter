@@ -13,8 +13,7 @@ from core.data_requesting.utils import TRIES, FAIL_DELAY, SUCCESS_DELAY
 
 class Requester:
     """ Helps to handle getting data from url end points, with some configurable options about timing. """
-    def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
-                 success_delay: Optional[float] = None):
+    def __init__(self, tries: int = None, fail_delay: float = None, success_delay: float = None):
         self._TRIES: int = tries or TRIES
         self._FAIL_DELAY: float = fail_delay or FAIL_DELAY
         self._SUCCESS_DELAY: float = success_delay or SUCCESS_DELAY

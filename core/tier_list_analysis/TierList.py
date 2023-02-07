@@ -82,6 +82,7 @@ class TierAggregator:
         self.tier_dict: dict[str, TierList] = dict()
         self._tier_frame: Optional[pd.DataFrame] = None
         self._avg_frame: Optional[pd.DataFrame] = None
+        self._comparer: Optional[TierComparer] = None
 
         self.data_root: str = os.path.join(DATA_DIR_LOC, DATA_DIR_NAME, self.SET, 'Tiers')
 
@@ -104,6 +105,12 @@ class TierAggregator:
         if self._avg_frame is None:
             self._avg_frame = self.calc_avgs()
         return self._avg_frame
+
+    @property
+    def comparer(self) -> TierComparer:
+        if self._comparer is None:
+            self._comparer = TierComparer(self)
+        return self._comparer
 
     def suborder_by_rarity(self, ordering='mean', style=False):
         rarities = RARITIES
@@ -351,3 +358,96 @@ class TierAggregator:
 
     def __getitem__(self, item) -> TierList:
         return self.tier_dict[item]
+
+
+class TierComparer:
+    DIFF_COL = 'diff'
+
+    def __init__(self, agg: TierAggregator):
+        self.agg: TierAggregator = agg
+        self._user: str = self.agg.users[0]
+        self._cmp_trg: str = 'mean'
+        self._play_frame: Optional[pd.DataFrame] = None
+
+    def make_frame(self) -> pd.DataFrame:
+        frame = self.agg.tier_frame.copy(True)
+        frame[self.DIFF_COL] = self.agg.tier_frame[self.user] - self.agg.tier_frame[self.compare_target]
+        return frame
+
+    def validate_column(self, val: str) -> bool:
+        # If the value is in the users, it's safe.
+        if val in self.agg.users:
+            return True
+
+        # If the value a format name, check that it's actually in the columns.
+        if val in FORMAT_NICKNAME_DICT.values():
+            return val in self.agg.tier_frame.columns
+
+        # Otherwise, the value has to be 'mean', or it's invalid for a comparison column.
+        return val == 'mean'
+
+    @property
+    def user(self) -> str:
+        return self._user
+
+    @user.setter
+    def user(self, value: str):
+        if self.validate_column(value):
+            self._play_frame = None
+            self._user = value
+        else:
+            logging.warning(f"'{value}' is not a valid column name.")
+
+    @property
+    def compare_target(self) -> str:
+        return self._cmp_trg
+
+    @compare_target.setter
+    def compare_target(self, value: str):
+        if self.validate_column(value):
+            self._play_frame = None
+            self._cmp_trg = value
+        else:
+            logging.warning(f"'{value}' is not a valid column name.")
+
+    @property
+    def play_frame(self) -> pd.DataFrame:
+        if self._play_frame is None:
+            self._play_frame = self.make_frame()
+        return self._play_frame
+
+    def default_diff(self):
+        # TODO: Come up with calculation for default diff, possibly based on if compare_target is 'mean' or not.
+        if self.compare_target == 'mean' or self.user == 'mean':
+            return 1
+        else:
+            return 1
+
+    def apply_thresholds(self, frame: pd.DataFrame, user_thresh: float, trg_thresh: float) -> pd.DataFrame:
+        if user_thresh:
+            frame = frame[frame[self.user] >= user_thresh]
+        if trg_thresh:
+            frame = frame[frame[self.compare_target] >= trg_thresh]
+        return frame
+
+    def get_overrated(self, diff: float = None, user_thresh: float = None, trg_thresh: float = None) -> pd.DataFrame:
+        if diff is None:
+            diff = self.default_diff()
+
+        frame = self.play_frame[self.play_frame[self.DIFF_COL] >= diff]
+        frame = self.apply_thresholds(frame, user_thresh, trg_thresh)
+        return frame.sort_values(self.DIFF_COL, ascending=False)
+
+    def get_underrated(self, diff: float = None, user_thresh: float = None, trg_thresh: float = None) -> pd.DataFrame:
+        if diff is None:
+            diff = self.default_diff()
+
+        frame = self.play_frame[self.play_frame[self.DIFF_COL] <= -diff]
+        frame = self.apply_thresholds(frame, user_thresh, trg_thresh)
+        return frame.sort_values(self.DIFF_COL, ascending=True)
+
+    def get_default_comparisons(self, diff: float = None, thresh: float = None) -> tuple[pd.DataFrame, pd.DataFrame]:
+        over = self.get_overrated(diff, user_thresh=thresh)
+        under = self.get_underrated(diff, trg_thresh=thresh)
+        return over, under
+

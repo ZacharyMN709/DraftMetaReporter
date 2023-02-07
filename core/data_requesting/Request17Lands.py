@@ -14,8 +14,7 @@ from core.data_requesting.Requester import Requester
 # Adapted from 'https://github.com/diogojapinto/mtg-data-mining/blob/main/utils/api_clients/seventeen_lands/client.py'
 class Request17Lands(Requester):
     """ A small class which helps get specific data from scryfall, handling the minutia of json checking. """
-    def __init__(self, tries: Optional[int] = None, fail_delay: Optional[float] = None,
-                 success_delay: Optional[float] = None):
+    def __init__(self, tries: int = None, fail_delay: float = None, success_delay: float = None):
         super().__init__(tries, fail_delay, success_delay)
 
     def get_colors(self) -> list[str]:
