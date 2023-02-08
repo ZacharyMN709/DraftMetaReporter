@@ -270,8 +270,11 @@ class TierAggregator:
 
         for col, data in self.set_data.DATA.items():
             if data.DATA.CARD_SUMMARY_FRAME is not None:
+                tier_frame = data.get_stats_grades()
+                if tier_frame is None:
+                    continue
                 short_col = FORMAT_NICKNAME_DICT[col]
-                frame[short_col] = data.get_stats_grades().droplevel(0)['Tier'].astype('Int64')
+                frame[short_col] = tier_frame.droplevel(0)['Tier'].astype('Int64')
                 new_cols.append(short_col)
 
         # Re-order the frame so the data-based stats are first.
