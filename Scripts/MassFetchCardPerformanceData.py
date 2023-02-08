@@ -3,7 +3,7 @@ from core.utilities import LogLvl, set_log_level, logging
 from core.data_fetching import SetManager
 
 
-TARGET_SET = 'BRO'
+TARGET_SET = 'ONE'
 LOG_LEVEL = LogLvl.SPARSE
 set_log_level(LOG_LEVEL)
 

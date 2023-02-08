@@ -56,8 +56,7 @@ class LoadedData:
 
         return self._CARD_DATA_DICT[str_date], self._META_DATA_DICT[str_date]
 
-    def _is_historic_data_available(self, requested_date: datetime, last_17l_update: datetime) \
-            -> bool:
+    def _is_historic_data_available(self, requested_date: datetime, last_17l_update: datetime) -> bool:
         # Data for a given day will be exist at 2am UTC the following day.
         update_date: datetime = datetime.combine(requested_date, time(2, 0)) + timedelta(days=1)
         has_updated: bool = update_date <= last_17l_update

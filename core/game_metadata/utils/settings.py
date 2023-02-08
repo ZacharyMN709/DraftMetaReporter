@@ -20,8 +20,8 @@ FORMATS: list[str] = ["PremierDraft", "TradDraft"]  # ["PremierDraft", "TradDraf
 #  parse the data to update the sets information.
 SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
     "ONE": {
-        "PremierDraft": [(date(2023, 2, 7), date(2022, 4, 15))],
-        "TradDraft": [(date(2023, 2, 7), date(2022, 4, 15))],
+        "PremierDraft": [(date(2023, 2, 7), date(2023, 4, 15))],
+        "TradDraft": [(date(2023, 2, 7), date(2023, 4, 15))],
         "QuickDraft": [(date(2023, 2, 17), date(2023, 3, 2))]
     },
     "BRO": {
