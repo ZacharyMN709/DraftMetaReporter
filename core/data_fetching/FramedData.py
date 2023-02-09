@@ -81,7 +81,7 @@ class FramedData:
         available_gih = np.array(available_rows['GIH WR'], dtype=float)
 
         # Get the stats, and use it to normalize the data, assigning it back to the available rows.
-        mu, std = norm.fit(norm.fit(available_gih))
+        mu, std = norm.fit(available_gih)
         available_rows['Percentile'] = norm.cdf(available_gih, mu, std).round(4) * 100
 
         # Re-map the available rows back to the main frame by reindexing, making empty rows.
