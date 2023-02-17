@@ -1,8 +1,7 @@
 import pandas as pd
 
 from core.utilities.auto_logging import logging
-
-from core.data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame, append_card_info
+from core.data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame, append_card_info, get_stats_grades
 from core.data_fetching.LoadedData import LoadedData
 from core.game_metadata import FormatMetadata
 
@@ -110,6 +109,7 @@ class DataFramer:
             for color in hist_card[date]:
                 frame = gen_card_frame(hist_card[date][color])
                 frame = append_card_info(frame, self._format_metadata.CARD_DICT)
+                frame = get_stats_grades(frame)
                 color_dict[color] = frame
             card_frame_dict[date] = pd.concat(color_dict, names=["Deck Colors", "Name"])
         card_frame = pd.concat(card_frame_dict, names=["Date", "Deck Colors", "Name"])
@@ -133,6 +133,7 @@ class DataFramer:
         for color in summ_card:
             frame = gen_card_frame(summ_card[color])
             frame = append_card_info(frame, self._format_metadata.CARD_DICT)
+            frame = get_stats_grades(frame)
             color_dict[color] = frame
         card_frame = pd.concat(color_dict, names=["Deck Colors", "Name"])
 

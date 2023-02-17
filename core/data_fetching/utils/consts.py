@@ -111,6 +111,8 @@ SHARED_COL_NAMES: list[str] = ['Rarity', 'Color']
 
 CARD_INFO_COL_NAMES: list[str] = ['Cast Color', 'CMC', 'Type Line', 'Supertypes', 'Types', 'Subtypes',
                                   'Power', 'Toughness']
+
+RANK_COL_NAMES: list[str] = ['Percentile', 'Tier', 'Rank']
 # endregion Frame Column Consts
 
 # region Tier Rank Consts
