@@ -40,10 +40,11 @@ class Request17Lands(Requester):
 
         start_date = start_date or DEFAULT_DATE
         end_date = end_date or date.today()
+        event_type = event_type or DEFAULT_FORMAT
 
         params = {
             'expansion': expansion,
-            'event_type': event_type or DEFAULT_FORMAT,
+            'event_type': event_type,
             'start_date': start_date.strftime('%Y-%m-%d'),
             'end_date': end_date.strftime('%Y-%m-%d'),
             'combine_splash': combine_splash,
@@ -74,10 +75,11 @@ class Request17Lands(Requester):
 
         start_date = start_date or DEFAULT_DATE
         end_date = end_date or date.today()
+        event_type = event_type or DEFAULT_FORMAT
 
         params = {
             'expansion': expansion,
-            'format': event_type or DEFAULT_FORMAT,
+            'format': event_type,
             'start_date': start_date.strftime('%Y-%m-%d'),
             'end_date': end_date.strftime('%Y-%m-%d'),
             'user_group': user_group,
@@ -134,10 +136,11 @@ class Request17Lands(Requester):
 
         start_date = start_date or DEFAULT_DATE
         end_date = end_date or date.today()
+        event_type = event_type or DEFAULT_FORMAT
 
         params = {
             'expansion': expansion,
-            'format': event_type or DEFAULT_FORMAT,
+            'format': event_type,
             'start_date': start_date.strftime('%Y-%m-%d'),
             'end_date': end_date.strftime('%Y-%m-%d'),
             'rarity': rarity,
@@ -171,9 +174,11 @@ class Request17Lands(Requester):
         return card_evaluations
 
     def get_trophy_deck_metadata(self, expansion: str, event_type: Optional[str] = None) -> dict:
+        event_type = event_type or DEFAULT_FORMAT
+
         params = {
             'expansion': expansion,
-            'format': event_type or DEFAULT_FORMAT
+            'format': event_type
         }
 
         result = self.request(url=TROPHY_17L_URL, params=params)
@@ -220,9 +225,13 @@ class Request17Lands(Requester):
             'draft_id': draft_id
         }
 
+        # Make a request and abort if None is returned.
+        result = self.raw_request(url=DRAFT_LOG_17L_URL, params=params)
+        if result is None:
+            return None
+
         # Process built-in JSON
-        text = self.raw_request(url=DRAFT_LOG_17L_URL, params=params).text[6:-2]
-        result = json.loads(text)
+        result = json.loads(result.text[6:-2])
 
         # Only return results if payload is complete
         if result['type'] != 'complete':  # pragma: nocover

@@ -8,8 +8,6 @@ from core.data_requesting import Requester, RequestScryfall, Request17Lands
 from Tests.settings import _tries, _fail_delay, _success_delay, TEST_MASS_DATA_PULL
 
 
-# TODO: Create new test suites for Requesting objects.
-
 class TestRequester(unittest.TestCase):
     REQUESTER = Requester(_tries, _fail_delay, _success_delay)
 
@@ -104,3 +102,81 @@ class TestRequestRequest17Lands(unittest.TestCase):
 
     def test_(self):
         pass
+
+    def test_get_deck(self):
+        deck = self.REQUESTER.get_deck('Fish')
+        self.assertIsNone(deck)
+
+        _id = 'f5383f215c364c129632cdc559f0ac3a'
+        deck = self.REQUESTER.get_deck(_id)
+        self.assertIsInstance(deck, dict)
+        self.assertIsInstance(deck['event_info'], dict)
+        self.assertIsInstance(deck['groups'], list)
+        self.assertIsInstance(deck['groups'][0], dict)
+        self.assertIsInstance(deck['groups'][0]['cards'], list)
+        self.assertIsInstance(deck['groups'][0]['cards'][0], dict)
+
+        self.assertEqual(deck['text_link'], f'/deck/{_id}/0.txt')
+        self.assertEqual(deck['builder_link'], f'https://sealeddeck.tech/17lands/deck/{_id}/0')
+        self.assertEqual(deck['event_info']['expansion'], 'ONE')
+        self.assertEqual(deck['event_info']['format'], 'PremierDraft')
+        self.assertEqual(deck['groups'][0]['name'], 'Maindeck')
+        self.assertEqual(deck['groups'][1]['name'], 'Sideboard')
+        self.assertEqual(deck['groups'][0]['cards'][0]['name'], 'Axiom Engraver')
+
+        deck = self.REQUESTER.get_deck(_id, 1)
+        self.assertIsInstance(deck, dict)
+        self.assertEqual(deck['text_link'], f'/deck/{_id}/1.txt')
+        self.assertEqual(deck['builder_link'], f'https://sealeddeck.tech/17lands/deck/{_id}/1')
+
+    def test_get_details(self):
+        details = self.REQUESTER.get_details('Fish')
+        self.assertIsNone(details)
+
+        details = self.REQUESTER.get_details('f5383f215c364c129632cdc559f0ac3a')
+        self.assertIsInstance(details, dict)
+        self.assertIsInstance(details['event_course'], dict)
+        self.assertIsInstance(details['match_results'], list)
+        self.assertIsInstance(details['match_results'][0], dict)
+        self.assertIsInstance(details['match_results'][0]['game_results'], list)
+        self.assertIsInstance(details['match_results'][0]['game_results'][0], dict)
+
+        self.assertEqual(details['expansion'], 'ONE')
+        self.assertEqual(details['format'], 'PremierDraft')
+        self.assertEqual(details['wins'], 7)
+        self.assertEqual(details['losses'], 2)
+        self.assertEqual(details['start_rank'], 'Platinum-4')
+        self.assertEqual(details['end_rank'], 'Platinum-3')
+
+        self.assertEqual(details['event_course']['wins'], 7)
+        self.assertEqual(details['event_course']['losses'], 2)
+
+    def test_get_draft(self):
+        draft = self.REQUESTER.get_draft('Fish')
+        self.assertIsNone(draft)
+
+        draft = self.REQUESTER.get_draft('f5383f215c364c129632cdc559f0ac3a')
+        self.assertIsInstance(draft, dict)
+        self.assertEqual(draft['expansion'], 'ONE')
+        self.assertIsInstance(draft['picks'], list)
+
+        pick = draft['picks'][0]
+        self.assertIsInstance(pick, dict)
+        self.assertIsInstance(pick['pick'], dict)
+        self.assertIsInstance(pick['available'], list)
+        self.assertIsInstance(pick['available'][0], dict)
+
+        self.assertEqual(pick['pack_number'], 0)
+        self.assertEqual(pick['pick_number'], 0)
+        self.assertEqual(pick['pick']['name'], 'Solphim, Mayhem Dominus')
+        self.assertEqual(pick['available'][0]['name'], 'Solphim, Mayhem Dominus')
+
+    def test_get_tier_list(self):
+        tiers = self.REQUESTER.get_tier_list('Fish')
+        self.assertIsInstance(tiers, list)
+        self.assertEqual(len(tiers), 0)
+
+        tiers = self.REQUESTER.get_tier_list('45a3a3a84d9f46178d6750ff96d85f8c')
+        self.assertIsInstance(tiers, list)
+        self.assertIsInstance(tiers[0], dict)
+        self.assertEqual(len(tiers), 261)
