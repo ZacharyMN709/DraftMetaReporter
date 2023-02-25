@@ -1,9 +1,11 @@
 import unittest
+import json
 
+from core.utilities import validate_json
 from core.data_requesting.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
 from core.data_requesting import Requester, RequestScryfall, Request17Lands
 
-from Tests.settings import _tries, _fail_delay, _success_delay
+from Tests.settings import _tries, _fail_delay, _success_delay, TEST_MASS_DATA_PULL
 
 
 # TODO: Create new test suites for Requesting objects.
@@ -38,6 +40,12 @@ class TestRequestScryfall(unittest.TestCase):
     def test_get_set_cards_valid(self):
         cards = self.REQUESTER.get_set_cards('NEO')
         self.assertIsInstance(cards, list)
+        self.assertEqual(cards[0]['name'], 'Ancestral Katana')
+
+    def test_get_set_review_valid(self):
+        cards = self.REQUESTER.get_set_review_order('NEO')
+        self.assertIsInstance(cards, list)
+        self.assertEqual(cards[0]['name'], 'Hotshot Mechanic')
 
     def test_get_set_cards_invalid(self):
         ret = self.REQUESTER.get_set_cards('INVALID')
@@ -75,6 +83,20 @@ class TestRequestScryfall(unittest.TestCase):
         card = self.REQUESTER.get_card_by_name(name)
         self.assertIsInstance(card, dict)
         self.assertEqual(card['err_msg'], f'Error: Cannot find card "{name}"')
+
+    @unittest.skipUnless(TEST_MASS_DATA_PULL, "Not testing mass data functions. 'TEST_MASS_DATA_PULL' set to False.")
+    def test_get_bulk_data(self):
+        data = self.REQUESTER.get_bulk_data()
+        self.assertIsInstance(data, list)
+        json_str = json.dumps(data)
+        self.assertTrue(validate_json(json_str))
+
+    @unittest.skipUnless(TEST_MASS_DATA_PULL, "Not testing mass data functions. 'TEST_MASS_DATA_PULL' set to False.")
+    def test_get_arena_cards(self):
+        data = self.REQUESTER.get_arena_cards()
+        self.assertIsInstance(data, list)
+        json_str = json.dumps(data)
+        self.assertTrue(validate_json(json_str))
 
 
 class TestRequestRequest17Lands(unittest.TestCase):

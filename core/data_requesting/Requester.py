@@ -83,7 +83,7 @@ class Requester:
     def raw_paginated_request(self, url: str, params: Optional[dict[str, str]] = None) -> Optional[list[Response]]:
         response = self.raw_request(url, params)
 
-        if response is None:  # pragma: nocover
+        if response is None:
             return None
 
         ret = [response]
@@ -95,10 +95,10 @@ class Requester:
                 response = self.raw_request(url)
                 ret.append(response)
                 url = response.json().get('next_page')
-            except KeyError as ex:  # pragma: nocover
+            except KeyError as ex:
                 logging.error(f"{ex} was not found in the returned json.")
                 break
-            except Exception as ex:  # pragma: nocover
+            except Exception as ex:
                 logging.error(f'Encountered unexpected error: {ex}')
                 break
 

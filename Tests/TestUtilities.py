@@ -2,11 +2,12 @@ import logging
 import os
 import unittest
 
-from core.utilities import load_json_file, save_json_file, auto_logging, flatten_lists, invert_dict
+from core.utilities import validate_json, load_json_file, save_json_file, auto_logging, flatten_lists, invert_dict
 from core.utilities.funcs import reformat_json_file
 
 
 class TestLogging(unittest.TestCase):
+    # noinspection PyUnresolvedReferences
     def test_logger(self):
         auto_logging.add_logging_level('TEST', 100)
         self.assertEqual(logging.TEST, 100)
@@ -42,6 +43,10 @@ class TestFuncs(unittest.TestCase):
 
     def tearDown(self) -> None:
         os.remove(os.path.join(self.test_dir, 'test.json'))
+
+    def test_validate_json(self):
+        self.assertTrue(validate_json('{"Test": "Data"}'))
+        self.assertFalse(validate_json("'Test"))
 
     def test_get_invalid_save(self):
         ret = save_json_file('./+%', 'test+test.json', {'test': 'results'})

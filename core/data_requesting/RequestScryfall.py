@@ -62,11 +62,8 @@ class RequestScryfall(Requester):
         logging.info(f"Fetching data for card: {name}")
         response = self.request(FUZZY_SCRYFALL_URL, params)
 
-        if response is None:
-            return None
-
-        # If is not a card, do some processing and return the struct with some information.
-        if response['object'] != 'card':
+        # If the response is not None, but not a card, do some processing and return the struct with some information.
+        if response is not None and response['object'] != 'card':
             logging.verbose(f"A non-card was returned for {name}")
             # If the response type is an error, use that as the message.
             if response['details'][:20] == 'Too many cards match':

@@ -44,18 +44,22 @@ def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
 
 def get_stats_grades(frame) -> Optional[pd.DataFrame]:
     # Get all of the rows where GIH WR is non NaN, convert it to a float, cancelling if none exist.
-    available_rows = frame[~frame['GIH WR'].isna()].copy()
+    available_rows = frame[~frame['GIH WR'].isna()]
     if len(available_rows) == 0:
         return frame
-    available_gih = np.array(available_rows['GIH WR'], dtype=float)
+
+    # Filter by a minimum number of games, to prevent one win to skew data.
+    filtered_rows = available_rows[available_rows['# GP'] >= round(available_rows['# GP'].max() * 0.005)]
+    filtered_rows = filtered_rows.copy()
 
     # Get the stats, and use it to normalize the data, assigning it back to the available rows.
+    available_gih = np.array(filtered_rows['GIH WR'], dtype=float)
     mu, std = norm.fit(available_gih)
-    available_rows['Percentile'] = norm.cdf(available_gih, mu, std).round(4) * 100
+    filtered_rows['Percentile'] = norm.cdf(available_gih, mu, std).round(4) * 100
 
     # Re-map the available rows back to the main frame by reindexing, making empty rows.
-    available_rows = available_rows.reindex(frame.index, fill_value=None)
-    frame['Percentile'] = available_rows['Percentile']
+    filtered_rows = filtered_rows.reindex(frame.index, fill_value=None)
+    frame['Percentile'] = filtered_rows['Percentile']
 
     # For each "Percentile", use a pre-defined mapping to assign that a tier, and in turn, a letter grade.
     range_map = [frame['Percentile'].between(start, end) for start, end in range_map_vals]
@@ -87,6 +91,7 @@ def append_card_info(frame: pd.DataFrame, card_dict: dict[str, Card]) -> pd.Data
             card = Card.from_name(card_name)
         card_list.append(card)
 
+    # TODO: This should be handled as a join.
     frame['Cast Color'] = [card.CAST_IDENTITY for card in card_list]
     frame['CMC'] = [card.CMC for card in card_list]
     frame['Type Line'] = [card.TYPE_LINE for card in card_list]
