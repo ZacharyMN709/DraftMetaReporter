@@ -114,7 +114,7 @@ class DataLoader:
                 logging.verbose(f"Updating data for '{filename}'. Fetching from 17Lands site...")
             else:
                 logging.verbose(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...")
-            raw_data = self._fetcher.request(url)
+            raw_data = self._fetcher.get_json_response(url)
 
             if raw_data is None:
                 logging.error(f"Data fetched for '{filename}' returned None! Returning empty CARD_DATA struct")

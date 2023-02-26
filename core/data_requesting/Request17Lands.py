@@ -18,16 +18,28 @@ class Request17Lands(Requester):
         super().__init__(tries, fail_delay, success_delay)
 
     def get_colors(self) -> Optional[list[str]]:
-        return self.request(url=COLOR_17L_URL)
+        """
+        Gets the list of colours 17 Lands supports.
+        :return: A list of colours
+        """
+        return self.get_json_response(url=COLOR_17L_URL)
 
     def get_expansions(self) -> Optional[list[str]]:
-        return self.request(url=EXPANSIONS_17L_URL)
+        """
+        Gets the list of expansions (sets) 17 Lands supports.
+        :return: A list expansion codes.
+        """
+        return self.get_json_response(url=EXPANSIONS_17L_URL)
 
     def get_event_types(self) -> Optional[list[str]]:
-        return self.request(url=FORMATS_17L_URL)
+        """
+        Gets the list of event types (game modes: eg. 'Premier Draft') 17 Lands supports.
+        :return: A list event types.
+        """
+        return self.get_json_response(url=FORMATS_17L_URL)
 
     def get_play_draw_stats(self) -> pd.DataFrame:
-        result = self.request(url=PLAY_DRAW_17L_URL)
+        result = self.get_json_response(url=PLAY_DRAW_17L_URL)
         play_draw_stats = pd.DataFrame(result)
         return play_draw_stats
 
@@ -47,7 +59,7 @@ class Request17Lands(Requester):
             'user_group': user_group
         }
 
-        result = self.request(url=COLOR_RATING_17L_URL, params=params)
+        result = self.get_json_response(url=COLOR_RATING_17L_URL, params=params)
 
         # Apply a more intuitive columns ordering
         unsorted_df = pd.DataFrame(result)
@@ -78,7 +90,7 @@ class Request17Lands(Requester):
             'colors': deck_colors
         }
 
-        result = self.request(url=CARD_RATING_17L_URL, params=params)
+        result = self.get_json_response(url=CARD_RATING_17L_URL, params=params)
 
         # Apply a more intuitive columns ordering, and remove URLs and sideboard metrics
         unsorted_df = pd.DataFrame(result)
@@ -119,8 +131,8 @@ class Request17Lands(Requester):
 
         return card_ratings
 
-    def get_card_evaluations(self, expansion: str, event_type: str = None, start_date: date = None, end_date: date = None,
-                             rarity: str = None, color: str = None) -> pd.DataFrame:
+    def get_card_evaluations(self, expansion: str, event_type: str = None, start_date: date = None,
+                             end_date: date = None, rarity: str = None, color: str = None) -> pd.DataFrame:
 
         start_date = start_date or DEFAULT_DATE
         end_date = end_date or date.today()
@@ -135,7 +147,7 @@ class Request17Lands(Requester):
             'color': color
         }
 
-        result = self.request(url=CARD_EVAL_17L_URL, params=params)
+        result = self.get_json_response(url=CARD_EVAL_17L_URL, params=params)
 
         # Tidy up data into a dataframe of one row per date-card combination
         digested_result_accum = []
@@ -162,6 +174,12 @@ class Request17Lands(Requester):
         return card_evaluations
 
     def get_trophy_deck_metadata(self, expansion: str, event_type: Optional[str] = None) -> Optional[dict]:
+        """
+
+        :param expansion:
+        :param event_type:
+        :return:
+        """
         event_type = event_type or DEFAULT_FORMAT
 
         params = {
@@ -169,7 +187,7 @@ class Request17Lands(Requester):
             'format': event_type
         }
 
-        result = self.request(url=TROPHY_17L_URL, params=params)
+        result = self.get_json_response(url=TROPHY_17L_URL, params=params)
 
         # Apply a more intuitive columns ordering
         unsorted_df = pd.DataFrame(result)
@@ -194,27 +212,43 @@ class Request17Lands(Requester):
         return result
 
     def get_deck(self, draft_id: str, deck_index: int = 0) -> Optional[dict]:
+        """
+        Gets details of a particular deck from DECK_17L_URL, based on the draft id and deck index provided.
+        :param draft_id: The id of the draft.
+        :param deck_index: The index of the deck to look for.
+        :return: The details of the specified deck, if found.
+        """
         params = {
             'draft_id': draft_id,
             'deck_index': deck_index
         }
-        return self.request(url=DECK_17L_URL, params=params)
+        return self.get_json_response(url=DECK_17L_URL, params=params)
 
     def get_details(self, draft_id: str) -> Optional[dict]:
+        """
+        Gets details of a run from DETAILS_17L_URL, based on the draft id provided.
+        :param draft_id: The id of the draft.
+        :return: A dictionary with the run's details, if found.
+        """
         params = {
             'draft_id': draft_id,
         }
 
-        result = self.request(url=DETAILS_17L_URL, params=params)
+        result = self.get_json_response(url=DETAILS_17L_URL, params=params)
         return result
 
     def get_draft(self, draft_id: str) -> Optional[dict]:
+        """
+        Gets a draft log from DRAFT_LOG_17L_URL, based on the draft id provided.
+        :param draft_id: The id of the draft.
+        :return: A dictionary with the draft data, if found.
+        """
         params = {
             'draft_id': draft_id
         }
 
         # Make a request and abort if None is returned.
-        result = self.raw_request(url=DRAFT_LOG_17L_URL, params=params)
+        result = self.get_response(url=DRAFT_LOG_17L_URL, params=params)
         if result is None:
             return None
 
@@ -227,14 +261,18 @@ class Request17Lands(Requester):
 
         return result['payload']
 
-    def get_tier_list(self, guid: str) -> list[dict]:
+    def get_tier_list(self, tier_list_id: str) -> Optional[list[dict]]:
         """
-        Requests information on a tier list, based on a guid (and not by set or user).
-        :param guid: The key for the tier list.
-        :return: A list of card tiers. A bad guid returns an empty list.
+        Requests information on a tier list from TIER_17L_URL, based on a tier list id.
+        :param tier_list_id: The id for the tier list.
+        :return: A list of card tier information. A an invalid id returns None.
         """
-        url_to_parse = TIER_17L_URL + f"/{guid}"
+        # Make a request to the appropriate url and get the result.
+        url = TIER_17L_URL + f"/{tier_list_id}"
+        result = self.get_json_response(url=url)
 
-        # Make a request and return the result.
-        result = self.request(url=url_to_parse)
+        # If the result is an empty list, no valid tier list was found, so return None instead.
+        if len(result) == 0:
+            return None
+
         return result

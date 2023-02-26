@@ -19,11 +19,11 @@ class Requester:
         self._SUCCESS_DELAY: float = success_delay or SUCCESS_DELAY
         self.valid_responses: list[int] = [200]
 
-    def fetch(self, url) -> Optional[Response]:
+    def request(self, url) -> Optional[Response]:
         """
         Attempts to get a Response from the given URL, and returns it if it has a valid response code.
-        :param url: The url to get data from
-        :return: A Response or None
+        :param url: The url to get data from.
+        :return: A Response or None.
         """
         try:
             # Try to get the data from the URL.
@@ -47,12 +47,12 @@ class Requester:
             logging.error(f'Encountered unexpected error: {ex}')
             return None
 
-    def raw_request(self, url: str, params: dict[str, str] = None) -> Optional[Response]:
+    def get_response(self, url: str, params: dict[str, str] = None) -> Optional[Response]:
         """
         Attempts to get a response from a url, within a given number of tries.
-        :param url: The url to get data from
+        :param url: The url to get data from.
         :param params: A dictionary of parameters to include in the url.
-        :return: A Response or None
+        :return: A Response or None.
         """
         # Generate the url to check.
         composed_url = url
@@ -63,7 +63,7 @@ class Requester:
         #  If it can't be gotten in under the number of tries allowed, break the loop,
         #  log an error, and return None.
         for cnt in range(1, self._TRIES + 1):
-            response = self.fetch(composed_url)
+            response = self.request(composed_url)
             if response is not None:
                 return response
 
@@ -77,15 +77,15 @@ class Requester:
         logging.error(f'Failed URL: {composed_url}')
         return None
 
-    def request(self, url: str, params: dict[str, str] = None) -> Optional[Union[list, dict]]:
+    def get_json_response(self, url: str, params: dict[str, str] = None) -> Optional[Union[list, dict]]:
         """
         Attempts to get json data from a url, within a given number of tries.
-        :param url: The url to get data from
+        :param url: The url to get data from.
         :param params: A dictionary of parameters to include in the url.
-        :return: A json object or None
+        :return: A json object or None.
         """
         # Get the response, short-circuiting if it's None.
-        response = self.raw_request(url, params)
+        response = self.get_response(url, params)
         if response is None:
             return None
 
@@ -98,9 +98,15 @@ class Requester:
             logging.error(response.content)
             return None
 
-    def raw_paginated_request(self, url: str, params: dict[str, str] = None) -> Optional[list[Response]]:
+    def get_paginated_response(self, url: str, params: dict[str, str] = None) -> Optional[list[Response]]:
+        """
+        Attempts to get a series of responses from a url, within a given number of tries.
+        :param url: The url to get data from.
+        :param params: A dictionary of parameters to include in the url.
+        :return: A list of Responses or None.
+        """
         # Get the response, short-circuiting if it's None.
-        response = self.raw_request(url, params)
+        response = self.get_response(url, params)
         if response is None:
             return None
 
@@ -111,7 +117,7 @@ class Requester:
         # While we have a url to query, get the next response.
         while url:
             logging.debug(f"Fetching next page. ({url})")
-            response = self.raw_request(url)
+            response = self.get_response(url)
 
             # If the response is None, break. We either have a connection issue or a bad link. Either way,
             #  we don't want to pollute the returned list with None.
@@ -125,8 +131,14 @@ class Requester:
         # Return all of the responses received.
         return ret
 
-    def paginated_request(self, url: str, params: dict[str, str] = None) -> Optional[list[Union[list, dict]]]:
-        ret = self.raw_paginated_request(url, params)
+    def get_paginated_json_response(self, url: str, params: dict[str, str] = None) -> Optional[list[Union[list, dict]]]:
+        """
+        Attempts to get a series of json objects from a url, within a given number of tries.
+        :param url: The url to get data from.
+        :param params: A dictionary of parameters to include in the url.
+        :return: A list of json objects or None.
+        """
+        ret = self.get_paginated_response(url, params)
         if ret is None:
             return None
         return [r.json() for r in ret if r]

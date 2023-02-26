@@ -2,6 +2,7 @@ import unittest
 import json
 
 from core.utilities import validate_json
+from core.wubrg import COLOR_COMBINATIONS
 from core.data_requesting.utils.settings import TRIES, FAIL_DELAY, SUCCESS_DELAY
 from core.data_requesting import Requester, RequestScryfall, Request17Lands
 
@@ -24,11 +25,11 @@ class TestRequester(unittest.TestCase):
         self.assertEqual(fetcher._SUCCESS_DELAY, 10)
 
     def test_valid_url(self):
-        ret = self.REQUESTER.request('https://api.scryfall.com/')
+        ret = self.REQUESTER.get_json_response('https://api.scryfall.com/')
         self.assertIsNone(ret)
 
     def test_invalid_url(self):
-        ret = self.REQUESTER.request('Hello World')
+        ret = self.REQUESTER.get_json_response('Hello World')
         self.assertIsNone(ret)
 
 
@@ -102,6 +103,25 @@ class TestRequestRequest17Lands(unittest.TestCase):
 
     def test_(self):
         pass
+
+    def test_get_colors(self):
+        colors = self.REQUESTER.get_colors()
+        baseline: list = COLOR_COMBINATIONS.copy()
+        baseline[0] = None
+        self.assertListEqual(baseline, colors)
+
+    def test_get_expansions(self):
+        expansions = self.REQUESTER.get_expansions()
+        self.assertIsInstance(expansions, list)
+        self.assertTrue('ONE' in expansions)
+
+    def test_get_event_types(self):
+        events = self.REQUESTER.get_event_types()
+        self.assertTrue('PremierDraft' in events)
+        self.assertTrue('TradDraft' in events)
+        self.assertTrue('QuickDraft' in events)
+        self.assertTrue('Sealed' in events)
+        self.assertTrue('TradSealed' in events)
 
     def test_get_deck(self):
         # Test a bad request
@@ -187,8 +207,7 @@ class TestRequestRequest17Lands(unittest.TestCase):
     def test_get_tier_list(self):
         # Test a bad request
         tiers = self.REQUESTER.get_tier_list('Fish')
-        self.assertIsInstance(tiers, list)
-        self.assertEqual(len(tiers), 0)
+        self.assertIsNone(tiers)
 
         # Send a good request
         tiers = self.REQUESTER.get_tier_list('45a3a3a84d9f46178d6750ff96d85f8c')

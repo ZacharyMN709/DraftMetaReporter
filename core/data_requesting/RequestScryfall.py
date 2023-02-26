@@ -16,7 +16,13 @@ class RequestScryfall(Requester):
         super().__init__(tries, fail_delay, success_delay)
         self.valid_responses = [200, 404]
 
-    def _get_set_cards(self, set_code: str, order: str) -> list[dict[str, Any]]:
+    def _get_set_cards(self, set_code: str, order: str = 'set') -> list[dict[str, Any]]:
+        """
+        Gets the cards from a given set, with an optional order.
+        :param set_code: The set to get cards for.
+        :param order: The order in which cards are returned. Default: 'set'
+        :return: A list of card json objects.
+        """
         params = {
             'format': 'json',
             'q': f'e%3A{set_code}',
@@ -27,18 +33,33 @@ class RequestScryfall(Requester):
             'include_extras': False,
         }
         logging.info(f"Fetching card data for set: {set_code}")
-        return flatten_lists([x['data'] for x in self.paginated_request(CARD_SCRYFALL_URL, params=params)])
+        return flatten_lists([x['data'] for x in self.get_paginated_json_response(CARD_SCRYFALL_URL, params=params)])
 
     def get_set_cards(self, set_code: str) -> list[dict[str, Any]]:
+        """
+        Gets the cards from a given set, in the 'set' order (based on card number).
+        :param set_code: The set to get cards for.
+        :return: A list of card json objects.
+        """
         return self._get_set_cards(set_code, 'set')
 
     def get_set_review_order(self, set_code: str) -> list[dict[str, Any]]:
+        """
+        Gets the cards from a given set, in the 'review' order (based on cmc/mv and rarity).
+        :param set_code: The set to get cards for.
+        :return: A list of card json objects.
+        """
         return self._get_set_cards(set_code, 'review')
 
     def get_set_info(self, set_code: str) -> Union[tuple[None, None], tuple[str, str]]:
+        """
+        Gets the name and the icon for a set.
+        :param set_code: The 3-character code for the set.
+        :return: The full set name and a link to the set symbol. If the set cannot be found Nones are returned.
+        """
         url = f'{SET_SCRYFALL_URL}/{set_code}'
         logging.info(f"Fetching data for set: {set_code}")
-        response = self.request(url)
+        response = self.get_json_response(url)
 
         try:
             return response['name'], response['icon_svg_uri']
@@ -60,7 +81,7 @@ class RequestScryfall(Requester):
 
         # Attempt to get information on the card.
         logging.info(f"Fetching data for card: {name}")
-        response = self.request(FUZZY_SCRYFALL_URL, params)
+        response = self.get_json_response(FUZZY_SCRYFALL_URL, params)
 
         # If the response is not None, but not a card, do some processing and return the struct with some information.
         if response is not None and response['object'] != 'card':
@@ -76,14 +97,22 @@ class RequestScryfall(Requester):
     # NOTE: The two functions below are expensive and slow, especially to Scryfall.
     #  They should be called only as required.
     def get_arena_cards(self) -> list[dict[str, Any]]:
+        """
+        Gets all cards which are currently available on arena.
+        :return: A list of card json objects.
+        """
         params = {
             'format': 'json',
             'q': f'game%3Aarena',
         }
         logging.info(f"Fetching card data for all Arena cards.")
-        return flatten_lists([x['data'] for x in self.paginated_request(CARD_SCRYFALL_URL, params=params)])
+        return flatten_lists([x['data'] for x in self.get_paginated_json_response(CARD_SCRYFALL_URL, params=params)])
 
     def get_bulk_data(self) -> list[dict[str, Any]]:
+        """
+        Gets all cards which are stored on Scryfall.
+        :return: A list of card json objects.
+        """
         logging.info(f"Fetching bulk data...")
-        response = self.request(BULK_SCRYFALL_URL)
-        return self.request(response['download_uri'])
+        response = self.get_json_response(BULK_SCRYFALL_URL)
+        return self.get_json_response(response['download_uri'])
