@@ -2,7 +2,7 @@
 A small class which helps get specific data from scryfall, handling the minutia of json checking.
 """
 
-from typing import Union, Optional, NoReturn, Any
+from typing import Union, Optional, Any
 
 from core.utilities import logging, flatten_lists
 
@@ -16,7 +16,7 @@ class RequestScryfall(Requester):
         super().__init__(tries, fail_delay, success_delay)
         self.valid_responses = [200, 404]
 
-    def _get_set_cards(self, set_code: str, order: str) -> Union[NoReturn, list[dict[str, Any]]]:
+    def _get_set_cards(self, set_code: str, order: str) -> list[dict[str, Any]]:
         params = {
             'format': 'json',
             'q': f'e%3A{set_code}',
@@ -29,10 +29,10 @@ class RequestScryfall(Requester):
         logging.info(f"Fetching card data for set: {set_code}")
         return flatten_lists([x['data'] for x in self.paginated_request(CARD_SCRYFALL_URL, params=params)])
 
-    def get_set_cards(self, set_code: str) -> Union[NoReturn, list[dict[str, Any]]]:
+    def get_set_cards(self, set_code: str) -> list[dict[str, Any]]:
         return self._get_set_cards(set_code, 'set')
 
-    def get_set_review_order(self, set_code: str) -> Union[NoReturn, list[dict[str, Any]]]:
+    def get_set_review_order(self, set_code: str) -> list[dict[str, Any]]:
         return self._get_set_cards(set_code, 'review')
 
     def get_set_info(self, set_code: str) -> Union[tuple[None, None], tuple[str, str]]:
@@ -75,7 +75,7 @@ class RequestScryfall(Requester):
 
     # NOTE: The two functions below are expensive and slow, especially to Scryfall.
     #  They should be called only as required.
-    def get_arena_cards(self) -> Union[NoReturn, list[dict[str, Any]]]:
+    def get_arena_cards(self) -> list[dict[str, Any]]:
         params = {
             'format': 'json',
             'q': f'game%3Aarena',
@@ -83,7 +83,7 @@ class RequestScryfall(Requester):
         logging.info(f"Fetching card data for all Arena cards.")
         return flatten_lists([x['data'] for x in self.paginated_request(CARD_SCRYFALL_URL, params=params)])
 
-    def get_bulk_data(self) -> Union[NoReturn, list[dict[str, Any]]]:
+    def get_bulk_data(self) -> list[dict[str, Any]]:
         logging.info(f"Fetching bulk data...")
         response = self.request(BULK_SCRYFALL_URL)
         return self.request(response['download_uri'])

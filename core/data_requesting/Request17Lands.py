@@ -2,7 +2,7 @@
 A small class which helps get specific data from scryfall, handling the minutia of json checking.
 """
 
-from typing import Optional, Union, NoReturn
+from typing import Optional
 from datetime import date, datetime
 import json
 import pandas as pd
@@ -17,13 +17,13 @@ class Request17Lands(Requester):
     def __init__(self, tries: int = None, fail_delay: float = None, success_delay: float = None):
         super().__init__(tries, fail_delay, success_delay)
 
-    def get_colors(self) -> list[str]:
+    def get_colors(self) -> Optional[list[str]]:
         return self.request(url=COLOR_17L_URL)
 
-    def get_expansions(self) -> list[str]:
+    def get_expansions(self) -> Optional[list[str]]:
         return self.request(url=EXPANSIONS_17L_URL)
 
-    def get_event_types(self) -> list[str]:
+    def get_event_types(self) -> Optional[list[str]]:
         return self.request(url=FORMATS_17L_URL)
 
     def get_play_draw_stats(self) -> pd.DataFrame:
@@ -31,12 +31,8 @@ class Request17Lands(Requester):
         play_draw_stats = pd.DataFrame(result)
         return play_draw_stats
 
-    def get_color_ratings(self, expansion: str,
-                          event_type: Optional[str] = None,
-                          start_date: Optional[date] = None,
-                          end_date: Optional[date] = None,
-                          combine_splash: bool = False,
-                          user_group: Optional[str] = None) -> pd.DataFrame:
+    def get_color_ratings(self, expansion: str, event_type: str = None, start_date: date = None, end_date: date = None,
+                          combine_splash: bool = False, user_group: str = None) -> pd.DataFrame:
 
         start_date = start_date or DEFAULT_DATE
         end_date = end_date or date.today()
@@ -66,12 +62,8 @@ class Request17Lands(Requester):
 
         return color_ratings
 
-    def get_card_ratings(self, expansion: str,
-                         event_type: Optional[str] = None,
-                         start_date: Optional[date] = None,
-                         end_date: Optional[date] = None,
-                         user_group: Optional[str] = None,
-                         deck_colors: Optional[str] = None) -> pd.DataFrame:
+    def get_card_ratings(self, expansion: str, event_type: str = None, start_date: date = None, end_date: date = None,
+                         user_group: str = None, deck_colors: str = None) -> pd.DataFrame:
 
         start_date = start_date or DEFAULT_DATE
         end_date = end_date or date.today()
@@ -127,12 +119,8 @@ class Request17Lands(Requester):
 
         return card_ratings
 
-    def get_card_evaluations(self, expansion: str,
-                             event_type: Optional[str] = None,
-                             start_date: Optional[date] = None,
-                             end_date: Optional[date] = None,
-                             rarity: Optional[str] = None,
-                             color: Optional[str] = None) -> pd.DataFrame:
+    def get_card_evaluations(self, expansion: str, event_type: str = None, start_date: date = None, end_date: date = None,
+                             rarity: str = None, color: str = None) -> pd.DataFrame:
 
         start_date = start_date or DEFAULT_DATE
         end_date = end_date or date.today()
@@ -173,7 +161,7 @@ class Request17Lands(Requester):
 
         return card_evaluations
 
-    def get_trophy_deck_metadata(self, expansion: str, event_type: Optional[str] = None) -> dict:
+    def get_trophy_deck_metadata(self, expansion: str, event_type: Optional[str] = None) -> Optional[dict]:
         event_type = event_type or DEFAULT_FORMAT
 
         params = {
@@ -205,14 +193,14 @@ class Request17Lands(Requester):
 
         return result
 
-    def get_deck(self, draft_id: str, deck_index: int = 0) -> dict:
+    def get_deck(self, draft_id: str, deck_index: int = 0) -> Optional[dict]:
         params = {
             'draft_id': draft_id,
             'deck_index': deck_index
         }
         return self.request(url=DECK_17L_URL, params=params)
 
-    def get_details(self, draft_id: str) -> dict:
+    def get_details(self, draft_id: str) -> Optional[dict]:
         params = {
             'draft_id': draft_id,
         }
@@ -220,7 +208,7 @@ class Request17Lands(Requester):
         result = self.request(url=DETAILS_17L_URL, params=params)
         return result
 
-    def get_draft(self, draft_id: str) -> Union[dict, NoReturn]:
+    def get_draft(self, draft_id: str) -> Optional[dict]:
         params = {
             'draft_id': draft_id
         }
@@ -239,8 +227,14 @@ class Request17Lands(Requester):
 
         return result['payload']
 
-    def get_tier_list(self, guid: str) -> Union[dict, NoReturn]:
+    def get_tier_list(self, guid: str) -> list[dict]:
+        """
+        Requests information on a tier list, based on a guid (and not by set or user).
+        :param guid: The key for the tier list.
+        :return: A list of card tiers. A bad guid returns an empty list.
+        """
         url_to_parse = TIER_17L_URL + f"/{guid}"
 
+        # Make a request and return the result.
         result = self.request(url=url_to_parse)
-        return [clean_card_tier(card_data) for card_data in result]
+        return result

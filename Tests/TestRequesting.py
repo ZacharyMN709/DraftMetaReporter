@@ -104,11 +104,15 @@ class TestRequestRequest17Lands(unittest.TestCase):
         pass
 
     def test_get_deck(self):
+        # Test a bad request
         deck = self.REQUESTER.get_deck('Fish')
         self.assertIsNone(deck)
 
+        # Send a good request
         _id = 'f5383f215c364c129632cdc559f0ac3a'
         deck = self.REQUESTER.get_deck(_id)
+
+        # Validate the structure
         self.assertIsInstance(deck, dict)
         self.assertIsInstance(deck['event_info'], dict)
         self.assertIsInstance(deck['groups'], list)
@@ -116,6 +120,7 @@ class TestRequestRequest17Lands(unittest.TestCase):
         self.assertIsInstance(deck['groups'][0]['cards'], list)
         self.assertIsInstance(deck['groups'][0]['cards'][0], dict)
 
+        # Validate the contents
         self.assertEqual(deck['text_link'], f'/deck/{_id}/0.txt')
         self.assertEqual(deck['builder_link'], f'https://sealeddeck.tech/17lands/deck/{_id}/0')
         self.assertEqual(deck['event_info']['expansion'], 'ONE')
@@ -124,16 +129,21 @@ class TestRequestRequest17Lands(unittest.TestCase):
         self.assertEqual(deck['groups'][1]['name'], 'Sideboard')
         self.assertEqual(deck['groups'][0]['cards'][0]['name'], 'Axiom Engraver')
 
+        # Validate the other build
         deck = self.REQUESTER.get_deck(_id, 1)
         self.assertIsInstance(deck, dict)
         self.assertEqual(deck['text_link'], f'/deck/{_id}/1.txt')
         self.assertEqual(deck['builder_link'], f'https://sealeddeck.tech/17lands/deck/{_id}/1')
 
     def test_get_details(self):
+        # Test a bad request
         details = self.REQUESTER.get_details('Fish')
         self.assertIsNone(details)
 
+        # Send a good request
         details = self.REQUESTER.get_details('f5383f215c364c129632cdc559f0ac3a')
+
+        # Validate the structure
         self.assertIsInstance(details, dict)
         self.assertIsInstance(details['event_course'], dict)
         self.assertIsInstance(details['match_results'], list)
@@ -141,42 +151,58 @@ class TestRequestRequest17Lands(unittest.TestCase):
         self.assertIsInstance(details['match_results'][0]['game_results'], list)
         self.assertIsInstance(details['match_results'][0]['game_results'][0], dict)
 
+        # Validate the contents
         self.assertEqual(details['expansion'], 'ONE')
         self.assertEqual(details['format'], 'PremierDraft')
         self.assertEqual(details['wins'], 7)
         self.assertEqual(details['losses'], 2)
         self.assertEqual(details['start_rank'], 'Platinum-4')
         self.assertEqual(details['end_rank'], 'Platinum-3')
-
         self.assertEqual(details['event_course']['wins'], 7)
         self.assertEqual(details['event_course']['losses'], 2)
 
     def test_get_draft(self):
+        # Test a bad request
         draft = self.REQUESTER.get_draft('Fish')
         self.assertIsNone(draft)
 
+        # Send a good request
         draft = self.REQUESTER.get_draft('f5383f215c364c129632cdc559f0ac3a')
+
+        # Validate the structure
         self.assertIsInstance(draft, dict)
-        self.assertEqual(draft['expansion'], 'ONE')
         self.assertIsInstance(draft['picks'], list)
+        self.assertIsInstance(draft['picks'][0], dict)
+        self.assertIsInstance(draft['picks'][0]['pick'], dict)
+        self.assertIsInstance(draft['picks'][0]['available'], list)
+        self.assertIsInstance(draft['picks'][0]['available'][0], dict)
 
-        pick = draft['picks'][0]
-        self.assertIsInstance(pick, dict)
-        self.assertIsInstance(pick['pick'], dict)
-        self.assertIsInstance(pick['available'], list)
-        self.assertIsInstance(pick['available'][0], dict)
-
-        self.assertEqual(pick['pack_number'], 0)
-        self.assertEqual(pick['pick_number'], 0)
-        self.assertEqual(pick['pick']['name'], 'Solphim, Mayhem Dominus')
-        self.assertEqual(pick['available'][0]['name'], 'Solphim, Mayhem Dominus')
+        # Validate the contents
+        self.assertEqual(draft['expansion'], 'ONE')
+        self.assertEqual(draft['picks'][0]['pack_number'], 0)
+        self.assertEqual(draft['picks'][0]['pick_number'], 0)
+        self.assertEqual(draft['picks'][0]['pick']['name'], 'Solphim, Mayhem Dominus')
+        self.assertEqual(draft['picks'][0]['available'][0]['name'], 'Solphim, Mayhem Dominus')
 
     def test_get_tier_list(self):
+        # Test a bad request
         tiers = self.REQUESTER.get_tier_list('Fish')
         self.assertIsInstance(tiers, list)
         self.assertEqual(len(tiers), 0)
 
+        # Send a good request
         tiers = self.REQUESTER.get_tier_list('45a3a3a84d9f46178d6750ff96d85f8c')
+
+        # Validate the structure
         self.assertIsInstance(tiers, list)
         self.assertIsInstance(tiers[0], dict)
+        self.assertIsInstance(tiers[0]['flags'], dict)
+
+        # Validate the contents
         self.assertEqual(len(tiers), 261)
+        self.assertEqual(tiers[0]['name'], 'Against All Odds')
+        self.assertEqual(tiers[0]['tier'], 'C-')
+        self.assertEqual(tiers[0]['comment'], '')
+        self.assertEqual(tiers[0]['flags']['sideboard'], False)
+        self.assertEqual(tiers[0]['flags']['synergy'], False)
+        self.assertEqual(tiers[0]['flags']['buildaround'], False)

@@ -17,6 +17,17 @@ from core.data_fetching import cast_color_filter, rarity_filter, filter_frame, t
 from core.tier_list_analysis.utils import *
 
 
+class CardTier:
+    name: str
+    tier: str
+    rank: int
+    sideboard: bool
+    synergy: bool
+    buildaround: bool
+    comment: str
+
+
+
 class TierList:
     def __init__(self, link, user, _set):
         self.link: str = link
@@ -28,10 +39,12 @@ class TierList:
         self.data_root: str = os.path.join(DATA_DIR_LOC, DATA_DIR_NAME, self.SET, 'Tiers')
         self.filename = f'{self.SET}-{self.user}-{self.pull_time.strftime("%y%m%d")}{TIER_LIST_EXT}'
 
-    def pull_data(self) -> dict:
+    def pull_data(self) -> list[dict]:
         # Generate a requester to get data from the 17Lands website.
         fetcher = Request17Lands()
         raw_data = fetcher.get_tier_list(self.link.replace(TIER_LIST_ROOT, ""))
+
+        # TODO: Patch/organize the raw data to be used here, using CardTier dataclass.
 
         # Update the time data was pulled.
         self.pull_time = datetime.utcnow()
