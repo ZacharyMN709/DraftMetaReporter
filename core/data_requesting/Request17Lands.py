@@ -3,7 +3,7 @@ A small class which helps get specific data from scryfall, handling the minutia 
 """
 
 from typing import Optional
-from datetime import date, datetime
+from datetime import date
 import json
 import pandas as pd
 
@@ -15,7 +15,7 @@ from core.data_requesting.Requester import Requester
 class Request17Lands(Requester):
     """ A small class which helps get specific data from scryfall, handling the minutia of json checking. """
     def __init__(self, tries: int = None, fail_delay: float = None, success_delay: float = None):
-        super().__init__(tries, fail_delay, success_delay)
+        super().__init__(tries, fail_delay, success_delay, [200])
 
     def get_colors(self) -> Optional[list[str]]:
         """
@@ -47,7 +47,7 @@ class Request17Lands(Requester):
 
     def get_color_ratings(self, expansion: str, event_type: str = None,
                           start_date: date = None, end_date: date = None,
-                          user_group: str = None, combine_splash: bool = False) -> Optional[dict]:
+                          user_group: str = None, combine_splash: bool = False) -> Optional[list[dict]]:
         """
         Gets data on win-rates for different colour combinations of decks.
         :param expansion: The set code to get data for.
@@ -56,7 +56,7 @@ class Request17Lands(Requester):
         :param end_date: The end date for the data range. Default: date.today()
         :param user_group: The tier of player to filter on ('top', 'middle', 'bottom'). Default: None
         :param combine_splash: Whether to combine decks that splash with those that don't. Default: False
-        :return:
+        :return: A list of dictionaries containing archetype information.
         """
         # Handle parameters, and package them into a dict to be used for the url.
         event_type = event_type or DEFAULT_FORMAT
@@ -88,7 +88,7 @@ class Request17Lands(Requester):
 
     def get_card_ratings(self, expansion: str, event_type: str = None,
                          start_date: date = None, end_date: date = None,
-                         user_group: str = None, deck_colors: str = None) -> Optional[dict]:
+                         user_group: str = None, deck_colors: str = None) -> Optional[list[dict]]:
         """
         Gets data on the performance of cards in a draft.
         :param expansion: The set code to get data for.
@@ -97,7 +97,7 @@ class Request17Lands(Requester):
         :param end_date: The end date for the data range. Default: date.today()
         :param user_group: The tier of player to filter on ('top', 'middle', 'bottom'). Default: None
         :param deck_colors: The colour of deck to filter on. Default: None
-        :return:
+        :return: A list of dictionaries containing card information.
         """
         # Handle parameters, and package them into a dict to be used for the url.
         event_type = event_type or DEFAULT_FORMAT
@@ -158,14 +158,17 @@ class Request17Lands(Requester):
                              rarity: str = None, color: str = None) -> Optional[dict]:
         """
         Gets data on how highly cards are being taken during a draft, and its changes over time.
+        The returned data seems to be duplicated 21 times?
         :param expansion: The set code to get data for.
         :param event_type: The event type to get the data for. ('PremierDraft', etc.) Default: DEFAULT_FORMAT
         :param start_date: The start date for the data range. Default: DEFAULT_DATE
         :param end_date: The end date for the data range. Default: date.today()
         :param rarity: The rarity of the card to filter on. Default: None
         :param color: The color of the card to filter on. Default: None
-        :return:
+        :return: Returns a dict with 4 lists, which need to be joined into tabular data.
         """
+
+        # TODO: The data returned from this is weirdly duplicated. Check on that with 17Lands.
         # Handle parameters, and package them into a dict to be used for the url.
         event_type = event_type or DEFAULT_FORMAT
         start_date = start_date or DEFAULT_DATE
@@ -179,31 +182,7 @@ class Request17Lands(Requester):
             'color': color
         }
 
-        result = self.get_json_response(url=CARD_EVAL_17L_URL, params=params)
-
-        # Tidy up data into a dataframe of one row per date-card combination
-        digested_result_accum = []
-        for d_i, day in enumerate(result['dates']):
-            for c_i, card in enumerate(result['cards']):
-                digested_result_accum.append({
-                    'date': datetime.strptime(day, '%Y-%m-%d'),
-                    'name': card,
-                    'pick_n': result['data'][d_i][c_i]['pick_n'],
-                    'pick_avg': result['data'][d_i][c_i]['pick_avg'],
-                    'seen_n': result['data'][d_i][c_i]['seen_n'],
-                    'seen_avg': result['data'][d_i][c_i]['seen_avg']
-                })
-        digested_result_df = pd.DataFrame(digested_result_accum).drop_duplicates(ignore_index=True)
-
-        # Rename the metrics for more standard ones
-        card_evaluations = digested_result_df.rename(columns={
-            'pick_n': 'pick_count',
-            'pick_avg': 'avg_taken_at',
-            'seen_n': 'seen_count',
-            'seen_avg': 'avg_last_seen_at'
-        })
-
-        return result
+        return self.get_json_response(url=CARD_EVAL_17L_URL, params=params)
 
     def get_trophy_deck_metadata(self, expansion: str, event_type: Optional[str] = None) -> Optional[list[dict]]:
         """
@@ -272,13 +251,8 @@ class Request17Lands(Requester):
         if result is None:
             return None
 
-        # Process built-in JSON
+        # Process built-in JSON, and return it.
         result = json.loads(result.text[6:-2])
-
-        # Only return results if payload is complete
-        if result['type'] != 'complete':  # pragma: nocover
-            raise ValueError(f"Response is not complete. Response type: '{result['type']}'")
-
         return result['payload']
 
     def get_tier_list(self, tier_list_id: str) -> Optional[list[dict]]:

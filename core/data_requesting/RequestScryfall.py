@@ -13,8 +13,7 @@ from core.data_requesting.Requester import Requester
 class RequestScryfall(Requester):
     """ A small class which helps get specific data from scryfall, handling the minutia of json checking. """
     def __init__(self, tries: int = None, fail_delay: float = None, success_delay: float = None):
-        super().__init__(tries, fail_delay, success_delay)
-        self.valid_responses = [200, 404]
+        super().__init__(tries, fail_delay, success_delay, [200, 404])
 
     def _get_set_cards(self, set_code: str, order: str = 'set') -> list[dict[str, Any]]:
         """

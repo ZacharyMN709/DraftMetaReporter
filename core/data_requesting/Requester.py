@@ -13,11 +13,12 @@ from core.data_requesting.utils import TRIES, FAIL_DELAY, SUCCESS_DELAY
 
 class Requester:
     """ Helps to handle getting data from url end points, with some configurable options about timing. """
-    def __init__(self, tries: int = None, fail_delay: float = None, success_delay: float = None):
+    def __init__(self, tries: int = None, fail_delay: float = None, success_delay: float = None,
+                 valid_codes: list[int] = None):
         self._TRIES: int = tries or TRIES
         self._FAIL_DELAY: float = fail_delay or FAIL_DELAY
         self._SUCCESS_DELAY: float = success_delay or SUCCESS_DELAY
-        self.valid_responses: list[int] = [200]
+        self.valid_responses: list[int] = valid_codes or [200]
 
     def request(self, url) -> Optional[Response]:
         """
@@ -54,10 +55,10 @@ class Requester:
         :param params: A dictionary of parameters to include in the url.
         :return: A Response or None.
         """
-        # Generate the url to check.
+        # Generate the url to check, ignoring any parameters which are None
         composed_url = url
         if params:
-            composed_url = url + '?' + '&'.join([f"{k}={v}" for k, v in params.items()])
+            composed_url = url + '?' + '&'.join([f"{k}={v}" for k, v in params.items() if v is not None])
 
         # Try to get the data the number of time prescribed, returning it whenever it's not None.
         #  If it can't be gotten in under the number of tries allowed, break the loop,

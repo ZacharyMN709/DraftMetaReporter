@@ -1,6 +1,7 @@
 from typing import Optional
 import unittest
 import json
+from requests import Response
 
 from core.utilities import validate_json
 from core.wubrg import COLOR_COMBINATIONS
@@ -13,25 +14,67 @@ from Tests.settings import _tries, _fail_delay, _success_delay, TEST_MASS_DATA_P
 class TestRequester(unittest.TestCase):
     REQUESTER = Requester(_tries, _fail_delay, _success_delay)
 
-    def test_default_init(self):
+    def test_init(self):
+        # Tests default initialization
         fetcher = Requester()
         self.assertEqual(fetcher._TRIES, TRIES)
         self.assertEqual(fetcher._FAIL_DELAY, FAIL_DELAY)
         self.assertEqual(fetcher._SUCCESS_DELAY, SUCCESS_DELAY)
 
-    def test_arg_init(self):
+        # Tests initialization.
         fetcher = Requester(2, 120, 10)
         self.assertEqual(fetcher._TRIES, 2)
         self.assertEqual(fetcher._FAIL_DELAY, 120)
         self.assertEqual(fetcher._SUCCESS_DELAY, 10)
 
-    def test_valid_url(self):
-        ret = self.REQUESTER.get_json_response('https://api.scryfall.com/')
+    def test_request(self):
+        # This uses 200 as a valid code by default, and the url should return a 400 code, ultimately scrubbing the
+        #  response in favour of None.
+        response = self.REQUESTER.request('https://api.scryfall.com/')
+        self.assertIsNone(response)
+
+        # Test that changing the list of code accepted allows this to return a response.
+        requester = Requester(_tries, _fail_delay, _success_delay, [200, 400])
+        response = requester.request('https://api.scryfall.com/')
+        self.assertIsInstance(response, Response)
+
+        # This should throw an error inside the function, which is caught, and then suppressed, returning None.
+        ret = self.REQUESTER.request('Hello World')
         self.assertIsNone(ret)
 
-    def test_invalid_url(self):
-        ret = self.REQUESTER.get_json_response('Hello World')
-        self.assertIsNone(ret)
+    def test_get_response(self):
+        # Use a bad url to test the retry mechanism.
+        response = self.REQUESTER.request('https://api.scryfall.com/')
+        self.assertIsNone(response)
+
+        # Use a good url, with parameters, to test that a response is returned
+        url = 'https://api.scryfall.com/cards/5a70e8fa-b71d-441e-b049-dacb09a9a7af'
+        params = {
+            'format': 'json',
+            'pretty': True
+        }
+        response = self.REQUESTER.get_response(url, params)
+        self.assertIsInstance(response, Response)
+
+    def test_get_json_response(self):
+        # Use a good url, with parameters, to test that a json response is returned.
+        url = 'https://api.scryfall.com/cards/5a70e8fa-b71d-441e-b049-dacb09a9a7af'
+        params = {
+            'format': 'json',
+            'pretty': True
+        }
+        response = self.REQUESTER.get_json_response(url, params)
+        self.assertIsInstance(response, dict)
+
+        # Use a valid url, but one that doesn't return json to test error handling.
+        response = self.REQUESTER.get_json_response('https://www.google.com/')
+        self.assertIsNone(response)
+
+    def test_get_paginated_response(self):
+        pass
+
+    def test_get_paginated_json_response(self):
+        pass
 
 
 class TestRequestScryfall(unittest.TestCase):
@@ -140,15 +183,64 @@ class TestRequestRequest17Lands(unittest.TestCase):
         self.assertIsInstance(play_draw[0]['average_game_length'], float)
         self.assertIsInstance(play_draw[0]['win_rate_on_play'], float)
 
-
     def test_get_color_ratings(self):
-        pass
+        # Validate the key parts of the structure, to make sure that changes in it haven't occurred.
+        #  We don't check the length of the list, as multi-colour decks aren't guaranteed to show up, meaning the
+        #  number of archetypes we have summaries on is variable.
+        color_ratings = self.REQUESTER.get_color_ratings('ONE')
+        self.assertIsInstance(color_ratings, list)
+        self.assertIsInstance(color_ratings[0], dict)
+        self.assertIsInstance(color_ratings[0]['is_summary'], bool)
+        self.assertIsInstance(color_ratings[0]['color_name'], str)
+        self.assertIsInstance(color_ratings[0]['wins'], int)
+        self.assertIsInstance(color_ratings[0]['games'], int)
 
     def test_get_card_ratings(self):
-        pass
+        # Validate the key parts of the structure, to make sure that changes in it haven't occurred.
+        #  We don't check any of the stats, as those are liable to change. Simply check that the number of cards in the
+        #  data, and the first card returned is correct, and the data type otherwise.
+        card_ratings = self.REQUESTER.get_card_ratings('ONE')
+        self.assertIsInstance(card_ratings, list)
+        self.assertIsInstance(card_ratings[0], dict)
+        self.assertIsInstance(card_ratings[0]['seen_count'], int)
+        self.assertIsInstance(card_ratings[0]['avg_seen'], float)
+        self.assertIsInstance(card_ratings[0]['pick_count'], int)
+        self.assertIsInstance(card_ratings[0]['avg_pick'], float)
+        self.assertIsInstance(card_ratings[0]['game_count'], int)
+        self.assertIsInstance(card_ratings[0]['win_rate'], float)
+        self.assertIsInstance(card_ratings[0]['opening_hand_game_count'], int)
+        self.assertIsInstance(card_ratings[0]['opening_hand_win_rate'], float)
+        self.assertIsInstance(card_ratings[0]['drawn_game_count'], int)
+        self.assertIsInstance(card_ratings[0]['drawn_win_rate'], float)
+        self.assertIsInstance(card_ratings[0]['ever_drawn_game_count'], int)
+        self.assertIsInstance(card_ratings[0]['ever_drawn_win_rate'], float)
+        self.assertIsInstance(card_ratings[0]['never_drawn_game_count'], int)
+        self.assertIsInstance(card_ratings[0]['never_drawn_win_rate'], float)
+        self.assertIsInstance(card_ratings[0]['drawn_improvement_win_rate'], float)
+        self.assertIsInstance(card_ratings[0]['name'], str)
+
+        self.assertEqual(len(card_ratings), 265)
+        self.assertEqual(card_ratings[0]['name'], 'Vorinclex, Monstrous Raider')
 
     def test_get_card_evaluations(self):
-        pass
+        # Validate the key parts of the structure, to make sure that changes in it haven't occurred.
+        #  Card images are contained in the data, but we ignore them, so they aren't checked.
+        card_evaluations = self.REQUESTER.get_card_evaluations('ONE')
+        self.assertIsInstance(card_evaluations, dict)
+        self.assertIsInstance(card_evaluations['cards'], list)
+        self.assertIsInstance(card_evaluations['dates'], list)
+        self.assertIsInstance(card_evaluations['data'], list)
+        self.assertIsInstance(card_evaluations['cards'][0], str)
+        self.assertIsInstance(card_evaluations['dates'][0], str)
+        self.assertIsInstance(card_evaluations['data'][0], list)
+        self.assertIsInstance(card_evaluations['data'][0][0], dict)
+        self.assertIsInstance(card_evaluations['data'][0][0]['pick_n'], float)
+        self.assertIsInstance(card_evaluations['data'][0][0]['pick_avg'], float)
+        self.assertIsInstance(card_evaluations['data'][0][0]['seen_n'], float)
+        self.assertIsInstance(card_evaluations['data'][0][0]['seen_avg'], float)
+
+        self.assertEqual(card_evaluations['cards'][0], 'Vorinclex, Monstrous Raider')
+        self.assertEqual(card_evaluations['dates'][0], '2023-02-02')
 
     def test_get_trophy_deck_metadata(self):
         # Test a bad request.
