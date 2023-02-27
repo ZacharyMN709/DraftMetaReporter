@@ -2,14 +2,23 @@ import unittest
 
 from core.utilities import load_json_file
 from core.utilities.auto_logging import auto_log, LogLvl
-
 from core.game_metadata.game_objects.Card import Card, CardManager
 from core.game_metadata.game_objects.Draft import Draft, Pick, DraftManager
+
+from Tests.settings import _tries, _success_delay, _fail_delay
 
 
 class TestBaseDraft(unittest.TestCase):
     def setUp(self) -> None:
         auto_log(LogLvl.DEBUG)
+        CardManager.REQUESTER._TRIES = _tries
+        CardManager.REQUESTER._SUCCESS_DELAY = _success_delay
+        CardManager.REQUESTER._FAIL_DELAY = _fail_delay
+
+        DraftManager.REQUESTER._TRIES = _tries
+        DraftManager.REQUESTER._SUCCESS_DELAY = _success_delay
+        DraftManager.REQUESTER._FAIL_DELAY = _fail_delay
+
         # Load all arena cards to speed up tests and reduce load on Scryfall server.
         CardManager.load_cache_from_file()
 

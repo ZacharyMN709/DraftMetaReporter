@@ -8,7 +8,7 @@ from core.wubrg import COLOR_COMBINATIONS
 from core.utilities.auto_logging import logging
 from core.utilities import save_json_file, load_json_file
 
-from core.data_interface.Requester import Requester
+from core.data_requesting.Requester import Requester
 from core.game_metadata import CardManager
 from core.data_fetching.utils.settings import DATA_DIR_LOC, DATA_DIR_NAME
 
@@ -114,7 +114,7 @@ class DataLoader:
                 logging.verbose(f"Updating data for '{filename}'. Fetching from 17Lands site...")
             else:
                 logging.verbose(f"Data for '{filename}' not found in saved data. Fetching from 17Lands site...")
-            raw_data = self._fetcher.request(url)
+            raw_data = self._fetcher.get_json_response(url)
 
             if raw_data is None:
                 logging.error(f"Data fetched for '{filename}' returned None! Returning empty CARD_DATA struct")

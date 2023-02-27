@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import Optional
 
 from core.utilities import logging
-from core.data_interface import Request17Lands
+from core.data_requesting import Request17Lands
 
 from core.game_metadata.game_objects.Card import Card
 import core.game_metadata.game_objects.Deck as Deck

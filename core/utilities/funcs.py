@@ -4,7 +4,7 @@ Hosts basic functions which can be useful throughout the application.
 Data structure manipulation and json handling are the current focus.
 """
 
-from typing import Union, Optional, TypeVar
+from typing import Any, Union, Optional, TypeVar
 from os import path
 import json
 
@@ -23,6 +23,14 @@ def flatten_lists(lst: list[list[T]]) -> list[T]:
 
 def invert_dict(d: dict[T1, T2]) -> dict[T2, T1]:
     return {v: k for k, v in d.items()}
+
+
+def validate_json(json_str: str) -> bool:
+    try:
+        json.loads(json_str)
+    except ValueError:
+        return False
+    return True
 
 
 def load_json_file(folder: str, filename: str) -> Union[dict, list[dict], None]:

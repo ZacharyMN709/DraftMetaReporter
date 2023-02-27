@@ -2,10 +2,10 @@
 This package query magic-related data from websites, chiefly 17Lands and Scryfall.
 """
 
-from core.data_interface.utils import *
-from core.data_interface.Requester import *
-from core.data_interface.Request17Lands import *
-from core.data_interface.RequestScryfall import *
+from core.data_requesting.utils import *
+from core.data_requesting.Requester import *
+from core.data_requesting.Request17Lands import *
+from core.data_requesting.RequestScryfall import *
 
 from_utils = ['BASE_17L_URL', 'DEFAULT_FORMAT', 'DEFAULT_DATE']
 

@@ -14,7 +14,7 @@ from os import path
 
 from core.wubrg import COLOR
 from core.utilities import flatten_lists, logging
-from core.data_interface import Request17Lands
+from core.data_requesting import Request17Lands
 
 from core.game_metadata.utils import RANKS, new_color_count_dict
 from core.game_metadata.game_objects.Card import CardManager, Card

@@ -1,5 +1,10 @@
+from typing import Optional
+import numpy as np
 import pandas as pd
+from scipy.stats import norm
 
+from core.utilities import logging
+from core.data_fetching.utils.consts import rank_to_tier, range_map_vals
 from core.wubrg import ALIAS_MAP
 from core.game_metadata import Card, RARITY_ALIASES
 
@@ -37,6 +42,37 @@ def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
     return frame
 
 
+def get_stats_grades(frame) -> Optional[pd.DataFrame]:
+    # Get all of the rows where GIH WR is non NaN, convert it to a float, cancelling if none exist.
+    available_rows = frame[~frame['GIH WR'].isna()]
+    if len(available_rows) == 0:
+        return frame
+
+    # Filter by a minimum number of games, to prevent one win to skew data.
+    filtered_rows = available_rows[available_rows['# GP'] >= round(available_rows['# GP'].max() * 0.005)]
+    filtered_rows = filtered_rows.copy()
+
+    # Get the stats, and use it to normalize the data, assigning it back to the available rows.
+    available_gih = np.array(filtered_rows['GIH WR'], dtype=float)
+    mu, std = norm.fit(available_gih)
+    filtered_rows['Percentile'] = norm.cdf(available_gih, mu, std).round(4) * 100
+
+    # Re-map the available rows back to the main frame by reindexing, making empty rows.
+    filtered_rows = filtered_rows.reindex(frame.index, fill_value=None)
+    frame['Percentile'] = filtered_rows['Percentile']
+
+    # For each "Percentile", use a pre-defined mapping to assign that a tier, and in turn, a letter grade.
+    range_map = [frame['Percentile'].between(start, end) for start, end in range_map_vals]
+    frame['Tier'] = np.select(range_map, [i for i in range(0, len(range_map))], 0)
+    frame['Rank'] = frame['Tier'].map(rank_to_tier)
+
+    # Reset any ranks and tiers which weren't originally found.
+    mask = frame['Percentile'].isna()
+    frame.loc[mask, 'Tier'] = None
+    frame.loc[mask, 'Rank'] = None
+    return frame
+
+
 def append_card_info(frame: pd.DataFrame, card_dict: dict[str, Card]) -> pd.DataFrame:
     """
     Appends card information to an existing frame to help with sorting.
@@ -55,6 +91,7 @@ def append_card_info(frame: pd.DataFrame, card_dict: dict[str, Card]) -> pd.Data
             card = Card.from_name(card_name)
         card_list.append(card)
 
+    # TODO: This should be handled as a join.
     frame['Cast Color'] = [card.CAST_IDENTITY for card in card_list]
     frame['CMC'] = [card.CMC for card in card_list]
     frame['Type Line'] = [card.TYPE_LINE for card in card_list]
@@ -64,6 +101,7 @@ def append_card_info(frame: pd.DataFrame, card_dict: dict[str, Card]) -> pd.Data
     frame['Power'] = [card.POW for card in card_list]
     frame['Toughness'] = [card.TOU for card in card_list]
 
+    # TODO: Make this re-indexing more dynamic.
     column_names = STAT_COL_NAMES + SHARED_COL_NAMES + CARD_INFO_COL_NAMES
     frame = frame.reindex(columns=column_names)
     return frame

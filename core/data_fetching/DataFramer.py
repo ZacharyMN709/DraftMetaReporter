@@ -1,8 +1,7 @@
 import pandas as pd
 
 from core.utilities.auto_logging import logging
-
-from core.data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame, append_card_info
+from core.data_fetching.utils.pandafy import gen_card_frame, gen_meta_frame, append_card_info, get_stats_grades
 from core.data_fetching.LoadedData import LoadedData
 from core.game_metadata import FormatMetadata
 
@@ -86,6 +85,7 @@ class DataFramer:
         """Populates and updates the three 'HISTORY' properties."""
         hist_card, hist_meta = self._FETCHER.get_historic_data(reload, overwrite)
         if (not hist_card) and (not hist_meta):  # pragma: no cover
+            logging.warning(f"{self.SET} {self.FORMAT} returned no data for 'hist_card' or 'hist_meta'")
             return
 
         # TODO: Attempt to handle this in a way so the entire history frames
@@ -109,6 +109,7 @@ class DataFramer:
             for color in hist_card[date]:
                 frame = gen_card_frame(hist_card[date][color])
                 frame = append_card_info(frame, self._format_metadata.CARD_DICT)
+                frame = get_stats_grades(frame)
                 color_dict[color] = frame
             card_frame_dict[date] = pd.concat(color_dict, names=["Deck Colors", "Name"])
         card_frame = pd.concat(card_frame_dict, names=["Date", "Deck Colors", "Name"])
@@ -121,16 +122,18 @@ class DataFramer:
 
     def gen_summary(self, reload: bool = False, overwrite: bool = False) -> None:
         """Populates and updates the three 'SUMMARY' properties."""
-        hist_card, hist_meta = self._FETCHER.get_summary_data(reload, overwrite)
-        if (not hist_card) and (not hist_meta):  # pragma: no cover
+        summ_card, summ_meta = self._FETCHER.get_summary_data(reload, overwrite)
+        if (not summ_card) and (not summ_meta):  # pragma: no cover
+            logging.warning(f"{self.SET} {self.FORMAT} returned no data for 'summ_card' or 'summ_meta'")
             return
 
-        grouped_arch_frame, single_arch_frame = gen_meta_frame(hist_meta)
+        grouped_arch_frame, single_arch_frame = gen_meta_frame(summ_meta)
 
         color_dict = dict()
-        for color in hist_card:
-            frame = gen_card_frame(hist_card[color])
+        for color in summ_card:
+            frame = gen_card_frame(summ_card[color])
             frame = append_card_info(frame, self._format_metadata.CARD_DICT)
+            frame = get_stats_grades(frame)
             color_dict[color] = frame
         card_frame = pd.concat(color_dict, names=["Deck Colors", "Name"])
 

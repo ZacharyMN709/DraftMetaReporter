@@ -4,16 +4,25 @@ import requests
 from requests import Response
 
 from core.utilities import auto_log, LogLvl
-from core.data_interface import Request17Lands
+from core.data_requesting import Request17Lands
 from core.game_metadata import Card, CardManager, Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager, Draft
 
 from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
+from Tests.settings import _tries, _success_delay, _fail_delay
 
 
 class TestBaseDeck(unittest.TestCase):
     def setUp(self) -> None:
         auto_log(LogLvl.DEBUG)
         # Load all arena cards to speed up tests and reduce load on Scryfall server.
+        CardManager.REQUESTER._TRIES = _tries
+        CardManager.REQUESTER._SUCCESS_DELAY = _success_delay
+        CardManager.REQUESTER._FAIL_DELAY = _fail_delay
+
+        DeckManager.REQUESTER._TRIES = _tries
+        DeckManager.REQUESTER._SUCCESS_DELAY = _success_delay
+        DeckManager.REQUESTER._FAIL_DELAY = _fail_delay
+
         CardManager.load_cache_from_file()
 
 
@@ -263,10 +272,9 @@ class TestTrophyStub(TestBaseDeck):
         self.assertTrue(deck.has_trophy_stub)
 
     @unittest.skipUnless(FULL_TEST, "Not performing full test. 'FULL_TEST' set to False.")
-    def test_mass_gen(self):
-        import core.data_interface.utils.settings as settings
-
-        requester = Request17Lands()
+    def test_mass_gen(self):  # pragma: nocover
+        import core.data_requesting.utils.settings as settings
+        from Tests.settings import _tries, _fail_delay, _success_delay
 
         def convert_data(data_list):
             for data in data_list:
@@ -276,6 +284,8 @@ class TestTrophyStub(TestBaseDeck):
                 except:  # pragma: nocover
                     # If the trophy stub can't be handled, some possible oddities in data need to be better handled.
                     print(data)
+
+        requester = Request17Lands(_tries, _fail_delay, _success_delay)
 
         self.assertEqual(settings.DEFAULT_FORMAT, 'PremierDraft')
         bo1 = requester.get_trophy_deck_metadata('DMU')
@@ -305,9 +315,11 @@ class TestDeckManager(TestBaseDeck):
         deck = DeckManager.from_deck_id("TunaSandwich")
         self.assertIsNone(deck)
         DeckManager.clear_blank_decks()
+        DeckManager.from_deck_id("2c653e26dc0647ca934af503d57eee3d")
         for deck in DeckManager.DECKS.values():
             is_valid = is_valid and deck is not None
         self.assertTrue(is_valid)
+        self.assertLessEqual(len(DeckManager.DECKS), 1)
 
     def test_flush_cache(self):
         DeckManager.from_deck_id("2c653e26dc0647ca934af503d57eee3d")

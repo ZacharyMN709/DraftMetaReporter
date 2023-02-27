@@ -12,7 +12,7 @@ import re
 
 from core.utilities import logging, load_json_file, save_json_file
 from core.wubrg import get_color_identity, calculate_cmc, parse_color_list, COLOR_STRING, WUBRG_COLOR_INDEXES
-from core.data_interface import RequestScryfall
+from core.data_requesting import RequestScryfall
 
 from core.game_metadata.utils import *
 from core.game_metadata.utils.settings import SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE, SCRYFALL_CACHE_FILE_ARENA

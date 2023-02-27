@@ -1,4 +1,5 @@
-from typing import Callable
+import logging
+from typing import Callable, Optional
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
@@ -68,16 +69,34 @@ class FramedData:
         else:
             return self.DATA.CARD_HISTORY_FRAME.loc(axis=0)[date_slice, deck_color_slice, name_slice]
 
-    def get_stats_grades(self, deck_color: str = ''):
+    def get_stats_grades(self, deck_color: str = '') -> Optional[pd.DataFrame]:
         # Get the non-colour specific card stats, then normalize GIH WR to from 0-100 for each card.
         frame = self.card_frame(deck_color=deck_color, summary=True).copy()
-        mu, std = norm.fit(frame['GIH WR'])
-        frame['Percentile'] = norm.cdf(frame['GIH WR'], mu, std).round(4) * 100
+
+        # Get all of the rows where GIH WR is non NaN, convert it to a float, cancelling if none exist.
+        available_rows = frame[~frame['GIH WR'].isna()].copy()
+        if len(available_rows) == 0:
+            logging.warning(f"{self.SET}'s {self.FORMAT_ALIAS} Dataframe had no valid data.")
+            return None
+        available_gih = np.array(available_rows['GIH WR'], dtype=float)
+
+        # Get the stats, and use it to normalize the data, assigning it back to the available rows.
+        mu, std = norm.fit(available_gih)
+        available_rows['Percentile'] = norm.cdf(available_gih, mu, std).round(4) * 100
+
+        # Re-map the available rows back to the main frame by reindexing, making empty rows.
+        available_rows = available_rows.reindex(frame.index, fill_value=None)
+        frame['Percentile'] = available_rows['Percentile']
 
         # For each "Percentile", use a pre-defined mapping to assign that a tier, and in turn, a letter grade.
         range_map = [frame['Percentile'].between(start, end) for start, end in range_map_vals]
         frame['Tier'] = np.select(range_map, [i for i in range(0, len(range_map))], 0)
         frame['Rank'] = frame['Tier'].map(rank_to_tier)
+
+        # Reset any ranks and tiers which weren't originally found.
+        mask = frame['Percentile'].isna()
+        frame.loc[mask, 'Tier'] = None
+        frame.loc[mask, 'Rank'] = None
         return frame
 
     # region Dataframe Creation
