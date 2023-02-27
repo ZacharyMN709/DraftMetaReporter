@@ -2,7 +2,7 @@
 Helps to handle getting data from url end points, with some configurable options about timing.
 """
 from json import JSONDecodeError
-from typing import Optional, Union
+from typing import Optional, Union, Any
 from time import sleep
 from requests import Response, get
 
@@ -19,6 +19,20 @@ class Requester:
         self._FAIL_DELAY: float = fail_delay or FAIL_DELAY
         self._SUCCESS_DELAY: float = success_delay or SUCCESS_DELAY
         self.valid_responses: list[int] = valid_codes or [200]
+
+    @staticmethod
+    def _gen_url(url: str, params: dict[str, Any] = None) -> str:
+        """
+        Takes a url and appends a dictionary of parameters to it.
+        :param url: The base url.
+        :param params: The parameters to include in the new url.
+        :return: The new url.
+        """
+        # Generate the url to check, ignoring any parameters which are None
+        composed_url = url
+        if params:
+            composed_url = url + '?' + '&'.join([f"{k}={v}" for k, v in params.items() if v is not None])
+        return composed_url
 
     def request(self, url) -> Optional[Response]:
         """
@@ -55,10 +69,8 @@ class Requester:
         :param params: A dictionary of parameters to include in the url.
         :return: A Response or None.
         """
-        # Generate the url to check, ignoring any parameters which are None
-        composed_url = url
-        if params:
-            composed_url = url + '?' + '&'.join([f"{k}={v}" for k, v in params.items() if v is not None])
+        # Get the url to query based on the parameters.
+        composed_url = self._gen_url(url, params)
 
         # Try to get the data the number of time prescribed, returning it whenever it's not None.
         #  If it can't be gotten in under the number of tries allowed, break the loop,
@@ -99,37 +111,46 @@ class Requester:
             logging.error(response.content)
             return None
 
-    def get_paginated_response(self, url: str, params: dict[str, str] = None) -> Optional[list[Response]]:
+    # TODO: Handle pagination more generically, instead of relying on JSON to exist.
+    def get_paginated_response(self, url: str, params: dict[str, str] = None,
+                               url_key: str = 'next_page') -> Optional[list[Response]]:
         """
         Attempts to get a series of responses from a url, within a given number of tries.
         :param url: The url to get data from.
         :param params: A dictionary of parameters to include in the url.
+        :param url_key: The key to get the next page url from.
         :return: A list of Responses or None.
         """
-        # Get the response, short-circuiting if it's None.
-        response = self.get_response(url, params)
-        if response is None:
-            return None
+        # Set up a list to store the responses.
+        ret = list()
 
-        # Initialise a list with the response, and then get the URL for the next page.
-        ret = [response]
-        url = response.json().get('next_page')
+        # Define a helper function which validates the response and the url, keeping track of the responses.
+        def parse_response(old_url):
+            # Get the response, and initialise a variable for url.
+            new_response = self.get_response(old_url)
+            new_url = None
 
-        # While we have a url to query, get the next response.
+            # If a response is gotten, add it it the list, and try to get a url to query next.
+            if new_response is not None:
+                ret.append(new_response)
+                try:
+                    new_url = new_response.json().get(url_key)
+                except JSONDecodeError:
+                    logging.warning(f"Failed to get next url with key '{url_key}'")
+            return new_response, new_url
+
+        # Get the initial url to use, and get the response and url to fetch next.
+        composed_url = self._gen_url(url, params)
+        response, url = parse_response(composed_url)
+
+        # While we have a url to query, get the next response and url.
         while url:
             logging.debug(f"Fetching next page. ({url})")
-            response = self.get_response(url)
+            response, url = parse_response(url)
 
-            # If the response is None, break. We either have a connection issue or a bad link. Either way,
-            #  we don't want to pollute the returned list with None.
-            if response is None:
-                break
-
-            # Add the response, and then check to see if it has another URL to request.
-            ret.append(response)
-            url = response.json().get('next_page')
-
-        # Return all of the responses received.
+        # Return all of the responses received, return None instead if the list is empty.
+        if len(ret) == 0:
+            return None
         return ret
 
     def get_paginated_json_response(self, url: str, params: dict[str, str] = None) -> Optional[list[Union[list, dict]]]:
@@ -139,7 +160,20 @@ class Requester:
         :param params: A dictionary of parameters to include in the url.
         :return: A list of json objects or None.
         """
-        ret = self.get_paginated_response(url, params)
-        if ret is None:
+        # Get the responses to parse the json from, short-circuiting if it's None.
+        responses = self.get_paginated_response(url, params)
+        if responses is None:
             return None
-        return [r.json() for r in ret if r]
+
+        # Initialise a list to hold the parse json, and then parse each response.
+        ret = list()
+        for response in responses:
+            try:
+                ret.append(response.json())
+            except JSONDecodeError:
+                # If we fail to parse a response, log an error and return None.
+                logging.error(f'Failed to parse JSON for url: {url}')
+                logging.error(response)
+                logging.error(response.content)
+                return None
+        return ret

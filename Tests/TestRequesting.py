@@ -43,11 +43,11 @@ class TestRequester(unittest.TestCase):
         self.assertIsNone(ret)
 
     def test_get_response(self):
-        # Use a bad url to test the retry mechanism.
-        response = self.REQUESTER.request('https://api.scryfall.com/')
+        # Use a url which doesn't return a supported code to test the retry mechanism.
+        response = self.REQUESTER.get_response('https://api.scryfall.com/')
         self.assertIsNone(response)
 
-        # Use a good url, with parameters, to test that a response is returned
+        # Use a good url, with parameters, to test that a response is properly returned.
         url = 'https://api.scryfall.com/cards/5a70e8fa-b71d-441e-b049-dacb09a9a7af'
         params = {
             'format': 'json',
@@ -57,6 +57,10 @@ class TestRequester(unittest.TestCase):
         self.assertIsInstance(response, Response)
 
     def test_get_json_response(self):
+        # Use a valid url, but one that doesn't return json to test error handling.
+        response = self.REQUESTER.get_json_response('https://www.google.com/')
+        self.assertIsNone(response)
+
         # Use a good url, with parameters, to test that a json response is returned.
         url = 'https://api.scryfall.com/cards/5a70e8fa-b71d-441e-b049-dacb09a9a7af'
         params = {
@@ -66,15 +70,51 @@ class TestRequester(unittest.TestCase):
         response = self.REQUESTER.get_json_response(url, params)
         self.assertIsInstance(response, dict)
 
-        # Use a valid url, but one that doesn't return json to test error handling.
-        response = self.REQUESTER.get_json_response('https://www.google.com/')
+    def test_get_paginated_response(self):
+        # Use a bad url to test the short-circuiting.
+        response = self.REQUESTER.get_paginated_response('Hello World')
         self.assertIsNone(response)
 
-    def test_get_paginated_response(self):
-        pass
+        # Use a valid, but non-paginated, url to test the json/url handling.
+        requester = Requester(_tries, _fail_delay, _success_delay, [200, 400])
+        response = requester.get_paginated_response('https://api.scryfall.com/')
+        self.assertIsInstance(response, list)
+        self.assertIsInstance(response[0], Response)
+        self.assertEqual(len(response), 1)
+
+        # Use a good url to test the return.
+        url = f'https://api.scryfall.com/cards/search'
+        params = {
+            'format': 'json',
+            'q': f'e%3AONE',
+            'unique': 'cards',
+            'order': 'set',
+        }
+        response = self.REQUESTER.get_paginated_response(url, params)
+        self.assertIsInstance(response, list)
+        self.assertIsInstance(response[0], Response)
 
     def test_get_paginated_json_response(self):
-        pass
+        # Use a bad url to test the short-circuiting.
+        response = self.REQUESTER.get_paginated_json_response('Hello World')
+        self.assertIsNone(response)
+
+        # Use a valid url, but one that doesn't return json to test error handling.
+        requester = Requester(_tries, _fail_delay, _success_delay)
+        response = self.REQUESTER.get_paginated_json_response('https://www.google.com/')
+        self.assertIsNone(response)
+
+        # Use a valid url, which returns json to test the full flow.
+        url = f'https://api.scryfall.com/cards/search'
+        params = {
+            'format': 'json',
+            'q': f'e%3AONE',
+            'unique': 'cards',
+            'order': 'set',
+        }
+        response = self.REQUESTER.get_paginated_json_response(url, params)
+        self.assertIsInstance(response, list)
+        self.assertIsInstance(response[0], dict)
 
 
 class TestRequestScryfall(unittest.TestCase):

@@ -32,7 +32,22 @@ class RequestScryfall(Requester):
             'include_extras': False,
         }
         logging.info(f"Fetching card data for set: {set_code}")
-        return flatten_lists([x['data'] for x in self.get_paginated_json_response(CARD_SCRYFALL_URL, params=params)])
+        responses = self.get_paginated_json_response(CARD_SCRYFALL_URL, params=params)
+
+        # Create a list to store the returned json objects.
+        ret = list()
+
+        # For each response, check that the data exists in the response and add it to the return list.
+        for response in responses:
+            if 'data' in response:
+                ret.append(response['data'])
+
+        # If no data was found, likely due to a bad order or set code, return the empty list.
+        if len(ret) == 0:
+            return ret
+
+        # Otherwise, flatten the lists into one long list, to handle more easily.
+        return flatten_lists(ret)
 
     def get_set_cards(self, set_code: str) -> list[dict[str, Any]]:
         """
