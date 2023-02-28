@@ -1,5 +1,5 @@
 import unittest
-from datetime import date
+from datetime import date, datetime
 
 from core.wubrg import COLOR_COMBINATIONS
 from core.game_metadata import SetMetadata, FormatMetadata, Card
@@ -16,11 +16,13 @@ class TestSetMetadata(unittest.TestCase):
         SetMetadata.REQUESTER._FAIL_DELAY = _fail_delay
 
     def test_get_metadata(self):
+        neo_cards = 282
+        alchemy_cards = 7
         meta = SetMetadata.get_metadata('NEO')
         self.assertIsInstance(meta, SetMetadata)
         self.assertIsInstance(meta.CARD_DICT, dict)
-        self.assertEqual(len(meta.CARD_DICT), 282)
-        self.assertEqual(len(meta.CARD_LIST), 282)
+        self.assertEqual(len(meta.CARD_DICT), neo_cards + alchemy_cards)
+        self.assertEqual(len(meta.CARD_LIST), neo_cards + alchemy_cards)
         self.assertIsInstance(meta.CARD_DICT['Virus Beetle'], Card)
 
         get = SetMetadata['NEO']
@@ -41,13 +43,14 @@ class TestSetMetadata(unittest.TestCase):
         self.assertIsNone(card_3)
 
     def test_get_cards_by_color(self):
+        red_or_blue_cnt = 88
         meta = SetMetadata.get_metadata('NEO')
         red_or_blue = meta.get_cards_by_colors(['R', 'U'])
         izzet = meta.get_cards_by_colors(['R', 'U', 'UR', 'RU'])
 
         self.assertGreater(len(izzet), len(red_or_blue))
-        self.assertEqual(len(red_or_blue), 86)
-        self.assertEqual(len(izzet),  88)
+        self.assertEqual(len(red_or_blue), red_or_blue_cnt)
+        self.assertEqual(len(izzet),  red_or_blue_cnt + 2)
 
         card = meta.find_card('Enthusiastic Mechanaut')
         self.assertIn(card, izzet)
@@ -100,11 +103,13 @@ class TestSetMetadata(unittest.TestCase):
 
 class TestFormatMetadata(unittest.TestCase):
     def test_get_metadata(self):
+        neo_cards = 282
+        alchemy_cards = 7
         form = FormatMetadata.get_metadata('NEO', 'PremierDraft')
         self.assertIsInstance(form, FormatMetadata)
         self.assertIsInstance(form.CARD_DICT, dict)
-        self.assertEqual(len(form.CARD_DICT), 282)
-        self.assertEqual(len(form.CARD_LIST), 282)
+        self.assertEqual(len(form.CARD_DICT), neo_cards + alchemy_cards)
+        self.assertEqual(len(form.CARD_LIST), neo_cards + alchemy_cards)
         self.assertIsInstance(form.CARD_DICT['Virus Beetle'], Card)
 
     def test_get_metadata_invalid_constructor(self):
@@ -133,16 +138,17 @@ class TestFormatMetadata(unittest.TestCase):
 
     def test_is_active(self):
         form = FormatMetadata.get_metadata('NEO', 'PremierDraft')
-        active = form.is_active(date(2022, 2, 1))
-        self.assertFalse(active)
+        self.assertTrue(form.has_started)
+        self.assertTrue(form.has_data)
 
-        active = form.is_active(date(2022, 3, 15))
-        self.assertTrue(active)
+        self.assertFalse(form.is_active(date(2022, 2, 1)))
+        self.assertFalse(form.is_active(datetime(2022, 2, 1, 11, 20)))
+
+        self.assertTrue(form.is_active(date(2022, 3, 15)))
+        self.assertTrue(form.is_active(datetime(2022, 3, 15, 11, 20)))
 
         active = form.is_active()
         self.assertEqual(active, date.today() <= date(2022, 4, 28))
-
-        self.assertTrue(form.has_started)
 
 
 class TestMetadataUtilities(unittest.TestCase):

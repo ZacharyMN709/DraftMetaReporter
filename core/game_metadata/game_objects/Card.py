@@ -52,20 +52,23 @@ class CardFace:
     def _parse_from_json(self, json, key, default=None):
         """
         Searches for the key in the json dictionary from most specific to least specific.
-        This allows for "inner" faces to fall-back to general information about a card.
+        This allows for "inner" faces to fall-back to general information about a card, so
+        each layout doesn't have to precisely know where information is kept.
         """
-        # Attempt to get the value from a specific face
+        # Attempt to get the value from a specific face.
         face_dict = self._extract_face_dict(json)
         val = face_dict.get(key)
         if val is not None:
             return val
 
-        # Attempt to get the value from general card information
+        # Attempt to get the value from general card information.
         val = json.get(key)
         if val is not None:
             return val
 
         # Fall-back to the default, logging unexpected absences.
+        #  Because of how mana cost and colour are stored, they are likely to be empty,
+        #  so we skip logging when they're missing, to avoid cluttering up the log.
         if key not in ['mana_cost', 'colors']:  # pragma: nocover
             logging.debug(f"'{key}' is empty for card '{self.NAME}'")
         return default
@@ -257,6 +260,8 @@ class Card:
         self.COLOR_IDENTITY: str = get_color_identity("".join(json['color_identity']))
         self.CAST_IDENTITY: str = get_color_identity(self.MANA_COST)
         self.CMC: int = int(json['cmc'])
+        self.IS_DIGITAL = json['digital']
+        self.IS_REBALANCED = 'rebalanced' in json.get('promo_types', list())
 
     @property
     def NAME(self) -> str:

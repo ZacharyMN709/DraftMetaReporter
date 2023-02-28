@@ -1,3 +1,4 @@
+import json
 import unittest
 from typing import Union
 
@@ -7,6 +8,7 @@ from core.game_metadata.utils.consts import CARD_SIDE
 
 from Tests.settings import TEST_MASS_DATA_PULL
 from Tests.settings import _tries, _success_delay, _fail_delay
+from core.utilities import load_json_file
 
 
 def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
@@ -1269,20 +1271,34 @@ class TestCard(unittest.TestCase):
         self.assertEqual(card.IMAGE_URL, 'https://c1.scryfall.com/file/scryfall-cards/normal/'
                                          'front/b/c/bc7239ea-f8aa-4a6f-87bd-c35359635673.jpg')
 
+    def test_card_alchemy_changes(self):
+        rebalanced = self.gen_card('A-Speakeasy Server')
+        self.assertTrue(rebalanced.IS_DIGITAL)
+        self.assertTrue(rebalanced.IS_REBALANCED)
+
+        alchemy = self.gen_card('Herald of Vengeance')
+        self.assertTrue(alchemy.IS_DIGITAL)
+        self.assertFalse(alchemy.IS_REBALANCED)
+
+        base = self.gen_card('Speakeasy Server')
+        self.assertFalse(base.IS_DIGITAL)
+        self.assertFalse(base.IS_REBALANCED)
+
 
 class TestCardManager(unittest.TestCase):
     def setUp(self) -> None:
-        # Load all arena cards to speed up tests and reduce load on Scryfall server.
         CardManager.REQUESTER._TRIES = _tries
         CardManager.REQUESTER._SUCCESS_DELAY = _success_delay
         CardManager.REQUESTER._FAIL_DELAY = _fail_delay
 
     @unittest.skipUnless(TEST_MASS_DATA_PULL, "Not testing mass data functions. 'TEST_MASS_DATA_PULL' set to False.")
-    def test_generate_cache_file(self):  # pragma: nocover
+    def test_generate_cache_file(self):
+        # Generate each cache, and the load each cache to ensure that no error is thrown, meaning the json is valid.
         CardManager.generate_cache_file()
-        CardManager.generate_arena_cache_file()
-        # TODO: Check if the file exists, and is less than 5 minutes old.
-        # TODO: Maybe check if file is of certain size or structure.
+        CardManager.generate_arena_cache_file(['YONE', 'KLD', 'AER'])
+
+        load_json_file(r'C:\Users\Zachary\Coding\GitHub\ScryfallData', 'oracle-cards.json')
+        load_json_file(r'C:\Users\Zachary\Coding\GitHub\ScryfallData', 'oracle-cards-arena.json')
 
     def test_from_file(self):
         CardManager.flush_cache()
@@ -1292,7 +1308,7 @@ class TestCardManager(unittest.TestCase):
     def test_from_set(self):
         cards = CardManager.from_set('NEO')
         self.assertIsInstance(cards, dict)
-        self.assertEqual(len(cards), 282)
+        self.assertEqual(len(cards), 289)
 
     def test_from_name(self):
         card = CardManager.from_name('Shock')
@@ -1321,7 +1337,7 @@ class TestCardManager(unittest.TestCase):
         CardManager.from_set('NEO')
         CardManager.reset_redirects()
 
-        self.assertEqual(310, len(CardManager.REDIRECT))
+        self.assertEqual(317, len(CardManager.REDIRECT))
         for name in CardManager.REDIRECT.keys():
             self.assertTrue(name.startswith(CardManager.REDIRECT[name]))
 
