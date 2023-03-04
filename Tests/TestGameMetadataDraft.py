@@ -29,10 +29,12 @@ class TestBaseDraft(unittest.TestCase):
         self.assertListEqual(list(), pick.cards_missing)
         self.assertEqual(14, len(pick.cards_available))
         self.assertEqual(Card.from_name("Llanowar Greenwidow"), pick.card_picked)
+        self.assertEqual(str(pick), "P1P1: Llanowar Greenwidow")
 
     def eval_draft(self, draft):
         self.assertEqual('0bea16f8b69c4ea1887d8bf15ed69f62', draft.DRAFT_ID)
         self.assertEqual('DMU', draft.SET)
+        self.assertEqual(14, draft.pack_size)
         self.assertEqual('PremierDraft', draft.FORMAT)
         self.assertEqual('0bea16f8b69c4ea1887d8bf15ed69f62', draft.deck.DECK_ID)
         TestPick.eval_pick(self, draft.picks[0])
@@ -52,6 +54,12 @@ class TestDraft(TestBaseDraft):
         data = load_json_file(file_path, 'draft_1.json')
         draft = Draft(data, '0bea16f8b69c4ea1887d8bf15ed69f62')
         self.eval_draft(draft)
+
+        self.assertEqual(draft.picks[2], draft.get_pick(1, 3))
+        self.assertEqual(draft.picks[15], draft.get_pick(2, 2))
+
+        loaded_draft = Draft.from_id('0bea16f8b69c4ea1887d8bf15ed69f62')
+        self.eval_draft(loaded_draft)
 
 
 class TestDraftManager(TestBaseDraft):

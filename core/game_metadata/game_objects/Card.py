@@ -167,6 +167,12 @@ class CardFace:
         return f"{self.IMG_URL}{size}/{self.IMG_SIDE}/" \
                f"{self.SCRYFALL_ID[0]}/{self.SCRYFALL_ID[1]}/{self.SCRYFALL_ID}.jpg"
 
+    def __str__(self):
+        return {self.NAME}
+
+    def __repr__(self):
+        return f"{self.NAME} {self.MANA_COST}: {self.TYPE_LINE}"
+
 
 class Card:
     """
@@ -287,6 +293,16 @@ class Card:
         return self.DEFAULT_FACE.TYPE_LINE
 
     @property
+    def COLORS(self) -> str:
+        """Gets the color identity of the card"""
+        return self.COLOR_IDENTITY
+
+    @property
+    def ALL_TYPES(self) -> set[str]:
+        """Gets the types of the card"""
+        return self.DEFAULT_FACE.ALL_TYPES
+
+    @property
     def SUPERTYPES(self) -> set[str]:
         """Gets the supertypes of the card"""
         return self.DEFAULT_FACE.SUPERTYPES
@@ -335,11 +351,31 @@ class Card:
             s += self.FACE_2.ORACLE
         return s
 
+    @property
+    def MANA_PRODUCED(self) -> set[str]:
+        return self.DEFAULT_FACE.MANA_PRODUCED
+
+    @property
+    def SCRYFALL_ID(self) -> str:
+        return self.DEFAULT_FACE.SCRYFALL_ID
+
+    @property
+    def ORACLE_ID(self) -> str:
+        return self.DEFAULT_FACE.ORACLE_ID
+
+    @property
+    def CARD_SIDE(self) -> str:
+        return self.DEFAULT_FACE.CARD_SIDE
+
+    @property
+    def IMG_SIDE(self) -> str:
+        return self.DEFAULT_FACE.IMG_SIDE
+
     def __str__(self):
         return self.FULL_NAME
 
     def __repr__(self):
-        return self.FULL_NAME
+        return self.__str__()
 
 
 class CardManager:

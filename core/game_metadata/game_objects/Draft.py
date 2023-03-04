@@ -16,13 +16,40 @@ import core.game_metadata.game_objects.Deck as Deck
 
 
 class Pick:
-    def __init__(self, pick):
+    @classmethod
+    def from_json_list(cls, pick_list: list[dict]) -> list[Pick]:
+        picks = [Pick(pick_data) for pick_data in pick_list]
+
+        pick_cnt = len(picks)
+        for i in range(0, pick_cnt):
+            last_pick = None
+            if i != 0:
+                last_pick = picks[i-1]
+            next_pick = None
+            if i != pick_cnt-1:
+                next_pick = picks[i+1]
+            current_pick = picks[i]
+            current_pick.last_pick = last_pick
+            current_pick.next_pick = next_pick
+
+        return picks
+
+    def __init__(self, pick: dict, next_pick: Pick = None, last_pick: Pick = None):
         self.pack_number = pick['pack_number']
         self.pick_number = pick['pick_number']
         self.card_picked = Card.from_name(pick['pick']['name'])
         self.cards_available = [Card.from_name(a['name']) for a in pick['available']]
         self.cards_missing = [Card.from_name(m['name']) for m in pick['known_missing']]
         self.pool = [Card.from_name(p['name']) for p in pick['pool']]
+
+        self.next_pick: Optional[Pick] = next_pick
+        self.last_pick: Optional[Pick] = last_pick
+
+    def __str__(self):
+        return f"P{self.pack_number+1}P{self.pick_number+1}: {self.card_picked}"
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class Draft:
@@ -34,12 +61,12 @@ class Draft:
         self.DRAFT_ID: str = draft_id
         self.SET: str = result['expansion']
         self._FORMAT: str = ''
-        self.picks: list[Pick] = [Pick(pick_data) for pick_data in result['picks']]
+        self.picks: list[Pick] = Pick.from_json_list(result['picks'])
+        self.pack_size: int = len(self.picks[0].cards_available)
         self._deck: Optional[Deck.LimitedDeck] = None
 
     def get_pick(self, pack: int = 1, pick: int = 1) -> Pick:
-        # TODO: Modify pack count based on set.
-        i = ((pack - 1) * 14) + (pick - 1)
+        i = ((pack - 1) * self.pack_size) + (pick - 1)
         return self.picks[i]
 
     @property
@@ -55,9 +82,15 @@ class Draft:
             self._FORMAT = self.deck.FORMAT
         return self._FORMAT
 
+    def __str__(self):
+        return f"Draft: {self.DRAFT_ID} ({self.FORMAT}{self.SET})"
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class DraftManager:
-    # Used to maintain a constant-time lookup cache of previously requested cards.
+    # Used to maintain a constant-time lookup cache of previously requested drafts.
     SETS: dict[str, dict[str, Draft]] = dict()
     DRAFTS: dict[str, Optional[Draft]] = dict()
     REQUESTER = Request17Lands()

@@ -66,6 +66,13 @@ class TrophyStub:
             self._DECK.trophy_stub = self
         return self._DECK
 
+    def __str__(self):
+        # TODO: Improve this with colour information and similar.
+        return f"{self.DECK_ID}"
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class Deck:
     _DECKS = 0
@@ -331,9 +338,12 @@ class Deck:
     def __or__(self, other: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
         return self.deck_overlap(other)
 
-    def __repr__(self):
+    def __str__(self):
         # TODO: Improve this with colour information and similar.
         return self.name
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class LimitedDeck(Deck):
