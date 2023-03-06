@@ -18,7 +18,11 @@ FORMATS: list[str] = ["PremierDraft", "TradDraft"]  # ["PremierDraft", "TradDraf
 # TODO: Change this so the dates are formatted strings, and the Set/FormatMetadata objects parse the dates on load.
 #  This will allow for the SET_CONFIG to be updated from a JSON file and have the Set/FormatMetadata objects re-
 #  parse the data to update the sets information.
+#  https://mtgarena.pro/mtga-event-calendar/
 SET_CONFIG: dict[str, dict[str, list[tuple[date, date]]]] = {
+    "Y23ONE": {
+        "PremierDraft": [(date(2023, 2, 28), date(2023, 3, 10))],
+    },
     "ONE": {
         "PremierDraft": [(date(2023, 2, 7), date(2023, 4, 15))],
         "TradDraft": [(date(2023, 2, 7), date(2023, 4, 15))],

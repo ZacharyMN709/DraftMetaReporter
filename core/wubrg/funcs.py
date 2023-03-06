@@ -44,7 +44,7 @@ def get_color_string(text: Optional[str]) -> COLOR_STRING:
         # noinspection PyTypeChecker
         return ALIAS_MAP[s]
 
-    # Replace '{', '}', 'X' or any numeric.
+    # Replace '{', '}', 'X', 'C' and any numerics.
     ret = _mana_symbol_scrub.sub('', s)
 
     # If the incoming string was a colorless mana-cost, it will be empty.

@@ -1,3 +1,5 @@
+import logging
+
 from core.game_metadata import SETS, FORMATS, SetMetadata, Card
 
 from core.data_fetching.FramedData import FramedData
@@ -25,10 +27,16 @@ class SetManager:  # pragma: no cover
     """
     def __init__(self, set_code, load_summary: bool = True, load_history: bool = True):
         self.SET: str = set_code
-        self.DATA: dict[str, FramedData] = {f: FramedData(set_code, f, load_summary, load_history) for f in FORMATS}
+        self.DATA: dict[str, FramedData] = {f: None for f in FORMATS}
         self.load_summary: bool = load_summary
         self.load_history: bool = load_history
         self.SET_METADATA: SetMetadata = SetMetadata.get_metadata(set_code)
+
+        for f in FORMATS:
+            try:
+                self.DATA[f] = FramedData(set_code, f, load_summary, load_history)
+            except KeyError as e:
+                logging.warning(f"No active periods found for {self.SET}'s {e}.")
 
     def check_for_updates(self) -> None:
         """Populates and updates all data properties, filling in missing data."""
