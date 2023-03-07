@@ -9,7 +9,8 @@ from core.game_metadata.utils.settings import *
 from core.game_metadata.utils.typing import *
 
 
-from_consts = ['RANKS', 'RARITIES', 'RARITY_ALIASES', 'SUPERTYPES', 'TYPES', 'SUBTYPES', 'SUBTYPE_DICT', 'CardLayouts']
+from_consts = ['DATE_FMT', 'RANKS', 'RARITIES', 'RARITY_ALIASES',
+               'SUPERTYPES', 'TYPES', 'SUBTYPES', 'SUBTYPE_DICT', 'CardLayouts']
 
 from_funcs = ['new_color_count_dict']
 

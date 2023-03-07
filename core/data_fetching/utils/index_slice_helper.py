@@ -2,6 +2,7 @@ import functools
 from typing import Union, NoReturn
 from datetime import date, datetime
 
+from core.game_metadata import Card
 from core.wubrg import get_color_identity
 
 
@@ -32,10 +33,13 @@ def _get_name_slice_slice(val: slice) -> slice:
 
 
 @get_name_slice.register(list)
-def _get_name_slice_list(val: list[str]) -> list[str]:
-    # Return a list as-is.
-    return val
-
+def _get_name_slice_list(val: list) -> list[str]:
+    # Return a list as-is, except if it is a list of Cards.
+    if isinstance(val[0], Card):
+        return [card.NAME for card in val]
+    else:
+        return val
+    
 
 @get_name_slice.register(tuple)
 def _get_name_slice_range(val: tuple[str, str]) -> Union[slice, NoReturn]:

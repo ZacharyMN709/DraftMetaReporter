@@ -16,7 +16,7 @@ from core.wubrg import index_dist_wubrg, COLOR_IDENTITY
 from core.utilities import logging
 from core.data_requesting import RequestScryfall
 
-from core.game_metadata.utils.settings import SET_CONFIG
+from core.game_metadata.utils import SET_CONFIG, DATE_FMT
 from core.game_metadata.game_objects.Card import Card, CardManager
 
 
@@ -52,7 +52,7 @@ class SetMetadata:
         _full_name, _icon_url = self.REQUESTER.get_set_info(set_code)
         self.FULL_NAME: str = _full_name
         self.ICON_URL: str = _icon_url
-        self.RELEASE_DATE: date = SET_CONFIG[self.SET]["PremierDraft"][0][0]
+        self.RELEASE_DATE: date = datetime.strptime(SET_CONFIG[self.SET]["PremierDraft"][0][0], DATE_FMT).date()
         # Set up dictionaries for quicker sorting.
         self.CARD_PRINT_ORDER_INDEXES: dict[str, int] = \
             {k.NAME: v for v, k in enumerate(self.CARD_LIST)}
@@ -158,6 +158,14 @@ class FormatMetadata:
             FormatMetadata.METADATA[set_code][format_name] = inst
         return FormatMetadata.METADATA[set_code][format_name]
 
+    def _parse_active_periods(self) -> list[tuple[date, date]]:
+        ret = list()
+        for start, end in SET_CONFIG[self.SET][self.FORMAT]:
+            start_date = datetime.strptime(start, DATE_FMT).date()
+            end_date = datetime.strptime(end, DATE_FMT).date()
+            ret.append((start_date, end_date))
+        return ret
+
     def __init__(self, cls_lock, set_name: str, format_name: str):
         if cls_lock != self.__cls_lock:
             raise Exception("Must use 'FormatMetadata.get_metadata' class method.")
@@ -165,7 +173,7 @@ class FormatMetadata:
         self.SET: str = set_name
         self.FORMAT: str = format_name
 
-        self._active_periods: list[tuple[date, date]] = SET_CONFIG[set_name][format_name]
+        self._active_periods: list[tuple[date, date]] = self._parse_active_periods()
         self.START_DATE: date = self._active_periods[0][0]
         self.END_DATE: date = self._active_periods[-1][1]
 
