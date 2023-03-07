@@ -17,7 +17,7 @@ from core.utilities import flatten_lists, logging
 from core.data_requesting import Request17Lands
 
 from core.game_metadata.utils import RANKS, new_color_count_dict
-from core.game_metadata.game_objects.Card import CardManager, Card
+from core.game_metadata.game_objects.Card import CardManager, Card, decklist_sort_lambda
 import core.game_metadata.game_objects.Draft as Draft
 
 
@@ -94,7 +94,7 @@ class Deck:
     def parse_decklist(cls, decklist: list[str]) -> tuple[list[Card], list[Card]]:
         def parse_line(line: str) -> list[str]:
             # If the line is empty or the deck header, return
-            if line in ["Deck", "Sideboard", "Commander"]:
+            if line in ["Deck", "Sideboard", "Commander", ""]:
                 return list()
 
             # Split the card line into bits, based on a typical Arena decklist export.
@@ -111,6 +111,9 @@ class Deck:
             # Return the card name the number of times it appears in the deck.
             return [_card] * int(_cnt)
 
+        # Trim any trailing new lines in the decklist, so matching is handled properly.
+        decklist = [s.strip() for s in decklist]
+
         # Find the line to split for sideboard cards,
         try:
             # If the list contains 'Sideboard', split the list on that index.
@@ -125,6 +128,12 @@ class Deck:
         # Flatten the lists and return them as Cards.
         maindeck = [CardManager.from_name(name) for name in flatten_lists(pre_maindeck)]
         sideboard = [CardManager.from_name(name) for name in flatten_lists(pre_sideboard)]
+
+        print(maindeck)
+        print(sideboard)
+
+        maindeck = sorted(maindeck, key=decklist_sort_lambda)
+        sideboard = sorted(sideboard, key=decklist_sort_lambda)
         return maindeck, sideboard
 
     @classmethod
@@ -166,8 +175,8 @@ class Deck:
         self.losses = losses
 
         # Track the number of decks instantiated, and use it as a default name if needed.
-        Deck._DECKS += 1
         if not name:
+            Deck._DECKS += 1
             self.name = f"Deck {Deck._DECKS}"
         else:
             self.name = name
