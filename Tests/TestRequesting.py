@@ -119,29 +119,55 @@ class TestRequester(unittest.TestCase):
 
 class TestRequestScryfall(unittest.TestCase):
     REQUESTER = RequestScryfall(_tries, _fail_delay, _success_delay)
+    SET_MAIN = 'BRO'
+    SET_ALCHEMY = 'Y23BRO'
+    SET_INVALID = 'INVALID'
 
     def test_get_set_cards_valid(self):
-        cards = self.REQUESTER.get_set_cards('NEO')
+        cards = self.REQUESTER.get_set_cards(self.SET_MAIN)
         self.assertIsInstance(cards, list)
-        self.assertEqual(cards[0]['name'], 'Ancestral Katana')
+        self.assertEqual(cards[0]['name'], "Aeronaut Cavalry")
+        self.assertEqual(cards[-1]['name'], "Woodcaller Automaton")
 
-    def test_get_set_review_valid(self):
-        cards = self.REQUESTER.get_set_review_order('NEO')
+    def test_get_set_cards_valid_alchemy(self):
+        cards = self.REQUESTER.get_set_cards(self.SET_ALCHEMY)
         self.assertIsInstance(cards, list)
-        self.assertEqual(cards[0]['name'], 'Hotshot Mechanic')
+        self.assertEqual(cards[0]['name'], "Aeronaut Cavalry")
+        self.assertEqual(cards[-1]['name'], "Warzone Duplicator")
 
     def test_get_set_cards_invalid(self):
-        ret = self.REQUESTER.get_set_cards('INVALID')
+        ret = self.REQUESTER.get_set_cards(self.SET_INVALID)
         self.assertListEqual(list(), ret)
 
+    def test_get_set_review_valid(self):
+        cards = self.REQUESTER.get_set_review_order(self.SET_MAIN)
+        self.assertIsInstance(cards, list)
+        self.assertEqual(cards[0]['name'], "Lay Down Arms")
+        self.assertEqual(cards[-1]['name'], "Woodcaller Automaton")
+
+    def test_get_set_review_valid_alchemy(self):
+        cards = self.REQUESTER.get_set_review_order(self.SET_ALCHEMY)
+        self.assertIsInstance(cards, list)
+        self.assertEqual(cards[0]['name'], "Lay Down Arms")
+        self.assertEqual(cards[-1]['name'], "Urza's Construction Drone")
+
     def test_get_set_info_valid(self):
-        cards = self.REQUESTER.get_set_info('NEO')
-        self.assertIsInstance(cards, tuple)
+        data = self.REQUESTER.get_set_info(self.SET_MAIN)
+        self.assertIsInstance(data, tuple)
+        self.assertEqual(data[0], "The Brothers' War")
+        self.assertEqual(data[1], "https://svgs.scryfall.io/sets/bro.svg?1678078800")
+
+    def test_get_set_info_valid_alchemy(self):
+        data = self.REQUESTER.get_set_info(self.SET_ALCHEMY)
+        self.assertIsInstance(data, tuple)
+        self.assertEqual(data[0], "Alchemy: The Brothers' War")
+        self.assertEqual(data[1], "https://svgs.scryfall.io/sets/y23.svg?1678078800")
 
     def test_get_set_info_invalid(self):
-        _set, _icon = self.REQUESTER.get_set_info('INVALID')
-        self.assertIsNone(_set)
-        self.assertIsNone(_icon)
+        data = self.REQUESTER.get_set_info(self.SET_INVALID)
+        self.assertIsInstance(data, tuple)
+        self.assertIsNone(data[0])
+        self.assertIsNone(data[1])
 
     def test_get_card_by_name_valid(self):
         card = self.REQUESTER.get_card_by_name('Virus Beetle')

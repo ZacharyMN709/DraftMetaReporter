@@ -168,7 +168,7 @@ class CardFace:
                f"{self.SCRYFALL_ID[0]}/{self.SCRYFALL_ID[1]}/{self.SCRYFALL_ID}.jpg"
 
     def __str__(self):
-        return {self.NAME}
+        return self.NAME
 
     def __repr__(self):
         return f"{self.NAME} {self.MANA_COST}: {self.TYPE_LINE}"
@@ -375,7 +375,7 @@ class Card:
         return self.FULL_NAME
 
     def __repr__(self):
-        return self.__str__()
+        return self.DEFAULT_FACE.__repr__()
 
 
 class CardManager:

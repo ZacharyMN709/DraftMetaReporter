@@ -18,6 +18,9 @@ def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
     test will be skipped.
     """
 
+    eval_dict['__STR__'] = eval_dict['NAME']
+    eval_dict['__REPR__'] = f"{eval_dict['NAME']} {eval_dict['MANA_COST']}: {eval_dict['TYPE_LINE']}"
+
     if "SCRYFALL_ID" in eval_dict:
         self.assertEqual(face.SCRYFALL_ID, eval_dict.get("SCRYFALL_ID"))
 
@@ -48,6 +51,9 @@ def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
     self.assertEqual(eval_dict.get("POW"), face.POW, msg="Error in POW")
     self.assertEqual(eval_dict.get("TOU"), face.TOU, msg="Error in TOU")
 
+    self.assertEqual(eval_dict.get("__STR__"), face.__str__(), msg="Error in __str__")
+    self.assertEqual(eval_dict.get("__REPR__"), face.__repr__(), msg="Error in __repr__")
+
 
 def _eval_card(self, eval_dict: [str, Union[set, str]], card: Card):
     """
@@ -56,6 +62,9 @@ def _eval_card(self, eval_dict: [str, Union[set, str]], card: Card):
     except for SCRYFALL_ID, as that may change as sets release. If not provided that
     test will be skipped.
     """
+
+    eval_dict['__STR__'] = eval_dict['FULL_NAME']
+    eval_dict['__REPR__'] = f"{eval_dict['FULL_NAME']} {eval_dict['MANA_COST']}: {eval_dict['TYPE_LINE']}"
 
     if "SCRYFALL_ID" in eval_dict:
         self.assertEqual(card.SCRYFALL_ID, eval_dict.get("SCRYFALL_ID"))
@@ -86,6 +95,9 @@ def _eval_card(self, eval_dict: [str, Union[set, str]], card: Card):
 
     self.assertEqual(eval_dict.get("POW"), card.POW, msg="Error in POW")
     self.assertEqual(eval_dict.get("TOU"), card.TOU, msg="Error in TOU")
+
+    self.assertEqual(eval_dict.get("__STR__"), card.__str__(), msg="Error in __str__")
+    self.assertEqual(eval_dict.get("__REPR__"), card.__repr__(), msg="Error in __repr__")
 
 
 class TestCardFace(unittest.TestCase):
@@ -1199,6 +1211,7 @@ class TestCard(unittest.TestCase):
         layout: CardLayouts = CardLayouts.TRANSFORM
         card = self.gen_card(name)
         card_dict = {
+            "SCRYFALL_ID": "1144014b-f13b-4397-97ed-a8de46371a2c",
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
             "LAYOUT": layout,
             "CARD_SIDE": 'default',
@@ -1223,6 +1236,7 @@ class TestCard(unittest.TestCase):
             "KEYWORDS": {"Reach", "Transform"},
         }
         default_dict = {
+            "SCRYFALL_ID": "1144014b-f13b-4397-97ed-a8de46371a2c",
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
             "LAYOUT": layout,
             "CARD_SIDE": 'default',
@@ -1244,6 +1258,7 @@ class TestCard(unittest.TestCase):
             "KEYWORDS": {"Reach", "Transform"},
         }
         front_dict = {
+            "SCRYFALL_ID": "1144014b-f13b-4397-97ed-a8de46371a2c",
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
             "LAYOUT": layout,
             "CARD_SIDE": 'front',
@@ -1265,6 +1280,7 @@ class TestCard(unittest.TestCase):
             "KEYWORDS": {"Reach", "Transform"},
         }
         back_dict = {
+            "SCRYFALL_ID": "1144014b-f13b-4397-97ed-a8de46371a2c",
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
             "LAYOUT": layout,
             "CARD_SIDE": 'back',
@@ -1302,8 +1318,6 @@ class TestCard(unittest.TestCase):
         name = 'Jukai Preserver'
         card = self.gen_card(name)
         self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
-        self.assertEqual(str(card), name)
-        self.assertEqual(repr(card), name)
         self.assertEqual(card.NAME, name)
         self.assertEqual(card.MANA_COST, '{3}{G}')
         self.assertEqual(card.CAST_IDENTITY, 'G')
@@ -1313,8 +1327,6 @@ class TestCard(unittest.TestCase):
         full_name = 'Boseiju Reaches Skyward // Branch of Boseiju'
         card = self.gen_card(name)
         self.assertEqual(card.LAYOUT, CardLayouts.TRANSFORM)
-        self.assertEqual(str(card), full_name)
-        self.assertEqual(repr(card), full_name)
         self.assertEqual(card.NAME, name)
         self.assertEqual(card.MANA_COST, '{3}{G}')
         self.assertEqual(card.CAST_IDENTITY, 'G')
@@ -1323,8 +1335,6 @@ class TestCard(unittest.TestCase):
         name = 'Invert // Invent'
         card = self.gen_card(name)
         self.assertEqual(card.LAYOUT, CardLayouts.SPLIT)
-        self.assertEqual(str(card), name)
-        self.assertEqual(repr(card), name)
         self.assertEqual(card.NAME, name)
         self.assertEqual(card.MANA_COST, '{U/R} // {4}{U}{R}')
         self.assertEqual(card.CAST_IDENTITY, 'UR')
