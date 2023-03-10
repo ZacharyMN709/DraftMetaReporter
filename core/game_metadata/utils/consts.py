@@ -12,6 +12,10 @@ import typing
 from enum import Flag, auto
 from core.game_metadata.utils.typing import *
 
+# Event Data Text Format
+DATE_FMT = "%b %d, %Y"
+
+
 # Arena Rank Consts
 RANKS: list[RANK] = ['None', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Mythic']
 
@@ -38,6 +42,7 @@ RARITY_INDEXES: dict[RARITY, int] = {
 
 
 # region Card Types
+# Extracting the card types from the data type definitions.
 SUPERTYPES: set[SUPERTYPE] = set(typing.get_args(SUPERTYPE))
 TYPES: set[TYPE] = set(typing.get_args(TYPE))
 LAND_SUBTYPES: set[LAND_SUBTYPE] = set(typing.get_args(LAND_SUBTYPE))

@@ -5,6 +5,7 @@ More info: https://api.scryfall.com/symbology
 
 from core.wubrg.typing import FORMATTED_MANA_SYMBOL, MANA_SYMBOL
 
+# Rule 107.4.
 
 # region Formatted Mana Symbols
 FORMATTED_BASE_MANA_SYMBOLS: list[FORMATTED_MANA_SYMBOL] = [

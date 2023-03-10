@@ -1,3 +1,6 @@
+from typing import Optional
+import logging
+
 from core.game_metadata import SETS, FORMATS, SetMetadata, Card
 
 from core.data_fetching.FramedData import FramedData
@@ -25,19 +28,25 @@ class SetManager:  # pragma: no cover
     """
     def __init__(self, set_code, load_summary: bool = True, load_history: bool = True):
         self.SET: str = set_code
-        self.DATA: dict[str, FramedData] = {f: FramedData(set_code, f, load_summary, load_history) for f in FORMATS}
+        self.DATA: dict[str, FramedData] = dict()
         self.load_summary: bool = load_summary
         self.load_history: bool = load_history
         self.SET_METADATA: SetMetadata = SetMetadata.get_metadata(set_code)
 
+        for f in FORMATS:
+            try:
+                self.DATA[f] = FramedData(set_code, f, load_summary, load_history)
+            except KeyError as e:
+                logging.warning(f"No active periods found for {self.SET}'s {e}.")
+
     def check_for_updates(self) -> None:
         """Populates and updates all data properties, filling in missing data."""
-        for format_name in FORMATS:
+        for format_name in self.DATA:
             self[format_name].check_for_updates()
 
     def reload_data(self) -> None:
         """Populates and updates all data properties, reloading all data."""
-        for format_name in FORMATS:
+        for format_name in self.DATA:
             self[format_name].reload_data()
 
     @property
@@ -45,24 +54,37 @@ class SetManager:  # pragma: no cover
         """The list of cards in the set."""
         return self.SET_METADATA.CARD_LIST
 
-    def __getitem__(self, item) -> FramedData:
-        return self.DATA[item]
+    def __getitem__(self, item) -> Optional[FramedData]:
+        try:
+            return self.DATA[item]
+        except KeyError:
+            return None
 
     # These are here for convenience, as they're the most often used data.
     @property
-    def BO1(self) -> FramedData:
+    def BO1(self) -> Optional[FramedData]:
         """Premier Draft data."""
         return self['PremierDraft']
 
     @property
-    def BO3(self) -> FramedData:
+    def BO3(self) -> Optional[FramedData]:
         """Traditional Draft data."""
         return self['TradDraft']
 
     @property
-    def QD(self) -> FramedData:
+    def QD(self) -> Optional[FramedData]:
         """Quick Draft data."""
         return self['QuickDraft']
+
+    @property
+    def SL1(self) -> Optional[FramedData]:
+        """Sealed data."""
+        return self['Sealed']
+
+    @property
+    def SL3(self) -> Optional[FramedData]:
+        """Traditional Selaed data."""
+        return self['TradSealed']
 
 
 class CentralManager:  # pragma: no cover
@@ -86,16 +108,3 @@ class CentralManager:  # pragma: no cover
 
     def __getitem__(self, item) -> SetManager:
         return self.DATA[item]
-
-    # These are here for convenience, as they're the most often used data.
-    @property
-    def DMU(self) -> SetManager:
-        return self.DATA['DMU']
-
-    @property
-    def SNC(self) -> SetManager:
-        return self.DATA['SNC']
-
-    @property
-    def NEO(self) -> SetManager:
-        return self.DATA['NEO']

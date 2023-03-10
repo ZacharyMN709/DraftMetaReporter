@@ -52,20 +52,23 @@ class CardFace:
     def _parse_from_json(self, json, key, default=None):
         """
         Searches for the key in the json dictionary from most specific to least specific.
-        This allows for "inner" faces to fall-back to general information about a card.
+        This allows for "inner" faces to fall-back to general information about a card, so
+        each layout doesn't have to precisely know where information is kept.
         """
-        # Attempt to get the value from a specific face
+        # Attempt to get the value from a specific face.
         face_dict = self._extract_face_dict(json)
         val = face_dict.get(key)
         if val is not None:
             return val
 
-        # Attempt to get the value from general card information
+        # Attempt to get the value from general card information.
         val = json.get(key)
         if val is not None:
             return val
 
         # Fall-back to the default, logging unexpected absences.
+        #  Because of how mana cost and colour are stored, they are likely to be empty,
+        #  so we skip logging when they're missing, to avoid cluttering up the log.
         if key not in ['mana_cost', 'colors']:  # pragma: nocover
             logging.debug(f"'{key}' is empty for card '{self.NAME}'")
         return default
@@ -164,6 +167,12 @@ class CardFace:
         return f"{self.IMG_URL}{size}/{self.IMG_SIDE}/" \
                f"{self.SCRYFALL_ID[0]}/{self.SCRYFALL_ID[1]}/{self.SCRYFALL_ID}.jpg"
 
+    def __str__(self):
+        return self.NAME
+
+    def __repr__(self):
+        return f"{self.NAME} {self.MANA_COST}: {self.TYPE_LINE}"
+
 
 class Card:
     """
@@ -257,6 +266,8 @@ class Card:
         self.COLOR_IDENTITY: str = get_color_identity("".join(json['color_identity']))
         self.CAST_IDENTITY: str = get_color_identity(self.MANA_COST)
         self.CMC: int = int(json['cmc'])
+        self.IS_DIGITAL = json['digital']
+        self.IS_REBALANCED = 'rebalanced' in json.get('promo_types', list())
 
     @property
     def NAME(self) -> str:
@@ -280,6 +291,16 @@ class Card:
     def TYPE_LINE(self) -> str:
         """Gets the type line of the card"""
         return self.DEFAULT_FACE.TYPE_LINE
+
+    @property
+    def COLORS(self) -> str:
+        """Gets the color identity of the card"""
+        return self.COLOR_IDENTITY
+
+    @property
+    def ALL_TYPES(self) -> set[str]:
+        """Gets the types of the card"""
+        return self.DEFAULT_FACE.ALL_TYPES
 
     @property
     def SUPERTYPES(self) -> set[str]:
@@ -330,11 +351,31 @@ class Card:
             s += self.FACE_2.ORACLE
         return s
 
+    @property
+    def MANA_PRODUCED(self) -> set[str]:
+        return self.DEFAULT_FACE.MANA_PRODUCED
+
+    @property
+    def SCRYFALL_ID(self) -> str:
+        return self.DEFAULT_FACE.SCRYFALL_ID
+
+    @property
+    def ORACLE_ID(self) -> str:
+        return self.DEFAULT_FACE.ORACLE_ID
+
+    @property
+    def CARD_SIDE(self) -> str:
+        return self.DEFAULT_FACE.CARD_SIDE
+
+    @property
+    def IMG_SIDE(self) -> str:
+        return self.DEFAULT_FACE.IMG_SIDE
+
     def __str__(self):
         return self.FULL_NAME
 
     def __repr__(self):
-        return self.FULL_NAME
+        return self.DEFAULT_FACE.__repr__()
 
 
 class CardManager:

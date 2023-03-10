@@ -7,6 +7,7 @@ from core.game_metadata.utils.consts import CARD_SIDE
 
 from Tests.settings import TEST_MASS_DATA_PULL
 from Tests.settings import _tries, _success_delay, _fail_delay
+from core.utilities import load_json_file
 
 
 def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
@@ -16,6 +17,9 @@ def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
     except for SCRYFALL_ID, as that may change as sets release. If not provided that
     test will be skipped.
     """
+
+    eval_dict['__STR__'] = eval_dict['NAME']
+    eval_dict['__REPR__'] = f"{eval_dict['NAME']} {eval_dict['MANA_COST']}: {eval_dict['TYPE_LINE']}"
 
     if "SCRYFALL_ID" in eval_dict:
         self.assertEqual(face.SCRYFALL_ID, eval_dict.get("SCRYFALL_ID"))
@@ -46,6 +50,54 @@ def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
 
     self.assertEqual(eval_dict.get("POW"), face.POW, msg="Error in POW")
     self.assertEqual(eval_dict.get("TOU"), face.TOU, msg="Error in TOU")
+
+    self.assertEqual(eval_dict.get("__STR__"), face.__str__(), msg="Error in __str__")
+    self.assertEqual(eval_dict.get("__REPR__"), face.__repr__(), msg="Error in __repr__")
+
+
+def _eval_card(self, eval_dict: [str, Union[set, str]], card: Card):
+    """
+    Handles the evaluation of a card face, based on the dictionary handed in.
+    If the dictionary does not have an expected key, the class' default will be used,
+    except for SCRYFALL_ID, as that may change as sets release. If not provided that
+    test will be skipped.
+    """
+
+    eval_dict['__STR__'] = eval_dict['FULL_NAME']
+    eval_dict['__REPR__'] = f"{eval_dict['FULL_NAME']} {eval_dict['MANA_COST']}: {eval_dict['TYPE_LINE']}"
+
+    if "SCRYFALL_ID" in eval_dict:
+        self.assertEqual(card.SCRYFALL_ID, eval_dict.get("SCRYFALL_ID"))
+
+    self.assertEqual(eval_dict.get("ORACLE_ID"), card.ORACLE_ID, msg="Error in ORACLE_ID")
+    self.assertEqual(eval_dict.get("LAYOUT"), card.LAYOUT, msg="Error in LAYOUT")
+    self.assertEqual(eval_dict.get("CARD_SIDE"), card.CARD_SIDE, msg="Error in CARD_SIDE")
+    self.assertEqual(eval_dict.get("IMG_SIDE"), card.IMG_SIDE, msg="Error in IMG_SIDE")
+
+    self.assertEqual(eval_dict.get("NAME"), card.NAME, msg="Error in NAME")
+    self.assertEqual(eval_dict.get("FULL_NAME"), card.FULL_NAME, msg="Error in FULL_NAME")
+    self.assertEqual(eval_dict.get("MANA_COST", ""), card.MANA_COST, msg="Error in MANA_COST")
+    self.assertEqual(eval_dict.get("CMC"), card.CMC, msg="Error in CMC")
+    self.assertEqual(eval_dict.get("COLORS", ""), card.COLORS, msg="Error in COLORS")
+    self.assertEqual(eval_dict.get("COLOR_IDENTITY", ""), card.COLOR_IDENTITY, msg="Error in COLOR_IDENTITY")
+    # TODO: Add in more colour information, based on activated costs, kickers or similar.
+
+    self.assertEqual(eval_dict.get("TYPE_LINE", ""), card.TYPE_LINE, msg="Error in TYPE_LINE")
+    self.assertSetEqual(eval_dict.get("ALL_TYPES", set()), card.ALL_TYPES, msg="Error in ALL_TYPES")
+    self.assertSetEqual(eval_dict.get("SUPERTYPES", set()), card.SUPERTYPES, msg="Error in SUPERTYPES")
+    self.assertSetEqual(eval_dict.get("TYPES", set()), card.TYPES, msg="Error in TYPES")
+    self.assertSetEqual(eval_dict.get("SUBTYPES", set()), card.SUBTYPES, msg="Error in SUBTYPES")
+
+    self.assertEqual(eval_dict.get("ORACLE"), card.ORACLE, msg="Error in ORACLE")
+    # TODO: Re-enable KEYWORDS at a later date
+    # self.assertSetEqual(eval_dict.get("KEYWORDS", set()), face.KEYWORDS, msg="Error in KEYWORDS")
+    self.assertSetEqual(eval_dict.get("MANA_PRODUCED", set()), card.MANA_PRODUCED, msg="Error in MANA_PRODUCED")
+
+    self.assertEqual(eval_dict.get("POW"), card.POW, msg="Error in POW")
+    self.assertEqual(eval_dict.get("TOU"), card.TOU, msg="Error in TOU")
+
+    self.assertEqual(eval_dict.get("__STR__"), card.__str__(), msg="Error in __str__")
+    self.assertEqual(eval_dict.get("__REPR__"), card.__repr__(), msg="Error in __repr__")
 
 
 class TestCardFace(unittest.TestCase):
@@ -1023,6 +1075,9 @@ class TestCard(unittest.TestCase):
     def eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
         _eval_card_face(self, eval_dict, face)
 
+    def eval_card(self, eval_dict: [str, Union[set, str]], card: Card):
+        _eval_card(self, eval_dict, card)
+
     # region Basic CardLayouts Tests
     def test_card_normal(self):
         name = 'Jukai Preserver'
@@ -1155,7 +1210,33 @@ class TestCard(unittest.TestCase):
         name = 'Boseiju Reaches Skyward'
         layout: CardLayouts = CardLayouts.TRANSFORM
         card = self.gen_card(name)
+        card_dict = {
+            "SCRYFALL_ID": "1144014b-f13b-4397-97ed-a8de46371a2c",
+            "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
+            "LAYOUT": layout,
+            "CARD_SIDE": 'default',
+            "IMG_SIDE": "front",
+            "NAME": "Boseiju Reaches Skyward",
+            "FULL_NAME": "Boseiju Reaches Skyward // Branch of Boseiju",
+            "MANA_COST": "{3}{G}",
+            "CMC": 4,
+            "COLORS": "G",
+            "COLOR_IDENTITY": "G",
+            "TYPE_LINE": "Enchantment — Saga // Enchantment Creature — Plant",
+            "ALL_TYPES": {"Enchantment", "Saga", "Creature", "Plant"},
+            "TYPES": {"Enchantment", "Creature"},
+            "SUBTYPES": {"Saga", "Plant"},
+            "ORACLE": "(As this Saga enters and after your draw step, add a lore counter.)\n"
+                      "I — Search your library for up to two basic Forest cards, reveal them, "
+                      "put them into your hand, then shuffle.\n"
+                      "II — Put up to one target land card from your graveyard on top of your library.\n"
+                      "III — Exile this Saga, then return it to the battlefield transformed under your control."
+                      "\n\n  ---  \n\n"
+                      "Reach\nBranch of Boseiju gets +1/+1 for each land you control.",
+            "KEYWORDS": {"Reach", "Transform"},
+        }
         default_dict = {
+            "SCRYFALL_ID": "1144014b-f13b-4397-97ed-a8de46371a2c",
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
             "LAYOUT": layout,
             "CARD_SIDE": 'default',
@@ -1177,6 +1258,7 @@ class TestCard(unittest.TestCase):
             "KEYWORDS": {"Reach", "Transform"},
         }
         front_dict = {
+            "SCRYFALL_ID": "1144014b-f13b-4397-97ed-a8de46371a2c",
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
             "LAYOUT": layout,
             "CARD_SIDE": 'front',
@@ -1198,6 +1280,7 @@ class TestCard(unittest.TestCase):
             "KEYWORDS": {"Reach", "Transform"},
         }
         back_dict = {
+            "SCRYFALL_ID": "1144014b-f13b-4397-97ed-a8de46371a2c",
             "ORACLE_ID": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
             "LAYOUT": layout,
             "CARD_SIDE": 'back',
@@ -1220,6 +1303,7 @@ class TestCard(unittest.TestCase):
         }
 
         self.assertEqual(layout, card.LAYOUT)
+        self.eval_card(card_dict, card)
         self.eval_card_face(default_dict, card.DEFAULT_FACE)
         self.eval_card_face(front_dict, card.FACE_1)
         self.eval_card_face(back_dict, card.FACE_2)
@@ -1234,8 +1318,6 @@ class TestCard(unittest.TestCase):
         name = 'Jukai Preserver'
         card = self.gen_card(name)
         self.assertEqual(card.LAYOUT, CardLayouts.NORMAL)
-        self.assertEqual(str(card), name)
-        self.assertEqual(repr(card), name)
         self.assertEqual(card.NAME, name)
         self.assertEqual(card.MANA_COST, '{3}{G}')
         self.assertEqual(card.CAST_IDENTITY, 'G')
@@ -1245,8 +1327,6 @@ class TestCard(unittest.TestCase):
         full_name = 'Boseiju Reaches Skyward // Branch of Boseiju'
         card = self.gen_card(name)
         self.assertEqual(card.LAYOUT, CardLayouts.TRANSFORM)
-        self.assertEqual(str(card), full_name)
-        self.assertEqual(repr(card), full_name)
         self.assertEqual(card.NAME, name)
         self.assertEqual(card.MANA_COST, '{3}{G}')
         self.assertEqual(card.CAST_IDENTITY, 'G')
@@ -1255,8 +1335,6 @@ class TestCard(unittest.TestCase):
         name = 'Invert // Invent'
         card = self.gen_card(name)
         self.assertEqual(card.LAYOUT, CardLayouts.SPLIT)
-        self.assertEqual(str(card), name)
-        self.assertEqual(repr(card), name)
         self.assertEqual(card.NAME, name)
         self.assertEqual(card.MANA_COST, '{U/R} // {4}{U}{R}')
         self.assertEqual(card.CAST_IDENTITY, 'UR')
@@ -1269,20 +1347,34 @@ class TestCard(unittest.TestCase):
         self.assertEqual(card.IMAGE_URL, 'https://c1.scryfall.com/file/scryfall-cards/normal/'
                                          'front/b/c/bc7239ea-f8aa-4a6f-87bd-c35359635673.jpg')
 
+    def test_card_alchemy_changes(self):
+        rebalanced = self.gen_card('A-Speakeasy Server')
+        self.assertTrue(rebalanced.IS_DIGITAL)
+        self.assertTrue(rebalanced.IS_REBALANCED)
+
+        alchemy = self.gen_card('Herald of Vengeance')
+        self.assertTrue(alchemy.IS_DIGITAL)
+        self.assertFalse(alchemy.IS_REBALANCED)
+
+        base = self.gen_card('Speakeasy Server')
+        self.assertFalse(base.IS_DIGITAL)
+        self.assertFalse(base.IS_REBALANCED)
+
 
 class TestCardManager(unittest.TestCase):
     def setUp(self) -> None:
-        # Load all arena cards to speed up tests and reduce load on Scryfall server.
         CardManager.REQUESTER._TRIES = _tries
         CardManager.REQUESTER._SUCCESS_DELAY = _success_delay
         CardManager.REQUESTER._FAIL_DELAY = _fail_delay
 
     @unittest.skipUnless(TEST_MASS_DATA_PULL, "Not testing mass data functions. 'TEST_MASS_DATA_PULL' set to False.")
-    def test_generate_cache_file(self):  # pragma: nocover
+    def test_generate_cache_file(self):
+        # Generate each cache, and the load each cache to ensure that no error is thrown, meaning the json is valid.
         CardManager.generate_cache_file()
-        CardManager.generate_arena_cache_file()
-        # TODO: Check if the file exists, and is less than 5 minutes old.
-        # TODO: Maybe check if file is of certain size or structure.
+        CardManager.generate_arena_cache_file(['YONE', 'KLD', 'AER'])
+
+        load_json_file(r'C:\Users\Zachary\Coding\GitHub\ScryfallData', 'oracle-cards.json')
+        load_json_file(r'C:\Users\Zachary\Coding\GitHub\ScryfallData', 'oracle-cards-arena.json')
 
     def test_from_file(self):
         CardManager.flush_cache()
@@ -1292,7 +1384,7 @@ class TestCardManager(unittest.TestCase):
     def test_from_set(self):
         cards = CardManager.from_set('NEO')
         self.assertIsInstance(cards, dict)
-        self.assertEqual(len(cards), 282)
+        self.assertEqual(len(cards), 289)
 
     def test_from_name(self):
         card = CardManager.from_name('Shock')
@@ -1321,7 +1413,7 @@ class TestCardManager(unittest.TestCase):
         CardManager.from_set('NEO')
         CardManager.reset_redirects()
 
-        self.assertEqual(310, len(CardManager.REDIRECT))
+        self.assertEqual(317, len(CardManager.REDIRECT))
         for name in CardManager.REDIRECT.keys():
             self.assertTrue(name.startswith(CardManager.REDIRECT[name]))
 

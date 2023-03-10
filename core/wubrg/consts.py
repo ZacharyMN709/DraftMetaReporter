@@ -7,6 +7,7 @@ As well, the key-value pairs in these dictionaries are all in 'WUBRG' order,
 for iterating purposes.
 """
 
+from core.utilities import invert_dict
 from core.wubrg.typing import COLOR, COLOR_IDENTITY, COLOR_ALIAS
 
 
@@ -52,7 +53,7 @@ ONE_NAME_TO_COLOR: dict[COLOR_ALIAS, COLOR_IDENTITY] = {
     'Red': "R",
     'Green': "G"
 }
-ONE_COLOR_TO_NAME: dict[COLOR_IDENTITY, COLOR_ALIAS] = {v: k for k, v in ONE_NAME_TO_COLOR.items()}
+ONE_COLOR_TO_NAME: dict[COLOR_IDENTITY, COLOR_ALIAS] = invert_dict(ONE_NAME_TO_COLOR)
 
 TWO_NAME_TO_COLOR: dict[COLOR_ALIAS, COLOR_IDENTITY] = {
     'Azorius': "WU",
@@ -66,7 +67,7 @@ TWO_NAME_TO_COLOR: dict[COLOR_ALIAS, COLOR_IDENTITY] = {
     'Golgari': "BG",
     'Gruul': "RG"
 }
-TWO_COLOR_TO_NAME: dict[COLOR_IDENTITY, COLOR_ALIAS] = {v: k for k, v in TWO_NAME_TO_COLOR.items()}
+TWO_COLOR_TO_NAME: dict[COLOR_IDENTITY, COLOR_ALIAS] = invert_dict(TWO_NAME_TO_COLOR)
 
 THREE_NAME_TO_COLOR: dict[COLOR_ALIAS, COLOR_IDENTITY] = {
     'Esper': "WUB",
@@ -80,7 +81,7 @@ THREE_NAME_TO_COLOR: dict[COLOR_ALIAS, COLOR_IDENTITY] = {
     'Temur': "URG",
     'Jund': "BRG"
 }
-THREE_COLOR_TO_NAME: dict[COLOR_IDENTITY, COLOR_ALIAS] = {v: k for k, v in THREE_NAME_TO_COLOR.items()}
+THREE_COLOR_TO_NAME: dict[COLOR_IDENTITY, COLOR_ALIAS] = invert_dict(THREE_NAME_TO_COLOR)
 
 FOUR_NAME_TO_COLOR: dict[COLOR_ALIAS, COLOR_IDENTITY] = {
     'Non-G': "WUBR",
@@ -89,7 +90,7 @@ FOUR_NAME_TO_COLOR: dict[COLOR_ALIAS, COLOR_IDENTITY] = {
     'Non-U': "WBRG",
     'Non-W': "UBRG"
 }
-FOUR_COLOR_TO_NAME: dict[COLOR_IDENTITY, COLOR_ALIAS] = {v: k for k, v in FOUR_NAME_TO_COLOR.items()}
+FOUR_COLOR_TO_NAME: dict[COLOR_IDENTITY, COLOR_ALIAS] = invert_dict(FOUR_NAME_TO_COLOR)
 
 # All previous dictionaries of aliases combined into one, with pairs for colourless and WUBRG added.
 NAME_TO_COLOR: dict[COLOR_ALIAS, COLOR_IDENTITY] = {
@@ -100,7 +101,7 @@ NAME_TO_COLOR: dict[COLOR_ALIAS, COLOR_IDENTITY] = {
     **FOUR_NAME_TO_COLOR,
     'Five-Color': 'WUBRG'
 }
-COLOR_TO_NAME: dict[COLOR_IDENTITY, COLOR_ALIAS] = {v: k for k, v in NAME_TO_COLOR.items()}
+COLOR_TO_NAME: dict[COLOR_IDENTITY, COLOR_ALIAS] = invert_dict(NAME_TO_COLOR)
 
 # Groups of aliases based on the number of colours.
 COLOUR_GROUPINGS: dict[str, dict[COLOR_ALIAS, COLOR_IDENTITY]] = {

@@ -2,9 +2,9 @@
 Contains sorting and filtering enums and functions.
 """
 
-from enum import Flag, auto
+from enum import Enum, auto
 from functools import cmp_to_key
-from typing import Callable
+from typing import Callable, Iterable
 
 from core.wubrg.typing import COLOR_IDENTITY
 from core.wubrg.consts import COLOR_COMBINATIONS, GROUP_COLOR_COMBINATIONS
@@ -47,7 +47,7 @@ pentad_compare_key: Callable = cmp_to_key(index_dist_pentad)
 
 
 # region Colour Filtering
-class ColorSortStyles(Flag):
+class ColorSortStyles(Enum):
     """
     Different relations applicable to two colour identities.
     """
@@ -59,7 +59,7 @@ class ColorSortStyles(Flag):
     shares = auto()
 
 
-def order_by_wubrg(color_list: list[COLOR_IDENTITY]) -> list[COLOR_IDENTITY]:
+def order_by_wubrg(color_list: Iterable[COLOR_IDENTITY]) -> list[COLOR_IDENTITY]:
     """
     Take a list and orders it in WUBRG order.
     :param color_list: The list to sort.
@@ -68,7 +68,7 @@ def order_by_wubrg(color_list: list[COLOR_IDENTITY]) -> list[COLOR_IDENTITY]:
     return sorted(color_list, key=wubrg_compare_key)
 
 
-def order_by_pentad(color_list: list[COLOR_IDENTITY]) -> list[COLOR_IDENTITY]:
+def order_by_pentad(color_list: Iterable[COLOR_IDENTITY]) -> list[COLOR_IDENTITY]:
     """
     Take a list and orders it in Pentad order.
     :param color_list: The list to sort.
@@ -90,7 +90,7 @@ def exact(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
 def subset(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
     """
     Returns a list of the subsets of the provided colour string.
-    'subset': 'UW' --> 'U', 'W', 'WU'
+    'subset': 'WU' --> 'W', 'U', 'WU'
     :param colors: A color string.
     :return: A list of color strings.
     """
@@ -100,7 +100,7 @@ def subset(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
 def superset(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
     """
     Returns a list of the supersets of the provided colour string.
-    'superset': 'UW' --> 'UW', 'UBW', 'URW', 'UGW'...
+    'superset': 'WU' --> 'WU', 'WUB', 'WUR', 'WUG', 'WUBR'...
     :param colors: A color string.
     :return: A list of color strings.
     """
@@ -109,8 +109,8 @@ def superset(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
 
 def adjacent(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
     """
-    Returns a list of color strings with no more than one colour different than the provided colour string.
-    'adjacent': 'UW' --> 'U', 'W', 'UW', 'UG', 'WG', 'UWG'...
+    Returns a list of color strings with plus or minus one colour from the provided colour string.
+    'adjacent': 'WU' --> 'W', 'U', 'WU', 'WUB', 'WUR', 'WUG'
     :param colors: A color string.
     :return: A list of color strings.
     """
@@ -123,7 +123,7 @@ def shares(colors: COLOR_IDENTITY) -> list[COLOR_IDENTITY]:
     # noinspection SpellCheckingInspection
     """
     Returns a list of color strings which share any colour with the provided colour string.
-    'adjacent': 'UW' --> 'U', 'W', 'UW', 'UG', 'UWG', 'UWRG', 'WUBRG'...
+    'adjacent': 'WU' --> 'W', 'U', 'WU', 'WB'... 'URG', 'WUBR'... 'WUBRG'
     :param colors: A color string.
     :return: A list of color strings.
     """
@@ -155,7 +155,7 @@ def color_filter(colors: COLOR_IDENTITY, style: ColorSortStyles) -> list[COLOR_I
     }
 
     # Verify that the provided filter value is valid.
-    if style not in funcs:
+    if not isinstance(style, ColorSortStyles):
         raise ValueError(f"`style` must be one of `ColorSortStyles` enums")
 
     # Return a function, based on the provided filter value.

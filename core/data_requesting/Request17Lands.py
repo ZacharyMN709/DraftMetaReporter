@@ -73,16 +73,9 @@ class Request17Lands(Requester):
 
         result = self.get_json_response(url=COLOR_RATING_17L_URL, params=params)
 
-        # Apply a more intuitive columns ordering
-        unsorted_df = pd.DataFrame(result)
-        columns_order = [
-            'is_summary',
-            'color_name',
-            'wins',
-            'games'
-        ]
-
-        color_ratings = unsorted_df.loc[:, columns_order]
+        # If the result is the default list, no data was found, so return None instead.
+        if len(result) == 1:
+            return None
 
         return result
 
@@ -114,42 +107,9 @@ class Request17Lands(Requester):
 
         result = self.get_json_response(url=CARD_RATING_17L_URL, params=params)
 
-        # Apply a more intuitive columns ordering, and remove URLs and sideboard metrics
-        unsorted_df = pd.DataFrame(result)
-        sorted_cols = [
-            'name',
-            'color',
-            'rarity',
-            'seen_count',
-            'avg_seen',
-            'pick_count',
-            'avg_pick',
-            'game_count',
-            'win_rate',
-            'opening_hand_game_count',
-            'opening_hand_win_rate',
-            'drawn_game_count',
-            'drawn_win_rate',
-            'ever_drawn_game_count',
-            'ever_drawn_win_rate',
-            'never_drawn_game_count',
-            'never_drawn_win_rate',
-            'drawn_improvement_win_rate'
-        ]
-        sorted_df = unsorted_df.loc[:, sorted_cols]
-
-        # Rename the metrics for more standard ones
-        card_ratings = sorted_df.rename(columns={
-            'avg_seen': 'avg_last_seen_at',
-            'avg_pick': 'avg_taken_at',
-            'game_count': 'games_played_count',
-            'win_rate': 'games_played_win_rate',
-            'ever_drawn_game_count': 'in_hand_game_count',
-            'ever_drawn_win_rate': 'in_hand_win_rate',
-            'never_drawn_game_count': 'not_drawn_game_count',
-            'never_drawn_win_rate': 'not_drawn_win_rate',
-            'drawn_improvement_win_rate': 'improvement_when_drawn'
-        })
+        # If the result is an empty list, no trophy decks were found, so return None instead.
+        if len(result) == 0:
+            return None
 
         return result
 
@@ -169,6 +129,7 @@ class Request17Lands(Requester):
         """
 
         # TODO: The data returned from this is weirdly duplicated. Check on that with 17Lands.
+        # NOTE: This request doesn't handle large time spans well. Use with caution.
         # Handle parameters, and package them into a dict to be used for the url.
         event_type = event_type or DEFAULT_FORMAT
         start_date = start_date or DEFAULT_DATE
@@ -233,8 +194,7 @@ class Request17Lands(Requester):
             'draft_id': draft_id,
         }
 
-        result = self.get_json_response(url=DETAILS_17L_URL, params=params)
-        return result
+        return self.get_json_response(url=DETAILS_17L_URL, params=params)
 
     def get_draft(self, draft_id: str) -> Optional[dict]:
         """

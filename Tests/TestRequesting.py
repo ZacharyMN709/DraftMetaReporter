@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 import unittest
 import json
@@ -119,29 +120,55 @@ class TestRequester(unittest.TestCase):
 
 class TestRequestScryfall(unittest.TestCase):
     REQUESTER = RequestScryfall(_tries, _fail_delay, _success_delay)
+    SET_MAIN = 'BRO'
+    SET_ALCHEMY = 'Y23BRO'
+    SET_INVALID = 'INVALID'
 
     def test_get_set_cards_valid(self):
-        cards = self.REQUESTER.get_set_cards('NEO')
+        cards = self.REQUESTER.get_set_cards(self.SET_MAIN)
         self.assertIsInstance(cards, list)
-        self.assertEqual(cards[0]['name'], 'Ancestral Katana')
+        self.assertEqual(cards[0]['name'], "Aeronaut Cavalry")
+        self.assertEqual(cards[-1]['name'], "Woodcaller Automaton")
 
-    def test_get_set_review_valid(self):
-        cards = self.REQUESTER.get_set_review_order('NEO')
+    def test_get_set_cards_valid_alchemy(self):
+        cards = self.REQUESTER.get_set_cards(self.SET_ALCHEMY)
         self.assertIsInstance(cards, list)
-        self.assertEqual(cards[0]['name'], 'Hotshot Mechanic')
+        self.assertEqual(cards[0]['name'], "Aeronaut Cavalry")
+        self.assertEqual(cards[-1]['name'], "Warzone Duplicator")
 
     def test_get_set_cards_invalid(self):
-        ret = self.REQUESTER.get_set_cards('INVALID')
+        ret = self.REQUESTER.get_set_cards(self.SET_INVALID)
         self.assertListEqual(list(), ret)
 
+    def test_get_set_review_valid(self):
+        cards = self.REQUESTER.get_set_review_order(self.SET_MAIN)
+        self.assertIsInstance(cards, list)
+        self.assertEqual(cards[0]['name'], "Lay Down Arms")
+        self.assertEqual(cards[-1]['name'], "Woodcaller Automaton")
+
+    def test_get_set_review_valid_alchemy(self):
+        cards = self.REQUESTER.get_set_review_order(self.SET_ALCHEMY)
+        self.assertIsInstance(cards, list)
+        self.assertEqual(cards[0]['name'], "Lay Down Arms")
+        self.assertEqual(cards[-1]['name'], "Urza's Construction Drone")
+
     def test_get_set_info_valid(self):
-        cards = self.REQUESTER.get_set_info('NEO')
-        self.assertIsInstance(cards, tuple)
+        data = self.REQUESTER.get_set_info(self.SET_MAIN)
+        self.assertIsInstance(data, tuple)
+        self.assertEqual(data[0], "The Brothers' War")
+        self.assertEqual(data[1], "https://svgs.scryfall.io/sets/bro.svg?1678078800")
+
+    def test_get_set_info_valid_alchemy(self):
+        data = self.REQUESTER.get_set_info(self.SET_ALCHEMY)
+        self.assertIsInstance(data, tuple)
+        self.assertEqual(data[0], "Alchemy: The Brothers' War")
+        self.assertEqual(data[1], "https://svgs.scryfall.io/sets/y23.svg?1678078800")
 
     def test_get_set_info_invalid(self):
-        _set, _icon = self.REQUESTER.get_set_info('INVALID')
-        self.assertIsNone(_set)
-        self.assertIsNone(_icon)
+        data = self.REQUESTER.get_set_info(self.SET_INVALID)
+        self.assertIsInstance(data, tuple)
+        self.assertIsNone(data[0])
+        self.assertIsNone(data[1])
 
     def test_get_card_by_name_valid(self):
         card = self.REQUESTER.get_card_by_name('Virus Beetle')
@@ -235,6 +262,9 @@ class TestRequestRequest17Lands(unittest.TestCase):
         self.assertIsInstance(color_ratings[0]['wins'], int)
         self.assertIsInstance(color_ratings[0]['games'], int)
 
+        color_ratings = self.REQUESTER.get_color_ratings('DUMMY')
+        self.assertIsNone(color_ratings)
+
     def test_get_card_ratings(self):
         # Validate the key parts of the structure, to make sure that changes in it haven't occurred.
         #  We don't check any of the stats, as those are liable to change. Simply check that the number of cards in the
@@ -262,10 +292,13 @@ class TestRequestRequest17Lands(unittest.TestCase):
         self.assertEqual(len(card_ratings), 265)
         self.assertEqual(card_ratings[0]['name'], 'Vorinclex, Monstrous Raider')
 
+        card_ratings = self.REQUESTER.get_card_ratings('DUMMY')
+        self.assertIsNone(card_ratings)
+
     def test_get_card_evaluations(self):
         # Validate the key parts of the structure, to make sure that changes in it haven't occurred.
         #  Card images are contained in the data, but we ignore them, so they aren't checked.
-        card_evaluations = self.REQUESTER.get_card_evaluations('ONE')
+        card_evaluations = self.REQUESTER.get_card_evaluations('ONE', start_date=datetime.date(2022, 11, 9))
         self.assertIsInstance(card_evaluations, dict)
         self.assertIsInstance(card_evaluations['cards'], list)
         self.assertIsInstance(card_evaluations['dates'], list)

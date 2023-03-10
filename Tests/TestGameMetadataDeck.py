@@ -3,17 +3,25 @@ import unittest
 import requests
 from requests import Response
 
-from core.utilities import auto_log, LogLvl
-from core.data_requesting import Request17Lands
+from core.data_requesting import Request17Lands, BASE_17L_URL
 from core.game_metadata import Card, CardManager, Deck, LimitedDeck, ConstructedDeck, TrophyStub, DeckManager, Draft
+from core.game_metadata.game_objects.Card import decklist_sort_lambda
 
-from Tests.settings import TEST_PERIPHERAL_URLS, FULL_TEST
+from Tests.settings import TEST_PERIPHERAL_URLS, TEST_MASS_DATA_PULL
 from Tests.settings import _tries, _success_delay, _fail_delay
 
 
 class TestBaseDeck(unittest.TestCase):
+    TARGET_DRAFT_DECK_ID_1 = "2e383598e5964c9ab90a7e8cb2440d9a"
+    TARGET_DRAFT_DECK_ID_2 = "2c653e26dc0647ca934af503d57eee3d"
+    TARGET_INVALID_DRAFT_DECK_ID = "b20a97b818f3418b94a8f4e7584398a8"
+
+    E1_DECK_LOC = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\E1.txt"
+    E3_DECK_LOC = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\E3.txt"
+    H1_DECK_LOC = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\H1.txt"
+    H3_DECK_LOC = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\H3.txt"
+
     def setUp(self) -> None:
-        auto_log(LogLvl.DEBUG)
         # Load all arena cards to speed up tests and reduce load on Scryfall server.
         CardManager.REQUESTER._TRIES = _tries
         CardManager.REQUESTER._SUCCESS_DELAY = _success_delay
@@ -28,33 +36,60 @@ class TestBaseDeck(unittest.TestCase):
 
 class TestDeck(TestBaseDeck):
     def test_parse_decklist_from_file_e3(self):
-        loc = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\E3.txt"
-        maindeck, sideboard = Deck.parse_decklist_from_file(loc)
+        maindeck, sideboard = Deck.parse_decklist_from_file(self.E3_DECK_LOC)
 
         self.assertEqual(60, len(maindeck))
         self.assertEqual(15, len(sideboard))
 
     def test_parse_decklist_from_file_e1(self):
-        loc = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\E1.txt"
-        maindeck, sideboard = Deck.parse_decklist_from_file(loc)
+        maindeck, sideboard = Deck.parse_decklist_from_file(self.E1_DECK_LOC)
 
         self.assertEqual(60, len(maindeck))
         self.assertEqual(0, len(sideboard))
 
-    def test_parse_decklist_comparison(self):
-        loc_bo3 = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\H3.txt"
-        maindeck, sideboard = Deck.parse_decklist_from_file(loc_bo3)
-        deck_bo3 = Deck(maindeck, sideboard, 'Azorius Affinity', 0, 0)
+    def test_gen_deck_from_decklist(self):
+        with open(self.H1_DECK_LOC, 'r') as f:
+            bo1_lines = f.readlines()
+        deck_bo1 = Deck.from_decklist(bo1_lines, 'Azorius Affinity', 0, 0)
 
-        loc_bo1 = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\H1.txt"
-        maindeck, sideboard = Deck.parse_decklist_from_file(loc_bo1)
-        deck_bo1 = Deck(maindeck, sideboard, 'Azorius Affinity', 0, 0)
+        with open(self.H3_DECK_LOC, 'r') as f:
+            bo3_lines = f.readlines()
+        deck_bo3 = Deck.from_decklist(bo3_lines, 'Azorius Affinity', 0, 0)
 
+        self.assertEqual(60, len(deck_bo1.maindeck))
         self.assertEqual(60, len(deck_bo3.maindeck))
         self.assertEqual(15, len(deck_bo3.sideboard))
-        self.assertEqual(60, len(deck_bo1.maindeck))
 
-        maindeck_diff, sideboard_diff = deck_bo3 - deck_bo1
+    def test_gen_deck_from_string(self):
+        with open(self.H1_DECK_LOC, 'r') as f:
+            bo1_text = f.read()
+        deck_bo1 = Deck.from_string(bo1_text, 'Azorius Affinity', 0, 0)
+
+        with open(self.H3_DECK_LOC, 'r') as f:
+            bo3_text = f.read()
+        deck_bo3 = Deck.from_string(bo3_text, 'Azorius Affinity', 0, 0)
+
+        self.assertEqual(60, len(deck_bo1.maindeck))
+        self.assertEqual(60, len(deck_bo3.maindeck))
+        self.assertEqual(15, len(deck_bo3.sideboard))
+
+    def test_gen_deck_from_file(self):
+        deck_bo1 = Deck.from_file(self.H1_DECK_LOC, 'Azorius Affinity', 0, 0)
+
+        deck_bo3 = Deck.from_file(self.H3_DECK_LOC, 'Azorius Affinity', 0, 0)
+
+        self.assertEqual(60, len(deck_bo1.maindeck))
+        self.assertEqual(60, len(deck_bo3.maindeck))
+        self.assertEqual(15, len(deck_bo3.sideboard))
+
+    def test_parse_decklist_from_file_invalid(self):
+        loc = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\DNE.txt"
+        self.assertRaises(ValueError, Deck.parse_decklist_from_file, loc)
+
+
+    def test_parse_decklist_difference(self):
+        deck_bo1 = Deck.from_file(self.H1_DECK_LOC, 'Azorius Affinity', 0, 0)
+        deck_bo3 = Deck.from_file(self.H3_DECK_LOC, 'Azorius Affinity', 0, 0)
 
         maindeck_comp = {
             CardManager.from_name("Soul-Guide Lantern"): -2,
@@ -72,16 +107,40 @@ class TestDeck(TestBaseDeck):
             CardManager.from_name("Skysovereign, Consul Flagship"): 1,
         }
 
+        maindeck_diff, sideboard_diff = deck_bo3 - deck_bo1
         self.assertDictEqual(maindeck_comp, maindeck_diff)
         self.assertDictEqual(sideboard_comp, sideboard_diff)
 
-    def test_parse_decklist_from_file_invalid(self):
-        loc = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\DNE.txt"
-        self.assertRaises(ValueError, Deck.parse_decklist_from_file, loc)
+    def test_parse_decklist_overlap(self):
+        deck_bo1 = Deck.from_file(self.H1_DECK_LOC, 'Azorius Affinity', 0, 0)
+        deck_bo3 = Deck.from_file(self.H3_DECK_LOC, 'Azorius Affinity', 0, 0)
 
-    def test_parse_decklist_from_url(self):
-        loc = r"https:/DNE.html"
-        self.assertRaises(NotImplementedError, Deck.parse_decklist_from_url, loc)
+        maindeck_comp = {
+            CardManager.from_name("Ornithopter"): 3,
+            CardManager.from_name("Ingenious Smith"): 4,
+            CardManager.from_name("Esper Sentinel"): 4,
+            CardManager.from_name("Retrofitter Foundry"): 4,
+            CardManager.from_name("Thought Monitor"): 4,
+            CardManager.from_name("Metallic Rebuke"): 4,
+            CardManager.from_name("Portable Hole"): 4,
+            CardManager.from_name("Moonsnare Prototype"): 4,
+            CardManager.from_name("Nettlecyst"): 4,
+            CardManager.from_name("Shadowspear"): 1,
+            CardManager.from_name("Darksteel Citadel"): 4,
+            CardManager.from_name("Razortide Bridge"): 2,
+            CardManager.from_name("Plains"): 1,
+            CardManager.from_name("Spire of Industry"): 4,
+            CardManager.from_name("Hengegate Pathway"): 4,
+            CardManager.from_name("Deserted Beach"): 2,
+            CardManager.from_name("Hallowed Fountain"): 4,
+            CardManager.from_name("Otawara, Soaring City"): 1,
+        }
+
+        sideboard_comp = dict()
+
+        maindeck_overlap, sideboard_overlap = deck_bo3 | deck_bo1
+        self.assertDictEqual(maindeck_comp, maindeck_overlap)
+        self.assertDictEqual(sideboard_comp, sideboard_overlap)
 
     def test_mangled_parse(self):
         decklist = """
@@ -110,8 +169,7 @@ Raffine's Informant
         self.assertEqual(1, deck._maindeck_dict[CardManager.from_name('Island')])
 
     def test_deck_from_file(self):
-        loc = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\E3.txt"
-        maindeck, sideboard = Deck.parse_decklist_from_file(loc)
+        maindeck, sideboard = Deck.parse_decklist_from_file(self.E3_DECK_LOC)
         deck = Deck(maindeck, sideboard, 'Mono-Blue Spirits', 3, 1)
 
         self.assertEqual(60, len(deck.maindeck))
@@ -125,11 +183,100 @@ Raffine's Informant
         self.assertEqual(8, len(deck._sideboard_dict))
         self.assertEqual(21, len(deck.unique_cards))
 
+    def test_deck_from_17_lands_id(self):
+        deck = Deck.from_17_lands_id(self.TARGET_DRAFT_DECK_ID_1, 0, 'Sultai Domain')
+
+        maindeck_comp = [
+            CardManager.from_name("Essence Scatter"),
+            CardManager.from_name("Phyrexian Espionage"),
+            CardManager.from_name("Rona's Vortex"),
+            CardManager.from_name("Shore Up"),
+            CardManager.from_name("Tolarian Geyser"),
+            CardManager.from_name("Tolarian Geyser"),
+            CardManager.from_name("Tolarian Geyser"),
+            CardManager.from_name("Tolarian Terror"),
+            CardManager.from_name("Vodalian Mindsinger"),
+            CardManager.from_name("Shadow Prophecy"),
+            CardManager.from_name("Urborg Repossession"),
+            CardManager.from_name("Gaea's Might"),
+            CardManager.from_name("Herd Migration"),
+            CardManager.from_name("Magnigoth Sentry"),
+            CardManager.from_name("Sunbathing Rootwalla"),
+            CardManager.from_name("Sunbathing Rootwalla"),
+            CardManager.from_name("Territorial Maro"),
+            CardManager.from_name("The Weatherseed Treaty"),
+            CardManager.from_name("Yavimaya Sojourner"),
+            CardManager.from_name("Bortuk Bonerattle"),
+            CardManager.from_name("Ertai Resurrected"),
+            CardManager.from_name("Tatyova, Steward of Tides"),
+            CardManager.from_name("Vohar, Vodalian Desecrator"),
+            CardManager.from_name("Idyllic Beachfront"),
+            CardManager.from_name("Radiant Grove"),
+            CardManager.from_name("Sunlit Marsh"),
+            CardManager.from_name("Tangled Islet"),
+            CardManager.from_name("Tangled Islet"),
+            CardManager.from_name("Wooded Ridgeline"),
+            CardManager.from_name("Island"),
+            CardManager.from_name("Island"),
+            CardManager.from_name("Island"),
+            CardManager.from_name("Island"),
+            CardManager.from_name("Island"),
+            CardManager.from_name("Swamp"),
+            CardManager.from_name("Swamp"),
+            CardManager.from_name("Forest"),
+            CardManager.from_name("Forest"),
+            CardManager.from_name("Forest"),
+            CardManager.from_name("Forest"),
+        ]
+
+        sideboard_comp = [
+            CardManager.from_name("Take Up the Shield"),
+            CardManager.from_name("Soaring Drake"),
+            CardManager.from_name("Monstrous War-Leech"),
+            CardManager.from_name("Pilfer"),
+            CardManager.from_name("In Thrall to the Pit"),
+            CardManager.from_name("Keldon Strike Team"),
+            CardManager.from_name("Thrill of Possibility"),
+            CardManager.from_name("Warhost's Frenzy"),
+            CardManager.from_name("Elfhame Wurm"),
+            CardManager.from_name("Gaea's Might"),
+            CardManager.from_name("Automatic Librarian"),
+            CardManager.from_name("Crystal Grotto"),
+            CardManager.from_name("Radiant Grove"),
+        ]
+
+        maindeck_comp = sorted(maindeck_comp, key=decklist_sort_lambda)
+        sideboard_comp = sorted(sideboard_comp, key=decklist_sort_lambda)
+
+        self.assertEqual(40, len(deck.maindeck))
+        self.assertEqual(13, len(deck.sideboard))
+        self.assertListEqual(maindeck_comp, deck.maindeck)
+        self.assertListEqual(sideboard_comp, deck.sideboard)
+
+    def test_deck_auto_name(self):
+        deck_h1 = Deck.from_file(self.H1_DECK_LOC, 'Azorius Affinity', 0, 0)
+        deck_d1 = Deck.from_file(self.H3_DECK_LOC, None, 0, 0)
+        deck_h3 = Deck.from_file(self.H3_DECK_LOC, 'Azorius Affinity', 0, 0)
+        deck_d2 = Deck.from_file(self.H3_DECK_LOC, None, 0, 0)
+        deck_d3 = Deck.from_file(self.H3_DECK_LOC, None, 0, 0)
+        deck_e1 = Deck.from_file(self.E1_DECK_LOC, 'Abzan Greasefang', 0, 0)
+        deck_e3 = Deck.from_file(self.E3_DECK_LOC, 'Mono-Blue Spirits', 0, 0)
+        deck_d4 = Deck.from_file(self.H3_DECK_LOC, None, 0, 0)
+
+        self.assertEqual(deck_d1.name, 'Deck 1')
+        self.assertEqual(deck_d2.name, 'Deck 2')
+        self.assertEqual(deck_d3.name, 'Deck 3')
+        self.assertEqual(deck_d4.name, 'Deck 4')
+
+        self.assertEqual(deck_h1.name, 'Azorius Affinity')
+        self.assertEqual(deck_h3.name, 'Azorius Affinity')
+        self.assertEqual(deck_e1.name, 'Abzan Greasefang')
+        self.assertEqual(deck_e3.name, 'Mono-Blue Spirits')
+
 
 class TestConstructedDeck(TestBaseDeck):
     def test_deck_from_file(self):
-        loc = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\E3.txt"
-        maindeck, sideboard = Deck.parse_decklist_from_file(loc)
+        maindeck, sideboard = Deck.parse_decklist_from_file(self.E3_DECK_LOC)
         deck = ConstructedDeck(maindeck, sideboard, 'Mono-Blue Spirits', 3, 1)
 
         self.assertEqual(60, len(deck.maindeck))
@@ -156,23 +303,21 @@ class TestLimitedDeck(TestBaseDeck):
 
     def validate_deck(self, deck):
         self.assertEqual(40, len(deck.maindeck))
-        self.assertEqual(17, len(deck.sideboard))
-        # TODO: Consider removing lands from the card pool?
-        self.assertEqual(57, len(deck.cardpool))
+        self.assertEqual(13, len(deck.sideboard))
+        self.assertEqual(53, len(deck.cardpool))
         self.assertEqual(5, deck.wins)
         self.assertEqual(3, deck.losses)
 
-        self.assertEqual("b20a97b818f3418b94a8f4e7584398a8", deck.DECK_ID)
+        self.assertEqual(self.TARGET_DRAFT_DECK_ID_1, deck.DECK_ID)
         self.assertEqual(1, deck.deck_builds)
         self.assertEqual(0, deck.selected_build)
         self.assertEqual('DMU', deck.SET)
         self.assertEqual('PremierDraft', deck.FORMAT)
         self.assertTrue(deck.is_valid)
-        self.assertFalse(deck.has_trophy_stub)
         self.assertRaises(NotImplementedError, deck._calc_colors)
 
     def test_limited_deck_init(self):
-        deck = self.gen_deck("b20a97b818f3418b94a8f4e7584398a8")
+        deck = self.gen_deck(self.TARGET_DRAFT_DECK_ID_1)
         self.validate_deck(deck)
 
     @unittest.skipUnless(TEST_PERIPHERAL_URLS, "Not testing peripheral links. 'TEST_PERIPHERAL_URLS' set to False.")
@@ -182,7 +327,7 @@ class TestLimitedDeck(TestBaseDeck):
             self.assertIsNotNone(resp)
             self.assertEqual(200, resp.status_code)
 
-        deck = self.gen_deck("b20a97b818f3418b94a8f4e7584398a8")
+        deck = self.gen_deck(self.TARGET_DRAFT_DECK_ID_1)
 
         handle_link(deck.details_link)
         handle_link(deck.pool_link)
@@ -192,11 +337,16 @@ class TestLimitedDeck(TestBaseDeck):
         handle_link(deck.text_link)
 
     def test_relay(self):
-        deck = LimitedDeck.from_id("b20a97b818f3418b94a8f4e7584398a8")
+        deck = LimitedDeck.from_id(self.TARGET_DRAFT_DECK_ID_1)
         self.validate_deck(deck)
 
     def test_get_draft(self):
-        deck = LimitedDeck.from_id("b20a97b818f3418b94a8f4e7584398a8")
+        # The draft portion of this has disappeared, so using it to test the fail-case.
+        deck = LimitedDeck.from_id(self.TARGET_INVALID_DRAFT_DECK_ID)
+        draft = deck.draft
+        self.assertIsNone(draft)
+
+        deck = LimitedDeck.from_id(self.TARGET_DRAFT_DECK_ID_1)
         draft = deck.draft
         self.assertIsNotNone(draft)
         self.assertIsInstance(draft, Draft)
@@ -210,8 +360,14 @@ class TestTrophyStub(TestBaseDeck):
         self.assertEqual(data['start_rank'], trophy.start_rank)
         self.assertEqual(data['end_rank'], trophy.end_rank)
         self.assertEqual(rank, trophy.rank)
+        self.assertEqual(data['colors'], trophy.colors)
         self.assertEqual(data['deck_index'], trophy.deck_idx)
         self.assertIsInstance(trophy.time, datetime.datetime)
+        self.assertEqual(data['aggregate_id'], trophy.__str__())
+        self.assertEqual(f"{BASE_17L_URL}/details/{data['aggregate_id']}", trophy.details_link)
+        self.assertEqual(f"{BASE_17L_URL}/draft/{data['aggregate_id']}", trophy.draft_link)
+        self.assertEqual(f"{BASE_17L_URL}/deck/{data['aggregate_id']}/{data['deck_index']}", trophy.deck_link)
+        self.assertEqual(f"{trophy.rank} ({trophy.colors}) {trophy.DECK_ID}", trophy.__repr__())
 
     def test_get_trophy_deck_list(self):
         requester = Request17Lands()
@@ -269,12 +425,11 @@ class TestTrophyStub(TestBaseDeck):
         self.assertEqual('DMU', deck.SET)
         self.assertEqual('PremierDraft', deck.FORMAT)
         self.assertTrue(deck.is_valid)
-        self.assertTrue(deck.has_trophy_stub)
+        self.assertEqual(deck.name, deck.__str__())
+        self.assertEqual(deck.__str__(), deck.__repr__())
 
-    @unittest.skipUnless(FULL_TEST, "Not performing full test. 'FULL_TEST' set to False.")
-    def test_mass_gen(self):  # pragma: nocover
-        import core.data_requesting.utils.settings as settings
-        from Tests.settings import _tries, _fail_delay, _success_delay
+    @unittest.skipUnless(TEST_MASS_DATA_PULL, "Not performing mass data pull. 'TEST_MASS_DATA_PULL' set to False.")
+    def test_mass_gen(self):
 
         def convert_data(data_list):
             for data in data_list:
@@ -287,22 +442,16 @@ class TestTrophyStub(TestBaseDeck):
 
         requester = Request17Lands(_tries, _fail_delay, _success_delay)
 
-        self.assertEqual(settings.DEFAULT_FORMAT, 'PremierDraft')
-        bo1 = requester.get_trophy_deck_metadata('DMU')
+        bo1 = requester.get_trophy_deck_metadata('DMU', 'PremierDraft')
         convert_data(bo1)
 
-        settings.DEFAULT_FORMAT = 'TradDraft'
-        self.assertEqual(settings.DEFAULT_FORMAT, 'TradDraft')
-        bo3 = requester.get_trophy_deck_metadata('DMU')
+        bo3 = requester.get_trophy_deck_metadata('DMU', 'TradDraft')
         convert_data(bo3)
-
-        settings.DEFAULT_FORMAT = 'PremierDraft'
-        self.assertEqual(settings.DEFAULT_FORMAT, 'PremierDraft')
 
 
 class TestDeckManager(TestBaseDeck):
     def test_from_deck_id_valid(self):
-        deck = DeckManager.from_deck_id("2c653e26dc0647ca934af503d57eee3d")
+        deck = DeckManager.from_deck_id(self.TARGET_DRAFT_DECK_ID_2)
         self.assertIsInstance(deck, LimitedDeck)
 
     def test_from_deck_id_invalid(self):
@@ -311,18 +460,18 @@ class TestDeckManager(TestBaseDeck):
 
     def test_clear_blank_decks(self):
         is_valid = True
-        DeckManager.from_deck_id("2c653e26dc0647ca934af503d57eee3d")
+        DeckManager.from_deck_id(self.TARGET_DRAFT_DECK_ID_2)
         deck = DeckManager.from_deck_id("TunaSandwich")
         self.assertIsNone(deck)
         DeckManager.clear_blank_decks()
-        DeckManager.from_deck_id("2c653e26dc0647ca934af503d57eee3d")
+        DeckManager.from_deck_id(self.TARGET_DRAFT_DECK_ID_2)
         for deck in DeckManager.DECKS.values():
             is_valid = is_valid and deck is not None
         self.assertTrue(is_valid)
         self.assertLessEqual(len(DeckManager.DECKS), 1)
 
     def test_flush_cache(self):
-        DeckManager.from_deck_id("2c653e26dc0647ca934af503d57eee3d")
+        DeckManager.from_deck_id(self.TARGET_DRAFT_DECK_ID_2)
         DeckManager.from_deck_id("TunaSandwich")
         DeckManager.flush_cache()
         self.assertFalse(DeckManager.SETS)

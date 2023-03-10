@@ -312,6 +312,9 @@ class TestDataLoader(unittest.TestCase):
     DATA_DIR_LOC = r'C:\Users\Zachary\Coding\GitHub'
     DATA_DIR_NAME = '17LandsData'
 
+    # TODO: Revamp these tests now that all data is contained as part
+    #  of the event_calendar.json file.
+
     def test_urls_no_date(self):
         loader = DataLoader('DOM', 'PremierDraft')
 
@@ -474,7 +477,7 @@ class TestDataFramer(unittest.TestCase):
                  'Type Line', 'Supertypes', 'Types', 'Subtypes', 'Power', 'Toughness']
 
     def test_gen_hist(self):
-        framer = DataFramer('DOM', 'PremierDraft')
+        framer = DataFramer('DMU', 'PremierDraft')
         framer.gen_hist()
         self.assertIsInstance(framer.GROUPED_ARCHETYPE_HISTORY_FRAME, DataFrame)
         self.assertIsInstance(framer.SINGLE_ARCHETYPE_HISTORY_FRAME, DataFrame)

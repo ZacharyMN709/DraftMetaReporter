@@ -1,15 +1,21 @@
+# Default ignores for project, notebooks and coverage.
 __pychache__
 Notebooks/.ipynb_checkpoints/*
 .idea
 .coverage
 .coverage.*
 
+# Ignore specific Test directories, which hold testing data.
 /Tests/.pytest_cache
 /Tests/DeckLists
 /Tests/Drafts
 /Tests/htmlcov
 /Tests/Misc
 
+# Ignore all notebook backups, python C code and generated images.
 *.ipynb
 *.pyc
 *.png
+
+# Ignore config files.
+core/game_metadata/utils/event_calendar.json

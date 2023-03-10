@@ -22,6 +22,14 @@ class RequestScryfall(Requester):
         :param order: The order in which cards are returned. Default: 'set'
         :return: A list of card json objects.
         """
+
+        # See if an alchemy set needs to be fetched, and prep the data to get the
+        #  regular set cards in addition.
+        append_alchemy = False
+        if len(set_code) > 3 and set_code.startswith('Y'):
+            set_code = set_code[3:]
+            append_alchemy = True
+
         params = {
             'format': 'json',
             'q': f'e%3A{set_code}',
@@ -33,6 +41,11 @@ class RequestScryfall(Requester):
         }
         logging.info(f"Fetching card data for set: {set_code}")
         responses = self.get_paginated_json_response(CARD_SCRYFALL_URL, params=params)
+
+        # If fetching alchemy cards, append them to the existing data.
+        if append_alchemy:
+            params['q'] = f'e%3AY{set_code}'
+            responses += self.get_paginated_json_response(CARD_SCRYFALL_URL, params=params)
 
         # Create a list to store the returned json objects.
         ret = list()
@@ -71,6 +84,9 @@ class RequestScryfall(Requester):
         :param set_code: The 3-character code for the set.
         :return: The full set name and a link to the set symbol. If the set cannot be found Nones are returned.
         """
+        if len(set_code) > 3 and set_code.startswith('Y'):
+            set_code = f"Y{set_code[3:]}"
+
         url = f'{SET_SCRYFALL_URL}/{set_code}'
         logging.info(f"Fetching data for set: {set_code}")
         response = self.get_json_response(url)
