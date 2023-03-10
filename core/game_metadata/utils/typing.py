@@ -14,16 +14,22 @@ CARD_SIDE = Literal['default', 'main', 'adventure', 'left', 'right', 'front', 'b
 
 # region Card Types
 # https://mtg.fandom.com/wiki/Supertype
+# https://media.wizards.com/2023/downloads/MagicComp%20Rules%2020230203.txt, from https://magic.wizards.com/en/rules
+
+# Rule 205.4a
 SUPERTYPE = Literal["Basic", "Legendary", "Snow", "World", "Host"]
 
+# Rule 205.2a
 TYPE = Literal["Land", "Creature", "Artifact", "Enchantment", "Planeswalker", "Instant", "Sorcery", "Tribal"]
 
+# Rule 205.3i
 LAND_SUBTYPE = Literal[
     "Plains", "Island", "Swamp", "Mountain", "Forest",
     "Desert", "Gate", "Lair", "Locus", "Sphere",
     "Urza's", "Mine", "Power-Plant", "Tower"
 ]
 
+# Rule 205.3m
 CREATURE_SUBTYPE = Literal[
      "Advisor", "Aetherborn", "Ally", "Angel", "Antelope", "Ape", "Archer", "Archon", "Army",
      "Artificer", "Assassin", "Assembly-Worker", "Atog", "Aurochs", "Avatar", "Azra", "Badger",
@@ -56,15 +62,18 @@ CREATURE_SUBTYPE = Literal[
      "Wizard", "Wolf", "Wolverine", "Wombat", "Worm", "Wraith", "Wurm", "Yeti", "Zombie", "Zubera"
 ]
 
+# Rule 205.3g
 ARTIFACT_SUBTYPE = Literal[
     "Blood", "Clue", "Contraption", "Equipment", "Food",
     "Gold", "Fortification", "Powerstone", "Treasure", "Vehicle"
 ]
 
+# Rule 205.3h
 ENCHANTMENT_SUBTYPE = Literal[
     "Aura", "Cartouche", "Curse", "Rune", "Background", "Class", "Saga", "Shard", "Shrine"
 ]
 
+# Rule 205.3j
 PLANESWALKER_SUBTYPE = Literal[
     "Ajani", "Aminatou", "Angrath", "Arlinn", "Ashiok", "Bahamut", "Basri", "Bolas", "Calix",
     "Chandra", "Dack", "Dakkon", "Daretti", "Davriel", "Dihada", "Domri", "Dovin", "Ellywick",
@@ -76,8 +85,10 @@ PLANESWALKER_SUBTYPE = Literal[
     "Wrenn", "Xenagos", "Yanggu", "Yanling", "Zariel"
 ]
 
+# Rule 205.3k
 INSTANT_SUBTYPE = Literal["Adventure", "Arcane", "Trap"]
 
+# Rule 205.3k
 SORCERY_SUBTYPE = Literal["Adventure", "Arcane", "Lesson"]
 
 SUBTYPE = Union[LAND_SUBTYPE, CREATURE_SUBTYPE, ARTIFACT_SUBTYPE, ENCHANTMENT_SUBTYPE,
