@@ -14,7 +14,7 @@ from os import path
 
 from core.wubrg import COLOR
 from core.utilities import flatten_lists, logging
-from core.data_requesting import Request17Lands
+from core.data_requesting import Request17Lands, BASE_17L_URL
 
 from core.game_metadata.utils import RANKS, new_color_count_dict
 from core.game_metadata.game_objects.Card import CardManager, Card, decklist_sort_lambda
@@ -27,7 +27,13 @@ card_line = re.compile(r"^([0-9]{0,3}) ?([^(\n]*)(?: |$)(\(\w{3}\))? ?(\d{1,3})?
 
 
 class TrophyStub:
-    # TODO: See if this can be folded into LimitedDeck with any ease.
+    DECK_ID: str
+    colors: str
+    deck_idx: int
+    start_rank: str
+    end_rank: str
+    rank: str
+    time: datetime
 
     @classmethod
     def parse_simple_rank(cls, rank_1: Optional[str], rank_2: Optional[str]) -> str:
@@ -51,7 +57,7 @@ class TrophyStub:
 
     def __init__(self, results):
         self.DECK_ID: str = results['aggregate_id']
-        self._DECK: Optional[LimitedDeck] = None
+        self.colors: str = results['colors']
         self.deck_idx: int = results['deck_index']
         self.start_rank: str = results['start_rank']
         self.end_rank: str = results['end_rank']
@@ -61,17 +67,29 @@ class TrophyStub:
     @property
     def deck(self) -> LimitedDeck:
         """ The deck associated with the draft. """
-        if self._DECK is None:
-            self._DECK = LimitedDeck.from_id(self.DECK_ID)
-            self._DECK.trophy_stub = self
-        return self._DECK
+        return LimitedDeck.from_id(self.DECK_ID)
+
+    @property
+    def details_link(self) -> str:
+        """ A link to the details page of the deck on 17Lands"""
+        return f"{BASE_17L_URL}/details/{self.DECK_ID}"
+
+    @property
+    def draft_link(self) -> str:
+        """ A link to the draft log on 17Lands """
+        return f"{BASE_17L_URL}/draft/{self.DECK_ID}"
+
+    @property
+    def deck_link(self) -> str:
+        """ A link to the 17Lands deck page """
+        return f"{BASE_17L_URL}/deck/{self.DECK_ID}/{self.deck_idx}"
 
     def __str__(self):
         # TODO: Improve this with colour information and similar.
         return f"{self.DECK_ID}"
 
     def __repr__(self):
-        return self.__str__()
+        return f"{self.rank} ({self.colors}) {self}"
 
 
 class Deck:
@@ -129,9 +147,6 @@ class Deck:
         maindeck = [CardManager.from_name(name) for name in flatten_lists(pre_maindeck)]
         sideboard = [CardManager.from_name(name) for name in flatten_lists(pre_sideboard)]
 
-        print(maindeck)
-        print(sideboard)
-
         maindeck = sorted(maindeck, key=decklist_sort_lambda)
         sideboard = sorted(sideboard, key=decklist_sort_lambda)
         return maindeck, sideboard
@@ -154,13 +169,9 @@ class Deck:
 
     # noinspection PyUnreachableCode
     @classmethod
-    def parse_decklist_from_url(cls, url: str) -> tuple[list[Card], list[Card]]:
-        raise NotImplementedError()
+    def parse_decklist_from_17_lands_id(cls, deck_id: str, deck_num: int = 0) -> tuple[list[Card], list[Card]]:
         requester = Request17Lands()
-        # TODO: Handle urls without '/#'.
-        _id, _deck = re.match("https://www.17lands.com/deck/(.*)/(.*)", url).groups()
-        # _id, _deck = re.match("https://www.17lands.com/data/deck?draft_id=(.*)&deck_index=(.*)", url).groups()
-        data = requester.get_deck(_id, _deck)['groups']
+        data = requester.get_deck(deck_id, deck_num)['groups']
         deck = ["Deck"] + [d['name'] for d in data[0]['cards']]
         sideboard = ["Sideboard"] + [d['name'] for d in data[1]['cards']]
         decklist = deck + [''] + sideboard
@@ -200,11 +211,10 @@ class Deck:
         return Deck(maindeck, sideboard, name, wins, losses)
 
     @classmethod
-    def from_url(cls, url: str, name: Optional[str], wins: int = 0, losses: int = 0) -> Deck:
-        maindeck, sideboard = Deck.parse_decklist_from_url(url)
+    def from_17_lands_id(cls, deck_id: str, deck_num: int, name: Optional[str], wins: int = 0, losses: int = 0) -> Deck:
+        maindeck, sideboard = Deck.parse_decklist_from_17_lands_id(deck_id, deck_num)
         return Deck(maindeck, sideboard, name, wins, losses)
 
-    # region Pip Calculations
     @classmethod
     def _gen_card_dict(cls, card_list: list[Card]) -> dict[Card, int]:
         card_dict = dict()
@@ -214,44 +224,40 @@ class Deck:
             card_dict[card] += 1
         return card_dict
 
-    def _get_produced_mana(self) -> dict[COLOR, int]:
-        d = new_color_count_dict()
-        for card in self.cardpool:
-            for mana in card.DEFAULT_FACE.MANA_PRODUCED:
-                d[mana] += 1
-        return d
-
-    @property
-    def produced_mana(self) -> Optional[dict[COLOR, int]]:
-        if self._produced_mana is None:
-            self._produced_mana = self._get_produced_mana()
-        return self._produced_mana
-
-    def _get_casting_pips(self) -> dict[COLOR, int]:
-        d = new_color_count_dict()
-        for card in self.cardpool:
-            for mana in card.DEFAULT_FACE.MANA_COST:
-                d[mana] += 1
-        return d
-
-    @property
-    def casting_pips(self) -> Optional[dict[COLOR, int]]:
-        if self._casting_pips is None:
-            self._casting_pips = self._get_casting_pips()
-        return self._casting_pips
-
-    def _get_all_pips(self) -> dict[COLOR, int]:
-        d = new_color_count_dict()
-        for card in self.cardpool:
-            for mana in card.DEFAULT_FACE.MANA_PRODUCED:
-                d[mana] += 1
-        return d
-
-    @property
-    def all_pips(self) -> Optional[dict[COLOR, int]]:
-        if self._all_pips is None:
-            self._all_pips = self._get_all_pips()
-        return self._all_pips
+    # region Pip Calculations
+    #def _get_produced_mana(self) -> dict[COLOR, int]:
+    #    d = new_color_count_dict()
+    #    for card in self.cardpool:
+    #        for mana in card.DEFAULT_FACE.MANA_PRODUCED:
+    #            d[mana] += 1
+    #    return d   #
+    #@property
+    #def produced_mana(self) -> Optional[dict[COLOR, int]]:
+    #    if self._produced_mana is None:
+    #        self._produced_mana = self._get_produced_mana()
+    #    return self._produced_mana #
+    #def _get_casting_pips(self) -> dict[COLOR, int]:
+    #    d = new_color_count_dict()
+    #    for card in self.cardpool:
+    #        for mana in card.DEFAULT_FACE.MANA_COST:
+    #            d[mana] += 1
+    #    return d   #
+    #@property
+    #def casting_pips(self) -> Optional[dict[COLOR, int]]:
+    #    if self._casting_pips is None:
+    #        self._casting_pips = self._get_casting_pips()
+    #    return self._casting_pips  #
+    #def _get_all_pips(self) -> dict[COLOR, int]:
+    #    d = new_color_count_dict()
+    #    for card in self.cardpool:
+    #        for mana in card.DEFAULT_FACE.MANA_PRODUCED:
+    #            d[mana] += 1
+    #    return d   #
+    #@property
+    #def all_pips(self) -> Optional[dict[COLOR, int]]:
+    #    if self._all_pips is None:
+    #        self._all_pips = self._get_all_pips()
+    #    return self._all_pips
     # endregion Pip Calculations
 
     # region Basic Deck Properties
@@ -356,8 +362,6 @@ class Deck:
 
 
 class LimitedDeck(Deck):
-    URL_ROOT = "https://www.17lands.com"
-
     @classmethod
     def from_id(cls, deck_id: str) -> LimitedDeck:
         return DeckManager.from_deck_id(deck_id)
@@ -384,7 +388,6 @@ class LimitedDeck(Deck):
         self.deck_builds: int = len(event_info['deck_links'])
         self.selected_build: int = self.deck_builds - 1
         self._draft: Optional[Draft] = None
-        self.trophy_stub: Optional[TrophyStub] = None
 
     @property
     def draft(self) -> Draft.Draft:
@@ -415,36 +418,29 @@ class LimitedDeck(Deck):
           eg. 'Phyrexian Metamorph' should be U only if blue exists elsewhere in the deck.
         """
 
-        raise NotImplementedError()
-
-        return ""  # pragma: nocover
+        raise NotImplementedError()  # pragma: nocover
 
     @property
     def is_valid(self) -> bool:
         """ If the deck is valid for organized play. """
         return len(self.maindeck) >= 40
 
-    @property
-    def has_trophy_stub(self) -> bool:
-        """ If the deck has an associate Trophy Stub. """
-        return self.trophy_stub is not None
-
     # region Link Properties
     # Properties that have a single link regardless of different deck builds.
     @property
     def details_link(self) -> str:
         """ A link to the details page of the deck on 17Lands"""
-        return f"{self.URL_ROOT}/details/{self.DECK_ID}"
+        return f"{BASE_17L_URL}/details/{self.DECK_ID}"
 
     @property
     def pool_link(self) -> str:
         """ A link to the card pool on 17Lands """
-        return f"{self.URL_ROOT}/pool/{self.DECK_ID}"
+        return f"{BASE_17L_URL}/pool/{self.DECK_ID}"
 
     @property
     def draft_link(self) -> str:
         """ A link to the draft log on 17Lands """
-        return f"{self.URL_ROOT}/draft/{self.DECK_ID}"
+        return f"{BASE_17L_URL}/draft/{self.DECK_ID}"
 
     # Properties that can have multiple links based on different deck builds.
     @property
@@ -455,12 +451,12 @@ class LimitedDeck(Deck):
     @property
     def deck_link(self) -> str:
         """ A link to the 17Lands deck page """
-        return f"{self.URL_ROOT}/deck/{self.DECK_ID}/{self.selected_build}"
+        return f"{BASE_17L_URL}/deck/{self.DECK_ID}/{self.selected_build}"
 
     @property
     def text_link(self) -> str:
         """ A link to a text version of the deck """
-        return f"{self.URL_ROOT}/deck/{self.DECK_ID}/{self.selected_build}.txt"
+        return f"{BASE_17L_URL}/deck/{self.DECK_ID}/{self.selected_build}.txt"
     # endregion Link Properties
 
 
@@ -475,9 +471,7 @@ class ConstructedDeck(Deck):
         """ Returns the colours of the deck, based on cards played and mana produced."""
         # TODO: Come up with clever way to get the colors of the card_pool.
         #  This should be based on Casting Cost, Color Identity, and the Manabase.
-        raise NotImplementedError()
-
-        return ""  # pragma: nocover
+        raise NotImplementedError()  # pragma: nocover
 
     @property
     def is_valid(self) -> bool:
