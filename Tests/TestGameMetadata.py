@@ -131,7 +131,7 @@ class TestFormatMetadata(unittest.TestCase):
         form = FormatMetadata.get_metadata('NEO', 'PremierDraft')
         active = form.get_active_days()
         start = date(2022, 2, 10)
-        end = date(2022, 4, 28)
+        end = date(2023, 2, 7)
 
         self.assertEqual(active[0], start)
         self.assertEqual(active[-1], end)

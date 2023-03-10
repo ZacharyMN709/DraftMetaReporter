@@ -83,7 +83,7 @@ class Draft:
         return self._FORMAT
 
     def __str__(self):
-        return f"Draft: {self.DRAFT_ID} ({self.FORMAT}{self.SET})"
+        return f"Draft {self.SET}-{self.FORMAT}: {self.DRAFT_ID}"
 
     def __repr__(self):
         return self.__str__()

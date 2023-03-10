@@ -73,8 +73,8 @@ class Request17Lands(Requester):
 
         result = self.get_json_response(url=COLOR_RATING_17L_URL, params=params)
 
-        # If the result is an empty list, no trophy decks were found, so return None instead.
-        if len(result) == 0:
+        # If the result is the default list, no data was found, so return None instead.
+        if len(result) == 1:
             return None
 
         return result
@@ -129,6 +129,7 @@ class Request17Lands(Requester):
         """
 
         # TODO: The data returned from this is weirdly duplicated. Check on that with 17Lands.
+        # NOTE: This request doesn't handle large time spans well. Use with caution.
         # Handle parameters, and package them into a dict to be used for the url.
         event_type = event_type or DEFAULT_FORMAT
         start_date = start_date or DEFAULT_DATE

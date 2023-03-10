@@ -108,7 +108,6 @@ class Requester:
         except JSONDecodeError:
             logging.error(f'Failed to parse JSON for url: {url}')
             logging.error(response)
-            logging.error(response.content)
             return None
 
     # TODO: Handle pagination more generically, instead of relying on JSON to exist.
@@ -174,6 +173,5 @@ class Requester:
                 # If we fail to parse a response, log an error and return None.
                 logging.error(f'Failed to parse JSON for url: {url}')
                 logging.error(response)
-                logging.error(response.content)
                 return None
         return ret

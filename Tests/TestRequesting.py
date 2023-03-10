@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 import unittest
 import json
@@ -261,6 +262,9 @@ class TestRequestRequest17Lands(unittest.TestCase):
         self.assertIsInstance(color_ratings[0]['wins'], int)
         self.assertIsInstance(color_ratings[0]['games'], int)
 
+        color_ratings = self.REQUESTER.get_color_ratings('DUMMY')
+        self.assertIsNone(color_ratings)
+
     def test_get_card_ratings(self):
         # Validate the key parts of the structure, to make sure that changes in it haven't occurred.
         #  We don't check any of the stats, as those are liable to change. Simply check that the number of cards in the
@@ -288,10 +292,13 @@ class TestRequestRequest17Lands(unittest.TestCase):
         self.assertEqual(len(card_ratings), 265)
         self.assertEqual(card_ratings[0]['name'], 'Vorinclex, Monstrous Raider')
 
+        card_ratings = self.REQUESTER.get_card_ratings('DUMMY')
+        self.assertIsNone(card_ratings)
+
     def test_get_card_evaluations(self):
         # Validate the key parts of the structure, to make sure that changes in it haven't occurred.
         #  Card images are contained in the data, but we ignore them, so they aren't checked.
-        card_evaluations = self.REQUESTER.get_card_evaluations('ONE')
+        card_evaluations = self.REQUESTER.get_card_evaluations('ONE', start_date=datetime.date(2022, 11, 9))
         self.assertIsInstance(card_evaluations, dict)
         self.assertIsInstance(card_evaluations['cards'], list)
         self.assertIsInstance(card_evaluations['dates'], list)

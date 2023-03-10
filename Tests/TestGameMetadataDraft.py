@@ -1,7 +1,6 @@
 import unittest
 
 from core.utilities import load_json_file
-from core.utilities.auto_logging import auto_log, LogLvl
 from core.game_metadata.game_objects.Card import Card, CardManager
 from core.game_metadata.game_objects.Draft import Draft, Pick, DraftManager
 
@@ -10,7 +9,6 @@ from Tests.settings import _tries, _success_delay, _fail_delay
 
 class TestBaseDraft(unittest.TestCase):
     def setUp(self) -> None:
-        auto_log(LogLvl.DEBUG)
         CardManager.REQUESTER._TRIES = _tries
         CardManager.REQUESTER._SUCCESS_DELAY = _success_delay
         CardManager.REQUESTER._FAIL_DELAY = _fail_delay
@@ -29,7 +27,8 @@ class TestBaseDraft(unittest.TestCase):
         self.assertListEqual(list(), pick.cards_missing)
         self.assertEqual(14, len(pick.cards_available))
         self.assertEqual(Card.from_name("Llanowar Greenwidow"), pick.card_picked)
-        self.assertEqual(str(pick), "P1P1: Llanowar Greenwidow")
+        self.assertEqual("P1P1: Llanowar Greenwidow", pick.__str__())
+        self.assertEqual("P1P1: Llanowar Greenwidow", pick.__repr__())
 
     def eval_draft(self, draft):
         self.assertEqual('0bea16f8b69c4ea1887d8bf15ed69f62', draft.DRAFT_ID)
@@ -37,6 +36,8 @@ class TestBaseDraft(unittest.TestCase):
         self.assertEqual(14, draft.pack_size)
         self.assertEqual('PremierDraft', draft.FORMAT)
         self.assertEqual('0bea16f8b69c4ea1887d8bf15ed69f62', draft.deck.DECK_ID)
+        self.assertEqual("Draft DMU-PremierDraft: 0bea16f8b69c4ea1887d8bf15ed69f62", draft.__str__())
+        self.assertEqual("Draft DMU-PremierDraft: 0bea16f8b69c4ea1887d8bf15ed69f62", draft.__repr__())
         TestPick.eval_pick(self, draft.picks[0])
 
 
