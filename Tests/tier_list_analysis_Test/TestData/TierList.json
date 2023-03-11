@@ -1,0 +1,5584 @@
+[
+    {
+        "card_id": 13293,
+        "name": "Karn, Living Legacy",
+        "url": "https://cards.scryfall.io/border_crop/front/e/8/e83b1b87-01d5-4624-8a2b-4b771e13e59c.jpg?1663046824",
+        "url_back": "",
+        "rarity": "M",
+        "color": "C",
+        "tier": "D+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "planeswalker",
+            "legendary",
+            "karn"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13255,
+        "name": "Charismatic Vanguard",
+        "url": "https://cards.scryfall.io/border_crop/front/a/5/a51764fe-0d75-4cfa-a699-0d9e7ffb7843.jpg?1663047011",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "D+",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "soldier",
+            "creature",
+            "dwarf"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13460,
+        "name": "Phyrexian Vivisector",
+        "url": "https://cards.scryfall.io/border_crop/front/6/5/65617a8f-4bd8-4edb-b5ec-e20b4482390b.jpg?1663048921",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "creature",
+            "phyrexian",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13253,
+        "name": "Phyrexian Warhorse",
+        "url": "https://cards.scryfall.io/border_crop/front/f/4/f42167ef-7858-4c66-b1bc-41c3288a8ee8.jpg?1663048940",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "creature",
+            "phyrexian",
+            "horse"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13291,
+        "name": "Pilfer",
+        "url": "https://cards.scryfall.io/border_crop/front/6/d/6d872c10-4126-4130-a74a-1331ed418ca8.jpg?1663048961",
+        "url_back": "",
+        "rarity": "U",
+        "color": "B",
+        "tier": "C-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13227,
+        "name": "The Raven Man",
+        "url": "https://cards.scryfall.io/border_crop/front/6/e/6e761fb2-ae4f-4d72-a142-f7e9bd681303.jpg?1663048983",
+        "url_back": "",
+        "rarity": "R",
+        "color": "B",
+        "tier": "C+",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "legendary",
+            "creature",
+            "wizard",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13243,
+        "name": "Sengir Connoisseur",
+        "url": "https://cards.scryfall.io/border_crop/front/7/c/7c9231f0-7733-46d9-b9c6-c6c5b7fe65dd.jpg?1663049003",
+        "url_back": "",
+        "rarity": "U",
+        "color": "B",
+        "tier": "D",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "vampire",
+            "creature"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13452,
+        "name": "Shadow Prophecy",
+        "url": "https://cards.scryfall.io/border_crop/front/b/b/bb078448-9e9f-4994-8aff-7e7c4fb62efc.jpg?1663049022",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C-",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13410,
+        "name": "Shadow-Rite Priest",
+        "url": "https://cards.scryfall.io/border_crop/front/c/9/c9e43116-a489-4557-a47f-623d915a2b79.jpg?1663049046",
+        "url_back": "",
+        "rarity": "R",
+        "color": "B",
+        "tier": "C+",
+        "sort_key": 2,
+        "comment": "I assume there are like 3 or 4 decent clerics below rare",
+        "types": [
+            "creature",
+            "human",
+            "cleric"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": true,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13381,
+        "name": "Sheoldred, the Apocalypse",
+        "url": "https://cards.scryfall.io/border_crop/front/d/6/d67be074-cdd4-41d9-ac89-0a0456c4e4b2.jpg?1663790204",
+        "url_back": "",
+        "rarity": "M",
+        "color": "B",
+        "tier": "B+",
+        "sort_key": 1,
+        "comment": "boring but powerful",
+        "types": [
+            "legendary",
+            "praetor",
+            "creature",
+            "phyrexian"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13336,
+        "name": "Sheoldred's Restoration",
+        "url": "https://cards.scryfall.io/border_crop/front/e/d/ed719f25-1aab-4a1e-8c9f-dd574db5de0c.jpg?1663049085",
+        "url_back": "",
+        "rarity": "U",
+        "color": "B",
+        "tier": "D+",
+        "sort_key": 0,
+        "comment": "my hot take is that this card sucks ass. zombify is not that impressive, zombify that dings you life if you spend less than 7 on it is bad imo",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13447,
+        "name": "Splatter Goblin",
+        "url": "https://cards.scryfall.io/border_crop/front/5/0/5045027d-0ff4-484c-b4cb-e0b61885d428.jpg?1663049109",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C",
+        "sort_key": 3,
+        "comment": "2 drop trade up. sure whatever",
+        "types": [
+            "goblin",
+            "creature",
+            "phyrexian"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13277,
+        "name": "Citizen's Arrest",
+        "url": "https://cards.scryfall.io/border_crop/front/9/8/9806370b-51e3-4144-a847-6b367fb937ef.jpg?1663047030",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "C+",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "enchantment"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13334,
+        "name": "Stronghold Arena",
+        "url": "https://cards.scryfall.io/border_crop/front/f/b/fb64b0a7-3e9a-490f-bf02-c62fc8cf750d.jpg?1663049134",
+        "url_back": "",
+        "rarity": "R",
+        "color": "B",
+        "tier": "D",
+        "sort_key": 1,
+        "comment": "nah",
+        "types": [
+            "enchantment"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13387,
+        "name": "Tattered Apparition",
+        "url": "https://cards.scryfall.io/border_crop/front/0/3/0368e91c-31ee-4b81-a361-30a4555b1a42.jpg?1663049151",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "D+",
+        "sort_key": 3,
+        "comment": "4 mana 2/2 flyer is bad",
+        "types": [
+            "creature",
+            "shade"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13346,
+        "name": "Toxic Abomination",
+        "url": "https://cards.scryfall.io/border_crop/front/f/4/f435329e-6de7-4b05-ba70-cb63d121116e.jpg?1663049175",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "zombie",
+            "creature",
+            "phyrexian"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13329,
+        "name": "Tribute to Urborg",
+        "url": "https://cards.scryfall.io/border_crop/front/3/1/31274707-3e16-4f46-8450-6927d936064b.jpg?1663049196",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C",
+        "sort_key": 5,
+        "comment": "I don't know this seems fine. 4 mana kill a thing is also available at common",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13250,
+        "name": "Urborg Repossession",
+        "url": "https://cards.scryfall.io/border_crop/front/e/c/ecb8dab0-ecce-4321-b382-c58b296c2fd3.jpg?1663049215",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C+",
+        "sort_key": 5,
+        "comment": "if midrange grind is a thing that works in this format this seems really good",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13335,
+        "name": "Writhing Necromass",
+        "url": "https://cards.scryfall.io/border_crop/front/a/1/a166abef-f068-47e9-8a65-43ebf4b015bd.jpg?1663049238",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C-",
+        "sort_key": 4,
+        "comment": "WRITHE",
+        "types": [
+            "zombie",
+            "creature",
+            "giant"
+        ],
+        "cmc": 7.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13368,
+        "name": "Balduvian Berserker",
+        "url": "https://cards.scryfall.io/border_crop/front/c/3/c35bab2f-8464-4968-8c50-8807638d687b.jpg?1663049257",
+        "url_back": "",
+        "rarity": "U",
+        "color": "R",
+        "tier": "C-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "berserker",
+            "creature",
+            "kor"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13343,
+        "name": "Chaotic Transformation",
+        "url": "https://cards.scryfall.io/border_crop/front/b/d/bdfb44f1-e366-437a-bde3-59bfdb362864.jpg?1663049281",
+        "url_back": "",
+        "rarity": "R",
+        "color": "R",
+        "tier": "D",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 6.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13440,
+        "name": "Coalition Warbrute",
+        "url": "https://cards.scryfall.io/border_crop/front/5/5/554c422f-2a1b-47c0-9358-42b85cdbb84e.jpg?1663049305",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "C",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "berserker",
+            "creature",
+            "minotaur"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13393,
+        "name": "Defiler of Instinct",
+        "url": "https://cards.scryfall.io/border_crop/front/0/e/0e76e0cc-caff-4b15-b550-39e2324c8c95.jpg?1663049325",
+        "url_back": "",
+        "rarity": "R",
+        "color": "R",
+        "tier": "A-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "kavu",
+            "creature",
+            "phyrexian"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13378,
+        "name": "Cleaving Skyrider",
+        "url": "https://cards.scryfall.io/border_crop/front/6/5/6544a289-3b27-4980-8ed7-22f50ae92c1a.jpg?1663047046",
+        "url_back": "",
+        "rarity": "U",
+        "color": "W",
+        "tier": "C+",
+        "sort_key": 6,
+        "comment": "",
+        "types": [
+            "warrior",
+            "creature",
+            "human"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13394,
+        "name": "Dragon Whelp",
+        "url": "https://cards.scryfall.io/border_crop/front/d/1/d13d40b9-319b-4630-a5cd-228ff2f24367.jpg?1663049343",
+        "url_back": "",
+        "rarity": "U",
+        "color": "R",
+        "tier": "C+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "dragon",
+            "creature"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13330,
+        "name": "The Elder Dragon War",
+        "url": "https://cards.scryfall.io/border_crop/front/0/c/0c52c7d4-a350-4518-8c9a-72cf7b14603d.jpg?1663049365",
+        "url_back": "",
+        "rarity": "R",
+        "color": "R",
+        "tier": "A-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "enchantment",
+            "saga"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13312,
+        "name": "Electrostatic Infantry",
+        "url": "https://cards.scryfall.io/border_crop/front/5/e/5ed2d72f-f1cf-45a7-adf7-969f531721ce.jpg?1663049388",
+        "url_back": "",
+        "rarity": "U",
+        "color": "R",
+        "tier": "C+",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "creature",
+            "wizard",
+            "dwarf"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13285,
+        "name": "Fires of Victory",
+        "url": "https://cards.scryfall.io/border_crop/front/c/5/c58096e5-3cd4-4edd-b71a-3bdb47ab2536.jpg?1663049412",
+        "url_back": "",
+        "rarity": "U",
+        "color": "R",
+        "tier": "C+",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13430,
+        "name": "Flowstone Infusion",
+        "url": "https://cards.scryfall.io/border_crop/front/b/5/b57c3674-9a31-4418-b306-e6b0a2514d8f.jpg?1663049432",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "C+",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13458,
+        "name": "Flowstone Kavu",
+        "url": "https://cards.scryfall.io/border_crop/front/7/3/73e40916-3502-448a-a509-f6a6ff3cd73d.jpg?1663049458",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "C-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "kavu",
+            "creature"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13469,
+        "name": "Furious Bellow",
+        "url": "https://cards.scryfall.io/border_crop/front/6/3/63d05659-bfff-4b73-80f7-a9f31a7ef957.jpg?1663049477",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "D+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13438,
+        "name": "Ghitu Amplifier",
+        "url": "https://cards.scryfall.io/border_crop/front/b/1/b1845806-7585-40d5-9d3a-f13667e6a9d2.jpg?1663049495",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "B-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "creature",
+            "wizard",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13420,
+        "name": "Goblin Picker",
+        "url": "https://cards.scryfall.io/border_crop/front/6/d/6d8f1f06-dde5-41f2-923c-67d1d4d13fab.jpg?1663049518",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "C-",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "goblin",
+            "creature"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13454,
+        "name": "Hammerhand",
+        "url": "https://cards.scryfall.io/border_crop/front/8/d/8d858e9e-452b-4281-9379-641ef6ebef39.jpg?1663049535",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "C",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "enchantment",
+            "aura"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13443,
+        "name": "Clockwork Drawbridge",
+        "url": "https://cards.scryfall.io/border_crop/front/0/3/037cb79c-163d-4b36-bd93-954eca8fe26e.jpg?1663047064",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "D",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "creature",
+            "artifact",
+            "wall"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": true
+        }
+    },
+    {
+        "card_id": 13360,
+        "name": "Hurler Cyclops",
+        "url": "https://cards.scryfall.io/border_crop/front/b/1/b16f2cf2-5908-4f49-9c5c-6c9e22a65a4d.jpg?1663049552",
+        "url_back": "",
+        "rarity": "U",
+        "color": "R",
+        "tier": "C",
+        "sort_key": 5,
+        "comment": "this could be a decent curve topper/finisher in RW",
+        "types": [
+            "cyclops",
+            "creature"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13316,
+        "name": "Hurloon Battle Hymn",
+        "url": "https://cards.scryfall.io/border_crop/front/f/f/ff252e80-c155-467b-8df3-9bddc5cc45c3.jpg?1663049574",
+        "url_back": "",
+        "rarity": "U",
+        "color": "R",
+        "tier": "B",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13417,
+        "name": "In Thrall to the Pit",
+        "url": "https://cards.scryfall.io/border_crop/front/0/f/0f33284f-bdb1-4982-8636-8f2e12896053.jpg?1663049593",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "D+",
+        "sort_key": 1,
+        "comment": "I love the pit, but I do not love this card. it might actually be interesting as top end in domain",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13392,
+        "name": "Jaya, Fiery Negotiator",
+        "url": "https://cards.scryfall.io/border_crop/front/3/b/3b9f54f0-4368-4d28-aa21-3f1e7be1b23a.jpg?1663049614",
+        "url_back": "",
+        "rarity": "M",
+        "color": "R",
+        "tier": "A",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "planeswalker",
+            "legendary",
+            "jaya"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13289,
+        "name": "Jaya's Firenado",
+        "url": "https://cards.scryfall.io/border_crop/front/4/b/4b78eaab-819c-4f06-b3b1-a25c17ab2235.jpg?1663049635",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "D",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13300,
+        "name": "Keldon Flamesage",
+        "url": "https://cards.scryfall.io/border_crop/front/7/1/710d2a3c-63a7-4e33-9ae3-21fb6b3d8326.jpg?1663049656",
+        "url_back": "",
+        "rarity": "R",
+        "color": "R",
+        "tier": "B",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "creature",
+            "shaman",
+            "human"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13439,
+        "name": "Keldon Strike Team",
+        "url": "https://cards.scryfall.io/border_crop/front/4/a/4af4031e-b14e-4568-b047-b3d470d9b18e.jpg?1663049678",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "C+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "warrior",
+            "creature",
+            "human"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13223,
+        "name": "Lightning Strike",
+        "url": "https://cards.scryfall.io/border_crop/front/7/d/7d541125-bfb8-4f88-8bf3-ad7b6af7ad1d.jpg?1663049695",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "B+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13416,
+        "name": "Meria's Outrider",
+        "url": "https://cards.scryfall.io/border_crop/front/4/8/48aa964f-99b5-4b6b-b158-42f39514c910.jpg?1663151045",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "C-",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "elf",
+            "creature",
+            "archer"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13234,
+        "name": "Molten Monstrosity",
+        "url": "https://cards.scryfall.io/border_crop/front/2/4/240957e5-ab0a-443f-92de-ae999b08c44f.jpg?1663049743",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "D",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "creature",
+            "hellion"
+        ],
+        "cmc": 8.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13322,
+        "name": "Coalition Skyknight",
+        "url": "https://cards.scryfall.io/border_crop/front/8/b/8b12da45-aff4-406d-83a3-39ecaff6ff56.jpg?1663047089",
+        "url_back": "",
+        "rarity": "U",
+        "color": "W",
+        "tier": "D",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "knight",
+            "creature",
+            "human"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13215,
+        "name": "Phoenix Chick",
+        "url": "https://cards.scryfall.io/border_crop/front/7/6/76bdc912-61da-428d-b0d7-3a38676a402a.jpg?1663049765",
+        "url_back": "",
+        "rarity": "U",
+        "color": "R",
+        "tier": "C+",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "creature",
+            "phoenix"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13238,
+        "name": "Radha's Firebrand",
+        "url": "https://cards.scryfall.io/border_crop/front/a/e/ae8a90c4-4a79-49e7-9fab-076b35d28adb.jpg?1663049783",
+        "url_back": "",
+        "rarity": "R",
+        "color": "R",
+        "tier": "B",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "warrior",
+            "creature",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13384,
+        "name": "Rundvelt Hordemaster",
+        "url": "https://cards.scryfall.io/border_crop/front/f/f/ffee9dbe-af90-4e19-844d-4df1180f24c4.jpg?1663049804",
+        "url_back": "",
+        "rarity": "R",
+        "color": "R",
+        "tier": "D+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "goblin",
+            "creature",
+            "warrior"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13372,
+        "name": "Shivan Devastator",
+        "url": "https://cards.scryfall.io/border_crop/front/1/f/1f5d274c-3a03-4f0d-97e8-7eef6508105d.jpg?1663049827",
+        "url_back": "",
+        "rarity": "M",
+        "color": "R",
+        "tier": "B",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "dragon",
+            "hydra",
+            "creature"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13244,
+        "name": "Smash to Dust",
+        "url": "https://cards.scryfall.io/border_crop/front/7/4/747881c7-3788-4dd6-b78d-b2a5ded20e14.jpg?1663049851",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "SB",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13213,
+        "name": "Sprouting Goblin",
+        "url": "https://cards.scryfall.io/border_crop/front/6/0/602f5370-d096-4765-b612-16bcec3aafa7.jpg?1663049875",
+        "url_back": "",
+        "rarity": "U",
+        "color": "R",
+        "tier": "B",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "druid",
+            "goblin",
+            "creature"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13280,
+        "name": "Squee, Dubious Monarch",
+        "url": "https://cards.scryfall.io/border_crop/front/3/c/3cd907ed-9c68-4bd6-af92-6244909fdf8b.jpg?1663049901",
+        "url_back": "",
+        "rarity": "R",
+        "color": "R",
+        "tier": "B+",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "noble",
+            "legendary",
+            "goblin",
+            "creature"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13364,
+        "name": "Temporal Firestorm",
+        "url": "https://cards.scryfall.io/border_crop/front/9/d/9d690340-75f1-4733-bde5-2d60fd02f060.jpg?1663049947",
+        "url_back": "",
+        "rarity": "R",
+        "color": "R",
+        "tier": "A-",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13256,
+        "name": "Thrill of Possibility",
+        "url": "https://cards.scryfall.io/border_crop/front/2/5/25e5dc88-9573-4eaa-bd37-eb0dee4add03.jpg?1663049971",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "C",
+        "sort_key": 3,
+        "comment": "UR probably plays the first one of these most of the time",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": true
+        }
+    },
+    {
+        "card_id": 13358,
+        "name": "Twinferno",
+        "url": "https://cards.scryfall.io/border_crop/front/b/c/bc531409-26cb-4c58-ba69-f39dd8aee3d1.jpg?1663049992",
+        "url_back": "",
+        "rarity": "U",
+        "color": "R",
+        "tier": "D+",
+        "sort_key": 3,
+        "comment": "this could be playable in UR",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13240,
+        "name": "Danitha, Benalia's Hope",
+        "url": "https://cards.scryfall.io/border_crop/front/8/4/845e5663-2959-44ae-b4c6-d6ea41f01d6e.jpg?1663047109",
+        "url_back": "",
+        "rarity": "R",
+        "color": "W",
+        "tier": "A-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "knight",
+            "legendary",
+            "creature",
+            "human"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13306,
+        "name": "Viashino Branchrider",
+        "url": "https://cards.scryfall.io/border_crop/front/1/f/1f08749e-05e0-4fb4-a4ae-35e7187584ab.jpg?1663050010",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "C",
+        "sort_key": 2,
+        "comment": "honestly this seems ok to me\n",
+        "types": [
+            "viashino",
+            "creature",
+            "warrior"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13274,
+        "name": "Warhost's Frenzy",
+        "url": "https://cards.scryfall.io/border_crop/front/a/8/a83d571b-ad91-43f5-8498-115cede4867d.jpg?1663050027",
+        "url_back": "",
+        "rarity": "U",
+        "color": "R",
+        "tier": "C-",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13382,
+        "name": "Yavimaya Steelcrusher",
+        "url": "https://cards.scryfall.io/border_crop/front/2/5/25175622-7b68-4916-adf2-3bf2d82e8356.jpg?1663050049",
+        "url_back": "",
+        "rarity": "C",
+        "color": "R",
+        "tier": "C",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "warrior",
+            "creature",
+            "ape"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13333,
+        "name": "Yotia Declares War",
+        "url": "https://cards.scryfall.io/border_crop/front/3/b/3bd9e99a-ae8c-4323-aa86-b19288c877d4.jpg?1664162452",
+        "url_back": "",
+        "rarity": "U",
+        "color": "R",
+        "tier": "D",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "enchantment",
+            "saga"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13445,
+        "name": "Barkweave Crusher",
+        "url": "https://cards.scryfall.io/border_crop/front/4/1/41c62c55-7b04-4987-9047-1322c842bb59.jpg?1663050095",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "D+",
+        "sort_key": 1,
+        "comment": "!drider",
+        "types": [
+            "elemental",
+            "warrior",
+            "creature"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13442,
+        "name": "Bite Down",
+        "url": "https://cards.scryfall.io/border_crop/front/0/e/0eacd3de-b803-4322-8d88-d533761aa748.jpg?1663050118",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13212,
+        "name": "Bog Badger",
+        "url": "https://cards.scryfall.io/border_crop/front/3/d/3d31d878-9114-4205-b7a9-bb13ce6aedd2.jpg?1663050140",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C",
+        "sort_key": 3,
+        "comment": "kicker is probably the wrong color for this to be good",
+        "types": [
+            "badger",
+            "creature"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13448,
+        "name": "Broken Wings",
+        "url": "https://cards.scryfall.io/border_crop/front/0/c/0ced8d87-ac22-41b0-a632-298159cbb316.jpg?1663050159",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "SB",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13304,
+        "name": "Colossal Growth",
+        "url": "https://cards.scryfall.io/border_crop/front/d/9/d9142f35-75f4-44c7-b03c-79c4a2d43c88.jpg?1663050184",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C+",
+        "sort_key": 7,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13456,
+        "name": "Deathbloom Gardener",
+        "url": "https://cards.scryfall.io/border_crop/front/8/8/88dee3d1-0496-40ea-b208-7362a932f531.jpg?1663050207",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C+",
+        "sort_key": 6,
+        "comment": "",
+        "types": [
+            "elf",
+            "druid",
+            "creature"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13318,
+        "name": "Defiler of Faith",
+        "url": "https://cards.scryfall.io/border_crop/front/2/c/2cfe404d-1a27-4627-9284-56188d92d5d5.jpg?1663047132",
+        "url_back": "",
+        "rarity": "R",
+        "color": "W",
+        "tier": "A-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "creature",
+            "phyrexian",
+            "human"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13214,
+        "name": "Defiler of Vigor",
+        "url": "https://cards.scryfall.io/border_crop/front/0/8/0896860c-d028-4193-89a5-97e05c12a1e7.jpg?1663050225",
+        "url_back": "",
+        "rarity": "R",
+        "color": "G",
+        "tier": "A",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "creature",
+            "phyrexian",
+            "wurm"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13423,
+        "name": "Elfhame Wurm",
+        "url": "https://cards.scryfall.io/border_crop/front/e/f/ef2dc99b-083d-473e-b352-e8264353e85b.jpg?1663050243",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C+",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "creature",
+            "wurm"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13257,
+        "name": "Elvish Hydromancer",
+        "url": "https://cards.scryfall.io/border_crop/front/9/0/90dc4122-4f7a-4d9f-8427-de36e3e8a913.jpg?1663050269",
+        "url_back": "",
+        "rarity": "U",
+        "color": "G",
+        "tier": "C-",
+        "sort_key": 5,
+        "comment": "bad if unkicked, ok if kicked",
+        "types": [
+            "elf",
+            "creature",
+            "wizard"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13461,
+        "name": "Floriferous Vinewall",
+        "url": "https://cards.scryfall.io/border_crop/front/8/3/8382b7c7-762e-43f6-b285-e0cebe749fab.jpg?1663050286",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C+",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "creature",
+            "plant",
+            "wall"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13344,
+        "name": "Gaea's Might",
+        "url": "https://cards.scryfall.io/border_crop/front/8/9/89c46e9c-ae7c-466c-bb11-4f4d01ea7a63.jpg?1663050304",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C-",
+        "sort_key": 3,
+        "comment": "this seems hard to make work in limited",
+        "types": [
+            "instant"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13353,
+        "name": "Herd Migration",
+        "url": "https://cards.scryfall.io/border_crop/front/b/0/b0244a1f-e696-4223-9c14-22c2ca3cb738.jpg?1663050324",
+        "url_back": "",
+        "rarity": "R",
+        "color": "G",
+        "tier": "C+",
+        "sort_key": 1,
+        "comment": "I have no idea how to evaluate this card. I think it's probably ok, not amazing",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 7.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13462,
+        "name": "Hexbane Tortoise",
+        "url": "https://cards.scryfall.io/border_crop/front/a/c/acd5a635-bcf5-4a05-b00b-bf40322823fe.jpg?1663050342",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "D+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "turtle",
+            "creature"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13237,
+        "name": "Leaf-Crowned Visionary",
+        "url": "https://cards.scryfall.io/border_crop/front/a/a/aa7bd814-9f88-4e01-932d-07ac1abc060e.jpg?1663050362",
+        "url_back": "",
+        "rarity": "R",
+        "color": "G",
+        "tier": "C-",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "elf",
+            "druid",
+            "creature"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13299,
+        "name": "Linebreaker Baloth",
+        "url": "https://cards.scryfall.io/border_crop/front/1/5/15cc59c7-6478-4f84-898a-7e0fed10f004.jpg?1663050380",
+        "url_back": "",
+        "rarity": "U",
+        "color": "G",
+        "tier": "C+",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "creature",
+            "beast"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13228,
+        "name": "Llanowar Greenwidow",
+        "url": "https://cards.scryfall.io/border_crop/front/8/1/81f90e4d-f60f-4175-830f-c2ce04c5a945.jpg?1663050402",
+        "url_back": "",
+        "rarity": "R",
+        "color": "G",
+        "tier": "B",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "creature",
+            "spider"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13450,
+        "name": "Destroy Evil",
+        "url": "https://cards.scryfall.io/border_crop/front/4/f/4f7862ef-2c8d-4d28-9e50-7cc41861f245.jpg?1663047154",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "C",
+        "sort_key": 8,
+        "comment": "this seems quite good against other white decks, could see wanting one if white aggro is the best thing to do in the format",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13371,
+        "name": "Llanowar Loamspeaker",
+        "url": "https://cards.scryfall.io/border_crop/front/b/d/bd5611db-82dd-464d-8b03-70d7619dcefe.jpg?1663050427",
+        "url_back": "",
+        "rarity": "R",
+        "color": "G",
+        "tier": "B-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "elf",
+            "druid",
+            "creature"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13465,
+        "name": "Llanowar Stalker",
+        "url": "https://cards.scryfall.io/border_crop/front/e/2/e2d714d8-0e9b-4761-a0ef-3429b4e2f5b7.jpg?1663050452",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C-",
+        "sort_key": 4,
+        "comment": "could be quite good if gw aggro is a real deck",
+        "types": [
+            "elf",
+            "warrior",
+            "creature"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": true
+        }
+    },
+    {
+        "card_id": 13262,
+        "name": "Magnigoth Sentry",
+        "url": "https://cards.scryfall.io/border_crop/front/d/9/d939d4bc-b7e8-4ee8-b904-68f0bff0fde1.jpg?1663050471",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "creature",
+            "treefolk"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13283,
+        "name": "Mossbeard Ancient",
+        "url": "https://cards.scryfall.io/border_crop/front/7/e/7e528d36-cea6-4013-83d5-ba837d570713.jpg?1663050489",
+        "url_back": "",
+        "rarity": "U",
+        "color": "G",
+        "tier": "B-",
+        "sort_key": 1,
+        "comment": "honey mammoth!",
+        "types": [
+            "creature",
+            "treefolk"
+        ],
+        "cmc": 7.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13303,
+        "name": "Nishoba Brawler",
+        "url": "https://cards.scryfall.io/border_crop/front/2/e/2ef6cb5f-0ab3-4652-9b39-c2cbf6d693d5.jpg?1663050509",
+        "url_back": "",
+        "rarity": "U",
+        "color": "G",
+        "tier": "C+",
+        "sort_key": 2,
+        "comment": "I want to believe, but it's probably not worth trying to make this happen in green aggro",
+        "types": [
+            "warrior",
+            "creature",
+            "cat"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": true
+        }
+    },
+    {
+        "card_id": 13319,
+        "name": "Quirion Beastcaller",
+        "url": "https://cards.scryfall.io/border_crop/front/2/a/2a501319-59a7-45d4-a6ca-666276095f87.jpg?1663050528",
+        "url_back": "",
+        "rarity": "R",
+        "color": "G",
+        "tier": "B+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "warrior",
+            "creature",
+            "dryad"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13350,
+        "name": "Scout the Wilderness",
+        "url": "https://cards.scryfall.io/border_crop/front/5/c/5ccd67d4-1a22-4378-804d-6e2c93dc4938.jpg?1663050556",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13408,
+        "name": "Silverback Elder",
+        "url": "https://cards.scryfall.io/border_crop/front/b/9/b987664f-0b74-4c0a-b306-14767a55559a.jpg?1663050578",
+        "url_back": "",
+        "rarity": "M",
+        "color": "G",
+        "tier": "B-",
+        "sort_key": 3,
+        "comment": "this is big, but it doesn't have evasion, doesn't protect itself, and doesn't really snowball that well",
+        "types": [
+            "creature",
+            "shaman",
+            "ape"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13354,
+        "name": "Slimefoot's Survey",
+        "url": "https://cards.scryfall.io/border_crop/front/6/2/622f96fc-179a-4ff6-95a5-de721492f7eb.jpg?1663050598",
+        "url_back": "",
+        "rarity": "U",
+        "color": "G",
+        "tier": "D",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13231,
+        "name": "Snarespinner",
+        "url": "https://cards.scryfall.io/border_crop/front/0/b/0b51c3b5-db70-4976-986d-ed3fc8584d1a.jpg?1663050616",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "D",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "creature",
+            "spider"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13425,
+        "name": "Griffin Protector",
+        "url": "https://cards.scryfall.io/border_crop/front/1/0/10d1d701-841c-4bf3-9122-b01842a22ac6.jpg?1663047171",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "C-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "creature",
+            "griffin"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13342,
+        "name": "Strength of the Coalition",
+        "url": "https://cards.scryfall.io/border_crop/front/8/4/8418c504-24fe-470f-8102-dcad68ba1520.jpg?1663050647",
+        "url_back": "",
+        "rarity": "U",
+        "color": "G",
+        "tier": "B-",
+        "sort_key": 2,
+        "comment": "this seems like a reasonably strong pull into GW aggro to me",
+        "types": [
+            "instant"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13389,
+        "name": "Sunbathing Rootwalla",
+        "url": "https://cards.scryfall.io/border_crop/front/7/a/7ae6f015-2ad6-4b8e-8590-c2c2d01b6d98.jpg?1663050676",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "creature",
+            "lizard"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13245,
+        "name": "Tail Swipe",
+        "url": "https://cards.scryfall.io/border_crop/front/9/5/95a39b26-8c83-40ea-b492-036251366d73.jpg?1663050699",
+        "url_back": "",
+        "rarity": "U",
+        "color": "G",
+        "tier": "C",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13224,
+        "name": "Tear Asunder",
+        "url": "https://cards.scryfall.io/border_crop/front/6/2/629aa907-9533-4681-9bf2-9e56450a4cc2.jpg?1663050725",
+        "url_back": "",
+        "rarity": "U",
+        "color": "G",
+        "tier": "B",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13351,
+        "name": "Territorial Maro",
+        "url": "https://cards.scryfall.io/border_crop/front/8/5/853ddf31-826b-411e-9b6d-75d53cdd1b84.jpg?1663050743",
+        "url_back": "",
+        "rarity": "U",
+        "color": "G",
+        "tier": "D+",
+        "sort_key": 0,
+        "comment": "nice 5 mana 8/8, I cast impede momentum",
+        "types": [
+            "elemental",
+            "creature"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13373,
+        "name": "Threats Undetected",
+        "url": "https://cards.scryfall.io/border_crop/front/9/9/99545c3e-0710-48d3-8558-046bd66f225c.jpg?1663050765",
+        "url_back": "",
+        "rarity": "R",
+        "color": "G",
+        "tier": "D",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13375,
+        "name": "Urborg Lhurgoyf",
+        "url": "https://cards.scryfall.io/border_crop/front/a/6/a6f97236-1497-4811-8189-0545707451da.jpg?1663050787",
+        "url_back": "",
+        "rarity": "R",
+        "color": "G",
+        "tier": "C-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "creature",
+            "lhurgoyf"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": true
+        }
+    },
+    {
+        "card_id": 13397,
+        "name": "Vineshaper Prodigy",
+        "url": "https://cards.scryfall.io/border_crop/front/5/4/545cddde-8018-4fdd-874d-b5193b73b414.jpg?1663050807",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "elf",
+            "druid",
+            "creature"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13379,
+        "name": "The Weatherseed Treaty",
+        "url": "https://cards.scryfall.io/border_crop/front/e/2/e2a54461-1f75-4304-b6d7-635171419456.jpg?1663050834",
+        "url_back": "",
+        "rarity": "U",
+        "color": "G",
+        "tier": "B",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "enchantment",
+            "saga"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13278,
+        "name": "The World Spell",
+        "url": "https://cards.scryfall.io/border_crop/front/f/3/f3a9112a-6a1d-4d89-9866-189b55cd326d.jpg?1663050854",
+        "url_back": "",
+        "rarity": "M",
+        "color": "G",
+        "tier": "D-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "enchantment",
+            "saga"
+        ],
+        "cmc": 7.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13233,
+        "name": "Guardian of New Benalia",
+        "url": "https://cards.scryfall.io/border_crop/front/4/3/43da76ee-fec3-4b2e-915d-10cf8d518d2c.jpg?1663047197",
+        "url_back": "",
+        "rarity": "R",
+        "color": "W",
+        "tier": "B+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "soldier",
+            "creature",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13305,
+        "name": "Yavimaya Iconoclast",
+        "url": "https://cards.scryfall.io/border_crop/front/1/b/1b1af9be-7f5e-48e9-a6e7-9261e199812e.jpg?1663050879",
+        "url_back": "",
+        "rarity": "U",
+        "color": "G",
+        "tier": "B",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "elf",
+            "creature"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13279,
+        "name": "Yavimaya Sojourner",
+        "url": "https://cards.scryfall.io/border_crop/front/c/7/c7fdb424-4d2c-437e-b2a2-8bc56c028338.jpg?1663050896",
+        "url_back": "",
+        "rarity": "C",
+        "color": "G",
+        "tier": "C-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "creature",
+            "treefolk"
+        ],
+        "cmc": 8.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13376,
+        "name": "Ajani, Sleeper Agent",
+        "url": "https://cards.scryfall.io/border_crop/front/7/6/7641f4d9-4614-41c8-87f5-4845bd78e9b3.jpg?1663050920",
+        "url_back": "",
+        "rarity": "M",
+        "color": "M",
+        "tier": "B-",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "planeswalker",
+            "legendary",
+            "ajani"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13288,
+        "name": "Aron, Benalia's Ruin",
+        "url": "https://cards.scryfall.io/border_crop/front/f/1/f1f8bf98-8911-4c86-978a-427377700544.jpg?1665439729",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "B+",
+        "sort_key": 4,
+        "comment": "hi token and go wide synergies",
+        "types": [
+            "legendary",
+            "creature",
+            "phyrexian",
+            "human"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13248,
+        "name": "Astor, Bearer of Blades",
+        "url": "https://cards.scryfall.io/border_crop/front/4/0/40f3a0ba-b917-488b-adbf-60a0d3c58a56.jpg?1663050959",
+        "url_back": "",
+        "rarity": "R",
+        "color": "M",
+        "tier": "C",
+        "sort_key": 1,
+        "comment": "we no have things that care about this",
+        "types": [
+            "legendary",
+            "warrior",
+            "creature",
+            "human"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13449,
+        "name": "Baird, Argivian Recruiter",
+        "url": "https://cards.scryfall.io/border_crop/front/1/f/1f643d78-d8d8-4645-9357-a68ebd0d3517.jpg?1663050986",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "B+",
+        "sort_key": 3,
+        "comment": "hi enlist synergies",
+        "types": [
+            "soldier",
+            "legendary",
+            "creature",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13296,
+        "name": "Balmor, Battlemage Captain",
+        "url": "https://cards.scryfall.io/border_crop/front/9/5/959ba62e-bb3a-49ad-8b1b-e787e413e5d4.jpg?1663051002",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "B+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "legendary",
+            "bird",
+            "creature",
+            "wizard"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13263,
+        "name": "Bortuk Bonerattle",
+        "url": "https://cards.scryfall.io/border_crop/front/9/a/9a25855f-abfc-482d-a36b-088b023a7df6.jpg?1663051019",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "B",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "legendary",
+            "creature",
+            "shaman",
+            "troll"
+        ],
+        "cmc": 6.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13297,
+        "name": "Elas il-Kor, Sadistic Pilgrim",
+        "url": "https://cards.scryfall.io/border_crop/front/1/c/1c3f0ffe-cf51-4c30-8cd5-9e3c7e92c019.jpg?1663051053",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "B-",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "phyrexian",
+            "legendary",
+            "creature",
+            "kor",
+            "cleric"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13431,
+        "name": "Ertai Resurrected",
+        "url": "https://cards.scryfall.io/border_crop/front/7/f/7f7e780e-fbc5-4dc0-b5c7-efcb8645c7c6.jpg?1663051078",
+        "url_back": "",
+        "rarity": "R",
+        "color": "M",
+        "tier": "B",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "phyrexian",
+            "human",
+            "legendary",
+            "creature",
+            "wizard"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13403,
+        "name": "Anointed Peacekeeper",
+        "url": "https://cards.scryfall.io/border_crop/front/5/b/5b8127b5-3a65-411a-84bc-54e5c1be1477.jpg?1663046849",
+        "url_back": "",
+        "rarity": "R",
+        "color": "W",
+        "tier": "C+",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "creature",
+            "human",
+            "cleric"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13434,
+        "name": "Heroic Charge",
+        "url": "https://cards.scryfall.io/border_crop/front/4/a/4aab611c-64e0-4b38-97b9-b29a1c6a79b7.jpg?1664081155",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "C+",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13419,
+        "name": "Garna, Bloodfist of Keld",
+        "url": "https://cards.scryfall.io/border_crop/front/2/9/294c5f08-08e7-458f-8838-ff321dc5d9f2.jpg?1663051105",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "C+",
+        "sort_key": 7,
+        "comment": "",
+        "types": [
+            "berserker",
+            "legendary",
+            "creature",
+            "human"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13361,
+        "name": "Ivy, Gleeful Spellthief",
+        "url": "https://cards.scryfall.io/border_crop/front/d/9/d94c15b7-6c8f-45a6-8734-975e3e3b790c.jpg?1663051122",
+        "url_back": "",
+        "rarity": "R",
+        "color": "M",
+        "tier": "C+",
+        "sort_key": 8,
+        "comment": "",
+        "types": [
+            "faerie",
+            "legendary",
+            "creature",
+            "rogue"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13369,
+        "name": "Jhoira, Ageless Innovator",
+        "url": "https://cards.scryfall.io/border_crop/front/d/d/dd911900-1f5f-4420-96b8-1e4fe67e59f6.jpg?1663051142",
+        "url_back": "",
+        "rarity": "R",
+        "color": "M",
+        "tier": "D",
+        "sort_key": 0,
+        "comment": "this does nothing",
+        "types": [
+            "artificer",
+            "legendary",
+            "creature",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13459,
+        "name": "Jodah, the Unifier",
+        "url": "https://cards.scryfall.io/border_crop/front/e/4/e4b1aa1e-b4e3-4346-8937-76b312501c70.jpg?1663051165",
+        "url_back": "",
+        "rarity": "M",
+        "color": "M",
+        "tier": "F",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "legendary",
+            "creature",
+            "wizard",
+            "human"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13309,
+        "name": "King Darien XLVIII",
+        "url": "https://cards.scryfall.io/border_crop/front/1/0/10eca3b1-f35a-4984-bfc0-818e619b1ece.jpg?1663051184",
+        "url_back": "",
+        "rarity": "R",
+        "color": "M",
+        "tier": "A-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "soldier",
+            "legendary",
+            "creature",
+            "human"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13219,
+        "name": "Lagomos, Hand of Hatred",
+        "url": "https://cards.scryfall.io/border_crop/front/1/a/1a6bb0c2-1e3c-48cd-8f10-49f047e0514c.jpg?1663051202",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "C+",
+        "sort_key": 9,
+        "comment": "",
+        "types": [
+            "legendary",
+            "creature",
+            "shaman",
+            "human"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13308,
+        "name": "Meria, Scholar of Antiquity",
+        "url": "https://cards.scryfall.io/border_crop/front/3/e/3eedd979-783d-4721-92de-965b77c20576.jpg?1663051224",
+        "url_back": "",
+        "rarity": "R",
+        "color": "M",
+        "tier": "C-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "elf",
+            "legendary",
+            "creature",
+            "artificer"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13345,
+        "name": "Nael, Avizoa Aeronaut",
+        "url": "https://cards.scryfall.io/border_crop/front/5/d/5da59e8f-cbe5-4c14-a5a9-28d56048dc23.jpg?1663051241",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "C+",
+        "sort_key": 6,
+        "comment": "",
+        "types": [
+            "elf",
+            "legendary",
+            "creature",
+            "scout"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13246,
+        "name": "Najal, the Storm Runner",
+        "url": "https://cards.scryfall.io/border_crop/front/9/0/9017ee70-761b-434e-bc44-705cf14336fa.jpg?1663051262",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "B",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "legendary",
+            "creature",
+            "efreet",
+            "wizard"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13264,
+        "name": "Nemata, Primeval Warden",
+        "url": "https://cards.scryfall.io/border_crop/front/a/d/adcd556d-351f-4faf-9456-0e47def69a69.jpg?1663051287",
+        "url_back": "",
+        "rarity": "R",
+        "color": "M",
+        "tier": "B+",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "legendary",
+            "creature",
+            "treefolk"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13390,
+        "name": "Join Forces",
+        "url": "https://cards.scryfall.io/border_crop/front/e/4/e4dce5e7-c864-4239-bab7-af6a3adcb731.jpg?1663047247",
+        "url_back": "",
+        "rarity": "U",
+        "color": "W",
+        "tier": "C",
+        "sort_key": 7,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13254,
+        "name": "Queen Allenal of Ruadach",
+        "url": "https://cards.scryfall.io/border_crop/front/b/4/b44b4e8b-7675-4c6a-a16a-92f8b6a0259f.jpg?1663051306",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "B-",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "elf",
+            "legendary",
+            "noble",
+            "creature"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13414,
+        "name": "Radha, Coalition Warlord",
+        "url": "https://cards.scryfall.io/border_crop/front/2/c/2cec235e-7ce0-4947-b221-a555b2c865bd.jpg?1663051323",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "C+",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "elf",
+            "legendary",
+            "warrior",
+            "creature"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13260,
+        "name": "Raff, Weatherlight Stalwart",
+        "url": "https://cards.scryfall.io/border_crop/front/c/c/cc0cba4c-d9f0-421f-acf4-ab1adcd59c80.jpg?1663051347",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "C",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "legendary",
+            "creature",
+            "wizard",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13208,
+        "name": "Ratadrabik of Urborg",
+        "url": "https://cards.scryfall.io/border_crop/front/9/3/9315812d-03e8-4eb4-a693-e7adf281f7fb.jpg?1663051370",
+        "url_back": "",
+        "rarity": "R",
+        "color": "M",
+        "tier": "C-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "legendary",
+            "creature",
+            "wizard",
+            "zombie"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13328,
+        "name": "Rith, Liberated Primeval",
+        "url": "https://cards.scryfall.io/border_crop/front/a/c/ac148784-b7b6-4aae-bffb-a4cf09f56971.jpg?1663051388",
+        "url_back": "",
+        "rarity": "M",
+        "color": "M",
+        "tier": "A-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "dragon",
+            "legendary",
+            "creature"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13269,
+        "name": "Rivaz of the Claw",
+        "url": "https://cards.scryfall.io/border_crop/front/9/a/9a47573a-601e-4738-acef-16118289f939.jpg?1663051409",
+        "url_back": "",
+        "rarity": "R",
+        "color": "M",
+        "tier": "C+",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "warlock",
+            "legendary",
+            "viashino",
+            "creature"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13362,
+        "name": "Rona, Sheoldred's Faithful",
+        "url": "https://cards.scryfall.io/border_crop/front/c/c/cc8331ab-adc9-45c6-9728-66afc72d901c.jpg?1663051430",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "B",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "legendary",
+            "creature",
+            "wizard",
+            "human"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13284,
+        "name": "Rulik Mons, Warren Chief",
+        "url": "https://cards.scryfall.io/border_crop/front/3/f/3fa49711-473d-4774-99b8-2bfbabc6b735.jpg?1663051449",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "B",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "legendary",
+            "goblin",
+            "creature"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13314,
+        "name": "Shanna, Purifying Blade",
+        "url": "https://cards.scryfall.io/border_crop/front/7/2/7261c443-8d27-4d85-8027-2a0271b85e07.jpg?1663051471",
+        "url_back": "",
+        "rarity": "M",
+        "color": "M",
+        "tier": "B+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "legendary",
+            "warrior",
+            "creature",
+            "human"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13341,
+        "name": "Sol'kanar the Tainted",
+        "url": "https://cards.scryfall.io/border_crop/front/3/0/3027347d-5fd3-47cd-83d4-8c834e00794c.jpg?1663051491",
+        "url_back": "",
+        "rarity": "M",
+        "color": "M",
+        "tier": "B-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "legendary",
+            "elemental",
+            "creature",
+            "demon"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13271,
+        "name": "Juniper Order Rootweaver",
+        "url": "https://cards.scryfall.io/border_crop/front/c/5/c56cf82f-8bbb-49ae-ad93-291cbec9126e.jpg?1663047268",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "C",
+        "sort_key": 6,
+        "comment": "",
+        "types": [
+            "druid",
+            "creature",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13325,
+        "name": "Soul of Windgrace",
+        "url": "https://cards.scryfall.io/border_crop/front/e/7/e775a2e6-e701-4cb8-8c0b-718d3508f6b6.jpg?1663051510",
+        "url_back": "",
+        "rarity": "M",
+        "color": "M",
+        "tier": "B",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "legendary",
+            "creature",
+            "cat",
+            "avatar"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13281,
+        "name": "Stenn, Paranoid Partisan",
+        "url": "https://cards.scryfall.io/border_crop/front/0/7/07177a8e-5ded-4084-a22f-2d8fe933de7a.jpg?1663051533",
+        "url_back": "",
+        "rarity": "R",
+        "color": "M",
+        "tier": "C+",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "legendary",
+            "creature",
+            "wizard",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13220,
+        "name": "Tatyova, Steward of Tides",
+        "url": "https://cards.scryfall.io/border_crop/front/0/d/0d446cb9-519a-4889-b057-029db9400021.jpg?1663051550",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "C+",
+        "sort_key": 10,
+        "comment": "",
+        "types": [
+            "merfolk",
+            "legendary",
+            "druid",
+            "creature"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13401,
+        "name": "Tori D'Avenant, Fury Rider",
+        "url": "https://cards.scryfall.io/border_crop/front/9/c/9c873c5b-61f6-49b9-8993-2d5e9823de62.jpg?1663051569",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "C+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "knight",
+            "legendary",
+            "creature",
+            "human"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13404,
+        "name": "Tura Kenner\u00fcd, Skyknight",
+        "url": "https://cards.scryfall.io/border_crop/front/c/8/c839d302-bf85-4a30-a49a-dbbd48695b5c.jpg?1663051590",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "C+",
+        "sort_key": 1,
+        "comment": "kind of expensive",
+        "types": [
+            "knight",
+            "legendary",
+            "creature",
+            "human"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": true
+        }
+    },
+    {
+        "card_id": 13380,
+        "name": "Uurg, Spawn of Turg",
+        "url": "https://cards.scryfall.io/border_crop/front/d/d/dd3fc36c-682b-4352-a66f-eddd2baf0bf6.jpg?1665819868",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "D+",
+        "sort_key": 0,
+        "comment": "nice 0/5",
+        "types": [
+            "frog",
+            "legendary",
+            "creature",
+            "beast"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13236,
+        "name": "Vohar, Vodalian Desecrator",
+        "url": "https://cards.scryfall.io/border_crop/front/8/0/807c7812-c108-45a7-a5b2-08cc693bc500.jpg?1663051624",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "B-",
+        "sort_key": 2,
+        "comment": "merfolk looter is aight",
+        "types": [
+            "phyrexian",
+            "merfolk",
+            "legendary",
+            "creature",
+            "wizard"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13363,
+        "name": "Zar Ojanen, Scion of Efrava",
+        "url": "https://cards.scryfall.io/border_crop/front/6/5/65c903e3-d622-415e-9144-a5b2f3f7b9ed.jpg?1663051642",
+        "url_back": "",
+        "rarity": "U",
+        "color": "M",
+        "tier": "B-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "legendary",
+            "warrior",
+            "creature",
+            "cat"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13359,
+        "name": "Zur, Eternal Schemer",
+        "url": "https://cards.scryfall.io/border_crop/front/4/d/4d987435-2403-4e0f-b19d-693da923ba50.jpg?1663051659",
+        "url_back": "",
+        "rarity": "M",
+        "color": "M",
+        "tier": "C+",
+        "sort_key": 0,
+        "comment": "I guess the joke is you animate sagas and send them in, but this doesn't seem like it has much fodder in this set",
+        "types": [
+            "legendary",
+            "creature",
+            "wizard",
+            "human"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": true,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13209,
+        "name": "Automatic Librarian",
+        "url": "https://cards.scryfall.io/border_crop/front/6/c/6c3d7ece-0f57-4213-a0ab-a9d7c1536ebb.jpg?1663051678",
+        "url_back": "",
+        "rarity": "C",
+        "color": "C",
+        "tier": "C-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "creature",
+            "artifact",
+            "construct"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13395,
+        "name": "Knight of Dawn's Light",
+        "url": "https://cards.scryfall.io/border_crop/front/b/7/b7c7a54e-4df6-4745-8bae-aeefda934d82.jpg?1663047288",
+        "url_back": "",
+        "rarity": "U",
+        "color": "W",
+        "tier": "B-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "knight",
+            "creature",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13239,
+        "name": "Golden Argosy",
+        "url": "https://cards.scryfall.io/border_crop/front/f/8/f8611a53-e54e-4625-8e28-03511f1550e8.jpg?1663051697",
+        "url_back": "",
+        "rarity": "R",
+        "color": "C",
+        "tier": "B-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "legendary",
+            "artifact",
+            "vehicle"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": true,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13396,
+        "name": "Hero's Heirloom",
+        "url": "https://cards.scryfall.io/border_crop/front/5/b/5b7c0d2d-7107-4599-8d49-c7c57d21e467.jpg?1665439737",
+        "url_back": "",
+        "rarity": "U",
+        "color": "C",
+        "tier": "C-",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "equipment",
+            "artifact"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13282,
+        "name": "Inscribed Tablet",
+        "url": "https://cards.scryfall.io/border_crop/front/6/9/699d8655-d250-4ab6-92c5-376979bbabc7.jpg?1663051736",
+        "url_back": "",
+        "rarity": "U",
+        "color": "C",
+        "tier": "F",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "artifact"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13349,
+        "name": "Jodah's Codex",
+        "url": "https://cards.scryfall.io/border_crop/front/d/6/d636da1e-4cc6-40a1-bd83-cc0dd761b1cc.jpg?1663051755",
+        "url_back": "",
+        "rarity": "U",
+        "color": "C",
+        "tier": "D",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "artifact"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13324,
+        "name": "Karn's Sylex",
+        "url": "https://cards.scryfall.io/border_crop/front/6/7/673a8676-0a93-4ca3-a786-63f138027e8a.jpg?1663051775",
+        "url_back": "",
+        "rarity": "M",
+        "color": "C",
+        "tier": "C+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "legendary",
+            "artifact"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13437,
+        "name": "Meteorite",
+        "url": "https://cards.scryfall.io/border_crop/front/3/3/33eb2032-50af-4fd6-bdc7-7cae2211956c.jpg?1663051795",
+        "url_back": "",
+        "rarity": "C",
+        "color": "C",
+        "tier": "C-",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "artifact"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13412,
+        "name": "Relic of Legends",
+        "url": "https://cards.scryfall.io/border_crop/front/6/4/64a2809e-c441-416c-90ff-6fb1e246dff3.jpg?1663051812",
+        "url_back": "",
+        "rarity": "U",
+        "color": "C",
+        "tier": "C-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "artifact"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13470,
+        "name": "Salvaged Manaworker",
+        "url": "https://cards.scryfall.io/border_crop/front/5/f/5fc22ecb-5d87-464e-8c7d-5d40a52e1e4f.jpg?1665439742",
+        "url_back": "",
+        "rarity": "C",
+        "color": "C",
+        "tier": "D",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "creature",
+            "artifact",
+            "construct"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13217,
+        "name": "Shield-Wall Sentinel",
+        "url": "https://cards.scryfall.io/border_crop/front/7/e/7e57e1d7-da1d-4a2b-867f-85b8331b7bbc.jpg?1663051855",
+        "url_back": "",
+        "rarity": "C",
+        "color": "C",
+        "tier": "C-",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "creature",
+            "artifact",
+            "golem"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": true
+        }
+    },
+    {
+        "card_id": 13226,
+        "name": "Timeless Lotus",
+        "url": "https://cards.scryfall.io/border_crop/front/6/f/6f566387-3342-4325-ba4c-eee7626072ac.jpg?1663051873",
+        "url_back": "",
+        "rarity": "M",
+        "color": "C",
+        "tier": "D",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "legendary",
+            "artifact"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13265,
+        "name": "Leyline Binding",
+        "url": "https://cards.scryfall.io/border_crop/front/3/c/3c3ac3dd-35db-447f-8674-37b4680a1ef7.jpg?1663047307",
+        "url_back": "",
+        "rarity": "R",
+        "color": "W",
+        "tier": "C+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "enchantment"
+        ],
+        "cmc": 6.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13418,
+        "name": "Vanquisher's Axe",
+        "url": "https://cards.scryfall.io/border_crop/front/a/e/aef37244-deb9-464e-ab8c-4308369ae09b.jpg?1663051892",
+        "url_back": "",
+        "rarity": "C",
+        "color": "C",
+        "tier": "C-",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "equipment",
+            "artifact"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13326,
+        "name": "Walking Bulwark",
+        "url": "https://cards.scryfall.io/border_crop/front/6/0/602d163c-d341-4b3b-9d3c-5d3419e9b10b.jpg?1663051911",
+        "url_back": "",
+        "rarity": "U",
+        "color": "C",
+        "tier": "C",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "creature",
+            "artifact",
+            "golem"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": true,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13399,
+        "name": "Weatherlight Compleated",
+        "url": "https://cards.scryfall.io/border_crop/front/9/7/976fd9d9-a9b5-40b6-ad38-4b3b263e1ebc.jpg?1663051928",
+        "url_back": "",
+        "rarity": "M",
+        "color": "C",
+        "tier": "C+",
+        "sort_key": 1,
+        "comment": "secret BW card",
+        "types": [
+            "legendary",
+            "artifact",
+            "vehicle"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": true
+        }
+    },
+    {
+        "card_id": 13235,
+        "name": "Adarkar Wastes",
+        "url": "https://cards.scryfall.io/border_crop/front/0/8/08ae1037-6f70-41a9-b75e-98fa9a2152c8.jpg?1663051946",
+        "url_back": "",
+        "rarity": "R",
+        "color": "L",
+        "tier": "C",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "land"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13216,
+        "name": "Caves of Koilos",
+        "url": "https://cards.scryfall.io/border_crop/front/9/9/99264beb-2149-4cd4-9880-f0dc5c570c1b.jpg?1663051969",
+        "url_back": "",
+        "rarity": "R",
+        "color": "L",
+        "tier": "C",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "land"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13476,
+        "name": "Contaminated Aquifer",
+        "url": "https://cards.scryfall.io/border_crop/front/6/b/6bb570f4-de68-4d8c-a9f3-8a3294163aa8.jpg?1663051988",
+        "url_back": "",
+        "rarity": "B",
+        "color": "L",
+        "tier": "C+",
+        "sort_key": 9,
+        "comment": "",
+        "types": [
+            "land",
+            "swamp",
+            "island"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13478,
+        "name": "Crystal Grotto",
+        "url": "https://cards.scryfall.io/border_crop/front/b/d/bd250c9d-c65f-4293-a6b0-007fac634d3d.jpg?1663052006",
+        "url_back": "",
+        "rarity": "C",
+        "color": "L",
+        "tier": "D-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "land"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13473,
+        "name": "Geothermal Bog",
+        "url": "https://cards.scryfall.io/border_crop/front/1/e/1e62fe57-4fa4-4bfd-8e31-9f6db774d7e2.jpg?1663052031",
+        "url_back": "",
+        "rarity": "B",
+        "color": "L",
+        "tier": "C+",
+        "sort_key": 8,
+        "comment": "",
+        "types": [
+            "land",
+            "swamp",
+            "mountain"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13475,
+        "name": "Haunted Mire",
+        "url": "https://cards.scryfall.io/border_crop/front/1/6/16f5e958-56e6-4666-a534-24deba6f652d.jpg?1663052053",
+        "url_back": "",
+        "rarity": "B",
+        "color": "L",
+        "tier": "C+",
+        "sort_key": 7,
+        "comment": "",
+        "types": [
+            "land",
+            "forest",
+            "swamp"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13471,
+        "name": "Idyllic Beachfront",
+        "url": "https://cards.scryfall.io/border_crop/front/c/5/c50ec22c-decb-419f-ae52-78ea1706eb11.jpg?1663052071",
+        "url_back": "",
+        "rarity": "B",
+        "color": "L",
+        "tier": "C+",
+        "sort_key": 6,
+        "comment": "",
+        "types": [
+            "land",
+            "island",
+            "plains"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13229,
+        "name": "Love Song of Night and Day",
+        "url": "https://cards.scryfall.io/border_crop/front/1/e/1e08d288-2f09-4856-a9ed-cc8aa8d953d7.jpg?1663047329",
+        "url_back": "",
+        "rarity": "U",
+        "color": "W",
+        "tier": "C",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "enchantment",
+            "saga"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13222,
+        "name": "Karplusan Forest",
+        "url": "https://cards.scryfall.io/border_crop/front/b/8/b89b2c79-e3d3-4ef9-bfc8-f9c090975011.jpg?1663052089",
+        "url_back": "",
+        "rarity": "R",
+        "color": "L",
+        "tier": "C",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "land"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13474,
+        "name": "Molten Tributary",
+        "url": "https://cards.scryfall.io/border_crop/front/2/0/20aff4af-5128-432f-a8c8-65b6909d31ac.jpg?1663052113",
+        "url_back": "",
+        "rarity": "B",
+        "color": "L",
+        "tier": "C+",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "land",
+            "island",
+            "mountain"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13386,
+        "name": "Plaza of Heroes",
+        "url": "https://cards.scryfall.io/border_crop/front/a/2/a2cfcf67-f83c-43af-9e2d-5513fcdde835.jpg?1663052132",
+        "url_back": "",
+        "rarity": "R",
+        "color": "L",
+        "tier": "D+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "land"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13479,
+        "name": "Radiant Grove",
+        "url": "https://cards.scryfall.io/border_crop/front/e/0/e0f9dca6-e5ae-4714-8a59-2ef1d8f1e82d.jpg?1663052153",
+        "url_back": "",
+        "rarity": "B",
+        "color": "L",
+        "tier": "C+",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "land",
+            "forest",
+            "plains"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13480,
+        "name": "Sacred Peaks",
+        "url": "https://cards.scryfall.io/border_crop/front/2/4/24957d64-ad17-4d4f-8a00-3cdd83e1ce88.jpg?1663052184",
+        "url_back": "",
+        "rarity": "B",
+        "color": "L",
+        "tier": "C+",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "land",
+            "plains",
+            "mountain"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13338,
+        "name": "Shivan Reef",
+        "url": "https://cards.scryfall.io/border_crop/front/a/3/a338107b-0960-4496-a9a5-f7b672e7c043.jpg?1663052201",
+        "url_back": "",
+        "rarity": "R",
+        "color": "L",
+        "tier": "C",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "land"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13321,
+        "name": "Sulfurous Springs",
+        "url": "https://cards.scryfall.io/border_crop/front/d/f/dfd5450a-6490-417f-9aea-b6fca6f380d7.jpg?1663052217",
+        "url_back": "",
+        "rarity": "R",
+        "color": "L",
+        "tier": "C",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "land"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13477,
+        "name": "Sunlit Marsh",
+        "url": "https://cards.scryfall.io/border_crop/front/f/0/f0588fbf-3c05-452a-b3f7-67604c1f921d.jpg?1663052238",
+        "url_back": "",
+        "rarity": "B",
+        "color": "L",
+        "tier": "C+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "land",
+            "swamp",
+            "plains"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13472,
+        "name": "Tangled Islet",
+        "url": "https://cards.scryfall.io/border_crop/front/4/a/4a325fb4-fe71-47f1-9a2f-05b8cfe88fe6.jpg?1663052257",
+        "url_back": "",
+        "rarity": "B",
+        "color": "L",
+        "tier": "C+",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "land",
+            "forest",
+            "island"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13332,
+        "name": "Thran Portal",
+        "url": "https://cards.scryfall.io/border_crop/front/e/f/ef074a2e-a387-4af8-a180-74b145d93992.jpg?1663052282",
+        "url_back": "",
+        "rarity": "R",
+        "color": "L",
+        "tier": "C-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "land",
+            "gate"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13286,
+        "name": "Mesa Cavalier",
+        "url": "https://cards.scryfall.io/border_crop/front/f/e/feeec740-7ffc-4f57-b52c-92209da91d69.jpg?1663047348",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "C",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "knight",
+            "creature",
+            "human"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13481,
+        "name": "Wooded Ridgeline",
+        "url": "https://cards.scryfall.io/border_crop/front/e/8/e8e31184-dca4-48b1-be9d-581247c41d99.jpg?1663052299",
+        "url_back": "",
+        "rarity": "B",
+        "color": "L",
+        "tier": "C+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "land",
+            "forest",
+            "mountain"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13317,
+        "name": "Yavimaya Coast",
+        "url": "https://cards.scryfall.io/border_crop/front/0/e/0ed6c8b0-f154-4678-89d0-9869864ead8d.jpg?1663052321",
+        "url_back": "",
+        "rarity": "R",
+        "color": "L",
+        "tier": "C",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "land"
+        ],
+        "cmc": 0.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13405,
+        "name": "Phyrexian Missionary",
+        "url": "https://cards.scryfall.io/border_crop/front/7/f/7f22fcfa-a5f0-4fae-b578-cdfd7d46a4c8.jpg?1665439725",
+        "url_back": "",
+        "rarity": "U",
+        "color": "W",
+        "tier": "B",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "creature",
+            "phyrexian",
+            "human",
+            "cleric"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13413,
+        "name": "Prayer of Binding",
+        "url": "https://cards.scryfall.io/border_crop/front/3/2/322f90b6-6b49-458d-9d5b-b601bfdd0af8.jpg?1663047393",
+        "url_back": "",
+        "rarity": "U",
+        "color": "W",
+        "tier": "B",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "enchantment"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13232,
+        "name": "Resolute Reinforcements",
+        "url": "https://cards.scryfall.io/border_crop/front/3/e/3e11ad33-b9d7-43ef-840a-61955683b599.jpg?1663047412",
+        "url_back": "",
+        "rarity": "U",
+        "color": "W",
+        "tier": "B-",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "soldier",
+            "creature",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13298,
+        "name": "Archangel of Wrath",
+        "url": "https://cards.scryfall.io/border_crop/front/2/d/2d00bab2-e95d-4296-a805-2a05e7640efb.jpg?1663046868",
+        "url_back": "",
+        "rarity": "R",
+        "color": "W",
+        "tier": "A",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "creature",
+            "angel"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13241,
+        "name": "Runic Shot",
+        "url": "https://cards.scryfall.io/border_crop/front/f/5/f54413be-7d73-478d-a25a-8fe06f6491a5.jpg?1663047438",
+        "url_back": "",
+        "rarity": "U",
+        "color": "W",
+        "tier": "C",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13292,
+        "name": "Samite Herbalist",
+        "url": "https://cards.scryfall.io/border_crop/front/4/0/409189da-53c9-4daf-b6b2-d155fc14f91a.jpg?1663047455",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "C",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "creature",
+            "human",
+            "cleric"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13315,
+        "name": "Serra Paragon",
+        "url": "https://cards.scryfall.io/border_crop/front/c/e/ce295f1e-fb31-4275-a5d3-8c6f29afff40.jpg?1663047478",
+        "url_back": "",
+        "rarity": "M",
+        "color": "W",
+        "tier": "B+",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "creature",
+            "angel"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13218,
+        "name": "Shalai's Acolyte",
+        "url": "https://cards.scryfall.io/border_crop/front/3/9/39996722-e7f2-41e4-aa1e-2b6778d7b535.jpg?1663047502",
+        "url_back": "",
+        "rarity": "U",
+        "color": "W",
+        "tier": "D+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "creature",
+            "angel"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13355,
+        "name": "Stall for Time",
+        "url": "https://cards.scryfall.io/border_crop/front/f/3/f346defa-ee4a-404e-8154-0e33ebe9102c.jpg?1663047526",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "C+",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13294,
+        "name": "Take Up the Shield",
+        "url": "https://cards.scryfall.io/border_crop/front/8/5/851e842e-a497-4c36-90ee-8d64f806c378.jpg?1663047545",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "C+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13275,
+        "name": "Temporary Lockdown",
+        "url": "https://cards.scryfall.io/border_crop/front/8/2/82b3088f-7b49-45e9-b447-129a597ceb75.jpg?1663047565",
+        "url_back": "",
+        "rarity": "R",
+        "color": "W",
+        "tier": "D+",
+        "sort_key": 1,
+        "comment": "sideboard card in a bo1 world",
+        "types": [
+            "enchantment"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13468,
+        "name": "Urza Assembles the Titans",
+        "url": "https://cards.scryfall.io/border_crop/front/1/0/10a544d7-ead7-42fd-a35a-c1b672771d5b.jpg?1663214498",
+        "url_back": "",
+        "rarity": "R",
+        "color": "W",
+        "tier": "F",
+        "sort_key": 0,
+        "comment": "lol",
+        "types": [
+            "enchantment",
+            "saga"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13249,
+        "name": "Valiant Veteran",
+        "url": "https://cards.scryfall.io/border_crop/front/1/8/18b1a4ee-437f-4a08-b176-8342d526143f.jpg?1663047606",
+        "url_back": "",
+        "rarity": "R",
+        "color": "W",
+        "tier": "B+",
+        "sort_key": 0,
+        "comment": "white probably just uses this well without too much need to build around",
+        "types": [
+            "soldier",
+            "creature",
+            "kor"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13268,
+        "name": "Wingmantle Chaplain",
+        "url": "https://cards.scryfall.io/border_crop/front/f/5/f5800f3d-b2e0-4c74-94bf-f29b27f82130.jpg?1663047625",
+        "url_back": "",
+        "rarity": "U",
+        "color": "W",
+        "tier": "B-",
+        "sort_key": 2,
+        "comment": "if there's a walls deck this is it\n",
+        "types": [
+            "creature",
+            "human",
+            "cleric"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": true,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13307,
+        "name": "Argivian Cavalier",
+        "url": "https://cards.scryfall.io/border_crop/front/5/7/57746e72-ba9f-4717-a4a2-6c6a039080c3.jpg?1663046888",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "B-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "knight",
+            "orc",
+            "creature"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13409,
+        "name": "Academy Loremaster",
+        "url": "https://cards.scryfall.io/border_crop/front/9/f/9fca4c4f-a77b-483e-9da4-574ba2e3d179.jpg?1663047648",
+        "url_back": "",
+        "rarity": "R",
+        "color": "U",
+        "tier": "C+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "creature",
+            "wizard",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13340,
+        "name": "Academy Wall",
+        "url": "https://cards.scryfall.io/border_crop/front/d/2/d2028115-f0de-4e8b-99bc-7369352e1e07.jpg?1663047670",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C-",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "creature",
+            "wall"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13411,
+        "name": "Aether Channeler",
+        "url": "https://cards.scryfall.io/border_crop/front/6/0/60afeb75-2c1e-4634-8c83-88b1dddb77c2.jpg?1663047689",
+        "url_back": "",
+        "rarity": "R",
+        "color": "U",
+        "tier": "B+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "creature",
+            "wizard",
+            "human"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13402,
+        "name": "Battlewing Mystic",
+        "url": "https://cards.scryfall.io/border_crop/front/0/0/000376ef-8b6c-490d-98cb-d6de15b2e585.jpg?1663047707",
+        "url_back": "",
+        "rarity": "U",
+        "color": "U",
+        "tier": "B",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "bird",
+            "creature",
+            "wizard"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13421,
+        "name": "Combat Research",
+        "url": "https://cards.scryfall.io/border_crop/front/6/c/6c44738c-706f-40b2-a09d-b21cd0889049.jpg?1663047725",
+        "url_back": "",
+        "rarity": "U",
+        "color": "U",
+        "tier": "C-",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "enchantment",
+            "aura"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13347,
+        "name": "Coral Colony",
+        "url": "https://cards.scryfall.io/border_crop/front/9/c/9c0e3882-1f97-48eb-b9e3-2f9683ff5897.jpg?1663047744",
+        "url_back": "",
+        "rarity": "U",
+        "color": "U",
+        "tier": "D",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "creature",
+            "wall"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13290,
+        "name": "Defiler of Dreams",
+        "url": "https://cards.scryfall.io/border_crop/front/8/8/881cc4a3-252b-4155-a34f-63d4b4f44442.jpg?1663047766",
+        "url_back": "",
+        "rarity": "R",
+        "color": "U",
+        "tier": "A-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "sphinx",
+            "creature",
+            "phyrexian"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13210,
+        "name": "Djinn of the Fountain",
+        "url": "https://cards.scryfall.io/border_crop/front/f/5/f55606da-de3e-4375-925b-cc16b03b6365.jpg?1663047790",
+        "url_back": "",
+        "rarity": "U",
+        "color": "U",
+        "tier": "C",
+        "sort_key": 0,
+        "comment": "too expensive to be really premium. probably fine if you get it late",
+        "types": [
+            "djinn",
+            "creature"
+        ],
+        "cmc": 6.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13432,
+        "name": "Ertai's Scorn",
+        "url": "https://cards.scryfall.io/border_crop/front/6/1/6129b0d3-b50a-4a4b-9111-39f8fc6718dd.jpg?1663047809",
+        "url_back": "",
+        "rarity": "U",
+        "color": "U",
+        "tier": "C-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13457,
+        "name": "Essence Scatter",
+        "url": "https://cards.scryfall.io/border_crop/front/b/7/b7ad4441-e300-4267-bedb-4ae6a64f59cd.jpg?1663047829",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13422,
+        "name": "Argivian Phalanx",
+        "url": "https://cards.scryfall.io/border_crop/front/a/f/afbadc37-1b4f-4237-a3c0-772bafb18aa0.jpg?1663046916",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "C-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "soldier",
+            "creature",
+            "human",
+            "kor"
+        ],
+        "cmc": 6.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13348,
+        "name": "Founding the Third Path",
+        "url": "https://cards.scryfall.io/border_crop/front/2/d/2d841faa-9e0b-45ff-9dfd-f8a169d9af76.jpg?1663047851",
+        "url_back": "",
+        "rarity": "U",
+        "color": "U",
+        "tier": "D+",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "enchantment",
+            "saga"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13383,
+        "name": "Frostfist Strider",
+        "url": "https://cards.scryfall.io/border_crop/front/4/0/40141353-c0d6-4529-b26a-34dfccbcf231.jpg?1663047868",
+        "url_back": "",
+        "rarity": "U",
+        "color": "U",
+        "tier": "B+",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "elemental",
+            "creature",
+            "giant"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13225,
+        "name": "Haughty Djinn",
+        "url": "https://cards.scryfall.io/border_crop/front/3/5/35095a68-b7c0-4805-b0b6-6ca15a338692.jpg?1663047886",
+        "url_back": "",
+        "rarity": "R",
+        "color": "U",
+        "tier": "B-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "djinn",
+            "creature"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13415,
+        "name": "Haunting Figment",
+        "url": "https://cards.scryfall.io/border_crop/front/d/1/d14b07ea-18e4-41fb-8136-759d5349e88a.jpg?1663047908",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "illusion",
+            "creature"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": true
+        }
+    },
+    {
+        "card_id": 13385,
+        "name": "Impede Momentum",
+        "url": "https://cards.scryfall.io/border_crop/front/2/5/259c04f7-86f2-4584-97fb-8278dca9a213.jpg?1663047928",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C+",
+        "sort_key": 7,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13464,
+        "name": "Impulse",
+        "url": "https://cards.scryfall.io/border_crop/front/5/a/5aec2b2c-0764-4869-814d-aad921122af9.jpg?1663047952",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C+",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": true
+        }
+    },
+    {
+        "card_id": 13211,
+        "name": "Joint Exploration",
+        "url": "https://cards.scryfall.io/border_crop/front/b/2/b25ab334-1060-457e-b212-3d7a697c545e.jpg?1663047969",
+        "url_back": "",
+        "rarity": "U",
+        "color": "U",
+        "tier": "C",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13251,
+        "name": "Micromancer",
+        "url": "https://cards.scryfall.io/border_crop/front/b/2/b21203c8-a935-4ce0-a742-148587e32145.jpg?1663047989",
+        "url_back": "",
+        "rarity": "U",
+        "color": "U",
+        "tier": "B-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "creature",
+            "wizard",
+            "human"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13221,
+        "name": "Negate",
+        "url": "https://cards.scryfall.io/border_crop/front/4/0/4016c6f7-7cb4-46c2-af73-3bd6d682ea5e.jpg?1663048006",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "D",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13252,
+        "name": "The Phasing of Zhalfir",
+        "url": "https://cards.scryfall.io/border_crop/front/0/7/0770eb6a-4f01-4677-a401-14c1b30692c9.jpg?1663048027",
+        "url_back": "",
+        "rarity": "R",
+        "color": "U",
+        "tier": "D",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "enchantment",
+            "saga"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13441,
+        "name": "Artillery Blast",
+        "url": "https://cards.scryfall.io/border_crop/front/0/d/0d4d7293-657f-48ac-931b-fb6a44128e6d.jpg?1663150704",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "D",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13331,
+        "name": "Phyrexian Espionage",
+        "url": "https://cards.scryfall.io/border_crop/front/0/b/0b983366-385f-41a3-aa46-20151e68d140.jpg?1663048051",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C-",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13467,
+        "name": "Pixie Illusionist",
+        "url": "https://cards.scryfall.io/border_crop/front/1/7/171bfcb2-dd43-4d63-b2e2-6ca594c2ec40.jpg?1663048069",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "faerie",
+            "creature",
+            "wizard"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13247,
+        "name": "Protect the Negotiators",
+        "url": "https://cards.scryfall.io/border_crop/front/b/b/bb6db604-8bbe-4719-88bd-f3cad8c4725d.jpg?1663048094",
+        "url_back": "",
+        "rarity": "U",
+        "color": "U",
+        "tier": "C+",
+        "sort_key": 5,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13261,
+        "name": "Rona's Vortex",
+        "url": "https://cards.scryfall.io/border_crop/front/b/d/bdf96533-f28a-4465-893b-0c9394d5b8d7.jpg?1663048111",
+        "url_back": "",
+        "rarity": "U",
+        "color": "U",
+        "tier": "B",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13428,
+        "name": "Shore Up",
+        "url": "https://cards.scryfall.io/border_crop/front/9/d/9d933bf1-14f0-4150-a0d2-6b845b9624cf.jpg?1663048129",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C+",
+        "sort_key": 9,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13273,
+        "name": "Silver Scrutiny",
+        "url": "https://cards.scryfall.io/border_crop/front/8/b/8b650ab6-9c22-424f-99e5-8ef5235a18a3.jpg?1663048158",
+        "url_back": "",
+        "rarity": "R",
+        "color": "U",
+        "tier": "C+",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13463,
+        "name": "Soaring Drake",
+        "url": "https://cards.scryfall.io/border_crop/front/0/b/0b0979f9-aae3-4fc7-beae-c8c6637ae596.jpg?1663048180",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "drake",
+            "creature"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13276,
+        "name": "Sphinx of Clear Skies",
+        "url": "https://cards.scryfall.io/border_crop/front/9/7/974c9e0c-07b2-4535-a3d0-bb827b651075.jpg?1663048205",
+        "url_back": "",
+        "rarity": "M",
+        "color": "U",
+        "tier": "A",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "sphinx",
+            "creature"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13451,
+        "name": "Talas Lookout",
+        "url": "https://cards.scryfall.io/border_crop/front/0/a/0a4b9afe-aeb7-4c56-8a22-96e19a7a938c.jpg?1663048226",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C+",
+        "sort_key": 6,
+        "comment": "",
+        "types": [
+            "creature",
+            "human",
+            "pirate"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13426,
+        "name": "Tidepool Turtle",
+        "url": "https://cards.scryfall.io/border_crop/front/d/3/d397fb84-8573-4b2c-be2c-f8fd820342f0.jpg?1663048249",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "D+",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "turtle",
+            "creature"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13429,
+        "name": "Benalish Faithbonder",
+        "url": "https://cards.scryfall.io/border_crop/front/0/8/084d77df-a899-406f-9d79-e3fa3abeaebc.jpg?1663046953",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "D+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "creature",
+            "human",
+            "cleric"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13400,
+        "name": "Timely Interference",
+        "url": "https://cards.scryfall.io/border_crop/front/0/1/017a3c6b-9a1e-403a-9c20-2360090d39ee.jpg?1663048276",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C+",
+        "sort_key": 8,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13258,
+        "name": "Tolarian Geyser",
+        "url": "https://cards.scryfall.io/border_crop/front/5/d/5dd5f389-fea2-4aed-a218-eca162902775.jpg?1663048302",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13323,
+        "name": "Tolarian Terror",
+        "url": "https://cards.scryfall.io/border_crop/front/4/2/42f01cba-43d4-46ad-b7a5-d7631b0e1347.jpg?1663048321",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "C+",
+        "sort_key": 1,
+        "comment": "if you consistently can play this for 4 it's good, UR gold card",
+        "types": [
+            "creature",
+            "serpent"
+        ],
+        "cmc": 7.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": true
+        }
+    },
+    {
+        "card_id": 13310,
+        "name": "Vesuvan Duplimancy",
+        "url": "https://cards.scryfall.io/border_crop/front/9/a/9a2119bc-a377-4156-89d4-56e7b5b494a8.jpg?1663048338",
+        "url_back": "",
+        "rarity": "M",
+        "color": "U",
+        "tier": "D",
+        "sort_key": 0,
+        "comment": "NO",
+        "types": [
+            "enchantment"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13377,
+        "name": "Voda Sea Scavenger",
+        "url": "https://cards.scryfall.io/border_crop/front/2/a/2a3cc789-cbb8-4dae-a749-af169832dd7b.jpg?1663048362",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "D+",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "merfolk",
+            "creature",
+            "rogue"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13230,
+        "name": "Vodalian Hexcatcher",
+        "url": "https://cards.scryfall.io/border_crop/front/4/e/4ec464dc-b1dd-4e45-b093-c3ad65a74050.jpg?1663048380",
+        "url_back": "",
+        "rarity": "R",
+        "color": "U",
+        "tier": "D+",
+        "sort_key": 2,
+        "comment": "not enough good merfolk to be worth it",
+        "types": [
+            "merfolk",
+            "creature",
+            "wizard"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13398,
+        "name": "Vodalian Mindsinger",
+        "url": "https://cards.scryfall.io/border_crop/front/2/1/211a9db2-8b5f-419d-8032-ac2a571dbb53.jpg?1663048397",
+        "url_back": "",
+        "rarity": "R",
+        "color": "U",
+        "tier": "B+",
+        "sort_key": 0,
+        "comment": "this is a gold card, don't think it's playable without kicker",
+        "types": [
+            "merfolk",
+            "creature",
+            "wizard"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13311,
+        "name": "Volshe Tideturner",
+        "url": "https://cards.scryfall.io/border_crop/front/e/a/ea61871b-9295-4ea0-86ef-e7a11e23bda8.jpg?1663048417",
+        "url_back": "",
+        "rarity": "C",
+        "color": "U",
+        "tier": "D+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "merfolk",
+            "creature",
+            "wizard"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13453,
+        "name": "Aggressive Sabotage",
+        "url": "https://cards.scryfall.io/border_crop/front/a/c/ac809fca-664a-4e7d-a39f-2bc1dea0fbd8.jpg?1663048434",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "D+",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13295,
+        "name": "Balduvian Atrocity",
+        "url": "https://cards.scryfall.io/border_crop/front/3/6/365333c4-59a0-4365-b242-a67b6224c1b8.jpg?1663048450",
+        "url_back": "",
+        "rarity": "U",
+        "color": "B",
+        "tier": "B-",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "berserker",
+            "creature",
+            "phyrexian"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13391,
+        "name": "Benalish Sleeper",
+        "url": "https://cards.scryfall.io/border_crop/front/f/9/f96089ea-20cf-496d-84a6-9b660c2ef672.jpg?1663046974",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "C",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "soldier",
+            "creature",
+            "phyrexian",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13427,
+        "name": "Battle-Rage Blessing",
+        "url": "https://cards.scryfall.io/border_crop/front/7/c/7cfc631b-49d1-4f1c-adac-5b07a2ccd06f.jpg?1663048483",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "D+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13466,
+        "name": "Battlefly Swarm",
+        "url": "https://cards.scryfall.io/border_crop/front/3/c/3c6b4a2d-0bc0-4a54-9c78-712b48ad6be1.jpg?1663048505",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C-",
+        "sort_key": 3,
+        "comment": "this seems mopey to me",
+        "types": [
+            "creature",
+            "phyrexian",
+            "insect"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13356,
+        "name": "Blight Pile",
+        "url": "https://cards.scryfall.io/border_crop/front/0/d/0dcc2699-03e6-47d1-b976-1453fe9d27b7.jpg?1663048523",
+        "url_back": "",
+        "rarity": "U",
+        "color": "B",
+        "tier": "C-",
+        "sort_key": 0,
+        "comment": "meh",
+        "types": [
+            "creature",
+            "phyrexian"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13435,
+        "name": "Bone Splinters",
+        "url": "https://cards.scryfall.io/border_crop/front/1/0/106b5c96-d1bd-433d-955e-ace0b60d3bc3.jpg?1663048541",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C+",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13370,
+        "name": "Braids, Arisen Nightmare",
+        "url": "https://cards.scryfall.io/border_crop/front/4/f/4ff97c69-6a6b-401c-b0a1-55fa81045d19.jpg?1663048560",
+        "url_back": "",
+        "rarity": "R",
+        "color": "B",
+        "tier": "B-",
+        "sort_key": 0,
+        "comment": "good in BW I think\n",
+        "types": [
+            "legendary",
+            "creature",
+            "nightmare"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": true
+        }
+    },
+    {
+        "card_id": 13259,
+        "name": "Braids's Frightful Return",
+        "url": "https://cards.scryfall.io/border_crop/front/4/9/49aa8d4c-04e9-4f38-9786-2c9ad735dd72.jpg?1663048580",
+        "url_back": "",
+        "rarity": "U",
+        "color": "B",
+        "tier": "C",
+        "sort_key": 6,
+        "comment": "",
+        "types": [
+            "enchantment",
+            "saga"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13446,
+        "name": "Choking Miasma",
+        "url": "https://cards.scryfall.io/border_crop/front/b/a/ba537452-3dab-4ecd-b65f-9e311a130d31.jpg?1663048597",
+        "url_back": "",
+        "rarity": "U",
+        "color": "B",
+        "tier": "D",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13444,
+        "name": "The Cruelty of Gix",
+        "url": "https://cards.scryfall.io/border_crop/front/3/d/3d6e5eb3-25ab-4e9e-96e8-655e0ce74675.jpg?1663048620",
+        "url_back": "",
+        "rarity": "R",
+        "color": "B",
+        "tier": "B+",
+        "sort_key": 3,
+        "comment": "I think it's hard for this to be worth 5 mana upfront",
+        "types": [
+            "enchantment",
+            "saga"
+        ],
+        "cmc": 5.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13266,
+        "name": "Cult Conscript",
+        "url": "https://cards.scryfall.io/border_crop/front/f/e/fed77513-94ab-44e2-b9a1-30ba927cd6ee.jpg?1663048639",
+        "url_back": "",
+        "rarity": "U",
+        "color": "B",
+        "tier": "C+",
+        "sort_key": 6,
+        "comment": "",
+        "types": [
+            "warrior",
+            "creature",
+            "skeleton"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13367,
+        "name": "Cut Down",
+        "url": "https://cards.scryfall.io/border_crop/front/7/5/753db072-5d6a-4f37-8f7d-255572ecd3bd.jpg?1663048662",
+        "url_back": "",
+        "rarity": "U",
+        "color": "B",
+        "tier": "B",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13424,
+        "name": "Captain's Call",
+        "url": "https://cards.scryfall.io/border_crop/front/0/c/0c7ed7e0-0e80-44d3-a7af-b4c321239df8.jpg?1663046992",
+        "url_back": "",
+        "rarity": "C",
+        "color": "W",
+        "tier": "C",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13352,
+        "name": "Defiler of Flesh",
+        "url": "https://cards.scryfall.io/border_crop/front/6/1/61a4dd11-6166-4a54-95c0-728c623d0fbc.jpg?1663048682",
+        "url_back": "",
+        "rarity": "R",
+        "color": "B",
+        "tier": "B+",
+        "sort_key": 2,
+        "comment": "",
+        "types": [
+            "creature",
+            "phyrexian",
+            "horror"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13242,
+        "name": "Drag to the Bottom",
+        "url": "https://cards.scryfall.io/border_crop/front/9/d/9d243099-94b1-4571-96af-4c5a34241911.jpg?1663048707",
+        "url_back": "",
+        "rarity": "R",
+        "color": "B",
+        "tier": "B-",
+        "sort_key": 2,
+        "comment": "if this routinely gets to 3 I think it's playable",
+        "types": [
+            "sorcery"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": true,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13436,
+        "name": "Eerie Soultender",
+        "url": "https://cards.scryfall.io/border_crop/front/3/3/335f3146-743c-4a25-86b5-c45e9c66eb15.jpg?1663048725",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "D",
+        "sort_key": 2,
+        "comment": "look, maestros initiate",
+        "types": [
+            "creature",
+            "cleric",
+            "spirit"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13366,
+        "name": "Evolved Sleeper",
+        "url": "https://cards.scryfall.io/border_crop/front/e/b/ebeafbc2-0399-4335-8f63-76a3e085e8c6.jpg?1663048749",
+        "url_back": "",
+        "rarity": "R",
+        "color": "B",
+        "tier": "B+",
+        "sort_key": 4,
+        "comment": "",
+        "types": [
+            "creature",
+            "human"
+        ],
+        "cmc": 1.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13406,
+        "name": "Extinguish the Light",
+        "url": "https://cards.scryfall.io/border_crop/front/0/1/01a51d08-f90e-4b72-8dce-fb2a6c72f181.jpg?1663048772",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C+",
+        "sort_key": 3,
+        "comment": "",
+        "types": [
+            "instant"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13433,
+        "name": "Gibbering Barricade",
+        "url": "https://cards.scryfall.io/border_crop/front/0/6/0674b340-420d-4864-92fe-7b268fe0874c.jpg?1663048795",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C",
+        "sort_key": 4,
+        "comment": "I want to like this ",
+        "types": [
+            "creature",
+            "nightmare",
+            "wall"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13455,
+        "name": "Knight of Dusk's Shadow",
+        "url": "https://cards.scryfall.io/border_crop/front/3/3/33dfd2fe-e0e0-465c-b730-a30e6f5c271c.jpg?1663048814",
+        "url_back": "",
+        "rarity": "U",
+        "color": "B",
+        "tier": "B-",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "knight",
+            "creature",
+            "human"
+        ],
+        "cmc": 2.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13374,
+        "name": "Liliana of the Veil",
+        "url": "https://cards.scryfall.io/border_crop/front/d/1/d12c8c97-6491-452c-811d-943441a7ef9f.jpg?1663048834",
+        "url_back": "",
+        "rarity": "M",
+        "color": "B",
+        "tier": "B+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "planeswalker",
+            "legendary",
+            "liliana"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13357,
+        "name": "Monstrous War-Leech",
+        "url": "https://cards.scryfall.io/border_crop/front/6/6/660d7983-b335-48b4-898d-f182effcf2de.jpg?1663048856",
+        "url_back": "",
+        "rarity": "U",
+        "color": "B",
+        "tier": "D+",
+        "sort_key": 1,
+        "comment": "",
+        "types": [
+            "creature",
+            "leech",
+            "horror"
+        ],
+        "cmc": 4.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    },
+    {
+        "card_id": 13287,
+        "name": "Phyrexian Rager",
+        "url": "https://cards.scryfall.io/border_crop/front/6/f/6fd574e7-705f-4a65-aad0-68ff6d63bf0f.jpg?1663048875",
+        "url_back": "",
+        "rarity": "C",
+        "color": "B",
+        "tier": "C+",
+        "sort_key": 0,
+        "comment": "",
+        "types": [
+            "creature",
+            "phyrexian",
+            "horror"
+        ],
+        "cmc": 3.0,
+        "flags": {
+            "sideboard": false,
+            "buildaround": false,
+            "synergy": false
+        }
+    }
+]
