@@ -1,4 +1,5 @@
 import unittest
+import os
 
 from core.utilities import load_json_file
 from core.game_metadata.game_objects.Card import Card, CardManager
@@ -8,6 +9,9 @@ from Tests.settings import _tries, _success_delay, _fail_delay
 
 
 class TestBaseDraft(unittest.TestCase):
+    root_dir = os.path.split(__file__)[0]
+    DRAFT_DIR = os.path.join(root_dir, 'TestData', 'Drafts')
+
     def setUp(self) -> None:
         CardManager.REQUESTER._TRIES = _tries
         CardManager.REQUESTER._SUCCESS_DELAY = _success_delay
@@ -43,16 +47,14 @@ class TestBaseDraft(unittest.TestCase):
 
 class TestPick(TestBaseDraft):
     def test_pick_init(self):
-        file_path = r'/Tests/Drafts'
-        data = load_json_file(file_path, 'pick_1.json')
+        data = load_json_file(self.DRAFT_DIR, 'pick_1.json')
         pick = Pick(data)
         self.eval_pick(pick)
 
 
 class TestDraft(TestBaseDraft):
     def test_draft_init(self):
-        file_path = r'/Tests/Drafts'
-        data = load_json_file(file_path, 'draft_1.json')
+        data = load_json_file(self.DRAFT_DIR, 'draft_1.json')
         draft = Draft(data, '0bea16f8b69c4ea1887d8bf15ed69f62')
         self.eval_draft(draft)
 

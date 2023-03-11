@@ -1,5 +1,6 @@
-import datetime
 import unittest
+import datetime
+import os
 import requests
 from requests import Response
 
@@ -16,10 +17,12 @@ class TestBaseDeck(unittest.TestCase):
     TARGET_DRAFT_DECK_ID_2 = "2c653e26dc0647ca934af503d57eee3d"
     TARGET_INVALID_DRAFT_DECK_ID = "b20a97b818f3418b94a8f4e7584398a8"
 
-    E1_DECK_LOC = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\E1.txt"
-    E3_DECK_LOC = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\E3.txt"
-    H1_DECK_LOC = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\H1.txt"
-    H3_DECK_LOC = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\H3.txt"
+    root_dir = os.path.split(__file__)[0]
+    E1_DECK_LOC = os.path.join(root_dir, 'TestData', 'DeckLists', 'E1.txt')
+    E3_DECK_LOC = os.path.join(root_dir, 'TestData', 'DeckLists', 'E3.txt')
+    H1_DECK_LOC = os.path.join(root_dir, 'TestData', 'DeckLists', 'H1.txt')
+    H3_DECK_LOC = os.path.join(root_dir, 'TestData', 'DeckLists', 'H3.txt')
+    DNE_DECK_LOC = os.path.join(root_dir, 'TestData', 'DeckLists', 'DNE.txt')
 
     def setUp(self) -> None:
         # Load all arena cards to speed up tests and reduce load on Scryfall server.
@@ -83,9 +86,7 @@ class TestDeck(TestBaseDeck):
         self.assertEqual(15, len(deck_bo3.sideboard))
 
     def test_parse_decklist_from_file_invalid(self):
-        loc = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\DeckLists\DNE.txt"
-        self.assertRaises(ValueError, Deck.parse_decklist_from_file, loc)
-
+        self.assertRaises(ValueError, Deck.parse_decklist_from_file, self.DNE_DECK_LOC)
 
     def test_parse_decklist_difference(self):
         deck_bo1 = Deck.from_file(self.H1_DECK_LOC, 'Azorius Affinity', 0, 0)

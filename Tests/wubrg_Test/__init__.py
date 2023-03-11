@@ -1,1 +1,1 @@
-from Tests.wubrg_Test.TestWUBRG import *
+from Tests.wubrg_Test.WUBRG_Test import *

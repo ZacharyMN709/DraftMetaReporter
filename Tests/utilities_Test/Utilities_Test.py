@@ -35,7 +35,9 @@ class TestLogging(unittest.TestCase):
 
 
 class TestFuncs(unittest.TestCase):
-    test_dir = r'/Tests/TestData'
+    root_dir = os.path.split(__file__)[0]
+    test_dir = os.path.join(root_dir, 'TestData')
+    os.makedirs(test_dir, exist_ok=True)
 
     def setUp(self) -> None:
         with open(os.path.join(self.test_dir, 'test.json'), 'w') as f:
