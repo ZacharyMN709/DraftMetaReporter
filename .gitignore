@@ -3,7 +3,8 @@ __pychache__
 Notebooks/.ipynb_checkpoints/*
 .idea
 .coverage
-.coverage.*
+.cumulative
+.single
 
 # Ignore specific Test directories, which hold testing data.
 /Tests/.pytest_cache
