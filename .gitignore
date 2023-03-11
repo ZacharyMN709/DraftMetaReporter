@@ -6,12 +6,9 @@ Notebooks/.ipynb_checkpoints/*
 .cumulative
 .single
 
-# Ignore specific Test directories, which hold testing data.
+# Ignore specific Test directories, which hold testing outputs.
 /Tests/.pytest_cache
-/Tests/DeckLists
-/Tests/Drafts
 /Tests/htmlcov
-/Tests/Misc
 
 # Ignore all notebook backups, python C code and generated images.
 *.ipynb
