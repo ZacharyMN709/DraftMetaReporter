@@ -35,7 +35,7 @@ class TestLogging(unittest.TestCase):
 
 
 class TestFuncs(unittest.TestCase):
-    test_dir = r'C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\Misc'
+    test_dir = r'/Tests/TestData'
 
     def setUp(self) -> None:
         with open(os.path.join(self.test_dir, 'test.json'), 'w') as f:
