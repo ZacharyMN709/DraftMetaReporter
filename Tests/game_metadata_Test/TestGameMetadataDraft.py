@@ -43,7 +43,7 @@ class TestBaseDraft(unittest.TestCase):
 
 class TestPick(TestBaseDraft):
     def test_pick_init(self):
-        file_path = r'C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\Drafts'
+        file_path = r'/Tests/Drafts'
         data = load_json_file(file_path, 'pick_1.json')
         pick = Pick(data)
         self.eval_pick(pick)
@@ -51,7 +51,7 @@ class TestPick(TestBaseDraft):
 
 class TestDraft(TestBaseDraft):
     def test_draft_init(self):
-        file_path = r'C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Tests\Drafts'
+        file_path = r'/Tests/Drafts'
         data = load_json_file(file_path, 'draft_1.json')
         draft = Draft(data, '0bea16f8b69c4ea1887d8bf15ed69f62')
         self.eval_draft(draft)

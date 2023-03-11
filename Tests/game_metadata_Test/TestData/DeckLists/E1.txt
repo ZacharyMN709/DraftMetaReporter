@@ -1,0 +1,21 @@
+Deck
+4 Liliana of the Veil (DMU) 97
+4 Stitcher's Supplier (M19) 121
+4 Raffine's Informant (SNC) 26
+4 Greasefang, Okiba Boss (NEO) 220
+4 Grisly Salvage (RTR) 165
+4 Thoughtseize (AKR) 127
+4 Witherbloom Command (STX) 248
+4 Can't Stay Away (MID) 213
+4 Esika's Chariot (KHM) 169
+4 Parhelion II (WAR) 24
+1 Swamp (MIR) 340
+4 Blooming Marsh (KLR) 280
+4 Concealed Courtyard (KLR) 282
+1 Branchloft Pathway (ZNR) 258
+1 Darkbore Pathway (KHM) 254
+4 Temple Garden (GRN) 258
+1 Godless Shrine (RNA) 248
+2 Overgrown Tomb (GRN) 253
+1 Boseiju, Who Endures (NEO) 266
+1 Takenuma, Abandoned Mire (NEO) 278

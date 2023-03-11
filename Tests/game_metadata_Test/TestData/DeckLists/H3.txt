@@ -1,0 +1,30 @@
+Deck
+2 Karn, Scion of Urza
+3 Ornithopter
+4 Ingenious Smith
+4 Esper Sentinel
+4 Retrofitter Foundry
+4 Thought Monitor
+4 Metallic Rebuke
+4 Portable Hole
+4 Moonsnare Prototype
+1 Shadowspear
+4 Nettlecyst
+4 Darksteel Citadel
+2 Razortide Bridge
+1 Plains
+4 Spire of Industry
+4 Hengegate Pathway
+2 Deserted Beach
+4 Hallowed Fountain
+1 Otawara, Soaring City
+
+Sideboard
+1 Karn, Scion of Urza
+2 Sai, Master Thopterist
+3 Dovin's Veto
+1 Mystical Dispute
+2 Soul-Guide Lantern
+4 Glass Casket
+1 Unlicensed Hearse
+1 Skysovereign, Consul Flagship
