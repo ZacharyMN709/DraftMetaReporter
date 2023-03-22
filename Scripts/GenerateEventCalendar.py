@@ -12,7 +12,12 @@ from core.game_metadata.utils.settings import EVENT_CALENDAR_JSON
 parse_str = r"([A-Z][a-z][a-z] [\d][\d], [\d][\d][\d][\d]) . ([A-Z][a-z][a-z] [\d][\d], [\d][\d][\d][\d])"
 finder = re.compile(parse_str)
 
+# TODO: These change over time. Try and parse them somehow.
+PANEL_CLASS_NAME = "sc-cfQIsQ bqWCmr"
+TEXT_CLASS_NAME = "sc-bJYTlW fYUbJS"
+
 expansion_name_mapping = {
+    "Shadows Remastered": "SIR",
     "Phyrexia: All Will Be One": "ONE",
     "All Will Be One": "ONE",
     "The Brothers' War": "BRO",
@@ -80,7 +85,7 @@ def parse_event_calendar_webpage() -> list[tuple[str, date, date]]:
     :return: A list of events: name, start date, end date.
     """
     def parse_item(item) -> tuple[str, date, date]:
-        event = item.find('div', {"class": "sc-cfQIsQ lpfHMX"})
+        event = item.find('div', {"class": TEXT_CLASS_NAME})
         event_name = event.text.replace('_', ' ')
         start, end = finder.findall(item.text)[0]
         fmt = "%b %d, %Y"
@@ -91,7 +96,7 @@ def parse_event_calendar_webpage() -> list[tuple[str, date, date]]:
     url = 'https://mtgarena.pro/mtga-event-calendar/'
     html = get_true_html(url)
     soup = BeautifulSoup(html, features="html.parser")
-    content_table = soup.find_all('div', {"class": "sc-kTxHUi kXFMHz"})
+    content_table = soup.find_all('div', {"class": PANEL_CLASS_NAME})
     return [parse_item(item) for item in content_table]
 
 
@@ -115,8 +120,7 @@ def generate_limited_information(event_list: list[tuple[str, date, date]]) -> li
         if expansion in expansion_name_mapping:
             expansion_code = expansion_name_mapping[expansion]
             if is_alchemy:
-                str_year = str(event[2].year)
-                expansion_code = f"Y{str_year[-2:]}{expansion_code}"
+                expansion_code = f"Y{expansion_code}"
         else:
             return None
 
