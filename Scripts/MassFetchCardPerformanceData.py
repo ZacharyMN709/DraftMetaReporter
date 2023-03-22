@@ -1,16 +1,17 @@
 from datetime import datetime
 from core.utilities import LogLvl, set_log_level, logging
 from core.data_fetching import SetManager
+from core.game_metadata.game_objects.Card import CardManager
 
 
-TARGET_SET = 'ONE'
+TARGET_SETS = ['SIR', 'ONE']
 LOG_LEVEL = LogLvl.SPARSE
 set_log_level(LOG_LEVEL)
 
 
-def load_set_data():
+def load_set_data(expansion: str):
     start = datetime.utcnow()
-    set_data = SetManager(TARGET_SET)
+    set_data = SetManager(expansion)
     set_data.check_for_updates()
     end = datetime.utcnow()
     logging.sparse(f"\n --- Data loaded in {end - start}.")
@@ -19,9 +20,9 @@ def load_set_data():
 
 
 def main():
-    from core.game_metadata.game_objects.Card import CardManager
     CardManager.load_cache_from_file()
-    load_set_data()
+    for s in TARGET_SETS:
+        load_set_data(s)
 
 
 if __name__ == "__main__":
