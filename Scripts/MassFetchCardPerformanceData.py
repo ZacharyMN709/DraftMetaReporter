@@ -11,7 +11,9 @@ set_log_level(LOG_LEVEL)
 
 def load_set_data(expansion: str):
     start = datetime.utcnow()
+    logging.sparse(f"\n --- Loading metadata for {expansion}.")
     set_data = SetManager(expansion)
+    logging.sparse(f"\n --- Getting data for {expansion}.")
     set_data.check_for_updates()
     end = datetime.utcnow()
     logging.sparse(f"\n --- Data loaded in {end - start}.")
