@@ -158,6 +158,7 @@ class CardFace:
 
         self.POW: Optional[str] = face_dict.get('power')
         self.TOU: Optional[str] = face_dict.get('toughness')
+        self.LOYALTY: Optional[str] = face_dict.get('loyalty')
 
         self._apply_overrides(json)
 

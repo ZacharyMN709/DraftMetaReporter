@@ -50,6 +50,7 @@ def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
 
     self.assertEqual(eval_dict.get("POW"), face.POW, msg="Error in POW")
     self.assertEqual(eval_dict.get("TOU"), face.TOU, msg="Error in TOU")
+    self.assertEqual(eval_dict.get("LOYALTY"), face.LOYALTY, msg="Error in LOYALTY")
 
     self.assertEqual(eval_dict.get("__STR__"), face.__str__(), msg="Error in __str__")
     self.assertEqual(eval_dict.get("__REPR__"), face.__repr__(), msg="Error in __repr__")
@@ -101,7 +102,7 @@ def _eval_card(self, eval_dict: [str, Union[set, str]], card: Card):
 
 
 class TestCardFace(unittest.TestCase):
-    REQUESTER = RequestScryfall(tries=2, fail_delay=15)
+    REQUESTER = RequestScryfall(tries=2, fail_delay=15, success_delay=1)
 
     def get_card_face(self, card_name: str, layout: CardLayouts, face: CARD_SIDE):
         json = self.REQUESTER.get_card_by_name(card_name)
@@ -969,6 +970,40 @@ class TestCardFace(unittest.TestCase):
                       "except by creatures with flying or reach.",
             "POW": "3",
             "TOU": "3"
+        }
+        self.eval_card_face(eval_dict, face)
+
+    def test_card_face_planeswalker(self):
+        # https://api.scryfall.com/cards/7641f4d9-4614-41c8-87f5-4845bd78e9b3?format=json&pretty=true
+        name = 'Ajani, Sleeper Agent'
+        layout: CardLayouts = CardLayouts.NORMAL
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "37714eb9-a39d-4534-a2d3-27908c418f8a",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Ajani, Sleeper Agent",
+            "MANA_COST": "{1}{G}{G/W/P}{W}",
+            "CMC": 4,
+            "COLORS": "WG",
+            "COLOR_IDENTITY": "WG",
+            "TYPE_LINE": "Legendary Planeswalker — Ajani",
+            "ALL_TYPES": {"Legendary", "Planeswalker", "Ajani"},
+            "SUPERTYPES": {"Legendary"},
+            "TYPES": {"Planeswalker"},
+            "SUBTYPES": {"Ajani"},
+            "ORACLE": "Compleated ({G/W/P} can be paid with {G}, {W}, or 2 life. "
+                      "If life was paid, this planeswalker enters with two fewer loyalty counters.)\n"
+                      "+1: Reveal the top card of your library. If it's a creature or planeswalker card, "
+                      "put it into your hand. Otherwise, you may put it on the bottom of your library.\n"
+                      "−3: Distribute three +1/+1 counters among up to three target creatures. "
+                      "They gain vigilance until end of turn.\n"
+                      "−6: You get an emblem with "
+                      "\"Whenever you cast a creature or planeswalker spell, "
+                      "target opponent gets two poison counters.\"",
+            "LOYALTY": "4",
         }
         self.eval_card_face(eval_dict, face)
 
