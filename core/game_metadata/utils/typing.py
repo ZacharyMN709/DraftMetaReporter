@@ -20,7 +20,7 @@ CARD_SIDE = Literal['default', 'main', 'adventure', 'left', 'right', 'front', 'b
 SUPERTYPE = Literal["Basic", "Legendary", "Snow", "World", "Host"]
 
 # Rule 205.2a
-TYPE = Literal["Land", "Creature", "Artifact", "Enchantment", "Planeswalker", "Instant", "Sorcery", "Tribal"]
+TYPE = Literal["Land", "Creature", "Artifact", "Enchantment", "Planeswalker", "Instant", "Sorcery", "Tribal", "Battle"]
 
 # Rule 205.3i
 LAND_SUBTYPE = Literal[
@@ -91,8 +91,11 @@ INSTANT_SUBTYPE = Literal["Adventure", "Arcane", "Trap"]
 # Rule 205.3k
 SORCERY_SUBTYPE = Literal["Adventure", "Arcane", "Lesson"]
 
+# Rule ???
+BATTLE_SUBTYPE = Literal["Siege"]
+
 SUBTYPE = Union[LAND_SUBTYPE, CREATURE_SUBTYPE, ARTIFACT_SUBTYPE, ENCHANTMENT_SUBTYPE,
-                PLANESWALKER_SUBTYPE, INSTANT_SUBTYPE, SORCERY_SUBTYPE]
+                PLANESWALKER_SUBTYPE, INSTANT_SUBTYPE, SORCERY_SUBTYPE, BATTLE_SUBTYPE]
 
 ANY_TYPE = Union[SUPERTYPE, TYPE, SUBTYPE]
 # endregion Card Types

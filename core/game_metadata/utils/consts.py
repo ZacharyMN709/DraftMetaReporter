@@ -52,8 +52,9 @@ ENCHANTMENT_SUBTYPES: set[ENCHANTMENT_SUBTYPE] = set(typing.get_args(ENCHANTMENT
 PLANESWALKER_SUBTYPES: set[PLANESWALKER_SUBTYPE] = set(typing.get_args(PLANESWALKER_SUBTYPE))
 INSTANT_SUBTYPES: set[INSTANT_SUBTYPE] = set(typing.get_args(INSTANT_SUBTYPE))
 SORCERY_SUBTYPES: set[SORCERY_SUBTYPE] = set(typing.get_args(SORCERY_SUBTYPE))
+BATTLE_SUBTYPES: set[SORCERY_SUBTYPE] = set(typing.get_args(BATTLE_SUBTYPE))
 SUBTYPES: set[SUBTYPE] = LAND_SUBTYPES | CREATURE_SUBTYPES | ARTIFACT_SUBTYPES | ENCHANTMENT_SUBTYPES | \
-                     PLANESWALKER_SUBTYPES | INSTANT_SUBTYPES | SORCERY_SUBTYPES
+                     PLANESWALKER_SUBTYPES | INSTANT_SUBTYPES | SORCERY_SUBTYPES | BATTLE_SUBTYPES
 
 SUBTYPE_DICT: dict[TYPE, set[SUBTYPE]] = {
     "Land": LAND_SUBTYPES,
@@ -81,10 +82,11 @@ class CardLayouts(Flag):
     SAGA = auto()
     ADVENTURE = auto()
     PROTOTYPE = auto()
+    BATTLE = auto()
 
     BASIC = NORMAL | LEVELER | CLASS | SAGA
     FUSED = ADVENTURE | SPLIT | FLIP | PROTOTYPE
-    TWO_SIDED = TRANSFORM | MODAL_DFC | MELD
+    TWO_SIDED = TRANSFORM | MODAL_DFC | MELD | BATTLE
 
 
 LAYOUT_DICT: dict[str, CardLayouts] = {
@@ -99,5 +101,6 @@ LAYOUT_DICT: dict[str, CardLayouts] = {
     "saga": CardLayouts.SAGA,
     "adventure": CardLayouts.ADVENTURE,
     "prototype": CardLayouts.PROTOTYPE,
+    "battle": CardLayouts.BATTLE,
 }
 # endregion Card Layouts

@@ -96,38 +96,44 @@ class CardFace:
                             f"TYPE_LINE: '{self.TYPE_LINE}'\n INVALID_TYPES: {invalid_types}")
 
     def _apply_overrides(self, json):
-        if self.LAYOUT == CardLayouts.FLIP and self.CARD_SIDE == 'flipped':
-            self.MANA_COST = json['mana_cost']
-            self.CMC: int = self._calculate_cmc(json)
+        if self.LAYOUT == CardLayouts.FLIP:
+            if self.CARD_SIDE == 'flipped':
+                self.MANA_COST = json['mana_cost']
+                self.CMC: int = self._calculate_cmc(json)
 
-        if self.LAYOUT == CardLayouts.TRANSFORM and self.CARD_SIDE == 'default':
-            front_face = json["card_faces"][0]
-            self.COLORS = parse_color_list(front_face['colors'])
-            self.MANA_COST = front_face["mana_cost"]
-            self.ORACLE = front_face["oracle_text"]
-            self.POW = front_face.get('power')
-            self.TOU = front_face.get('toughness')
+        elif self.LAYOUT == CardLayouts.TRANSFORM or self.LAYOUT == CardLayouts.BATTLE:
+            if self.CARD_SIDE == 'default':
+                front_face = json["card_faces"][0]
+                self.COLORS = parse_color_list(front_face['colors'])
+                self.MANA_COST = front_face["mana_cost"]
+                self.ORACLE = front_face["oracle_text"]
+                self.POW = front_face.get('power')
+                self.TOU = front_face.get('toughness')
+                self.LOYALTY: Optional[str] = front_face.get('loyalty')
+                self.DEFENSE: Optional[str] = front_face.get('defense')
 
-        if self.LAYOUT == CardLayouts.TRANSFORM and self.CARD_SIDE == 'back':
-            self.MANA_COST = ''
-            self.CMC = json["cmc"]
+            elif self.CARD_SIDE == 'back':
+                self.MANA_COST = ''
+                self.CMC = json["cmc"]
 
-        if self.LAYOUT == CardLayouts.MODAL_DFC and self.CARD_SIDE == 'default':
-            front_face = json["card_faces"][0]
-            self.MANA_COST = front_face["mana_cost"]
-            self.COLORS = self.COLOR_IDENTITY
-            self.ORACLE = front_face["oracle_text"]
+        elif self.LAYOUT == CardLayouts.MODAL_DFC:
+            if self.CARD_SIDE == 'default':
+                front_face = json["card_faces"][0]
+                self.MANA_COST = front_face["mana_cost"]
+                self.COLORS = self.COLOR_IDENTITY
+                self.ORACLE = front_face["oracle_text"]
 
-        if self.LAYOUT == CardLayouts.MODAL_DFC and self.CARD_SIDE == 'back':
-            self.MANA_PRODUCED = set(json.get("produced_mana", list()))
+            elif self.CARD_SIDE == 'back':
+                self.MANA_PRODUCED = set(json.get("produced_mana", list()))
 
-        if self.LAYOUT == CardLayouts.PROTOTYPE and self.CARD_SIDE == 'prototype':
-            c, p, t = prototype_parse.match(self.ORACLE).groups()
-            self.MANA_COST = c
-            self.POW = p
-            self.TOU = t
-            self.CMC = calculate_cmc(self.MANA_COST)
-            self.COLORS: COLOR_STRING = get_color_identity(self.MANA_COST)
+        if self.LAYOUT == CardLayouts.PROTOTYPE:
+            if self.CARD_SIDE == 'prototype':
+                c, p, t = prototype_parse.match(self.ORACLE).groups()
+                self.MANA_COST = c
+                self.POW = p
+                self.TOU = t
+                self.CMC = calculate_cmc(self.MANA_COST)
+                self.COLORS: COLOR_STRING = get_color_identity(self.MANA_COST)
 
     def __init__(self, json: CARD_INFO, layout: CardLayouts, side: CARD_SIDE = 'default'):
         self.SCRYFALL_ID: str = json['id']
@@ -159,6 +165,7 @@ class CardFace:
         self.POW: Optional[str] = face_dict.get('power')
         self.TOU: Optional[str] = face_dict.get('toughness')
         self.LOYALTY: Optional[str] = face_dict.get('loyalty')
+        self.DEFENSE: Optional[str] = face_dict.get('defense')
 
         self._apply_overrides(json)
 
@@ -234,7 +241,7 @@ class Card:
         elif self.LAYOUT == CardLayouts.FLIP:
             self.FACE_1 = CardFace(json, self.LAYOUT, 'main')
             self.FACE_2 = CardFace(json, self.LAYOUT, 'flipped')
-        elif self.LAYOUT in {CardLayouts.TRANSFORM, CardLayouts.MODAL_DFC}:
+        elif self.LAYOUT & CardLayouts.TWO_SIDED:
             self.FACE_1 = CardFace(json, self.LAYOUT, 'front')
             self.FACE_2 = CardFace(json, self.LAYOUT, 'back')
         else:  # pragma: nocover
