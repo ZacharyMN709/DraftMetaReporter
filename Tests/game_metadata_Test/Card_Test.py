@@ -51,6 +51,7 @@ def _eval_card_face(self, eval_dict: [str, Union[set, str]], face: CardFace):
     self.assertEqual(eval_dict.get("POW"), face.POW, msg="Error in POW")
     self.assertEqual(eval_dict.get("TOU"), face.TOU, msg="Error in TOU")
     self.assertEqual(eval_dict.get("LOYALTY"), face.LOYALTY, msg="Error in LOYALTY")
+    self.assertEqual(eval_dict.get("DEFENSE"), face.DEFENSE, msg="Error in DEFENSE")
 
     self.assertEqual(eval_dict.get("__STR__"), face.__str__(), msg="Error in __str__")
     self.assertEqual(eval_dict.get("__REPR__"), face.__repr__(), msg="Error in __repr__")
@@ -787,6 +788,99 @@ class TestCardFace(unittest.TestCase):
             "KEYWORDS": {"Meld"},
             "POW": "2",
             "TOU": "4"
+        }
+        self.eval_card_face(eval_dict, face)
+
+    def test_card_face_battle_front(self):
+        # https://api.scryfall.com/cards/8fed056f-a8f5-41ec-a7d2-a80a238872d1?format=json&pretty=true
+        name = 'Invasion of Zendikar'
+        layout: CardLayouts = CardLayouts.BATTLE
+        side: CARD_SIDE = 'front'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "4b1874af-4ea5-4e22-a4d4-e718d75fe95e",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Invasion of Zendikar",
+            "MANA_COST": "{3}{G}",
+            "CMC": 4,
+            "COLORS": "G",
+            "COLOR_IDENTITY": "G",
+            "TYPE_LINE": "Battle — Siege",
+            "ALL_TYPES": {"Battle", "Siege"},
+            "TYPES": {"Battle"},
+            "SUBTYPES": {"Siege"},
+            "ORACLE": "(As a Siege enters, choose an opponent to protect it. You and others can attack it. "
+                      "When it's defeated, exile it, then cast it transformed.)\n"
+                      "When Invasion of Zendikar enters the battlefield, "
+                      "search your library for up to two basic land cards, "
+                      "put them onto the battlefield tapped, then shuffle.",
+            "KEYWORDS": {"Vigilance", "Transform", "Haste"},
+            "DEFENSE": "3",
+        }
+        self.eval_card_face(eval_dict, face)
+
+    def test_card_face_battle_defeated(self):
+        # https://api.scryfall.com/cards/8fed056f-a8f5-41ec-a7d2-a80a238872d1?format=json&pretty=true
+        name = 'Invasion of Zendikar'
+        layout: CardLayouts = CardLayouts.BATTLE
+        side: CARD_SIDE = 'back'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "4b1874af-4ea5-4e22-a4d4-e718d75fe95e",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "back",
+            "NAME": "Awakened Skyclave",
+            "MANA_COST": '',
+            "CMC": 4,
+            "COLORS": "G",
+            "COLOR_IDENTITY": "G",
+            "TYPE_LINE": "Creature — Elemental",
+            "ALL_TYPES": {"Creature", "Elemental"},
+            "TYPES": {"Creature"},
+            "SUBTYPES": {"Elemental"},
+            "ORACLE": "Vigilance, haste\n"
+                      "As long as Awakened Skyclave is on the battlefield, "
+                      "it's a land in addition to its other types.\n"
+                      "{T}: Add one mana of any color.",
+            "KEYWORDS": {"Vigilance", "Transform", "Haste"},
+            # "MANA_PRODUCED": {"W", "U", "B", "G", "R"},
+            "FLAVOR_TEXT": "Nahiri tried to bend Zendikar to Phyrexia's will. In response, the world rose against her.",
+            "POW": "4",
+            "TOU": "4"
+        }
+        self.eval_card_face(eval_dict, face)
+
+    def test_card_face_battle_default(self):
+        # https://api.scryfall.com/cards/8fed056f-a8f5-41ec-a7d2-a80a238872d1?format=json&pretty=true
+        name = 'Invasion of Zendikar'
+        layout: CardLayouts = CardLayouts.BATTLE
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "4b1874af-4ea5-4e22-a4d4-e718d75fe95e",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Invasion of Zendikar // Awakened Skyclave",
+            "MANA_COST": "{3}{G}",
+            "CMC": 4,
+            "COLORS": "G",
+            "COLOR_IDENTITY": "G",
+            "TYPE_LINE": "Battle — Siege // Creature — Elemental",
+            "ALL_TYPES": {"Battle", "Siege", "Creature", "Elemental"},
+            "TYPES": {"Battle", "Creature"},
+            "SUBTYPES": {"Siege", "Elemental"},
+            "ORACLE": "(As a Siege enters, choose an opponent to protect it. You and others can attack it. "
+                      "When it's defeated, exile it, then cast it transformed.)\n"
+                      "When Invasion of Zendikar enters the battlefield, "
+                      "search your library for up to two basic land cards, "
+                      "put them onto the battlefield tapped, then shuffle.",
+            "MANA_PRODUCED": {"W", "U", "B", "G", "R"},
+            "KEYWORDS": {"Vigilance", "Transform", "Haste"},
+            "DEFENSE": "3",
         }
         self.eval_card_face(eval_dict, face)
     # endregion Basic Face Tests
