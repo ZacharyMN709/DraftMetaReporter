@@ -27,51 +27,46 @@ class CardTier:
     comment: str
 
 
-
 class TierList:
-    def __init__(self, link, user, _set):
-        self.link: str = link
-        self.user: str = user
-        self.SET: str = _set  # TODO: Auto determine the set from cards in tierlist.
-        self.pull_time: datetime = datetime.utcnow()
-
-        self.tiers: pd.DataFrame = self.gen_frame()
-        self.data_root: str = os.path.join(DATA_DIR_LOC, DATA_DIR_NAME, self.SET, 'Tiers')
-        self.filename = f'{self.SET}-{self.user}-{self.pull_time.strftime("%y%m%d")}{TIER_LIST_EXT}'
-
-    def pull_data(self) -> list[dict]:
-        # Generate a requester to get data from the 17Lands website.
-        fetcher = Request17Lands()
-        raw_data = fetcher.get_tier_list(self.link.replace(TIER_LIST_ROOT, ""))
-
-        # TODO: Patch/organize the raw data to be used here, using CardTier dataclass.
-
-        # Update the time data was pulled.
-        self.pull_time = datetime.utcnow()
-        return raw_data
-
-    def gen_frame(self) -> pd.DataFrame:
-        def adjust_data(tier_dict: dict):
+    @staticmethod
+    def adjust_data(data: dict):
+        for tier in data:
             # Use the card name from 17Lands to get the relevant card from Scryfall.
             # This patches bad names coming back from Arena or 17Lands.
-            card = CardManager.from_name(tier_dict['name'])
-            tier_dict['name'] = card.NAME
-            tier_dict['rank'] = tier_to_rank[tier_dict['tier']]
+            card = CardManager.from_name(tier['name'])
+            tier['name'] = card.NAME
+            tier['rank'] = tier_to_rank[tier['tier']]
 
-        # Pull and adjust the data from 17Lands.
-        data = self.pull_data()
-        for tier in data:
-            adjust_data(tier)
+            del tier['sideboard']
+            del tier['synergy']
+            del tier['buildaround']
+        return data
 
+    def __init__(self, data, user, _set):
+        # Apply adjustments to the data.
+        self.data = self.adjust_data(data)
+        self.user: str = user
+        self.SET: str = _set  # TODO: Auto determine the set from cards in tierlist.
+
+        self.tiers: pd.DataFrame = self.gen_frame(self.data)
+        self.creation_time = datetime.utcnow()
+
+        self.data_root: str = os.path.join(DATA_DIR_LOC, DATA_DIR_NAME, self.SET, 'Tiers')
+        self.filename = f'{self.SET}-{self.user}-{self.creation_time.strftime("%y%m%d")}{TIER_LIST_EXT}'
+
+    @classmethod
+    def from_link(cls, link, user, _set):
+        # Pull the data from 17Lands.
+        fetcher = Request17Lands()
+        data = fetcher.get_tier_list(link.replace(TIER_LIST_ROOT, ""))
+        return TierList(data, user, _set)
+
+    def gen_frame(self, data) -> pd.DataFrame:
         # Create the DataFrame, setting the index to be the user who provided the TierList.
         frame_dict = {tier['name']: tier for tier in data}
         frame = pd.DataFrame.from_dict(frame_dict, orient="index")
         frame.index.name = self.user
-
         return frame
-
-    def refresh_data(self):
-        self.tiers = self.gen_frame()
 
     def save(self):
         os.makedirs(self.data_root, exist_ok=True)
@@ -355,19 +350,6 @@ class TierAggregator:
     def add_tiers(self, lst: list[TierList]):
         for tier, in lst:
             self.add_tier(tier)
-
-    def refresh_data(self, key=None):
-        if key is None:
-            for tier in self.tier_dict.values():
-                tier.refresh_data()
-            self._tier_frame = self.merge_rankings()
-        else:
-            try:
-                self.tier_dict[key].refresh_data()
-                self._tier_frame = self.merge_rankings()
-            except KeyError:
-                logging.warning("Failed to find TierList object. Please check the key provided.")
-
     # endregion Tier Management
 
     def __getitem__(self, item) -> TierList:
