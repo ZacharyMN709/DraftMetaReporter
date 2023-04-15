@@ -15,6 +15,18 @@ SCRYFALL_CACHE_FILE_ARENA: str = r'oracle-cards-arena.json'
 # Game Format Defaults and Data
 SETS: list[str] = ["MOM", "SIR", "ONE", "BRO", "DMU", "SNC", "NEO", "VOW", "MID"]
 
+SET_EXTRAS: dict[str, list[str]] = {
+    "MOM": ["MUL"],
+    "SIR": ["SIS"],
+    "ONE": [],
+    "BRO": ["BRR"],
+    "DMU": [],
+    "SNC": [],
+    "NEO": [],
+    "VOW": [],
+    "MID": [],
+}
+
 FORMATS: list[str] = ["PremierDraft", "TradDraft"]
 
 # Location of event calendar data. Sourced from https://mtgarena.pro/mtga-event-calendar/,

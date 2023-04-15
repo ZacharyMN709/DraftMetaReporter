@@ -14,7 +14,7 @@ from_consts = ['DATE_FMT', 'RANKS', 'RARITIES', 'RARITY_ALIASES',
 
 from_funcs = ['new_color_count_dict']
 
-from_settings = ['SETS', 'FORMATS', 'SET_CONFIG']
+from_settings = ['SETS', 'SET_EXTRAS', 'FORMATS', 'SET_CONFIG']
 
 from_typing = ['RARITY', 'RANK', 'CARD_INFO', 'CARD_SIDE',
                'SUPERTYPE', 'TYPE', 'LAND_SUBTYPE', 'CREATURE_SUBTYPE', 'ARTIFACT_SUBTYPE', 'ENCHANTMENT_SUBTYPE',
