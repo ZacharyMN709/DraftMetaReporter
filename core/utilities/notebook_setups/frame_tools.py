@@ -36,11 +36,13 @@ def load_set_data(target_set=SETS[0], load_all=False) -> tuple[CentralManager, S
 
     start = datetime.utcnow()
     if load_all:
+        print(f"Getting info for all sets...")
         if data_manager is None:
             data_manager = CentralManager()
             set_data = data_manager[target_set]
         data_manager.check_for_updates()
     else:
+        print(f"Getting info for {target_set}...")
         if set_data is None:
             set_data = SetManager(target_set)
         set_data.check_for_updates()
@@ -53,5 +55,11 @@ def load_set_data(target_set=SETS[0], load_all=False) -> tuple[CentralManager, S
 def set_up(log_lvl=LogLvl.DEBUG, target_set=SETS[0], load_all=False) -> tuple[CentralManager, SetManager]:
     sub_set_up(log_lvl)
     info_splash()
+
+    print("Loading Cards from cache...", end="")
+    start = datetime.utcnow()
     CardManager.load_cache_from_file()
+    end = datetime.utcnow()
+    print(f"   Done!  ({end - start})")
+
     return load_set_data(target_set, load_all)
