@@ -54,11 +54,9 @@ class TierList:
         def adjust_data(tier_dict: dict):
             # Use the card name from 17Lands to get the relevant card from Scryfall.
             # This patches bad names coming back from Arena or 17Lands.
-            card = CardManager.from_name(tier_dict['Card'])
-            tier_dict['Card'] = card.NAME
-            tier_dict['Rank'] = tier_to_rank[tier_dict['Tier']]
-            del tier_dict['Comment']
-            del tier_dict['Sideboard']
+            card = CardManager.from_name(tier_dict['name'])
+            tier_dict['name'] = card.NAME
+            tier_dict['rank'] = tier_to_rank[tier_dict['tier']]
 
         # Pull and adjust the data from 17Lands.
         data = self.pull_data()
@@ -66,7 +64,7 @@ class TierList:
             adjust_data(tier)
 
         # Create the DataFrame, setting the index to be the user who provided the TierList.
-        frame_dict = {tier['Card']: tier for tier in data}
+        frame_dict = {tier['name']: tier for tier in data}
         frame = pd.DataFrame.from_dict(frame_dict, orient="index")
         frame.index.name = self.user
 
@@ -287,7 +285,7 @@ class TierAggregator:
                 if tier_frame is None:
                     continue
                 short_col = FORMAT_NICKNAME_DICT[col]
-                frame[short_col] = tier_frame.droplevel(0)['Tier'].astype('Int64')
+                frame[short_col] = tier_frame.droplevel(0)['tier'].astype('Int64')
                 new_cols.append(short_col)
 
         # Re-order the frame so the data-based stats are first.
@@ -318,7 +316,7 @@ class TierAggregator:
         # Get each user's converted ranks as ints.
         for indiv in self.tier_dict.values():
             user_frame = indiv.tiers
-            frame[user_frame.index.name] = user_frame['Rank'].astype('Int64')
+            frame[user_frame.index.name] = user_frame['rank'].astype('Int64')
 
         frame = self.append_stat_summary(frame)
         frame = self.prepend_17L_ranks(frame)
