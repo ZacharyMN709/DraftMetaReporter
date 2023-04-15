@@ -20,29 +20,39 @@ def format_long_float(val):
 
 
 def hover_card(card_name):
-    card = CardManager.from_name(card_name)
-    html = '<style>.hover_img a { position:relative; }\n' + \
-           '.hover_img a span { position:absolute; display:none; z-index:300; }\n' + \
-           '.hover_img a:hover span { display:block; height: 300px; width: 300px; overflow: visible; ' \
-           'margin-left: -175px; }</style>\n' + \
-           '<div class="hover_img">\n' + \
-           f'<a href="#">{card.NAME}<span><img src="{card.IMAGE_URL}" alt="image"/></span></a>\n' + \
-           '</div>'
-    return html
+    try:
+        card = CardManager.from_name(card_name)
+        html = '<style>.hover_img a { position:relative; }\n' + \
+               '.hover_img a span { position:absolute; display:none; z-index:300; }\n' + \
+               '.hover_img a:hover span { display:block; height: 300px; width: 300px; overflow: visible; ' \
+               'margin-left: -175px; }</style>\n' + \
+               '<div class="hover_img">\n' + \
+               f'<a href="#">{card.NAME}<span><img src="{card.IMAGE_URL}" alt="image"/></span></a>\n' + \
+               '</div>'
+        return html
+    except:
+        return card_name
 
 
 def color_map(val):
-    if len(val) == 1:
-        return f'color: black; background-color: {color_hexes[val]}44'
-    elif len(val) > 1:
-        return f'color: black; background-color: #cea95244'
+    try:
+        if len(val) == 1:
+            return f'color: black; background-color: {color_hexes[val]}44'
+        elif len(val) > 1:
+            return f'color: black; background-color: #cea95244'
+    except KeyError:
+        return f'color: black; background-color: #55555566'
+    except TypeError:
+        return f'color: black; background-color: #55555566'
 
 
 def rank_map(val, alpha='cc'):
     try:
         x = round(val)
         return f'color: black; background-color: {rank_hexes[x]}{alpha}'
-    except:
+    except KeyError:
+        return f'color: black; background-color: #55555566'
+    except TypeError:
         return f'color: black; background-color: #55555566'
 
 
@@ -55,9 +65,15 @@ def stat_map(val):
 
 
 def range_map(val):
-    return f'color: black; background-color: {range_hexes[round(val)]}'
+    try:
+        return f'color: black; background-color: {range_hexes[round(val)]}'
+    except KeyError:
+        return f'color: black; background-color: #55555566'
 
 
 def rarity_map(val):
-    return f'color: black; background-color: {rarity_hexes[val]}22'
+    try:
+        return f'color: black; background-color: {rarity_hexes[val]}22'
+    except KeyError:
+        return f'color: black; background-color: #55555566'
 # endregion Dataframe Formatting
