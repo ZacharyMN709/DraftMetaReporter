@@ -52,7 +52,10 @@ class SetMetadata:
         _full_name, _icon_url = self.REQUESTER.get_set_info(set_code)
         self.FULL_NAME: str = _full_name
         self.ICON_URL: str = _icon_url
-        self.RELEASE_DATE: date = datetime.strptime(SET_CONFIG[self.SET]["PremierDraft"][0][0], DATE_FMT).date()
+        try:
+            self.RELEASE_DATE: date = datetime.strptime(SET_CONFIG[self.SET]["PremierDraft"][0][0], DATE_FMT).date()
+        except KeyError:
+            self.RELEASE_DATE: date = date(9999, 1, 1)
         # Set up dictionaries for quicker sorting.
         self.CARD_PRINT_ORDER_INDEXES: dict[str, int] = \
             {k.NAME: v for v, k in enumerate(self.CARD_LIST)}
