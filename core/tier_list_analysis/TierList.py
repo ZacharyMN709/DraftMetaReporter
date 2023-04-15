@@ -10,7 +10,7 @@ from datetime import datetime, date
 from core.wubrg import WUBRG, COLOR_COMBINATIONS
 from core.utilities import logging
 from core.data_requesting import Request17Lands
-from core.game_metadata import SetMetadata, RARITIES, CardManager
+from core.game_metadata import SetMetadata, RARITIES, CardManager, SET_EXTRAS
 from core.data_fetching import cast_color_filter, rarity_filter, filter_frame, tier_to_rank, SetManager, \
     FORMAT_NICKNAME_DICT, DATA_DIR_LOC, DATA_DIR_NAME
 
@@ -84,6 +84,10 @@ class TierList:
 class TierAggregator:
     def __init__(self, _set):
         self.set_metadata: SetMetadata = SetMetadata.get_metadata(_set)
+        self.card_list = self.set_metadata.CARD_LIST
+        for x in SET_EXTRAS[_set]:
+            extra_metadata = SetMetadata.get_metadata(x)
+            self.card_list += extra_metadata.CARD_LIST
         self.set_data: SetManager = SetManager(_set)
         self.tier_dict: dict[str, TierList] = dict()
         self._tier_frame: Optional[pd.DataFrame] = None
@@ -293,11 +297,12 @@ class TierAggregator:
 
         # Append card information to the frame.
         series = frame.index.to_series()
-        frame['Image'] = series.map({card.NAME: card.NAME for card in self.set_metadata.CARD_DICT.values()})
-        frame['Cast Color'] = series.map({card.NAME: card.CAST_IDENTITY for card in self.set_metadata.CARD_DICT.values()})
-        frame['Color'] = series.map({card.NAME: card.COLOR_IDENTITY for card in self.set_metadata.CARD_DICT.values()})
-        frame['Rarity'] = series.map({card.NAME: card.RARITY for card in self.set_metadata.CARD_DICT.values()})
-        frame['CMC'] = series.map({card.NAME: card.CMC for card in self.set_metadata.CARD_DICT.values()})
+        # TODO: Handle bonus sheets here.
+        frame['Image'] = series.map({card.NAME: card.NAME for card in self.card_list})
+        frame['Cast Color'] = series.map({card.NAME: card.CAST_IDENTITY for card in self.card_list})
+        frame['Color'] = series.map({card.NAME: card.COLOR_IDENTITY for card in self.card_list})
+        frame['Rarity'] = series.map({card.NAME: card.RARITY for card in self.card_list})
+        frame['CMC'] = series.map({card.NAME: card.CMC for card in self.card_list})
 
         # Re-order the frame so card information is first.
         frame = frame[['Image', 'CMC', 'Rarity', 'Color', 'Cast Color'] + org_cols]
