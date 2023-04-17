@@ -249,6 +249,7 @@ class Card:
             raise ValueError(f"Unknown layout '{self.LAYOUT}'")
 
     def __init__(self, json: CARD_INFO):
+        self._json = json
         if json['object'] != 'card':
             raise ValueError(f"Invalid JSON provided! Object type is not 'card'")
 
