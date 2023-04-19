@@ -17,6 +17,7 @@ PANEL_CLASS_NAME = "sc-cfQIsQ bqWCmr"
 TEXT_CLASS_NAME = "sc-bJYTlW fYUbJS"
 
 expansion_name_mapping = {
+    "March of the Machine": "MOM",
     "Shadows Remastered": "SIR",
     "Phyrexia: All Will Be One": "ONE",
     "All Will Be One": "ONE",
