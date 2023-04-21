@@ -45,5 +45,7 @@ def info_splash() -> None:
 
 def set_up(log_lvl=LogLvl.DEBUG) -> None:
     set_log_level(log_lvl)
+    if log_lvl >= LogLvl.ERROR:
+        np.seterr(invalid='ignore')
     set_notebook_display()
     info_splash()
