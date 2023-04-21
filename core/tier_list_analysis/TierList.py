@@ -36,10 +36,6 @@ class TierList:
             card = CardManager.from_name(tier['name'])
             tier['name'] = card.NAME
             tier['rank'] = tier_to_rank[tier['tier']]
-
-            del tier['sideboard']
-            del tier['synergy']
-            del tier['buildaround']
         return data
 
     def __init__(self, data, user, _set):
@@ -68,10 +64,12 @@ class TierList:
         frame.index.name = self.user
         return frame
 
-    def save(self):
+    def save(self) -> str:
         os.makedirs(self.data_root, exist_ok=True)
-        with open(os.path.join(self.data_root, self.filename), 'wb') as f:
+        file_path = os.path.join(self.data_root, self.filename)
+        with open(file_path, 'wb') as f:
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+        return file_path
 
     @classmethod
     def load(cls, filename: str) -> TierList:
