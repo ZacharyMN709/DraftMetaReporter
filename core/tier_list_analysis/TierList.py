@@ -282,7 +282,7 @@ class TierAggregator:
                 if tier_frame is None:
                     continue
                 short_col = FORMAT_NICKNAME_DICT[col]
-                frame[short_col] = tier_frame.droplevel(0)['tier'].astype('Int64')
+                frame[short_col] = tier_frame.droplevel(0)['Tier'].astype('Int64')
                 new_cols.append(short_col)
 
         # Re-order the frame so the data-based stats are first.

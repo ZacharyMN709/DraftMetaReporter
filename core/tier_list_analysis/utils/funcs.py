@@ -1,13 +1,41 @@
+import logging
+
 from core.game_metadata import CardManager
 
 from core.tier_list_analysis.utils.consts import range_hexes, rarity_hexes, rank_hexes, color_hexes
 
 
 # region Dataframe Formatting
+ON_ERROR = f'color: black; background-color: #55555566'
+
+
+def failsafe(function):
+    def wrapper(*args, **kwargs):
+        try:
+            output = function(*args, **kwargs)
+            return output
+        except KeyError:
+            return ON_ERROR
+        except TypeError:
+            return ON_ERROR
+        except ValueError:
+            return ON_ERROR
+
+    return wrapper
+
+
+def gen_background_str(color: str | int, alpha: str | int = '') -> str:
+    if isinstance(color, str) and color.startswith('#'):
+        color = color[1:]
+    return f'color: black; background-color: #{color}{alpha}'
+
+
 def safe_to_int(val):
     try:
         return int(val)
-    except Exception:
+    except TypeError:
+        return ' - '
+    except ValueError:
         return ' - '
 
 
@@ -34,46 +62,30 @@ def hover_card(card_name):
         return card_name
 
 
+@failsafe
 def color_map(val):
-    try:
-        if len(val) == 1:
-            return f'color: black; background-color: {color_hexes[val]}44'
-        elif len(val) > 1:
-            return f'color: black; background-color: #cea95244'
-    except KeyError:
-        return f'color: black; background-color: #55555566'
-    except TypeError:
-        return f'color: black; background-color: #55555566'
+    if len(val) == 1:
+        return gen_background_str(color_hexes[val], 44)
+    elif len(val) > 1:
+        return gen_background_str('cea952', 44)
 
 
-def rank_map(val, alpha='cc'):
-    try:
-        x = round(val)
-        return f'color: black; background-color: {rank_hexes[x]}{alpha}'
-    except KeyError:
-        return f'color: black; background-color: #55555566'
-    except TypeError:
-        return f'color: black; background-color: #55555566'
-
-
+@failsafe
 def user_map(val):
-    return rank_map(val, 'cc')
+    return gen_background_str(rank_hexes[round(val)], 'cc')
 
 
+@failsafe
 def stat_map(val):
-    return rank_map(val, '44')
+    return gen_background_str(rank_hexes[round(val)], '44')
 
 
+@failsafe
 def range_map(val):
-    try:
-        return f'color: black; background-color: {range_hexes[round(val)]}'
-    except KeyError:
-        return f'color: black; background-color: #55555566'
+    return gen_background_str(range_hexes[round(val)])
 
 
+@failsafe
 def rarity_map(val):
-    try:
-        return f'color: black; background-color: {rarity_hexes[val]}22'
-    except KeyError:
-        return f'color: black; background-color: #55555566'
+    return gen_background_str(rarity_hexes[val], 22)
 # endregion Dataframe Formatting
