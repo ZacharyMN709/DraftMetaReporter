@@ -4,7 +4,7 @@ from core.data_fetching import SetManager
 from core.game_metadata.game_objects.Card import CardManager
 
 
-TARGET_SETS = ['SIR', 'ONE']
+TARGET_SETS = ['MOM']
 LOG_LEVEL = LogLvl.SPARSE
 set_log_level(LOG_LEVEL)
 
