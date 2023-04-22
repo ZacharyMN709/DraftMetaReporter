@@ -7,6 +7,7 @@ Data structure manipulation and json handling are the current focus.
 from typing import Any, Union, Optional, TypeVar
 from os import path
 import json
+from itertools import chain
 
 from core.utilities.auto_logging import logging
 
@@ -19,6 +20,13 @@ T2 = TypeVar('T2')
 
 def flatten_lists(lst: list[list[T]]) -> list[T]:
     return [item for sublist in lst for item in sublist]
+
+
+def weave_lists(l1: list[T], l2: list[T]) -> list[T]:
+    """Interweaves elements of two equal-length lists into one."""
+    if len(l1) != len(l2):
+        raise ValueError("List length must be equal!")
+    return list(chain.from_iterable(zip(l1, l2)))
 
 
 def invert_dict(d: dict[T1, T2]) -> dict[T2, T1]:
