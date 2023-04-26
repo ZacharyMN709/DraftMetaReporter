@@ -223,6 +223,7 @@ class TierAggregator:
             "range": partial(apply, range_map),
             "std": partial(gradient, 'Purples'),
             "dist": partial(gradient, 'Purples'),
+            "Last Update": partial(apply, change_map),
         }
         style_dict = user_style_dict | const_style_dict
 

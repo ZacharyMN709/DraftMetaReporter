@@ -23,6 +23,13 @@ rank_hexes: list = [
     '#8fc47e', '#73bf84', '#57bb8a'
 ]
 
+change_hexes: list = [
+    '#E67C73', '#E7857D', '#E98E87', '#EB9891', '#EDA19B',
+    '#EEAAA5', '#F0B4AF', '#F2BDB9', '#F4C6C3', '#F6D0CD',
+    '#F7D9D7', '#F9E2E1', '#FFFFFF', '#DBF0E5', '#CFEBDD',
+    '#C3E6D5', '#B7E1CC', '#ABDDC4', '#9FD8BC', '#93D3B3',
+    '#87CEAB', '#7BC9A3', '#6FC49A', '#63BF92', '#57BB8A'
+]
 
 range_hexes: list = [
     '#ffffff', '#eef4fd', '#dee9fb', '#cddef9', '#bdd3f7',

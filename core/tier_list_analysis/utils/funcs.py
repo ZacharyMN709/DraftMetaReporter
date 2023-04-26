@@ -2,7 +2,7 @@ import logging
 
 from core.game_metadata import CardManager
 
-from core.tier_list_analysis.utils.consts import range_hexes, rarity_hexes, rank_hexes, color_hexes
+from core.tier_list_analysis.utils.consts import range_hexes, rarity_hexes, rank_hexes, color_hexes, change_hexes
 
 
 # region Dataframe Formatting
@@ -78,6 +78,11 @@ def user_map(val):
 @failsafe
 def stat_map(val):
     return gen_background_str(rank_hexes[round(val)], '44')
+
+
+@failsafe
+def change_map(val):
+    return gen_background_str(change_hexes[round(val) + 12])
 
 
 @failsafe
