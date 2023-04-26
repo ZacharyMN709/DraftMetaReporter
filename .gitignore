@@ -11,7 +11,6 @@ Notebooks/.ipynb_checkpoints/*
 /Tests/htmlcov
 
 # Ignore all notebook backups, python C code and generated images.
-*.ipynb
 *.pyc
 *.png
 *.jpeg
