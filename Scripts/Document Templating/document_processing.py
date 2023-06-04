@@ -76,12 +76,14 @@ def add_hyperlink(document, run, url: str, is_external: bool = True):
 class DocumentCreator:
     def __init__(
         self,
+        set_grades,
         left_margin=3.18,
         right_margin=3.18,
         top_margin=2.54,
         bottom_margin=2.54
     ):
         self.card_count = 0
+        self.set_grades = set_grades
 
         self.left_margin = left_margin
         self.right_margin = right_margin
@@ -101,20 +103,6 @@ class DocumentCreator:
         )
 
     def add_card_to_document(self, card_name):
-        def add_grade(cell, grader):
-            grade = tier_parsing.SET_GRADES.loc[card_name][grader].strip()
-            if grade.startswith('BA'):
-                grade = f"{grade[2:]}, \nBuild-Around"
-            if grade.startswith('SYN'):
-                grade = f"{grade[3:]}, \nSynergy"
-
-            cell.text = f"{grader}: {grade}"
-            p = cell.paragraphs[0]
-            p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            r = p.runs[0]
-            r.bold = True
-            apply_font(r.font, size=12, color=(0x00, 0x00, 0x00))
-
         style = self.document.styles['Heading 3']
         apply_default_font(style.font)
 
@@ -130,8 +118,8 @@ class DocumentCreator:
         add_image_to_cell(table.cell(0, 0), height, width, cfg.TEMP_LOC)
         table.cell(0, 0).merge(table.cell(1, 2))
 
-        add_grade(table.cell(0, 3), 'Marc')
-        add_grade(table.cell(1, 3), 'Alex')
+        self.add_grade(table.cell(0, 3), card_name, 'Marc')
+        self.add_grade(table.cell(1, 3), card_name, 'Alex')
 
         paragraph = table.cell(2, 0).paragraphs[0]
         paragraph.style = 'List Bullet'
@@ -140,6 +128,20 @@ class DocumentCreator:
         self.card_count += 1
         if self.card_count % 2 == 0:
             self.document.add_page_break()
+
+    def add_grade(self, cell, card_name, grader):
+        grade = self.set_grades.loc[card_name][grader].strip()
+        if grade.startswith('BA'):
+            grade = f"{grade[2:]}, \nBuild-Around"
+        if grade.startswith('SYN'):
+            grade = f"{grade[3:]}, \nSynergy"
+
+        cell.text = f"{grader}: {grade}"
+        p = cell.paragraphs[0]
+        p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        r = p.runs[0]
+        r.bold = True
+        apply_font(r.font, size=12, color=(0x00, 0x00, 0x00))
 
     def save_as(self, file_name):
         self.document.save(file_name)

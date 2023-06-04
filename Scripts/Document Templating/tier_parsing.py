@@ -97,5 +97,3 @@ def parse_chord_excel(file_path, patch_func=None):
     frame = frame.set_index('Card Name')  # Use the card names as indexes, creating something like a 'layered' dict.
     return frame
 
-
-SET_GRADES = parse_chord_excel(cfg.TIER_LIST_LOC, patch_chord_excel)
