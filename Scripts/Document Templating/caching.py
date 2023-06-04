@@ -25,7 +25,12 @@ def populate_cache(sets):
             if 'next_page' in data:
                 next_url = data['next_page']
             for card in data['data']:
+                logging.debug(f"Adding '{card['name']}' to `CARD_CACHE`")
                 CARD_CACHE[card['name']] = card
+                if "card_faces" in card:
+                    face = card['card_faces'][0]
+                    logging.debug(f"Adding '{face['name']}' to `CARD_CACHE`")
+                    CARD_CACHE[face['name']] = card
 
     end_cnt = len(CARD_CACHE)
     logging.debug(f"{end_cnt - start_cnt} cards added to `CARD_CACHE`")

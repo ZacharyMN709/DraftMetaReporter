@@ -1,3 +1,5 @@
+import logging
+
 import pandas as pd
 
 import config as cfg
@@ -6,8 +8,10 @@ import caching
 
 def repair_names(frame):
     """Repairs all card names in the `Card Name` column, using scryfall's fuzzy search."""
-    name_patch = {card_name: caching.get_card_data(card_name)['name'] for card_name in frame["Card Name"]}
+    logging.debug("Patching names from loaded Excel...")
+    name_patch = {card_name: caching.get_card_data(card_name.strip())['name'] for card_name in frame["Card Name"]}
     frame = frame.replace({"Card Name": name_patch})
+    logging.debug("Finished patching names!")
     return frame
 
 
