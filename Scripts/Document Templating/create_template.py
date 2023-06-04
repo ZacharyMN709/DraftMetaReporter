@@ -4,23 +4,23 @@ import document_processing
 
 
 def create_document(card_names, doc_name="test.docx", hori_margin=3.18, vert_margin=2.54):
-    document = document_processing.new_document(hori_margin=hori_margin, vert_margin=vert_margin)
+    doc_handler = document_processing.DocumentCreator(
+        left_margin=hori_margin,
+        right_margin=hori_margin,
+        top_margin=vert_margin,
+        bottom_margin=vert_margin
+    )
 
-    cnt = 0
     for card_name in card_names:
         card_name = card_name.strip()
         card_data = caching.get_card_data(card_name)
 
         if card_data:
-            document_processing.add_card_to_document(document, card_name)
-            cnt += 1
-            if cnt % 2 == 0:
-                document.add_page_break()
-
+            doc_handler.add_card_to_document(card_name)
         else:
             print(f"Card not found: {card_name}")
 
-    document.save(doc_name)
+    doc_handler.save_as(doc_name)
 
 
 def main(card_list=None):

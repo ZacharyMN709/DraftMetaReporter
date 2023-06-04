@@ -1,3 +1,5 @@
+import logging
+
 import requests
 from time import sleep
 from functools import cache
@@ -10,6 +12,8 @@ CARD_CACHE = dict()
 
 def populate_cache(sets):
     """Load the data for the provided sets into the cache."""
+    start_cnt = len(CARD_CACHE)
+
     base_url = "https://api.scryfall.com/cards/search?format=json&order=set&q=e%3A"
     for s in sets:
         next_url = base_url + s
@@ -23,8 +27,11 @@ def populate_cache(sets):
             for card in data['data']:
                 CARD_CACHE[card['name']] = card
 
+    end_cnt = len(CARD_CACHE)
+    logging.debug(f"{end_cnt - start_cnt} cards added to `CARD_CACHE`")
 
-@cache  # Save the results so we don't re-query stuff we don't have in CARD_CACHE.
+
+@cache  # Save the results, so we don't re-query stuff we have in CARD_CACHE.
 def get_card_data(card_name):
     """Get data for a card based on it's name, taking it from the cache if at all possible."""
     if card_name in CARD_CACHE:
