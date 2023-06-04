@@ -6,8 +6,6 @@ import docx.oxml.ns
 
 import config as cfg
 import caching
-import tier_parsing
-import image_processing
 
 
 def set_cell_margins(cell, **kwargs):
@@ -114,7 +112,7 @@ class DocumentCreator:
 
         add_hyperlink(self.document, run, card_url)
         table = self.document.add_table(rows=3, cols=4)
-        height, width = image_processing.download_card_image(card_name)
+        height, width = caching.download_card_image(card_name)
         add_image_to_cell(table.cell(0, 0), height, width, cfg.TEMP_LOC)
         table.cell(0, 0).merge(table.cell(1, 2))
 
