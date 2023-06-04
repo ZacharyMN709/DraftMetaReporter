@@ -1,8 +1,6 @@
 import logging
-
 import pandas as pd
 
-import config as cfg
 import caching
 
 

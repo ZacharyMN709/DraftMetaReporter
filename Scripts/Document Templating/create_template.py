@@ -2,10 +2,10 @@ import pandas as pd
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx import Document
 
+import config as cfg
 import caching
 import tier_parsing
 import document_processing
-import config as cfg
 
 
 class DocumentCreator:

@@ -1,6 +1,5 @@
 import logging
 import requests
-
 from io import BytesIO
 from PIL import Image
 from time import sleep
