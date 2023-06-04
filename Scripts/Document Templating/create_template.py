@@ -5,7 +5,7 @@ from docx import Document
 import config as cfg
 import caching
 import tier_parsing
-import document_processing
+from utils import docx_funcs
 
 
 class DocumentCreator:
@@ -29,7 +29,7 @@ class DocumentCreator:
         self.update_margins()
 
     def update_margins(self):
-        document_processing.update_margins(
+        docx_funcs.update_margins(
             self.document,
             top_margin=self.top_margin,
             bottom_margin=self.bottom_margin,
@@ -39,7 +39,7 @@ class DocumentCreator:
 
     def add_card_to_document(self, card_name):
         style = self.document.styles['Heading 3']
-        document_processing.apply_default_font(style.font)
+        docx_funcs.apply_default_font(style.font)
 
         heading = self.document.add_heading("", level=3)
         heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
@@ -47,10 +47,10 @@ class DocumentCreator:
         card_data = caching.get_card_data(card_name)
         card_url = card_data["scryfall_uri"]
 
-        document_processing.add_hyperlink(self.document, run, card_url)
+        docx_funcs.add_hyperlink(self.document, run, card_url)
         table = self.document.add_table(rows=3, cols=4)
         height, width = caching.download_card_image(card_name)
-        document_processing.add_image_to_cell(table.cell(0, 0), height, width, cfg.TEMP_LOC)
+        docx_funcs.add_image_to_cell(table.cell(0, 0), height, width, cfg.TEMP_LOC)
         table.cell(0, 0).merge(table.cell(1, 2))
 
         self.add_grade(table.cell(0, 3), card_name, 'Marc')
@@ -76,7 +76,7 @@ class DocumentCreator:
         p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
         r = p.runs[0]
         r.bold = True
-        document_processing.apply_font(r.font, size=12, color=(0x00, 0x00, 0x00))
+        docx_funcs.apply_font(r.font, size=12, color=(0x00, 0x00, 0x00))
 
     def save_as(self, file_name):
         self.document.save(file_name)
