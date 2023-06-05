@@ -16,3 +16,5 @@ Notebooks/.ipynb_checkpoints/*
 *.jpeg
 *.docx
 *.docx#
+*.pptx
+*.pptx#
