@@ -1,6 +1,7 @@
 import pandas as pd
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx import Document
+from docx.table import _Cell
 
 import config as cfg
 import caching
@@ -10,12 +11,12 @@ from utils import docx_funcs
 
 class DocumentCreator:
     def __init__(
-        self,
-        grades,
-        left_margin=3.18,
-        right_margin=3.18,
-        top_margin=2.54,
-        bottom_margin=2.54
+            self,
+            grades: pd.DataFrame,
+            left_margin: float = 3.18,
+            right_margin: float = 3.18,
+            top_margin: float = 2.54,
+            bottom_margin: float = 2.54
     ):
         self.card_count: int = 0
         self.grades: pd.DataFrame = grades
@@ -37,7 +38,7 @@ class DocumentCreator:
             right_margin=self.right_margin
         )
 
-    def add_card_to_document(self, card_name):
+    def add_card_to_document(self, card_name: str):
         style = self.document.styles['Heading 3']
         docx_funcs.apply_default_font(style.font)
 
@@ -64,7 +65,7 @@ class DocumentCreator:
         if self.card_count % 2 == 0:
             self.document.add_page_break()
 
-    def add_grade(self, cell, card_name, grader):
+    def add_grade(self, cell: _Cell, card_name: str, grader: str):
         grade = self.grades.loc[card_name][grader].strip()
         if grade.startswith('BA'):
             grade = f"{grade[2:]}, \nBuild-Around"
@@ -78,11 +79,17 @@ class DocumentCreator:
         r.bold = True
         docx_funcs.apply_font(r.font, size=12, color=(0x00, 0x00, 0x00))
 
-    def save_as(self, file_name):
+    def save_as(self, file_name: str):
         self.document.save(file_name)
 
 
-def create_document(grades, card_names, doc_name="test.docx", hori_margin=3.18, vert_margin=2.54):
+def create_document(
+        grades: pd.DataFrame,
+        card_names: list[str],
+        doc_name="test.docx",
+        hori_margin: float = 3.18,
+        vert_margin: float = 2.54
+):
     doc_handler = DocumentCreator(
         grades,
         left_margin=hori_margin,
@@ -103,7 +110,7 @@ def create_document(grades, card_names, doc_name="test.docx", hori_margin=3.18, 
     doc_handler.save_as(doc_name)
 
 
-def main(grades, card_list=None):
+def main(grades: pd.DataFrame, card_list: list[str] = None):
     if card_list is None:
         card_list = [card_name for card_name in grades.index]
 
@@ -112,7 +119,7 @@ def main(grades, card_list=None):
 
 
 if __name__ == "__main__":
-    caching.populate_cache(cfg.SETS)
+    caching.populate_cache(['MOM', 'MUL'])
     set_grades = tier_parsing.parse_chord_excel(cfg.TIER_LIST_LOC, tier_parsing.patch_chord_excel)
 
     test_order = [

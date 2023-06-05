@@ -9,10 +9,6 @@ DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 logging.basicConfig(level=LOG_LVL, format=FMT, datefmt=DATE_FORMAT, force=True)
 
 
-# Caching
-SETS = ['MOM', 'MUL']
-
-
 # Tier List
 TIER_LIST_ROOT = f'C:\\Users\\Zachary\\Coding\\GitHub\\17LandsData\\MOM\\Tiers\\'
 TIER_LIST_FILE = 'MOM Gradings.xlsx'
