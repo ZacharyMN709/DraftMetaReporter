@@ -35,7 +35,7 @@ def add_centered_image_slide(
 ):
     # TODO: Get height and width from image.
     height = 24
-    width = 32
+    width = 16
 
     height_ratio = height / (SLIDE_HEIGHT - min_vertical_margin*2)
     width_ratio = width / (SLIDE_WIDTH - min_horizontal_margin*2)
@@ -53,12 +53,3 @@ def add_centered_image_slide(
         vertical_margin = min_vertical_margin
 
     add_image_slide(presentation, image_path, horizontal_margin, vertical_margin, height, width)
-
-
-if __name__ == "__main__":
-    prs = new_presentation()
-
-    path = r"C:\Users\Zachary\Coding\GitHub\DraftMetaReporter\Notebooks\temp.jpeg"
-    add_centered_image_slide(prs, path)
-
-    prs.save("test.pptx")
