@@ -34,8 +34,8 @@ def add_centered_image_slide(
         min_vertical_margin: float = 2,
 ):
     # TODO: Get height and width from image.
-    height = 24
-    width = 16
+    height = 88.9
+    width = 63.5
 
     height_ratio = height / (SLIDE_HEIGHT - min_vertical_margin*2)
     width_ratio = width / (SLIDE_WIDTH - min_horizontal_margin*2)
