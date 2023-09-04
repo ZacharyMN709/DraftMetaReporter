@@ -4,6 +4,7 @@ import pandas as pd
 from core.game_metadata import Card
 
 import card_ordering
+import caching
 
 
 def gen_dict_from_card(card: Card, reviewers: list[str] = None) -> dict[str, Any]:
@@ -23,6 +24,7 @@ def gen_dict_from_card(card: Card, reviewers: list[str] = None) -> dict[str, Any
 
 
 def gen_review_spreadsheet(file_name: str, set_code: str, reviewers: list[str] = None):
+    caching.populate_cache([set_code])
     cards = card_ordering.get_set_order(set_code)
     records = [gen_dict_from_card(card, reviewers) for card in cards]
     frame = pd.DataFrame.from_records(records)
@@ -30,7 +32,7 @@ def gen_review_spreadsheet(file_name: str, set_code: str, reviewers: list[str] =
 
 
 if __name__ == "__main__":
-    SET = "LTR"
+    SET = "WOT"
     FILE = f"{SET} Gradings.xlsx"
     REVIEWERS = ["Alex", "Marc"]
     gen_review_spreadsheet(FILE, SET, REVIEWERS)

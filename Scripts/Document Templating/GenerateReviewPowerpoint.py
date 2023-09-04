@@ -20,6 +20,7 @@ def gen_powerpoint_half(cards: list[Card], file_name: str):
 
 
 def gen_set_review_pptx(set_code: str, split_point: int):
+    caching.populate_cache([set_code])
     cards = card_ordering.get_set_order(set_code)
 
     commons_and_uncommons = cards[0:split_point]
@@ -30,7 +31,7 @@ def gen_set_review_pptx(set_code: str, split_point: int):
 
 
 if __name__ == "__main__":
-    SET = "LTR"
-    SPLIT = 183
+    SET = "WOT"
+    SPLIT = 18
 
     gen_set_review_pptx(SET, SPLIT)
