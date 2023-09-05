@@ -223,7 +223,7 @@ class Card:
 
         self.DEFAULT_FACE = CardFace(json, self.LAYOUT, 'default')
 
-        if self.LAYOUT in {CardLayouts.NORMAL, CardLayouts.SAGA, CardLayouts.CLASS}:
+        if self.LAYOUT in CardLayouts.BASIC:
             self.FACE_1 = self.DEFAULT_FACE
             self.FACE_2 = None
         elif self.LAYOUT == CardLayouts.MELD:

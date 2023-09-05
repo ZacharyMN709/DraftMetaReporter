@@ -83,8 +83,9 @@ class CardLayouts(Flag):
     ADVENTURE = auto()
     PROTOTYPE = auto()
     BATTLE = auto()
+    MUTATE = auto()
 
-    BASIC = NORMAL | LEVELER | CLASS | SAGA
+    BASIC = NORMAL | LEVELER | CLASS | SAGA | MUTATE
     FUSED = ADVENTURE | SPLIT | FLIP | PROTOTYPE
     TWO_SIDED = TRANSFORM | MODAL_DFC | MELD | BATTLE
 
@@ -102,5 +103,6 @@ LAYOUT_DICT: dict[str, CardLayouts] = {
     "adventure": CardLayouts.ADVENTURE,
     "prototype": CardLayouts.PROTOTYPE,
     "battle": CardLayouts.BATTLE,
+    "mutate": CardLayouts.MUTATE
 }
 # endregion Card Layouts
