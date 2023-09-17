@@ -3,19 +3,19 @@ from core.wubrg.typing import COLOR_IDENTITY
 from core.data_graphing.utils.color.colors import Color
 
 # For internal use, for easy palette changing.
-_LIGHT_WHITE = Color.AMBER_100
+_LIGHT_WHITE = Color.AMBER_A100
 _LIGHT_BLUE = Color.BLUE_500
 _LIGHT_BLACK = Color.GREY_500
 _LIGHT_RED = Color.RED_500
 _LIGHT_GREEN = Color.GREEN_500
 
-_WHITE = Color.AMBER_200
+_WHITE = Color.AMBER_A200
 _BLUE = Color.BLUE_700
 _BLACK = Color.GREY_700
 _RED = Color.RED_700
 _GREEN = Color.GREEN_700
 
-_DARK_WHITE = Color.AMBER_300
+_DARK_WHITE = Color.AMBER_A400
 _DARK_BLUE = Color.BLUE_900
 _DARK_BLACK = Color.GREY_900
 _DARK_RED = Color.RED_900
