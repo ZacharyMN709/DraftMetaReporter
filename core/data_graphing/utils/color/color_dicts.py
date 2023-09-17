@@ -1,3 +1,5 @@
+from core.wubrg.typing import COLOR_IDENTITY
+
 from colors import Color
 
 # For internal use, for easy palette changing.
@@ -21,42 +23,42 @@ _DARK_GREEN = Color.GREEN_900
 
 
 # Externally accessible dictionaries, which map archetypes to colours.
-WHITE: dict[str, Color] = {
+WHITE: dict[COLOR_IDENTITY, Color] = {
      'WU': _BLUE,
      'WB': _BLACK,
      'WR': _RED,
      'WG': _GREEN,
 }
 
-BLUE: dict[str, Color] = {
+BLUE: dict[COLOR_IDENTITY, Color] = {
      'WU': _WHITE,
      'UB': _BLACK,
      'UR': _RED,
      'UG': _GREEN,
 }
 
-BLACK: dict[str, Color] = {
+BLACK: dict[COLOR_IDENTITY, Color] = {
      'WB': _WHITE,
      'UB': _BLUE,
      'BR': _RED,
      'BG': _GREEN,
 }
 
-RED: dict[str, Color] = {
+RED: dict[COLOR_IDENTITY, Color] = {
      'WR': _WHITE,
      'UR': _BLUE,
      'BR': _BLACK,
      'RG': _GREEN,
 }
 
-GREEN: dict[str, Color] = {
+GREEN: dict[COLOR_IDENTITY, Color] = {
     'WG': _WHITE,
     'UG': _BLUE,
     'BG': _BLACK,
     'RG': _RED,
 }
 
-ALLIED: dict[str, Color] = {
+ALLIED: dict[COLOR_IDENTITY, Color] = {
      'WG': _WHITE,
      'WU': _BLUE,
      'UB': _BLACK,
@@ -64,7 +66,7 @@ ALLIED: dict[str, Color] = {
      'RG': _GREEN,
 }
 
-ENEMY: dict[str, Color] = {
+ENEMY: dict[COLOR_IDENTITY, Color] = {
      'WB': _WHITE,
      'UR': _BLUE,
      'BG': _BLACK,
@@ -72,7 +74,7 @@ ENEMY: dict[str, Color] = {
      'UG': _GREEN,
 }
 
-SHARD: dict[str, Color] = {
+SHARD: dict[COLOR_IDENTITY, Color] = {
      'WUG': _WHITE,
      'WUB': _BLUE,
      'UBR': _BLACK,
@@ -80,7 +82,7 @@ SHARD: dict[str, Color] = {
      'WRG': _GREEN,
 }
 
-WEDGE: dict[str, Color] = {
+WEDGE: dict[COLOR_IDENTITY, Color] = {
      'WBR': _WHITE,
      'URG': _BLUE,
      'WBG': _BLACK,
@@ -88,7 +90,7 @@ WEDGE: dict[str, Color] = {
      'UBG': _GREEN,
 }
 
-NEPHILIM: dict[str, Color] = {
+NEPHILIM: dict[COLOR_IDENTITY, Color] = {
      'UBRG': _WHITE,
      'WBRG': _BLUE,
      'WURG': _BLACK,
@@ -96,7 +98,7 @@ NEPHILIM: dict[str, Color] = {
      'WUBR': _GREEN,
 }
 
-TWO_COLOR: dict[str, Color] = {
+TWO_COLOR: dict[COLOR_IDENTITY, Color] = {
      'WG': _WHITE,
      'WU': _BLUE,
      'UB': _BLACK,
@@ -109,7 +111,7 @@ TWO_COLOR: dict[str, Color] = {
      'UG': _DARK_GREEN,
 }
 
-THREE_COLOR: dict[str, Color] = {
+THREE_COLOR: dict[COLOR_IDENTITY, Color] = {
      'WUG': _WHITE,
      'WUB': _BLUE,
      'UBR': _BLACK,
@@ -129,4 +131,21 @@ COLOR_COUNTS: dict[str, Color] = {
      '3C': Color.PURPLE_500,
      '4C': Color.PURPLE_700,
      '5C': Color.PURPLE_900,
+}
+
+
+COLOR_MAPPINGS: dict[str, dict[COLOR_IDENTITY, Color]] = {
+     "White": WHITE,
+     "Blue": BLUE,
+     "Black": BLACK,
+     "Red": RED,
+     "Green": GREEN,
+     "Allied": ALLIED,
+     "Enemy": ENEMY,
+     "Shard": SHARD,
+     "Wedge": WEDGE,
+     "Nephilim": NEPHILIM,
+     "Two Color": TWO_COLOR,
+     "Three Color": THREE_COLOR,
+     "Four Color": NEPHILIM,
 }
