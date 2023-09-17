@@ -2,6 +2,8 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as plot_dates
+import pandas as pd
+import seaborn as sns
 import dataframe_image as dfi
 
 from core.data_fetching import FramedData
@@ -12,12 +14,40 @@ from core.data_graphing.utils.color.plotting_config import PlotConfig
 
 
 class PlotterHelper:  # pragma: no cover
-    def __init__(self, data: FramedData, palette=None, color_dict=None):
+    DATA: FramedData
+    _plotter_config: PlotConfig
+    _palette_name: str
+    _palette: sns.palettes._ColorPalette
+    _palette_idx: int
+
+    def __init__(self, data: FramedData, plotter_config: PlotConfig, palette_name=None):
         self.DATA = data
         self.FIG = None
         self.AX = None
-        self.COLORS = ColorHandler(palette, color_dict)
+        self._plotter_config = plotter_config
+        self._palette_name = None
+        self.reset_palette(palette_name)
         os.makedirs(self.get_folder_path(), exist_ok=True)
+
+    # region Color Handling
+    def reset_palette(self, palette_name: str = None):
+        if palette_name:
+            self._palette_name = palette_name
+        self._palette = sns.color_palette(self._palette_name)
+        self._palette_idx = 0
+
+    def _get_color(self, col_name=None):
+        color = self._plotter_config.color_mapping.get(col_name, None)
+        if color:
+            r = color.value[0] / 255
+            g = color.value[1] / 255
+            b = color.value[2] / 255
+            return r, g ,b
+        else:
+            color = self._palette[self._palette_idx % len(self._palette)]
+            self._palette_idx += 1
+            return color
+    # endregion Color Handling
 
     def _get_sub_ax(self, x=None, y=None):
         if not isinstance(self.AX, np.ndarray):
@@ -40,12 +70,14 @@ class PlotterHelper:  # pragma: no cover
         return os.path.join(self.get_folder_path(sub_dir), filename)
 
     def new_single_plot(self, title, width=8, height=6, fontsize=settings.TITLE_SIZE):
+        self.reset_palette()
         self.FIG, self.AX = plt.subplots(1, 1)
         self.FIG.set_size_inches(width, height)
         self.AX.set_title(f"{self.DATA.SET} {self.DATA.FORMAT_ALIAS}: {title}", fontsize=fontsize)
         return self.FIG, self.AX
 
     def new_quad_plot(self, title, width=12, height=8, fontsize=settings.TITLE_SIZE):
+        self.reset_palette()
         self.FIG, self.AX = plt.subplots(2, 2)
         self.FIG.set_size_inches(width, height)
         plt.figtext(0.4, 0.9, f"{self.DATA.SET} {self.DATA.FORMAT_ALIAS}: {title}", fontsize=fontsize)
@@ -83,7 +115,7 @@ class PlotterHelper:  # pragma: no cover
         else:
             self.set_x_axis_daily(ax)
         for col in col_list:
-            ax.plot(data.index, data[[col]], label=col, color=self.COLORS.get_color(col))
+            ax.plot(data.index, data[[col]], label=col, color=self._get_color(col))
         if inv_y:
             ax.invert_yaxis()
         if inv_x:
