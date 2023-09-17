@@ -1,5 +1,6 @@
 # Graphing Defaults
 ROLL: int = 3
+ALPHA: float = 0.85
 GRAPH_DIR_NAME: str = 'Images'
 GRAPH_DIR_LOC: str = r'C:\Users\Zachary\Coding\GitHub'
 DPI: int = 400

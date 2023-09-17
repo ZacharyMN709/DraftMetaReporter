@@ -14,15 +14,17 @@ from core.data_graphing.utils.color.plotting_config import PlotConfig
 
 class PlotterHelper:  # pragma: no cover
     DATA: FramedData
+    alpha: float
     _plotter_config: PlotConfig
     _palette_name: str
     _palette: sns.palettes._ColorPalette
     _palette_idx: int
 
-    def __init__(self, data: FramedData, plotter_config: PlotConfig, palette_name=None):
+    def __init__(self, data: FramedData, plotter_config: PlotConfig, alpha: float = None, palette_name: str = None):
         self.DATA = data
         self.FIG = None
         self.AX = None
+        self.alpha = alpha or settings.ALPHA
         self._plotter_config = plotter_config
         self._palette_name = None
         self.reset_palette(palette_name)
@@ -41,7 +43,7 @@ class PlotterHelper:  # pragma: no cover
             r = color.value[0] / 255
             g = color.value[1] / 255
             b = color.value[2] / 255
-            return r, g ,b
+            return r, g, b, self.alpha
         else:
             color = self._palette[self._palette_idx % len(self._palette)]
             self._palette_idx += 1
