@@ -8,7 +8,7 @@ from core.data_fetching import FramedData
 
 from core.data_graphing.utils import prettify_frame
 from core.data_graphing.utils import settings
-from core.data_graphing.ColorHandler import ColorHandler
+from core.data_graphing.utils.color.plotting_config import PlotConfig
 
 
 class PlotterHelper:  # pragma: no cover

@@ -1,6 +1,6 @@
 from core.wubrg.typing import COLOR_IDENTITY
 
-from colors import Color
+from core.data_graphing.utils.color.colors import Color
 
 # For internal use, for easy palette changing.
 _LIGHT_WHITE = Color.AMBER_100

@@ -1,7 +1,7 @@
 import enum
 
-from colors import Color
-from color_dicts import COLOR_MAPPINGS
+from core.data_graphing.utils.color.colors import Color
+from core.data_graphing.utils.color.color_dicts import COLOR_MAPPINGS
 
 
 class PlotConfig:
