@@ -5,7 +5,7 @@ from core.data_graphing.utils.color.color_dicts import COLOR_MAPPINGS
 
 
 class PlotConfig:
-    file_name: str
+    file_name_prefix: str
     color_list: list[str]
     color_mapping: dict[str, Color]
 
@@ -15,8 +15,8 @@ class PlotConfig:
         color_list = list(color_mapping.keys())
         return PlotConfig(key, color_list, color_mapping)
 
-    def __init__(self, file_name, color_list, color_mapping):
-        self.file_name = file_name
+    def __init__(self, file_name_prefix, color_list, color_mapping):
+        self.file_name_prefix = file_name_prefix
         self.color_list = color_list
         self.color_mapping = color_mapping
 
@@ -26,6 +26,18 @@ class DefaultPlotConfigs(enum.Enum):
 
     def __init__(self, key: str):
         self.plot_config = PlotConfig.from_name(key)
+
+    @property
+    def file_name_prefix(self) -> str:
+        return self.plot_config.file_name_prefix
+
+    @property
+    def color_list(self) -> list[str]:
+        return self.plot_config.color_list
+
+    @property
+    def color_mapping(self) -> dict[str, Color]:
+        return self.plot_config.color_mapping
 
     WHITE = "White"
     BLUE = "Blue"
