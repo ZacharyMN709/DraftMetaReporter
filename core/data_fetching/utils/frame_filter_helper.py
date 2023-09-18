@@ -19,7 +19,7 @@ def rarity_filter(rarities: FilterLike) -> Union[FilterFunc, NoReturn]:
 @rarity_filter.register(type(None))
 def _rarity_filter_none(val: None) -> FilterFunc:
     # Return the frame unchanged
-    return lambda frame: frame
+    return lambda frame: pd.Series(True, index=frame.index)
 
 
 @rarity_filter.register(str)
@@ -81,9 +81,9 @@ def _color_filter(colors: FilterLike, _: str) -> FilterFunc:
 
 
 @_color_filter.register(type(None))
-def _color_filter_none(val: None) -> FilterFunc:
+def _color_filter_none(val: None, col_name: str) -> FilterFunc:
     # Return the frame unchanged
-    return lambda frame: frame
+    return lambda frame: pd.Series(True, index=frame.index)
 
 
 @_color_filter.register(str)
