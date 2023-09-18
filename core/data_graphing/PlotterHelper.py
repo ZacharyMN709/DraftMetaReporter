@@ -1,4 +1,6 @@
+from typing import Optional
 import os
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as plot_dates
@@ -9,23 +11,24 @@ from core.data_fetching import FramedData
 
 from core.data_graphing.utils import prettify_frame
 from core.data_graphing.utils import settings
-from core.data_graphing.utils.color.plotting_config import PlotConfig
+from core.data_graphing.utils.color.plotting_config import PlotConfig, DefaultPlotConfigs
 
 
 class PlotterHelper:  # pragma: no cover
     DATA: FramedData
     alpha: float
     _plotter_config: PlotConfig
-    _palette_name: str
+    _palette_name: Optional[str]
     _palette: sns.palettes._ColorPalette
     _palette_idx: int
 
-    def __init__(self, data: FramedData, plotter_config: PlotConfig, alpha: float = None, palette_name: str = None):
+    def __init__(self, data: FramedData, plotter_config: PlotConfig = None,
+                 alpha: float = None, palette_name: str = None):
         self.DATA = data
         self.FIG = None
         self.AX = None
         self.alpha = alpha or settings.ALPHA
-        self._plotter_config = plotter_config
+        self._plotter_config = plotter_config or DefaultPlotConfigs.BLANK.plot_config
         self._palette_name = None
         self.reset_palette(palette_name)
         os.makedirs(self.get_folder_path(), exist_ok=True)
