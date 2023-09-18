@@ -4,29 +4,32 @@ import pandas as pd
 
 from core.wubrg import get_color_identity
 
+FilterLike = Union[None, str, list[str], set[str]]
+FilterFunc = Callable[[pd.DataFrame], pd.Series]
+
 
 # region Rarity Filtering
 @functools.singledispatch
-def rarity_filter(rarities: Union[str, list[str], set[str]]) -> Union[Callable[[pd.DataFrame], pd.Series], NoReturn]:
+def rarity_filter(rarities: FilterLike) -> Union[FilterFunc, NoReturn]:
     # By default, if we don't have a specific way of handling a parameter, raise an error.
-    raise TypeError(f"Cannot use type '{type(rarities)}' for a name slice. \n"
                     f"Please use one of 'str', 'list[str]' or 'set[str]'.")
+    raise TypeError(f"Cannot use type '{type(rarities)}' for a rarity filter. \n"
 
 
 @rarity_filter.register(str)
-def _rarity_filter_string(rarities: str) -> Callable[[pd.DataFrame], pd.Series]:
+def _rarity_filter_string(rarities: str) -> FilterFunc:
     # Convert the string into uppercase, then into a set.
     return lambda frame: frame['Rarity'].isin({i for i in set(rarities.upper())})
 
 
 @rarity_filter.register(list)
-def _rarity_filter_list(rarities: list[str]) -> Callable[[pd.DataFrame], pd.Series]:
+def _rarity_filter_list(rarities: list[str]) -> FilterFunc:
     # Convert each element in the list into uppercase, and add to the set.
     return lambda frame: frame['Rarity'].isin({i.upper() for i in set(rarities)})
 
 
 @rarity_filter.register(set)
-def _rarity_filter_set(rarities: set[str]) -> Callable[[pd.DataFrame], pd.Series]:
+def _rarity_filter_set(rarities: set[str]) -> FilterFunc:
     # Uppercase each element in the set.
     return lambda frame: frame['Rarity'].isin({i.upper() for i in rarities})
 # endregion Rarity Filtering
@@ -36,8 +39,7 @@ def _rarity_filter_set(rarities: set[str]) -> Callable[[pd.DataFrame], pd.Series
 OPERANDS = Literal['>', '<', '=', '==', '!=', '>=', '<=']
 
 
-def cmc_filter(cmc: int, op: OPERANDS = "==") \
-        -> Callable[[pd.DataFrame], pd.Series]:
+def cmc_filter(cmc: int, op: OPERANDS = "==") -> FilterFunc:
     # Make sure the mana value is an int, and op is str
     if type(cmc) is not int:
         raise TypeError("`cmc` must be an int.")
@@ -66,40 +68,40 @@ def cmc_filter(cmc: int, op: OPERANDS = "==") \
 
 # region Color Filtering
 @functools.singledispatch
-def _color_filter(colors: Union[str, list[str], set[str]], _: str) -> Callable[[pd.DataFrame], pd.Series]:
+def _color_filter(colors: FilterLike, _: str) -> FilterFunc:
     # By default, if we don't have a specific way of handling a parameter, raise an error.
     raise TypeError(f"Cannot use type '{type(colors)}' for a color filter. \n"
                     f"Please use one of 'str', 'list[str]' or 'set[str]'.")
 
 
 @_color_filter.register(str)
-def _color_filter_string(colors: str, col_name: str) -> Callable[[pd.DataFrame], pd.Series]:
+def _color_filter_string(colors: str, col_name: str) -> FilterFunc:
     # Convert the string into uppercase, then into single element list.
     return lambda frame: frame[col_name].isin({get_color_identity(colors)})
 
 
 @_color_filter.register(list)
-def _color_filter_list(colors: list[str], col_name: str) -> Callable[[pd.DataFrame], pd.Series]:
+def _color_filter_list(colors: list[str], col_name: str) -> FilterFunc:
     # Convert each element in the list into uppercase, and add to the set.
     return _color_filter_set({i.upper() for i in set(colors)}, col_name)
 
 
 @_color_filter.register(set)
-def _color_filter_set(colors: set[str], col_name: str) -> Callable[[pd.DataFrame], pd.Series]:
+def _color_filter_set(colors: set[str], col_name: str) -> FilterFunc:
     # Return a function, based on the provided filter value.
     return lambda frame: frame[col_name].isin(colors)
 
 
-def card_color_filter(colors: Union[str, list[str], set[str]]) -> Callable[[pd.DataFrame], pd.Series]:
+def card_color_filter(colors: FilterLike) -> FilterFunc:
     return _color_filter(colors, 'Color')
 
 
-def cast_color_filter(colors: Union[str, list[str], set[str]]) -> Callable[[pd.DataFrame], pd.Series]:
+def cast_color_filter(colors: FilterLike) -> FilterFunc:
     return _color_filter(colors, 'Cast Color')
 # endregion Color Filtering
 
 
-def compose_filters(filters: list[Callable[[pd.DataFrame], pd.Series]]) -> Callable[[pd.DataFrame], pd.Series]:
+def compose_filters(filters: list[FilterFunc]) -> FilterFunc:
     def composed_func(frame: pd.DataFrame) -> pd.Series:
         sub_frame = frame.copy()
         filtered_frame = pd.DataFrame()
@@ -110,7 +112,7 @@ def compose_filters(filters: list[Callable[[pd.DataFrame], pd.Series]]) -> Calla
     return composed_func
 
 
-def filter_frame(frame, order=None, filters=None, asc=False):
+def filter_frame(frame, order: str = None, filters: list[FilterFunc] = None, asc: bool = False):
     if filters:
         sub_frame = pd.DataFrame()
         for f in filters:
