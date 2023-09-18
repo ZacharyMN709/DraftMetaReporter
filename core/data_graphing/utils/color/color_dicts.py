@@ -112,11 +112,11 @@ TWO_COLOR: dict[COLOR_IDENTITY, Color] = {
 }
 
 THREE_COLOR: dict[COLOR_IDENTITY, Color] = {
-     'WUG': _WHITE,
-     'WUB': _BLUE,
-     'UBR': _BLACK,
-     'BRG': _RED,
-     'WRG': _GREEN,
+     'WUG': _LIGHT_WHITE,
+     'WUB': _LIGHT_BLUE,
+     'UBR': _LIGHT_BLACK,
+     'BRG': _LIGHT_RED,
+     'WRG': _LIGHT_GREEN,
      'WBR': _DARK_WHITE,
      'URG': _DARK_BLUE,
      'WBG': _DARK_BLACK,
