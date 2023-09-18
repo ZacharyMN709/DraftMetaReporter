@@ -99,11 +99,11 @@ NEPHILIM: dict[COLOR_IDENTITY, Color] = {
 }
 
 TWO_COLOR: dict[COLOR_IDENTITY, Color] = {
-     'WG': _WHITE,
-     'WU': _BLUE,
-     'UB': _BLACK,
-     'BR': _RED,
-     'RG': _GREEN,
+     'WG': _LIGHT_WHITE,
+     'WU': _LIGHT_BLUE,
+     'UB': _LIGHT_BLACK,
+     'BR': _LIGHT_RED,
+     'RG': _LIGHT_GREEN,
      'WB': _DARK_WHITE,
      'UR': _DARK_BLUE,
      'BG': _DARK_BLACK,
