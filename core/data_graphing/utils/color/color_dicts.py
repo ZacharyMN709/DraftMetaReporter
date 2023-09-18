@@ -23,6 +23,8 @@ _DARK_GREEN = Color.GREEN_900
 
 
 # Externally accessible dictionaries, which map archetypes to colours.
+BLANK: dict[str, dict[COLOR_IDENTITY, Color]] = dict()
+
 WHITE: dict[COLOR_IDENTITY, Color] = {
      'WU': _BLUE,
      'WB': _BLACK,
@@ -133,6 +135,19 @@ COLOR_COUNTS: dict[str, Color] = {
      '5C': Color.PURPLE_900,
 }
 
+STATS: dict[str, Color] = {
+    'GIH WR': Color.GREEN_500,
+    'OH WR': Color.BLUEGREY_500,
+    'GD WR': Color.RED_500,
+    'ATA': Color.ORANGE_500,
+    'ALSA': Color.BLUE_500,
+    '# GIH': Color.GREEN_500,
+    '# OH': Color.BLUEGREY_500,
+    '# GD': Color.RED_500,
+    '# GP': Color.PURPLE_700,
+    '# Picked': Color.ORANGE_500,
+    '# Seen': Color.BLUE_500,
+}
 
 COLOR_MAPPINGS: dict[str, dict[COLOR_IDENTITY, Color]] = {
      "White": WHITE,
@@ -148,4 +163,6 @@ COLOR_MAPPINGS: dict[str, dict[COLOR_IDENTITY, Color]] = {
      "Two Color": TWO_COLOR,
      "Three Color": THREE_COLOR,
      "Four Color": NEPHILIM,
+     "Stats": STATS,
+     "Blank": BLANK,
 }

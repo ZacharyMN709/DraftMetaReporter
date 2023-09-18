@@ -52,3 +52,5 @@ class DefaultPlotConfigs(enum.Enum):
     TWO_COLOR = "Two Color"
     THREE_COLOR = "Three Color"
     FOUR_COLOR = "Four Color"
+    STATS = "Stats"
+    BLANK = "Blank"
