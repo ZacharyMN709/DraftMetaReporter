@@ -19,13 +19,13 @@ class FramedData:
     """
 
     def __init__(self, set_code: str, format_name: str, load_summary: bool = True, load_history: bool = True):
-        self._set_metadata = SetMetadata.get_metadata(set_code)
         self.SET: str = set_code
-        self.SET_NAME: str = self._set_metadata.FULL_NAME
+        self.SET_METADATA = SetMetadata.get_metadata(set_code)
+        self.SET_NAME: str = self.SET_METADATA.FULL_NAME
         self.FORMAT: str = format_name
         self.FORMAT_ALIAS: str = FORMAT_NICKNAME_DICT[self.FORMAT].upper()
         self.DATA: DataFramer = DataFramer(set_code, format_name, load_summary, load_history)
-        self._compare_key: Callable = self._set_metadata.FRAME_ORDER_KEY
+        self._compare_key: Callable = self.SET_METADATA.FRAME_ORDER_KEY
 
         self.load_summary: bool = load_summary
         self.load_history: bool = load_history
