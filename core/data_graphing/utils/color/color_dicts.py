@@ -136,17 +136,18 @@ COLOR_COUNTS: dict[str, Color] = {
 }
 
 STATS: dict[str, Color] = {
-    'GIH WR': Color.GREEN_500,
-    'OH WR': Color.BLUEGREY_500,
+    'GIH WR': Color.PURPLE_500,
+    'OH WR': Color.INDIGO_500,
     'GD WR': Color.RED_500,
+    'GP WR': Color.GREEN_500,
     'ATA': Color.ORANGE_500,
-    'ALSA': Color.BLUE_500,
-    '# GIH': Color.GREEN_500,
-    '# OH': Color.BLUEGREY_500,
-    '# GD': Color.RED_500,
-    '# GP': Color.PURPLE_700,
-    '# Picked': Color.ORANGE_500,
-    '# Seen': Color.BLUE_500,
+    'ALSA': Color.LIGHTBLUE_500,
+    '# GIH': Color.PURPLE_A700,
+    '# OH': Color.INDIGO_A700,
+    '# GD': Color.RED_A700,
+    '# GP': Color.GREEN_A700,
+    '# Picked': Color.ORANGE_A700,
+    '# Seen': Color.LIGHTBLUE_A700,
 }
 
 COLOR_MAPPINGS: dict[str, dict[COLOR_IDENTITY, Color]] = {
