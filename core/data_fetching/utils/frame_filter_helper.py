@@ -12,8 +12,14 @@ FilterFunc = Callable[[pd.DataFrame], pd.Series]
 @functools.singledispatch
 def rarity_filter(rarities: FilterLike) -> Union[FilterFunc, NoReturn]:
     # By default, if we don't have a specific way of handling a parameter, raise an error.
-                    f"Please use one of 'str', 'list[str]' or 'set[str]'.")
     raise TypeError(f"Cannot use type '{type(rarities)}' for a rarity filter. \n"
+                    f"Please use one of 'None', 'str', 'list[str]' or 'set[str]'.")
+
+
+@rarity_filter.register(type(None))
+def _rarity_filter_none(val: None) -> FilterFunc:
+    # Return the frame unchanged
+    return lambda frame: frame
 
 
 @rarity_filter.register(str)
@@ -71,7 +77,13 @@ def cmc_filter(cmc: int, op: OPERANDS = "==") -> FilterFunc:
 def _color_filter(colors: FilterLike, _: str) -> FilterFunc:
     # By default, if we don't have a specific way of handling a parameter, raise an error.
     raise TypeError(f"Cannot use type '{type(colors)}' for a color filter. \n"
-                    f"Please use one of 'str', 'list[str]' or 'set[str]'.")
+                    f"Please use one of 'None', 'str', 'list[str]' or 'set[str]'.")
+
+
+@_color_filter.register(type(None))
+def _color_filter_none(val: None) -> FilterFunc:
+    # Return the frame unchanged
+    return lambda frame: frame
 
 
 @_color_filter.register(str)
