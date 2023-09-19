@@ -17,7 +17,7 @@ from_utils = ['FORMAT_NICKNAME_DICT', 'STAT_FORMAT_STRINGS',
               'PERCENT_COLUMNS', 'STAT_COL_NAMES', 'SHARED_COL_NAMES', 'CARD_INFO_COL_NAMES',
               'utc_today', 'get_prev_17lands_update_time', 'get_next_17lands_update_time',
               'rarity_filter', 'cmc_filter', 'card_color_filter', 'cast_color_filter',
-              'compose_filters', 'filter_frame',
+              'compose_filters', 'filter_frame', 'FilterLike', 'FilterFunc',
               'get_name_slice', 'get_color_slice', 'get_date_slice']
 
 from_data_loader = ['DataLoader']
