@@ -145,7 +145,8 @@ class PlotterHelper:  # pragma: no cover
             dpi = settings.DPI
         self.FIG.savefig(self.get_file_path(filename.replace(' ', '_'), sub_dir), dpi=dpi)
 
-    def frame_to_png(self, frame, file_name):
+    def frame_to_png(self, frame, file_name, save=False):
         s = prettify_frame(frame)
-        dfi.export(s, self.get_file_path(file_name, 'Tables'))
+        if save:
+            dfi.export(s, self.get_file_path(file_name, 'Tables'))
         return s
