@@ -2,10 +2,13 @@ from typing import Optional
 from datetime import date, timedelta
 import pandas as pd
 
+from core.wubrg import COLOR_PAIRS
 from core.data_fetching import cast_color_filter, rarity_filter, filter_frame, FilterLike
 
 from core.data_graphing.PlotterHelper import PlotterHelper
 
+MIN_ALSA = 6
+TRG_STAT = 'GIH WR'
 
 
 class PickOrderAnalyzer:
@@ -119,3 +122,36 @@ class PickOrderAnalyzer:
         frame, head_cnt = self._get_frame_and_row_count(rarity)
         sub_frame = frame.sort_values(sort_col, ascending=False).head(head_cnt)
         return self.PLOTTER.frame_to_png(sub_frame, title)
+
+    def _get_winrate(self, color=''):
+        if color:
+            sub_frame = self.DATA.deck_archetype_frame(summary=True)
+            sub_frame = sub_frame[sub_frame['Splash'] == False]
+            return sub_frame['Win %'][color]
+        else:
+            return self.DATA.deck_group_frame(summary=True)['Win %']['All Decks']
+
+    # https://mtgazone.com/how-to-wheel-in-drafts/
+    def get_best_wheel_cards(self, deck_color, min_alsa=None, trg_stat=None, save=False):
+        min_alsa = min_alsa or MIN_ALSA
+        trg_stat = trg_stat or TRG_STAT
+        target_wr = self._get_winrate(deck_color)
+
+        frame = self._gen_pick_order_diffs(deck_color=deck_color)
+        sub_frame = frame[frame['ALSA'] >= min_alsa].sort_values('ALSA', ascending=True)
+        sub_frame = sub_frame[sub_frame[trg_stat] >= target_wr]
+        axis_name = deck_color or 'All Decks'
+        sub_frame = sub_frame.rename_axis(f"{axis_name} (%{target_wr})")
+        sub_frame = sub_frame.sort_values(trg_stat, ascending=False)
+        if deck_color:
+            title = f"Wheelable Cards - {deck_color}.png"
+        else:
+            title = f"Wheelable Cards - All Cards.png"
+
+        return self.PLOTTER.frame_to_png(sub_frame, title, save=save)
+
+    def get_wheelable_summary(self, save=False):
+        archetypes = [''] + COLOR_PAIRS
+        wheelable_cards = {c: self.get_best_wheel_cards(c, save=save) for c in archetypes}
+        frame_iterator = iter(wheelable_cards.values())
+        return frame_iterator
