@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional
 from datetime import date, timedelta
 import pandas as pd
 
@@ -7,24 +7,22 @@ from core.data_fetching import cast_color_filter, rarity_filter, filter_frame, F
 from core.data_graphing.PlotterHelper import PlotterHelper
 
 
+
 class PickOrderAnalyzer:
-    COLUMNS = ['ALSA', 'ALSA Change', 'ATA', 'ATA Change', 'GIH WR', 'OH WR', 'Color', 'Cast Color', 'Rarity']
-    KEPT_COLUMNS = ['ALSA', 'ATA', 'GIH WR', 'OH WR', 'Color', 'Cast Color', 'Rarity']
+    COLUMNS = ['ALSA', 'ALSA Change', 'ATA', 'ATA Change', 'GIH WR', 'OH WR', 'Color', 'Cast Color', 'Rarity', 'Rank']
+    KEPT_COLUMNS = ['ALSA', 'ATA', 'GIH WR', 'OH WR', 'Color', 'Cast Color', 'Rarity', 'Rank']
 
-    def _gen_pick_order_diffs(self, start_date: Optional[date] = None, end_date: Optional[date] = None):
-        def frame_by_date(target_date: Optional[date]):
-            df = self.DATA.card_frame(date=target_date, deck_color='')
-            df.index = [tup[2] for tup in df.index]
-            return df
-
+    def _gen_pick_order_diffs(self,
+                              deck_color: str = '',
+                              start_date: Optional[date] = None,
+                              end_date: Optional[date] = None):
         start_date = start_date or self.DATA.SET_METADATA.RELEASE_DATE
         end_date = end_date or date.today() - timedelta(days=1)
 
-        # TODO: Remove the extra index from this.
-        diff = self.DATA.card_frame(deck_color='', summary=True).copy()
-        diff.index = [tup[1] for tup in diff.index]
-        first = frame_by_date(target_date=start_date)
-        last = frame_by_date(target_date=end_date)
+        diff = self.DATA.simplified_card_frame(deck_color=deck_color).copy()
+        first = self.DATA.simplified_card_frame(date=start_date)
+        last = self.DATA.simplified_card_frame(date=end_date)
+
         diff['ALSA'] = last['ALSA']
         diff['ATA'] = last['ATA']
         diff['ALSA Change'] = first['ALSA'] - last['ALSA']
