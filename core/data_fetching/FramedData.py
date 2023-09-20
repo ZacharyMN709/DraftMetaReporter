@@ -6,7 +6,7 @@ from scipy.stats import norm
 
 from core.game_metadata import SetMetadata
 
-from core.data_fetching.utils.consts import FORMAT_NICKNAME_DICT, rank_to_tier, range_map_vals
+from core.data_fetching.utils.consts import rank_to_tier, range_map_vals, FORMAT_NICKNAME_DICT, CARD_INFO_COL_NAMES
 from core.data_fetching.utils.index_slice_helper import get_name_slice, get_color_slice, get_date_slice
 from core.data_fetching.DataFramer import DataFramer
 
@@ -68,6 +68,22 @@ class FramedData:
             return self.DATA.CARD_SUMMARY_FRAME.loc(axis=0)[deck_color_slice, name_slice]
         else:
             return self.DATA.CARD_HISTORY_FRAME.loc(axis=0)[date_slice, deck_color_slice, name_slice]
+
+    def simplified_card_frame(self, deck_color='', date=None, drop_card_info: bool = False) -> pd.DataFrame:
+        """Returns a subset of the 'CARD' data as a DataFrame, with only the card names as indexes."""
+        deck_color_slice = get_color_slice(deck_color)
+        date_slice = get_date_slice(date)
+
+        if date:
+            frame = self.DATA.CARD_HISTORY_FRAME.loc(axis=0)[date_slice, deck_color_slice]
+            frame.index = [tup[2] for tup in frame.index]
+        else:
+            frame = self.DATA.CARD_SUMMARY_FRAME.loc(axis=0)[deck_color_slice]
+            frame.index = [tup[1] for tup in frame.index]
+
+        if drop_card_info:
+            frame = frame.drop(CARD_INFO_COL_NAMES, axis=1)
+        return frame
 
     def get_stats_grades(self, deck_color: str = '') -> Optional[pd.DataFrame]:
         # Get the non-colour specific card stats, then normalize GIH WR to from 0-100 for each card.
