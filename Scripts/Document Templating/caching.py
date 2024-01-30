@@ -58,6 +58,25 @@ def get_card_data(card_name):
         return None
 
 
+@cache  # Save the results, so we don't re-query stuff we have in CARD_CACHE.
+def get_card_data_by_set(expansion, number, name):
+    card = CARD_CACHE.get(name, None)
+    if card is not None and card['set'].lower() == expansion.lower():
+        return card
+
+    search_url = f"https://api.scryfall.com/cards/{expansion.lower()}/{number}"
+    response = requests.get(search_url)
+    data = response.json()
+    sleep(0.1)  # Scryfall requests this, so I try to be a good netizen.
+
+    if data["object"] == 'card':
+        CARD_CACHE[data['name']] = data
+        return data
+    else:
+        print(f"Could not find card for '{expansion} - {number}'")
+        return None
+
+
 @cache  # Save the results so if we remake the document, we don't re-fetch all the images.
 def get_image_data(card_image_url):
     """Get the image for a given url."""
