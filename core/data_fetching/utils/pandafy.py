@@ -32,7 +32,7 @@ def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
         frame[f'{name} WR'] = frame[f'{name} WR'] * 100
 
     frame["IWD"] = frame["IWD"] * 100
-    frame = frame.drop(['sideboard_game_count', 'sideboard_win_rate', 'url', 'url_back'], axis=1)
+    frame = frame.drop(['url', 'url_back'], axis=1)
     frame['Rarity'] = frame['Rarity'].map(RARITY_ALIASES)
 
     column_names = STAT_COL_NAMES + SHARED_COL_NAMES
