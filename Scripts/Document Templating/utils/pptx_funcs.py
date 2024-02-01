@@ -2,6 +2,8 @@ from pptx import Presentation as new_presentation
 from pptx.slide import Slide
 from pptx.util import Cm
 from pptx.presentation import Presentation
+from PIL import Image
+import tempfile
 
 SLIDE_HEIGHT = 19.05
 SLIDE_WIDTH = 25.40
@@ -29,14 +31,11 @@ def add_image_slide(
 
 def add_centered_image_slide(
         presentation: Presentation,
-        image_path: str,
+        img: Image,
         min_horizontal_margin: float = 2,
         min_vertical_margin: float = 2,
 ):
-    # TODO: Get height and width from image.
-    height = 88.9
-    width = 63.5
-
+    width, height = img.size
     height_ratio = height / (SLIDE_HEIGHT - min_vertical_margin*2)
     width_ratio = width / (SLIDE_WIDTH - min_horizontal_margin*2)
     is_landscape = width_ratio >= height_ratio
@@ -52,4 +51,7 @@ def add_centered_image_slide(
         horizontal_margin = (SLIDE_WIDTH - width) / 2
         vertical_margin = min_vertical_margin
 
-    add_image_slide(presentation, image_path, horizontal_margin, vertical_margin, height, width)
+
+    tmp = tempfile.NamedTemporaryFile(suffix='.png')
+    img.save(tmp)
+    add_image_slide(presentation, tmp, horizontal_margin, vertical_margin, height, width)

@@ -13,8 +13,8 @@ def gen_powerpoint_half(card_names: list[str], file_name: str):
     prs = new_presentation()
 
     for card_name in card_names:
-        height, width = caching.download_card_image(card_name)
-        pptx_funcs.add_centered_image_slide(prs, IMAGE_PATH)
+        image_stream = caching.generate_slide_image(card_name)
+        pptx_funcs.add_centered_image_slide(prs, image_stream)
 
     prs.save(file_name)
 
@@ -30,14 +30,14 @@ def gen_set_review_pptx(set_code: str, split_point: int):
     gen_powerpoint_half(rares_and_mythic,  f"{set_code} - Rares and Mythics .pptx")
 
 
-def gen_by_set():
+def gen_by_set(expansion):
     SPLIT = 18
 
-    gen_set_review_pptx(SET, SPLIT)
+    gen_set_review_pptx(expansion, SPLIT)
 
 
-def gen_by_card_lists():
-    caching.populate_cache({SET, "SPG"})
+def gen_by_card_lists(expansion):
+    caching.populate_cache({expansion, "SPG"})
 
     day_one_keys = [
         ("MKM", 221, "No More Lies"),
@@ -368,12 +368,21 @@ def gen_by_card_lists():
     day_one_cards = [caching.get_card_data_by_set(s, n, name)["name"] for s, n, name in day_one_keys]
     day_two_cards = [caching.get_card_data_by_set(s, n, name)["name"] for s, n, name in day_two_keys]
 
-    gen_powerpoint_half(day_one_cards,  f"{SET} - Commons and Uncommons.pptx")
-    gen_powerpoint_half(day_two_cards,  f"{SET} - Rares and Mythics.pptx")
+    gen_powerpoint_half(day_one_cards,  f"{expansion} - Commons and Uncommons.pptx")
+    gen_powerpoint_half(day_two_cards,  f"{expansion} - Rares and Mythics.pptx")
+
+
+def debug():
+    day_one_keys = [
+        ("MOM", 243, "Joyful Stormsculptor"),
+        ("MOM", 49, "Captive Weird"),
+        ("MOM", 234, "Invasion of Kaladesh"),
+    ]
+
+    day_one_cards = [caching.get_card_data_by_set(s, n, name)["name"] for s, n, name in day_one_keys]
+    gen_powerpoint_half(day_one_cards, f"Test.pptx")
 
 
 if __name__ == "__main__":
-    SET = "MKM"
-
-    gen_by_card_lists()
+    debug()
 

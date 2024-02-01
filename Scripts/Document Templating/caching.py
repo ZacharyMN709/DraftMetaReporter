@@ -77,6 +77,52 @@ def get_card_data_by_set(expansion, number, name):
         return None
 
 
+def get_card_face_images(card_data):
+    def _get_url(face):
+        uris = ['large', 'border_crop', 'normal', 'small', 'art_crop']
+        for uri in uris:
+            if uri in face["image_uris"]:
+                return face["image_uris"][uri]
+
+    def get_face_image(card_face):
+        image_url = _get_url(card_face)
+        response = requests.get(image_url)
+        image_data = response.content
+        sleep(0.1)  # Scryfall requests this, so I try to be a good netizen.
+        return Image.open(BytesIO(image_data))
+
+    if "layout" in card_data and card_data["layout"] == "transform":
+        front_face = get_face_image(card_data["card_faces"][0])
+        back_face = get_face_image(card_data["card_faces"][1])
+    else:
+        front_face = get_face_image(card_data)
+        back_face = None
+
+    return front_face, back_face
+
+
+def generate_slide_image(card_name):
+    card_data = get_card_data(card_name)
+    front_image, back_image = get_card_face_images(card_data)
+
+    if back_image is None:
+        return front_image
+
+    if "Battle" in card_data["card_faces"][0]["type_line"]:
+        front_image = front_image.rotate(270, expand=True)  # Rotate image by -90 degrees
+
+    merge_image_size = (front_image.size[0] + back_image.size[0], max(front_image.size[1], back_image.size[1]))
+    merged_image = Image.new("RGBA", merge_image_size, (255, 255, 255, 255))
+
+    front_image_location = (0, (merged_image.size[1] - front_image.size[1]) // 2)
+    back_image_location = (front_image.size[0], (merged_image.size[1] - back_image.size[1]) // 2)
+    merged_image.paste(front_image, front_image_location)
+    merged_image.paste(back_image, back_image_location)
+    return merged_image
+
+
+
+
 @cache  # Save the results so if we remake the document, we don't re-fetch all the images.
 def get_image_data(card_image_url):
     """Get the image for a given url."""
