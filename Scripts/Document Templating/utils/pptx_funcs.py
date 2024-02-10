@@ -31,27 +31,33 @@ def add_image_slide(
 
 def add_centered_image_slide(
         presentation: Presentation,
-        img: Image,
-        min_horizontal_margin: float = 2,
-        min_vertical_margin: float = 2,
+        image: Image
 ):
-    width, height = img.size
-    height_ratio = height / (SLIDE_HEIGHT - min_vertical_margin*2)
-    width_ratio = width / (SLIDE_WIDTH - min_horizontal_margin*2)
+    SCRYFALL_DPI = 96
+    INCH_TO_CM = 2.54
+    MINIMUM_MARGIN = 2
+
+    image_width = (image.size[0] / SCRYFALL_DPI) * INCH_TO_CM
+    image_height = (image.size[1] / SCRYFALL_DPI) * INCH_TO_CM
+    width_ratio = image_width / (SLIDE_WIDTH - MINIMUM_MARGIN * 2)
+    height_ratio = image_height / (SLIDE_HEIGHT - MINIMUM_MARGIN * 2)
     is_landscape = width_ratio >= height_ratio
 
     if is_landscape:
-        height = height / width_ratio
-        width = width / width_ratio
-        horizontal_margin = min_horizontal_margin
-        vertical_margin = (SLIDE_HEIGHT - height) / 2
+        new_image_width = image_width / width_ratio
+        new_image_height = image_height / width_ratio
     else:
-        height = height / height_ratio
-        width = width / height_ratio
-        horizontal_margin = (SLIDE_WIDTH - width) / 2
-        vertical_margin = min_vertical_margin
+        new_image_width = image_width / height_ratio
+        new_image_height = image_height / height_ratio
 
+    x_position = (SLIDE_WIDTH - new_image_width) / 2
+    y_position = (SLIDE_HEIGHT - new_image_height) / 2
 
-    tmp = tempfile.NamedTemporaryFile(suffix='.png')
-    img.save(tmp)
-    add_image_slide(presentation, tmp, horizontal_margin, vertical_margin, height, width)
+    temporary_image_file = tempfile.NamedTemporaryFile(suffix=".png")
+    image.save(temporary_image_file)
+
+    blank_slide_layout = presentation.slide_layouts[6]
+    slide = presentation.slides.add_slide(blank_slide_layout)
+    slide.shapes.add_picture(
+        temporary_image_file, Cm(x_position), Cm(y_position), width=Cm(new_image_width), height=Cm(new_image_height)
+    )
