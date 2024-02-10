@@ -25,8 +25,8 @@ TYPE = Literal["Land", "Creature", "Artifact", "Enchantment", "Planeswalker", "I
 # Rule 205.3i
 LAND_SUBTYPE = Literal[
     "Plains", "Island", "Swamp", "Mountain", "Forest",
-    "Desert", "Gate", "Lair", "Locus", "Sphere",
-    "Urza's", "Mine", "Power-Plant", "Tower"
+    "Cave", "Desert", "Gate", "Lair", "Locus",
+    "Sphere", "Urza's", "Mine", "Power-Plant", "Tower"
 ]
 
 # Rule 205.3m
@@ -34,9 +34,9 @@ CREATURE_SUBTYPE = Literal[
      "Advisor", "Aetherborn", "Ally", "Angel", "Antelope", "Ape", "Archer", "Archon", "Army",
      "Artificer", "Assassin", "Assembly-Worker", "Atog", "Aurochs", "Avatar", "Azra", "Badger",
      "Barbarian", "Bard", "Basilisk", "Bat", "Bear", "Beast", "Beeble", "Beholder", "Berserker",
-     "Bird", "Blinkmoth", "Boar", "Bringer", "Brushwagg", "Camarid", "Camel", "Caribou", "Carrier",
+     "Bird", "Blinkmoth", "Boar", "Bringer", "Brushwagg", "Camarid", "Camel", "Capybara", "Caribou", "Carrier",
      "Cat", "Centaur", "Cephalid", "Chimera", "Citizen", "Cleric", "Cockatrice", "Construct", "Coward",
-     "Crab", "Crocodile", "Cyclops", "Dauthi", "Demigod", "Demon", "Deserter", "Devil", "Dinosaur",
+     "Crab", "Crocodile", "Cyclops", "Dauthi", "Demigod", "Demon", "Deserter", "Detective", "Devil", "Dinosaur",
      "Djinn", "Dog", "Dragon", "Drake", "Dreadnought", "Drone", "Druid", "Dryad", "Dwarf", "Efreet",
      "Egg", "Elder", "Eldrazi", "Elemental", "Elephant", "Elf", "Elk", "Eye", "Faerie", "Ferret",
      "Fish", "Flagbearer", "Fox", "Fractal", "Frog", "Fungus", "Gargoyle", "Germ", "Giant", "Gith", "Gnoll",
@@ -54,7 +54,7 @@ CREATURE_SUBTYPE = Literal[
      "Rat", "Rebel", "Reflection", "Rhino", "Rigger", "Rogue", "Sable", "Salamander", "Samurai",
      "Sand", "Saproling", "Satyr", "Scarecrow", "Scion", "Scorpion", "Scout", "Sculpture", "Serf",
      "Serpent", "Servo", "Shade", "Shaman", "Shapeshifter", "Shark", "Sheep", "Siren", "Skeleton",
-     "Slith", "Sliver", "Slug", "Snake", "Soldier", "Soltari", "Spawn", "Specter", "Spellshaper",
+     "Slith", "Sliver", "Slug", "Snail", "Snake", "Soldier", "Soltari", "Spawn", "Specter", "Spellshaper",
      "Sphinx", "Spider", "Spike", "Spirit", "Splinter", "Sponge", "Squid", "Squirrel", "Starfish",
      "Surrakar", "Survivor", "Tentacle", "Tetravite", "Thalakos", "Thopter", "Thrull", "Tiefling",
      "Treefolk", "Trilobite", "Triskelavite", "Troll", "Turtle", "Unicorn", "Vampire", "Vedalken",
@@ -70,7 +70,7 @@ ARTIFACT_SUBTYPE = Literal[
 
 # Rule 205.3h
 ENCHANTMENT_SUBTYPE = Literal[
-    "Aura", "Cartouche", "Curse", "Rune", "Background", "Class", "Saga", "Shard", "Shrine"
+    "Aura", "Cartouche", "Case", "Curse", "Rune", "Background", "Class", "Saga", "Shard", "Shrine"
 ]
 
 # Rule 205.3j
@@ -79,14 +79,14 @@ PLANESWALKER_SUBTYPE = Literal[
     "Chandra", "Dack", "Dakkon", "Daretti", "Davriel", "Dihada", "Domri", "Dovin", "Ellywick",
     "Elspeth", "Estrid", "Freyalise", "Garruk", "Gideon", "Grist", "Huatli", "Jace", "Jaya",
     "Jeska", "Kaito", "Karn", "Kasmina", "Kaya", "Kiora", "Koth", "Liliana", "Lolth", "Lukka",
-    "Minsc", "Mordenkainen", "Nahiri", "Narset", "Niko", "Nissa", "Nixilis", "Oko", "Ral", "Rowan",
+    "Minsc", "Mordenkainen", "Nahiri", "Narset", "Niko", "Nissa", "Nixilis",  "Quintorius", "Oko", "Ral", "Rowan",
     "Saheeli", "Samut", "Sarkhan", "Serra", "Sorin", "Szat", "Tamiyo", "Tasha", "Teferi", "Teyo",
     "Tezzeret", "Tibalt", "Tyvar", "Ugin", "Urza", "Venser", "Vivien", "Vraska", "Will", "Windgrace",
     "Wrenn", "Xenagos", "Yanggu", "Yanling", "Zariel"
 ]
 
 # Rule 205.3k
-INSTANT_SUBTYPE = Literal["Adventure", "Arcane", "Trap"]
+INSTANT_SUBTYPE = Literal["Adventure", "Arcane", "Chorus", "Trap"]
 
 # Rule 205.3k
 SORCERY_SUBTYPE = Literal["Adventure", "Arcane", "Lesson"]

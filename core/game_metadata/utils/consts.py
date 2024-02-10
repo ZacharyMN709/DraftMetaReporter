@@ -78,6 +78,7 @@ class CardLayouts(Flag):
     MODAL_DFC = auto()
     MELD = auto()
     LEVELER = auto()
+    CASE = auto()
     CLASS = auto()
     SAGA = auto()
     ADVENTURE = auto()
@@ -85,7 +86,7 @@ class CardLayouts(Flag):
     BATTLE = auto()
     MUTATE = auto()
 
-    BASIC = NORMAL | LEVELER | CLASS | SAGA | MUTATE
+    BASIC = NORMAL | LEVELER | CASE | CLASS | SAGA | MUTATE
     FUSED = ADVENTURE | SPLIT | FLIP | PROTOTYPE
     TWO_SIDED = TRANSFORM | MODAL_DFC | MELD | BATTLE
 
@@ -98,6 +99,7 @@ LAYOUT_DICT: dict[str, CardLayouts] = {
     "modal_dfc": CardLayouts.MODAL_DFC,
     "meld": CardLayouts.MELD,
     "leveler": CardLayouts.LEVELER,
+    "case": CardLayouts.CASE,
     "class": CardLayouts.CLASS,
     "saga": CardLayouts.SAGA,
     "adventure": CardLayouts.ADVENTURE,

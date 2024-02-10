@@ -204,6 +204,35 @@ class TestCardFace(unittest.TestCase):
         }
         self.eval_card_face(eval_dict, face)
 
+    def test_card_face_case(self):
+        # https://api.scryfall.com/cards/2a70f0ae-d49b-4cc8-9f76-895039c3dc39?format=json&pretty=true
+        name = 'Case of the Shattered Pact'
+        layout: CardLayouts = CardLayouts.CASE
+        side: CARD_SIDE = 'default'
+        face = self.get_card_face(name, layout, side)
+        eval_dict = {
+            "ORACLE_ID": "d00a089b-7d0d-4b89-902b-7b914e892178",
+            "LAYOUT": layout,
+            "CARD_SIDE": side,
+            "IMG_SIDE": "front",
+            "NAME": "Case of the Shattered Pact",
+            "MANA_COST": "{2}",
+            "CMC": 2,
+            "COLORS": "",
+            "COLOR_IDENTITY": "",
+            "TYPE_LINE": "Enchantment — Case",
+            "ALL_TYPES": {"Enchantment", "Case"},
+            "TYPES": {"Enchantment"},
+            "SUBTYPES": {"Case"},
+            "ORACLE": "When this Case enters the battlefield, search your library for a basic land card, "
+                      "reveal it, put it into your hand, then shuffle.\n"
+                      "To solve — There are five colors among permanents you control. "
+                      "(If unsolved, solve at the beginning of your end step.)\n"
+                      "Solved — At the beginning of combat on your turn, target creature you control gains flying, "
+                      "double strike, and vigilance until end of turn.",
+        }
+        self.eval_card_face(eval_dict, face)
+
     def test_card_face_adventure_main(self):
         # https://api.scryfall.com/cards/09fd2d9c-1793-4beb-a3fb-7a869f660cd4?format=json&pretty=true
         name = 'Bonecrusher Giant'
