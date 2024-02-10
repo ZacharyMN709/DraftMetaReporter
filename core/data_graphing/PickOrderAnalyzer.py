@@ -153,5 +153,6 @@ class PickOrderAnalyzer:
     def get_wheelable_summary(self, save=False):
         archetypes = [''] + COLOR_PAIRS
         wheelable_cards = {c: self.get_best_wheel_cards(c, save=save) for c in archetypes}
-        frame_iterator = iter(wheelable_cards.values())
-        return frame_iterator
+        return wheelable_cards
+
+

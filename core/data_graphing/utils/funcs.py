@@ -13,8 +13,8 @@ def prettify_frame(arg) -> Union[Styler, NoReturn]:  # pragma: no cover
 
 @prettify_frame.register(DataFrame)
 def _prettify_frame(frame: DataFrame) -> Styler:  # pragma: no cover
-    frame.fillna('---')
-    s = frame.style
+    new_frame = frame.fillna('---')
+    s = new_frame.style
     return _prettify_style(s)
 
 
