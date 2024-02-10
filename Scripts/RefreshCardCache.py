@@ -5,6 +5,7 @@ from core.game_metadata.game_objects.Card import CardManager
 
 NEXT_SET = "MKM"
 EXTRA_SETS = [NEXT_SET, "PLST", "SPG", "WOT", "MUL", "SIS", "BRR", "STA"]
+# TODO: Handle the list and special guest cards more elegantly, by which I likely mean separately.
 
 
 def refresh_scryfall_caches():

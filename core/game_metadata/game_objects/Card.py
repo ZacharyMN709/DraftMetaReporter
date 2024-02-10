@@ -532,8 +532,15 @@ class CardManager:
         """ Loads the cache of Arena cards from a configurable location disk. """
         dictionary = load_json_file(SCRYFALL_CACHE_DIR, SCRYFALL_CACHE_FILE_ARENA)
         for line in dictionary:
-            card = Card(line)
-            cls._add_card(card)
+            try:
+                if line['layout'] in ('token', 'emblem') or line['rarity'] == 'special':
+                    continue
+                card = Card(line)
+                cls._add_card(card)
+            except Exception as ex:
+                print(str(ex))
+                print(line["name"])
+                print("\n\n")
 
     # NOTE: The two functions below are expensive and slow, especially to Scryfall.
     #  They should be called only as required.
