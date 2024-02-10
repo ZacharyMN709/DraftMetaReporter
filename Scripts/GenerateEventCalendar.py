@@ -13,10 +13,12 @@ parse_str = r"([A-Z][a-z][a-z] [\d][\d], [\d][\d][\d][\d]) . ([A-Z][a-z][a-z] [\
 finder = re.compile(parse_str)
 
 # TODO: These change over time. Try and parse them somehow.
-PANEL_CLASS_NAME = "sc-cfQIsQ bqWCmr"
-TEXT_CLASS_NAME = "sc-bJYTlW fYUbJS"
+PANEL_CLASS_NAME = "sc-bXmInU fTTNsa"
+TEXT_CLASS_NAME = "sc-ezHdRe dZLpki"
 
 expansion_name_mapping = {
+    "Murders at Karlov Manor": "MKM",
+    "Lost Caverns of Ixalan": "LCI",
     "Wilds of Eldraine": "WOE",
     "Lord of the Rings: Tales of Middle-earth": "LTR",
     "March of the Machine": "MOM",
