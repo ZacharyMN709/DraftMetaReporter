@@ -85,11 +85,10 @@ class TrophyStub:
         return f"{BASE_17L_URL}/deck/{self.DECK_ID}/{self.deck_idx}"
 
     def __str__(self):
-        # TODO: Improve this with colour information and similar.
         return f"{self.DECK_ID}"
 
     def __repr__(self):
-        return f"{self.rank} ({self.colors}) {self}"
+        return f"{self.rank:8} {self.colors:5} - {self}"
 
 
 class Deck:
