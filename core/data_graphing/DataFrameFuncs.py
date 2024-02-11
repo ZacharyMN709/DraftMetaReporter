@@ -1,22 +1,41 @@
 import pandas as pd
 import numpy as np
 import datetime
+from functools import partial, wraps
 
 from core.wubrg import get_color_identity
 from core.wubrg import COLOR_PAIRS, COLOR_COMBINATIONS, get_color_subsets
-
 from core.game_metadata import SetMetadata
+
 from core.data_fetching.utils.consts import COLOR_COUNT_REVERSE_MAP, COLOR_COUNT_SHORTHAND_MAP, STAT_COL_NAMES
 from core.data_fetching.utils import get_name_slice, get_color_slice, rarity_filter, card_color_filter, filter_frame
+from core.data_fetching import FramedData
+
 from core.data_graphing.utils.settings import ROLL
-from core.data_graphing.PlotterHelper import PlotterHelper
+from core.data_graphing.utils.funcs import hyperlink_card_index, prettify_frame
 from core.data_graphing.utils.color.plotting_config import DefaultPlotConfigs
+from core.data_graphing.PlotterHelper import PlotterHelper
+
+
+def auto_prettify(method):
+    @wraps(method)
+    def _wrapped_function(self, *method_args, **method_kwargs):
+        frame = method(self, *method_args, **method_kwargs)
+        if self.auto_prettify:
+            styler = prettify_frame(frame)
+            styler.format_index(formatter=self.hyperlink_card_index)
+            return styler
+        else:
+            return frame
+    return _wrapped_function
 
 
 class DataFrameFuncs:
-    def __init__(self, DATA):
-        self._DATA = DATA
+    def __init__(self, DATA, auto_prettify=False):
+        self._DATA: FramedData = DATA
         self._COLOR_IDX = 0
+        self.auto_prettify = auto_prettify
+        self.hyperlink_card_index = partial(hyperlink_card_index, card_dict=self._DATA.SET_METADATA.CARD_DICT)
 
     @property
     def SET(self):
@@ -335,6 +354,7 @@ class DataFrameFuncs:
 
         return frame.head(count)
 
+    @auto_prettify
     def get_top_performers(self, card_color=None, common_cnt=10, uncommon_cnt=5, deck_color='', play_lim=None):
         play_lim = play_lim or round(self.card_frame(deck_color=deck_color, summary=True)['# GP'].max() * 0.005)
         commons = self.get_top('GIH WR', count=common_cnt, card_color=card_color, card_rarity='C',
