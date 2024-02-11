@@ -108,6 +108,7 @@ class PickOrderAnalyzer:
         frame, head_cnt = self._get_frame_and_row_count(rarity)
         title_stub = self._gen_title(rarity, top)
         title = f"{self.sort_col} - {title_stub}CCE.png"
+        frame = frame[~frame[self.sort_col].isna()]
         frame = frame.sort_values(self.sort_col, ascending=not top).head(head_cnt)
         return self.PLOTTER.frame_to_png(frame, title)
 
@@ -132,7 +133,7 @@ class PickOrderAnalyzer:
     def _get_winrate(self, color=''):
         if color:
             sub_frame = self.DATA.deck_archetype_frame(summary=True)
-            sub_frame = sub_frame[sub_frame['Splash'] == False]
+            sub_frame = sub_frame[~sub_frame['Splash']]
             return sub_frame['Win %'][color]
         else:
             return self.DATA.deck_group_frame(summary=True)['Win %']['All Decks']
