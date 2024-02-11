@@ -355,12 +355,18 @@ class DataFrameFuncs:
         return frame.head(count)
 
     @auto_prettify
-    def get_top_performers(self, card_color=None, common_cnt=10, uncommon_cnt=5, deck_color='', play_lim=None):
+    def get_top_performers(self, card_color=None, common_cnt=10, uncommon_cnt=5, deck_color='', play_lim=None, stat='GIH WR'):
+        to_drop = [
+            '# GP', '# OH', '# GD', '# GIH', '# GND',
+            'GP GW', 'OH GW', 'GD GW', 'GIH GW', 'GND GW',
+            'Type Line', 'Supertypes', 'Types', 'Subtypes', 'Power', 'Toughness',
+            'OH Tier', 'GD Tier',  'GIH Tier', 'OH Percentile', 'GD Percentile', 'GIH Percentile'
+        ]
         play_lim = play_lim or round(self.card_frame(deck_color=deck_color, summary=True)['# GP'].max() * 0.005)
-        commons = self.get_top('GIH WR', count=common_cnt, card_color=card_color, card_rarity='C',
+        commons = self.get_top(stat, count=common_cnt, card_color=card_color, card_rarity='C',
                                deck_color=deck_color, play_lim=play_lim)
-        uncommons = self.get_top('GIH WR', count=uncommon_cnt, card_color=card_color, card_rarity='U',
+        uncommons = self.get_top(stat, count=uncommon_cnt, card_color=card_color, card_rarity='U',
                                  deck_color=deck_color, play_lim=play_lim)
         top_cards = pd.concat([commons, uncommons])
-        top_cards = top_cards.drop(['Type Line', 'Supertypes', 'Types', 'Subtypes', 'Power', 'Toughness'], axis=1)
-        return top_cards.sort_values('GIH WR', ascending=False)
+        top_cards = top_cards.drop(to_drop, axis=1)
+        return top_cards.sort_values(stat, ascending=False)

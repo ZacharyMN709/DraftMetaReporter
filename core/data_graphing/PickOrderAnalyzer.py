@@ -12,8 +12,14 @@ TRG_STAT = 'GIH WR'
 
 
 class PickOrderAnalyzer:
-    COLUMNS = ['ALSA', 'ALSA Change', 'ATA', 'ATA Change', 'GIH WR', 'OH WR', 'Color', 'Cast Color', 'Rarity', 'Rank']
-    KEPT_COLUMNS = ['ALSA', 'ATA', 'GIH WR', 'OH WR', 'Color', 'Cast Color', 'Rarity', 'Rank']
+    COLUMNS = [
+        'ALSA', 'ALSA Change', 'ATA', 'ATA Change', 'GIH WR', 'OH WR',
+        'Color', 'Cast Color', 'Rarity',
+        'OH Rank', 'GIH Rank', 'GD Rank'
+    ]
+    KEPT_COLUMNS = [
+        'ALSA', 'ATA', 'GIH WR', 'OH WR', 'Color', 'Cast Color', 'Rarity', 'OH Rank', 'GIH Rank', 'GD Rank'
+    ]
 
     def _gen_pick_order_diffs(self,
                               deck_color: str = '',

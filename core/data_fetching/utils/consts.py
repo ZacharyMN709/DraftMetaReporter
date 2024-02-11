@@ -103,9 +103,13 @@ STAT_FORMAT_STRINGS: dict[str, str] = {
 
 PERCENT_COLUMNS: list[str] = ["GP WR", "OH WR", "GD WR", "GIH WR", "GND WR", "IWD"]
 
-STAT_COL_NAMES: list[str] = ['# Seen', 'ALSA', '# Picked', 'ATA', '# GP', 'GP WR', 'GP GW',
-                             '# OH', 'OH WR', 'OH GW', '# GD', 'GD WR', 'GD GW',
-                             '# GIH', 'GIH WR', 'GIH GW', '# GND', 'GND WR', 'GND GW', 'IWD']
+STAT_COL_NAMES: list[str] = ['# Seen', 'ALSA', '# Picked', 'ATA',
+                             '# GP', 'GP WR', 'GP GW',
+                             '# GND', 'GND WR', 'GND GW',
+                             '# OH', 'OH WR', 'OH GW',
+                             '# GIH', 'GIH WR', 'GIH GW',
+                             '# GD', 'GD WR', 'GD GW',
+                             "IIO", "IWS", "IWD"]
 
 SHARED_COL_NAMES: list[str] = ['Rarity', 'Color']
 

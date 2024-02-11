@@ -31,7 +31,9 @@ def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
         frame[f'{name} GW'] = (frame[f'# {name}'] * frame[f'{name} WR']).astype(int, errors='ignore')
         frame[f'{name} WR'] = frame[f'{name} WR'] * 100
 
-    frame["IWD"] = frame["IWD"] * 100
+    frame["IIO"] = frame["OH WR"] - frame["GIH WR"]
+    frame["IWD"] = frame["GD WR"] - frame["GIH WR"]
+    frame["IWS"] = frame["GIH WR"] - frame["GND WR"]
     frame = frame.drop(['url', 'url_back'], axis=1)
     frame['Rarity'] = frame['Rarity'].map(RARITY_ALIASES)
 
@@ -43,8 +45,20 @@ def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
 
 
 def get_stats_grades(frame) -> Optional[pd.DataFrame]:
-    # Get all of the rows where GIH WR is non NaN, convert it to a float, cancelling if none exist.
-    available_rows = frame[~frame['GIH WR'].isna()]
+    frame = _get_stats_grades(frame, 'OH')
+    frame = _get_stats_grades(frame, 'GIH')
+    frame = _get_stats_grades(frame, 'GD')
+    return frame
+
+
+def _get_stats_grades(frame, stat) -> Optional[pd.DataFrame]:
+    key_col = f'{stat} WR'
+    percentile_col = f'{stat} Percentile'
+    tier_col = f'{stat} Tier'
+    rank_col = f'{stat} Rank'
+
+    # Get all the rows where GIH WR is non NaN, convert it to a float, cancelling if none exist.
+    available_rows = frame[~frame[key_col].isna()]
     if len(available_rows) == 0:
         return frame
 
@@ -53,23 +67,23 @@ def get_stats_grades(frame) -> Optional[pd.DataFrame]:
     filtered_rows = filtered_rows.copy()
 
     # Get the stats, and use it to normalize the data, assigning it back to the available rows.
-    available_gih = np.array(filtered_rows['GIH WR'], dtype=float)
+    available_gih = np.array(filtered_rows[key_col], dtype=float)
     mu, std = norm.fit(available_gih)
-    filtered_rows['Percentile'] = norm.cdf(available_gih, mu, std).round(4) * 100
+    filtered_rows[percentile_col] = norm.cdf(available_gih, mu, std).round(4) * 100
 
     # Re-map the available rows back to the main frame by reindexing, making empty rows.
     filtered_rows = filtered_rows.reindex(frame.index, fill_value=None)
-    frame['Percentile'] = filtered_rows['Percentile']
+    frame[percentile_col] = filtered_rows[percentile_col]
 
     # For each "Percentile", use a pre-defined mapping to assign that a tier, and in turn, a letter grade.
-    range_map = [frame['Percentile'].between(start, end) for start, end in range_map_vals]
-    frame['Tier'] = np.select(range_map, [i for i in range(0, len(range_map))], 0)
-    frame['Rank'] = frame['Tier'].map(rank_to_tier)
+    range_map = [frame[percentile_col].between(start, end) for start, end in range_map_vals]
+    frame[tier_col] = np.select(range_map, [i for i in range(0, len(range_map))], 0)
+    frame[rank_col] = frame[tier_col].map(rank_to_tier)
 
     # Reset any ranks and tiers which weren't originally found.
-    mask = frame['Percentile'].isna()
-    frame.loc[mask, 'Tier'] = None
-    frame.loc[mask, 'Rank'] = None
+    mask = frame[percentile_col].isna()
+    frame.loc[mask, tier_col] = None
+    frame.loc[mask, rank_col] = None
     return frame
 
 
