@@ -28,7 +28,7 @@ def set_notebook_display() -> None:
 
 def info_splash() -> None:
     print(f"PYTHON VER:          {sys.version}")
-    print(f"LOG LEVEL:           {logging.root.name} ({logging.root.level})")
+    print(f"LOG LEVEL:           {LogLvl(logging.root.level).name} ({logging.root.level})")
     print()
     print(f'Available Sets:      {SETS}')
     print(f"Default Set:         {SETS[0]}")

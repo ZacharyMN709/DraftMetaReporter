@@ -49,6 +49,12 @@ def load_set_data(target_set=SETS[0], load_all=False) -> tuple[CentralManager, S
     end = datetime.utcnow()
     logging.sparse(f"\n --- Data loaded in {end - start}.")
 
+    frame = set_data.BO1.card_frame(deck_color='', summary=True)
+    rows, columns = len(frame), len(frame.columns)
+    print(f"\n Setting DataFrame default size to {rows} rows, {columns} columns.")
+    pd.set_option('display.max_rows', rows)
+    pd.set_option('display.max_columns', columns)
+
     return data_manager, set_data
 
 
