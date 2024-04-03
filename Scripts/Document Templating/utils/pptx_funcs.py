@@ -1,5 +1,6 @@
+from typing import Iterable
+
 from pptx import Presentation as new_presentation
-from pptx.slide import Slide
 from pptx.util import Cm
 from pptx.presentation import Presentation
 from PIL import Image
@@ -7,6 +8,16 @@ import tempfile
 
 SLIDE_HEIGHT = 19.05
 SLIDE_WIDTH = 25.40
+
+
+def gen_powerpoint(
+        file_name: str,
+        card_images: Iterable[Image]
+):
+    prs = new_presentation()
+    for image in card_images:
+        add_centered_image_slide(prs, image)
+    prs.save(file_name)
 
 
 def add_image_slide(

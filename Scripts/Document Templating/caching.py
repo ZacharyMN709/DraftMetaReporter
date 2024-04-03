@@ -11,30 +11,34 @@ import config as cfg
 CARD_CACHE = dict()
 
 
-def populate_cache(sets):
+def populate_cache(expansions):
     """Load the data for the provided sets into the cache."""
     start_cnt = len(CARD_CACHE)
 
-    base_url = "https://api.scryfall.com/cards/search?format=json&order=set&q=e%3A"
-    for s in sets:
-        next_url = base_url + s
-        while next_url is not None:
-            response = requests.get(next_url)
-            sleep(0.1)  # Scryfall requests this, so I try to be a good netizen.
-            data = response.json()
-            next_url = None
-            if 'next_page' in data:
-                next_url = data['next_page']
-            for card in data['data']:
-                logging.debug(f"Adding '{card['name']}' to `CARD_CACHE`")
-                CARD_CACHE[card['name']] = card
-                if "card_faces" in card:
-                    face = card['card_faces'][0]
-                    logging.debug(f"Adding '{face['name']}' to `CARD_CACHE`")
-                    CARD_CACHE[face['name']] = card
+    for expansion in expansions:
+        get_expansion_data(expansion)
 
     end_cnt = len(CARD_CACHE)
     logging.debug(f"{end_cnt - start_cnt} cards added to `CARD_CACHE`")
+
+
+def get_expansion_data(expansion):
+    base_url = "https://api.scryfall.com/cards/search?format=json&order=set&q=e%3A"
+    next_url = base_url + expansion
+    while next_url is not None:
+        response = requests.get(next_url)
+        sleep(0.1)  # Scryfall requests this, so I try to be a good netizen.
+        data = response.json()
+        next_url = None
+        if 'next_page' in data:
+            next_url = data['next_page']
+        for card in data['data']:
+            logging.debug(f"Adding '{card['name']}' to `CARD_CACHE`")
+            CARD_CACHE[card['name']] = card
+            if "card_faces" in card:
+                face = card['card_faces'][0]
+                logging.debug(f"Adding '{face['name']}' to `CARD_CACHE`")
+                CARD_CACHE[face['name']] = card
 
 
 @cache  # Save the results, so we don't re-query stuff we have in CARD_CACHE.
@@ -101,7 +105,7 @@ def get_card_face_images(card_data):
     return front_face, back_face
 
 
-def generate_slide_image(card_name):
+def generate_slide_image(card_name) -> Image:
     card_data = get_card_data(card_name)
     front_image, back_image = get_card_face_images(card_data)
 
@@ -119,8 +123,6 @@ def generate_slide_image(card_name):
     merged_image.paste(front_image, front_image_location)
     merged_image.paste(back_image, back_image_location)
     return merged_image
-
-
 
 
 @cache  # Save the results so if we remake the document, we don't re-fetch all the images.
@@ -179,3 +181,7 @@ def download_card_image(card_name):
 
     return height, width
 
+
+def image_generator(card_names):
+    for card_name in card_names:
+        yield generate_slide_image(card_name)
