@@ -124,6 +124,14 @@ class RequestScryfall(Requester):
 
         return response
 
+    def get_by_query(self, query) -> list[dict[str, Any]]:
+        """
+        Populates the card cache with results from searching scryfall using a query.
+        :param query: The query to use, following Scryfall's search syntax.
+        """
+        query = query.replace(' ', '+').replace('=', '%3D').replace(':', '%3A')
+        return flatten_lists([x['data'] for x in self.get_paginated_json_response(f"{CARD_SCRYFALL_URL}?q={query}")])
+
     # NOTE: The two functions below are expensive and slow, especially to Scryfall.
     #  They should be called only as required.
     def get_arena_cards(self) -> list[dict[str, Any]]:
