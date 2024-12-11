@@ -1,3 +1,5 @@
+from typing import Optional, Iterable
+
 import logging
 import requests
 from io import BytesIO
@@ -7,110 +9,188 @@ from functools import cache
 
 import config as cfg
 
-# Create a blank cache to fill with data.
-CARD_CACHE = dict()
 
-
-def populate_cache(expansions):
-    """Load the data for the provided sets into the cache."""
-    start_cnt = len(CARD_CACHE)
-
-    for expansion in expansions:
-        get_expansion_data(expansion)
-
-    end_cnt = len(CARD_CACHE)
-    logging.debug(f"{end_cnt - start_cnt} cards added to `CARD_CACHE`")
-
-
-def get_expansion_data(expansion):
-    base_url = "https://api.scryfall.com/cards/search?format=json&order=set&q=e%3A"
-    next_url = base_url + expansion
-    while next_url is not None:
-        response = requests.get(next_url)
+class Scryfall:
+    @classmethod
+    @cache
+    def _request(cls, url: str) -> requests.Response:
+        """
+        Request data from a url, with an automatic delay that Scryfall requests.
+        :param url: The url to request data from.
+        :return: The response from the request.
+        """
+        response = requests.get(url)
         sleep(0.1)  # Scryfall requests this, so I try to be a good netizen.
-        data = response.json()
-        next_url = None
-        if 'next_page' in data:
-            next_url = data['next_page']
-        for card in data['data']:
-            logging.debug(f"Adding '{card['name']}' to `CARD_CACHE`")
-            CARD_CACHE[card['name']] = card
-            if "card_faces" in card:
-                face = card['card_faces'][0]
-                logging.debug(f"Adding '{face['name']}' to `CARD_CACHE`")
-                CARD_CACHE[face['name']] = card
+        return response
 
+    @classmethod
+    def scryfall_search(cls, query: str) -> dict[str, dict]:
+        """
+        Search scryfall for multiple cards, populating the card cache with the results.
+        :param query: The query to use, formatted for url.
+        :return: A list of names added to the cache.
+        """
+        cards = dict()
+        url = f"https://api.scryfall.com/cards/search?format=json&order=set&q={query}"
+        while url:
+            data = cls._request(url).json()
+            url = data.get('next_page', None)
+            cards |= {card['name']: card for card in data['data']}
 
-@cache  # Save the results, so we don't re-query stuff we have in CARD_CACHE.
-def get_card_data(card_name):
-    """Get data for a card based on it's name, taking it from the cache if at all possible."""
-    if card_name in CARD_CACHE:
-        return CARD_CACHE[card_name]
+        return cards
 
-    search_url = f"https://api.scryfall.com/cards/named?fuzzy={card_name}"
-    response = requests.get(search_url)
-    data = response.json()
-    sleep(0.1)  # Scryfall requests this, so I try to be a good netizen.
+    @classmethod
+    def scryfall_card(cls, query: str) -> Optional[dict]:
+        """
+        Search scryfall for a specific card, populating the card cache with the results.
+        :param query: The url parameter/path for the card.
+        :return: The card data, if found.
+        """
+        url = f"https://api.scryfall.com/cards/{query}"
+        data = cls._request(url).json()
 
-    if data["object"] == 'card':
-        if data['name'] in CARD_CACHE:
-            return CARD_CACHE[data['name']]
+        if data["object"] == 'card':
+            return data["object"]
         else:
-            return data
-    else:
-        print(f"Could not find card for '{card_name}'")
-        return None
+            logging.warning(f"Could not find card for '{url}'")
+            return None
 
-
-@cache  # Save the results, so we don't re-query stuff we have in CARD_CACHE.
-def get_card_data_by_set(expansion, number, name):
-    card = CARD_CACHE.get(name, None)
-    if card is not None and card['set'].lower() == expansion.lower():
-        return card
-
-    search_url = f"https://api.scryfall.com/cards/{expansion.lower()}/{number}"
-    response = requests.get(search_url)
-    data = response.json()
-    sleep(0.1)  # Scryfall requests this, so I try to be a good netizen.
-
-    if data["object"] == 'card':
-        CARD_CACHE[data['name']] = data
-        return data
-    else:
-        print(f"Could not find card for '{expansion} - {number}'")
-        return None
-
-
-def get_card_face_images(card_data):
-    def _get_url(face):
+    @classmethod
+    def _get_image_url(cls, face) -> str:
+        """
+        Get the highest resolution image available from a card face
+        :param face: The card or card face data.
+        :return: A url to the image.
+        """
         uris = ['large', 'border_crop', 'normal', 'small', 'art_crop']
         for uri in uris:
             if uri in face["image_uris"]:
                 return face["image_uris"][uri]
 
-    def get_face_image(card_face):
-        image_url = _get_url(card_face)
-        response = requests.get(image_url)
-        image_data = response.content
-        sleep(0.1)  # Scryfall requests this, so I try to be a good netizen.
+    @classmethod
+    def get_face_image(cls, card_face: dict) -> Image:
+        url = cls._get_image_url(card_face)
+        image_data = cls._request(url).content
         return Image.open(BytesIO(image_data))
 
-    if "layout" in card_data and card_data["layout"] == "transform":
-        front_face = get_face_image(card_data["card_faces"][0])
-        back_face = get_face_image(card_data["card_faces"][1])
-    else:
-        front_face = get_face_image(card_data)
-        back_face = None
 
-    return front_face, back_face
+class CardCache:
+    @classmethod
+    def from_expansions(cls, expansions: list[str]):
+        card_cache = cls()
+        for expansion in expansions:
+            card_cache.populate_cache_by_expansion(expansion)
+        return card_cache
+
+    @classmethod
+    def from_queries(cls, queries: list[str]):
+        card_cache = cls()
+        for query in queries:
+            card_cache.populate_cache_by_query(query)
+        return card_cache
+
+    @classmethod
+    def from_config(cls):
+        card_cache = cls()
+
+        # TODO: Load these from a config file
+        expansions = list()
+        queries = list()
+
+        for expansion in expansions:
+            card_cache.populate_cache_by_expansion(expansion)
+
+        for query in queries:
+            card_cache.populate_cache_by_query(query)
+        return card_cache
+
+    def __init__(self):
+        self._card_cache = dict()
+
+    def _add_to_cache(self, card, overwrite: bool = False) -> bool:
+        """
+        Adds new card data to the cache, skipping existing records.
+        Can be set to overwrite data with the `overwrite` flag.
+        :param card: The card data to add to the cache.
+        :param overwrite: Whether to overwrite existing data.
+        :return: Whether the value was updated.
+        """
+        name = card['name']
+        if name in self._card_cache and not overwrite:
+            return False
+
+        logging.debug(f"Adding '{name}' to `CARD_CACHE`")
+        self._card_cache[name] = card
+
+        if "card_faces" in card:
+            short_name = card['card_faces'][0]['name']
+            logging.debug(f"Adding '{short_name}' to `CARD_CACHE`")
+            self._card_cache[short_name] = card
+        return True
+
+    def populate_cache_by_query(self, query) -> None:
+        """
+        Populates the card cache with results from searching scryfall using a query.
+        :param query: The query to use, following Scryfall's search syntax.
+        """
+        query = query.replace(' ', '+').replace('=', '%3D').replace(':', '%3A')
+        cards = Scryfall.scryfall_search(query)
+        for _, card in cards:
+            self._add_to_cache(card)
+
+    def populate_cache_by_expansion(self, expansion) -> None:
+        """
+        Popluates the card cache with results for a specific set.
+        :param expansion: The set to get cards from.
+        """
+        cards = Scryfall.scryfall_search(f"e%3A{expansion}")
+        for _, card in cards:
+            self._add_to_cache(card)
+
+    @cache
+    def get_card_data(self, card_name) -> Optional[dict]:
+        """
+        Gets data for a card, by name. Uses Scryfall's fuzzy match, if a card can't be found in the cache.
+        :param card_name: The name of the card.
+        :return: The card data, if found.
+        """
+        if card_name in self._card_cache:
+            return self._card_cache[card_name]
+
+        card = Scryfall.scryfall_card(f"named?fuzzy={card_name}")
+        self._add_to_cache(card)
+        return card
+
+    def get_card_data_by_set(self, card_name, expansion, number) -> Optional[dict]:
+        """
+        Gets data for a card, using its name, set and collector number.
+        This allows for specifying a printing of a card.
+        :param card_name: The card name.
+        :param expansion: The set the card comes from.
+        :param number: The card's collector number in the set.
+        :return: The card data, if found.
+        """
+        card = self._card_cache.get(card_name, None)
+        if card and card['set'].lower() == expansion.lower():
+            return card
+
+        card = Scryfall.scryfall_card(f"{expansion.lower()}/{number}")
+        self._add_to_cache(card)
+        return card
 
 
-def generate_slide_image(card_name) -> Image:
-    card_data = get_card_data(card_name)
-    front_image, back_image = get_card_face_images(card_data)
+card_cache = CardCache()
 
-    if back_image is None:
-        return front_image
+
+def generate_slide_image(card_name: str) -> Image:
+    print(card_name)
+    card_data = card_cache.get_card_data(card_name)
+
+    if "layout" in card_data and card_data["layout"] != "transform":
+        return Scryfall.get_face_image(card_data)
+
+    front_image = Scryfall.get_face_image(card_data["card_faces"][0])
+    back_image = Scryfall.get_face_image(card_data["card_faces"][1])
 
     if "Battle" in card_data["card_faces"][0]["type_line"]:
         front_image = front_image.rotate(270, expand=True)  # Rotate image by -90 degrees
@@ -125,49 +205,31 @@ def generate_slide_image(card_name) -> Image:
     return merged_image
 
 
-@cache  # Save the results so if we remake the document, we don't re-fetch all the images.
-def get_image_data(card_image_url):
-    """Get the image for a given url."""
-    response = requests.get(card_image_url)
-    image_data = response.content
-    sleep(0.1)  # Scryfall requests this, so I try to be a good netizen.
-    return image_data
+def format_and_save_temp_image(img: Image, rotate: bool, out_loc: str) -> tuple[float, float]:
+    new_height = cfg.HEIGHT
+    new_width = cfg.WIDTH
 
+    if rotate:
+        img = img.rotate(270, expand=True)  # Rotate image by -90 degrees
+        new_height, new_width = new_width, new_height  # Switch the height and width, since we've rotated.
 
-def format_image(card_image_url, rotate, out_loc):
-    image_data = get_image_data(card_image_url)
-
-    with BytesIO(image_data) as b_io:
-        with Image.open(b_io) as img:
-            new_height = cfg.HEIGHT
-            new_width = cfg.WIDTH
-
-            if rotate:
-                img = img.rotate(270, expand=True)  # Rotate image by -90 degrees
-                new_height, new_width = new_width, new_height  # Switch the height and width, since we've rotated.
-
-            # Save the image fetched from the web as a JPEG, then use that file location to add the image into the docx.
-            img.save(out_loc, format='JPEG')
+    # Save the image fetched from the web as a JPEG, then use that file location to add the image into the docx.
+    img.save(out_loc, format='JPEG')
     return new_height, new_width
 
 
-def download_card_image(card_name):
-    def _get_url(face):
-        uris = ['large', 'border_crop', 'normal', 'small', 'art_crop']
-        for uri in uris:
-            if uri in face["image_uris"]:
-                return face["image_uris"][uri]
-
-    card_data = get_card_data(card_name)
+def download_card_image(card_name: str) -> tuple[float, float]:
+    card_data = card_cache.get_card_data(card_name)
 
     if "layout" in card_data and card_data["layout"] == "transform":
         front_face = card_data["card_faces"][0]
         rotate = front_face['type_line'] == 'Battle — Siege'
-        height, width = format_image(_get_url(front_face), rotate, cfg.TEMP_FRONT_LOC)
+        front_image = Scryfall.get_face_image(front_face)
+        height, width = format_and_save_temp_image(front_image, rotate, cfg.TEMP_FRONT_LOC)
         front = Image.open(cfg.TEMP_FRONT_LOC)
 
-        back_face = card_data["card_faces"][1]
-        h, w = format_image(_get_url(back_face), False, cfg.TEMP_BACK_LOC)
+        back_image = Scryfall.get_face_image(card_data["card_faces"][1])
+        h, w = format_and_save_temp_image(back_image, False, cfg.TEMP_BACK_LOC)
         height = max(height, h)
         width += w
         back = Image.open(cfg.TEMP_BACK_LOC)
@@ -177,11 +239,12 @@ def download_card_image(card_name):
         new.paste(back, (front.size[0], (new.size[1] - back.size[1]) // 2))
         new.save(cfg.TEMP_LOC, format='PNG')
     else:
-        height, width = format_image(_get_url(card_data), False, cfg.TEMP_LOC)
+        image = Scryfall.get_face_image(card_data)
+        height, width = format_and_save_temp_image(image, False, cfg.TEMP_LOC)
 
     return height, width
 
 
-def image_generator(card_names):
+def image_generator(card_names: Iterable[str]):
     for card_name in card_names:
         yield generate_slide_image(card_name)

@@ -3,7 +3,7 @@ from utils import pptx_funcs
 
 
 def gen_set_review_powerpoint(file_name, card_keys):
-    cards = [caching.get_card_data_by_set(s, n, name)["name"] for s, n, name in card_keys]
+    cards = [caching.get_card_data_by_set(name, s, n)["name"] for s, n, name in card_keys]
     pptx_funcs.gen_powerpoint(file_name, caching.image_generator(cards))
 
 
