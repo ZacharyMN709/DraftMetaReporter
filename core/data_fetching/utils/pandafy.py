@@ -31,6 +31,7 @@ def gen_card_frame(card_dict: list[dict[str, object]]) -> pd.DataFrame:
         frame[f'{name} GW'] = (frame[f'# {name}'] * frame[f'{name} WR']).astype(int, errors='ignore')
         frame[f'{name} WR'] = frame[f'{name} WR'] * 100
 
+    # TODO: Re-evaluate whether these numbers are useful.
     frame["IIO"] = frame["OH WR"] - frame["GIH WR"]
     frame["IWD"] = frame["GD WR"] - frame["GIH WR"]
     frame["IWS"] = frame["GIH WR"] - frame["GND WR"]

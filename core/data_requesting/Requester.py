@@ -129,7 +129,7 @@ class Requester:
             new_response = self.get_response(old_url)
             new_url = None
 
-            # If a response is gotten, add it it the list, and try to get a url to query next.
+            # If a response is gotten, add it to the list, and try to get a url to query next.
             if new_response is not None:
                 ret.append(new_response)
                 try:
@@ -147,7 +147,7 @@ class Requester:
             logging.debug(f"Fetching next page. ({url})")
             response, url = parse_response(url)
 
-        # Return all of the responses received, return None instead if the list is empty.
+        # Return all the responses received, return None instead if the list is empty.
         if len(ret) == 0:
             return None
         return ret
