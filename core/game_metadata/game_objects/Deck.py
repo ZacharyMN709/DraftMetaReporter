@@ -23,7 +23,7 @@ import core.game_metadata.game_objects.Draft as Draft
 
 # Alternate regex for ranks: r"(\w*)-([\d])"
 trim_numeric = re.compile(r"-[\d]*")
-card_line = re.compile(r"^([0-9]{0,3}) ?([^(\n]*)(?: |$)(\(\w{3}\))? ?(\d{1,3})?")
+card_line = re.compile(r"^([0-9]{0,3})x? ?([^(\n]*)(?: |$)(\(\w{3}\))? ?(\d{1,3})?")
 
 
 class TrophyStub:
@@ -349,8 +349,12 @@ class Deck:
     def __sub__(self, other: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
         return self.deck_differences(other)
 
-    def __or__(self, other: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
+    def __and__(self, other: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
         return self.deck_overlap(other)
+
+    def __or__(self, other: Deck) -> tuple[dict[Card, int], dict[Card, int]]:
+        # TODO: Make this return the minimal union of both decks
+        raise NotImplementedError
 
     def __str__(self):
         # TODO: Improve this with colour information and similar.
